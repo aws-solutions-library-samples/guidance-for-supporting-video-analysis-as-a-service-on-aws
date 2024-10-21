@@ -1,8 +1,6 @@
 import { Template } from 'aws-cdk-lib/assertions';
 import { Workflow } from '../lib/video_analytics_async_workflow';
 import { Stack, App } from 'aws-cdk-lib';
-import * as path from 'path';
-import { Code } from 'aws-cdk-lib/aws-lambda';
 
 // Mock the Lambda asset
 jest.mock('aws-cdk-lib/aws-lambda', () => {

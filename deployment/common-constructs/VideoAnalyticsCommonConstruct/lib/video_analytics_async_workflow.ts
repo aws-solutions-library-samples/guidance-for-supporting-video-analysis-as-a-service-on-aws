@@ -15,7 +15,6 @@ import { DynamoEventSource, SqsDlq } from 'aws-cdk-lib/aws-lambda-event-sources'
 import { StateMachine } from 'aws-cdk-lib/aws-stepfunctions';
 import { Key } from 'aws-cdk-lib/aws-kms';
 import * as fs from 'fs';
-import { Bucket } from 'aws-cdk-lib/aws-s3';
 
 import {
   DEFAULT_LAMBDA_PACKAGE_NAME,
