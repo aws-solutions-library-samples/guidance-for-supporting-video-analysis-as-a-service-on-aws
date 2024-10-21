@@ -8,8 +8,6 @@ import {
   TableClass,
   TableEncryption
 } from 'aws-cdk-lib/aws-dynamodb';
-import * as regionInfo from 'aws-cdk-lib/region-info';
-import { Key } from 'aws-cdk-lib/aws-kms';
 import { Stack } from 'aws-cdk-lib';
 const AUTO_SCALING_AT_CPU_UTILIZATION = 80;
 const DEFAULT_MIN_READ_CAPACITY = 1;
@@ -17,15 +15,6 @@ const DEFAULT_MAX_READ_CAPACITY = 20;
 const DEFAULT_MIN_WRITE_CAPACITY = 1;
 const DEFAULT_MAX_WRITE_CAPACITY = 5;
 
-
-
-/**
- * String representing an AWS region.
- *
- * Using the AWS SDK to ensure we always have the most up-to-date list of regions.
- */
-
-export type AWSRegion = string & keyof typeof regionInfo.RegionInfo.regions;
 
 /**
  * Create a DDB table with required stack, table name and partition key. Others are optional.

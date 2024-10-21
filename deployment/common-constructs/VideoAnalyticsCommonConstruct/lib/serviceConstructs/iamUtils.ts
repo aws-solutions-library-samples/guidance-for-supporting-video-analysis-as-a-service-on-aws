@@ -1,6 +1,5 @@
-import type { Construct } from 'constructs';
-import type { PolicyStatement } from 'aws-cdk-lib/aws-iam';
-import { PolicyDocument, Role, ServicePrincipal, ManagedPolicy } from 'aws-cdk-lib/aws-iam';
+import { Construct } from 'constructs';
+import { PolicyStatement, PolicyDocument, Role, ServicePrincipal, ManagedPolicy } from 'aws-cdk-lib/aws-iam';
 import { LAMBDA_SERVICE_PRINCIPAL, LAMBDA_MANAGED_POLICY_NAME } from './const';
 
 /**
@@ -10,7 +9,7 @@ export function createLambdaRole(
   scope: Construct,
   roleName: string,
   statements: PolicyStatement[]
-) {
+): Role {
   return new Role(scope, roleName, {
     roleName: roleName,
     assumedBy: new ServicePrincipal(LAMBDA_SERVICE_PRINCIPAL),
@@ -23,7 +22,7 @@ export function createLambdaRole(
   });
 }
 
-export function createBasicLambdaRole(scope: Construct, roleName: string) {
+export function createBasicLambdaRole(scope: Construct, roleName: string): Role {
     return new Role(scope, roleName, {
         roleName: roleName,
         assumedBy: new ServicePrincipal(LAMBDA_SERVICE_PRINCIPAL),
