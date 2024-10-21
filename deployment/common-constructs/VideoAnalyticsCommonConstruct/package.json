@@ -15,7 +15,8 @@
     "lint": "eslint 'lib/**/*.ts' 'test/**/*.ts'",
     "format": "eslint --fix 'lib/**/*.ts' 'test/**/*.ts' && prettier --write 'lib/**/*.ts' 'test/**/*.ts'",
     "prepublishOnly": "npm run build",
-    "cdk": "cdk"
+    "cdk": "cdk",
+    "build:openapi": "cd ../../../models/video-analytics && smithy build"
   },
   "devDependencies": {
     "@eslint/js": "^9.13.0",
@@ -34,6 +35,9 @@
     "ts-node": "^10.9.2",
     "typescript": "~5.6.2",
     "typescript-eslint": "^8.11.0"
+    "@typescript-eslint/eslint-plugin": "^5.0.0",
+    "@typescript-eslint/parser": "^5.0.0",
+    "smithy-cli": "^1.0.0"
   },
   "dependencies": {
     "@aws-sdk/client-ec2": "^3.0.0",

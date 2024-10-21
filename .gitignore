@@ -4,5 +4,6 @@
 deployment/common-constructs/VideoAnalyticsCommonConstruct/dist/
 deployment/common-constructs/VideoAnalyticsCommonConstruct/node_modules/
 *.DS_Store
-
+deployment/common-constructs/VideoAnalyticsCommonConstruct/model/classpath.json
+.idea/
 
