@@ -15,7 +15,8 @@
     "lint": "eslint 'lib/**/*.ts' 'test/**/*.ts'",
     "format": "eslint --fix 'lib/**/*.ts' 'test/**/*.ts' && prettier --write 'lib/**/*.ts' 'test/**/*.ts'",
     "prepublishOnly": "npm run build",
-    "cdk": "cdk"
+    "cdk": "cdk",
+    "build:openapi": "cd ../../models/video-analytics && smithy build"
   },
   "devDependencies": {
     "@types/jest": "^29.5.12",
@@ -30,7 +31,8 @@
     "eslint-plugin-prettier": "^5.1.3",
     "prettier": "^3.2.5",
     "@typescript-eslint/eslint-plugin": "^5.0.0",
-    "@typescript-eslint/parser": "^5.0.0"
+    "@typescript-eslint/parser": "^5.0.0",
+    "smithy-cli": "^1.0.0"
   },
   "dependencies": {
     "aws-cdk-lib": "2.161.1",
