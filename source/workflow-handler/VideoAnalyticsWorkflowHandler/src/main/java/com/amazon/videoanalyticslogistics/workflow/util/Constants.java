@@ -12,4 +12,7 @@ public final class Constants {
     public static final String WORKFLOW_NAME = "WorkflowName";
     public static final String DATASET_WORKFLOW_NAME = "workflowName";
     public static final String NULL_ATTRIBUTE_KEY_METRIC = "attributeKeyNull:";
+    public static final String STATUS_KEY = "status";
+    public static final String DELETING_STATUS = "DELETING";
+    public static final String FINALIZING_STATUS = "FINALIZING";
 }
