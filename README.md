@@ -1,4 +1,5 @@
-# Guidance Title (required)
+# Guidance for Retail Video Analytics on AWS
+
 
 The Guidance title should be consistent with the title established first in Alchemy.
 
