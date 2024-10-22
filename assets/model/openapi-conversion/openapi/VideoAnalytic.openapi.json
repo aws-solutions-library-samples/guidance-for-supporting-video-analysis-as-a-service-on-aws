@@ -42,6 +42,16 @@
                             }
                         }
                     },
+                    "404": {
+                        "description": "ResourceNotFoundException 404 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResourceNotFoundExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "InternalServerException 500 response",
                         "content": {
@@ -165,6 +175,17 @@
                 }
             },
             "InternalServerExceptionResponseContent": {
+                "type": "object",
+                "properties": {
+                    "message": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "message"
+                ]
+            },
+            "ResourceNotFoundExceptionResponseContent": {
                 "type": "object",
                 "properties": {
                     "message": {

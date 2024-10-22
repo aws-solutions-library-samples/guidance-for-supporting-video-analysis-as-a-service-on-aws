@@ -57,6 +57,9 @@
                     "target": "com.amazonaws.videoanalytics#InternalServerException"
                 },
                 {
+                    "target": "com.amazonaws.videoanalytics#ResourceNotFoundException"
+                },
+                {
                     "target": "com.amazonaws.videoanalytics#ValidationException"
                 }
             ],
@@ -109,6 +112,75 @@
                     "max": 128
                 },
                 "smithy.api#pattern": "^[a-zA-Z0-9:_\\-]+$"
+            }
+        },
+        "com.amazonaws.videoanalytics#GetCreateDeviceNotificationStatus": {
+            "type": "operation",
+            "input": {
+                "target": "com.amazonaws.videoanalytics#GetCreateDeviceNotificationStatusRequest"
+            },
+            "output": {
+                "target": "com.amazonaws.videoanalytics#GetCreateDeviceNotificationStatusResponse"
+            },
+            "errors": [
+                {
+                    "target": "com.amazonaws.videoanalytics#InternalServerException"
+                },
+                {
+                    "target": "com.amazonaws.videoanalytics#ValidationException"
+                }
+            ],
+            "traits": {
+                "smithy.api#http": {
+                    "code": 200,
+                    "method": "GET",
+                    "uri": "/get-create-device-notification-status/{jobId}"
+                },
+                "smithy.api#idempotent": {}
+            }
+        },
+        "com.amazonaws.videoanalytics#GetCreateDeviceNotificationStatusRequest": {
+            "type": "structure",
+            "members": {
+                "jobId": {
+                    "target": "com.amazonaws.videoanalytics#JobId",
+                    "traits": {
+                        "smithy.api#httpLabel": {},
+                        "smithy.api#required": {}
+                    }
+                }
+            },
+            "traits": {
+                "smithy.api#input": {}
+            }
+        },
+        "com.amazonaws.videoanalytics#GetCreateDeviceNotificationStatusResponse": {
+            "type": "structure",
+            "members": {
+                "jobId": {
+                    "target": "com.amazonaws.videoanalytics#JobId"
+                },
+                "deviceId": {
+                    "target": "com.amazonaws.videoanalytics#DeviceId"
+                },
+                "ruleId": {
+                    "target": "com.amazonaws.videoanalytics#RuleId"
+                },
+                "errorMessage": {
+                    "target": "smithy.api#String"
+                },
+                "status": {
+                    "target": "com.amazonaws.videoanalytics#Status"
+                },
+                "createTime": {
+                    "target": "smithy.api#Timestamp"
+                },
+                "modifiedTime": {
+                    "target": "smithy.api#Timestamp"
+                }
+            },
+            "traits": {
+                "smithy.api#output": {}
             }
         },
         "com.amazonaws.videoanalytics#GetCreateDeviceStatus": {
@@ -215,6 +287,16 @@
             "traits": {
                 "smithy.api#error": "client",
                 "smithy.api#httpError": 404
+            }
+        },
+        "com.amazonaws.videoanalytics#RuleId": {
+            "type": "string",
+            "traits": {
+                "smithy.api#length": {
+                    "min": 1,
+                    "max": 128
+                },
+                "smithy.api#pattern": "^[a-zA-Z0-9_]+$"
             }
         },
         "com.amazonaws.videoanalytics#Status": {
