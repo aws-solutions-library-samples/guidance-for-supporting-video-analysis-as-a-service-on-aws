@@ -3,7 +3,8 @@
     "operationShapeIds": [
         "com.amazonaws.videoanalytics#DeleteDevice",
         "com.amazonaws.videoanalytics#GetCreateDeviceNotificationStatus",
-        "com.amazonaws.videoanalytics#GetCreateDeviceStatus"
+        "com.amazonaws.videoanalytics#GetCreateDeviceStatus",
+        "com.amazonaws.videoanalytics#GetCreateNotificationRuleStatus"
     ],
     "projection": {
         "abstract": false,
@@ -149,6 +150,7 @@
         "smithy.api#private",
         "smithy.api#protocolDefinition",
         "smithy.api#range",
+        "smithy.api#readonly",
         "smithy.api#recommended",
         "smithy.api#required",
         "smithy.api#tags",

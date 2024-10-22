@@ -1,4 +1,4 @@
-$version: "1.0"
+$version: "2.0"
 
 namespace com.amazonaws.videoanalytics
 
@@ -7,7 +7,7 @@ namespace com.amazonaws.videoanalytics
 operation GetCreateDeviceNotificationStatus {
     input: GetCreateDeviceNotificationStatusRequest,
     output: GetCreateDeviceNotificationStatusResponse,
-    errors: [InternalServerException, ValidationException]
+    errors: [InternalServerException, ValidationException],
 }
 
 @input
