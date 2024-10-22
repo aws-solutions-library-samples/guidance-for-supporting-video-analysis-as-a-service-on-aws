@@ -13,7 +13,7 @@
     "openapi-conversion": {
       "plugins": {
         "openapi": {
-          "service": "com.aws.videoanalytic#VideoAnalytic",
+          "service": "com.amazonaws.videoanalytics#VideoAnalytic",
           "protocol": "aws.protocols#restJson1",
           "version": "3.1.0",
           "outputFile": "../../../assets/model/openapi.yaml"

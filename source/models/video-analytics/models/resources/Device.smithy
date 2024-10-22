@@ -1,9 +1,10 @@
 $version: "2.0"
 
-namespace com.aws.videoanalytic
+namespace com.amazonaws.videoanalytics
 
 resource Device {
     operations: [
+        GetCreateDeviceStatus,
         DeleteDevice
     ]
 }

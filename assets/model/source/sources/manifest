@@ -1,5 +1,6 @@
 types/Device.smithy
 resources/Device.smithy
 operations/Device/DeleteDevice.smithy
+operations/Device/GetCreateDeviceStatus.smithy
 video-analytic.smithy
 errors/errors.smithy

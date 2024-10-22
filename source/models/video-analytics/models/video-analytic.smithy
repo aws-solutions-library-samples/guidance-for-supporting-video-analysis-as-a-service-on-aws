@@ -1,6 +1,6 @@
 $version: "2.0"
 
-namespace com.aws.videoanalytic
+namespace com.amazonaws.videoanalytics
 
 use aws.protocols#restJson1
 
@@ -10,6 +10,5 @@ use aws.protocols#restJson1
 service VideoAnalytic {
     version: "2024-10-18"
     resources: [Device]
-    errors: [ServiceError, ThrottlingError]
 }
 

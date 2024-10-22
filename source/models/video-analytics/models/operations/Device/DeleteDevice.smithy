@@ -1,13 +1,13 @@
 $version: "2.0"
 
-namespace com.aws.videoanalytic
+namespace com.amazonaws.videoanalytics
 
 @http(code: 200, method: "POST", uri: "/delete-device")
 @idempotent
 operation DeleteDevice {
     input: DeleteDeviceRequest,
     output: DeleteDeviceResponse,
-    errors: []
+    errors: [AccessDeniedException, InternalServerException, ValidationException]
 }
 
 @input
