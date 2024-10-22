@@ -16,7 +16,7 @@
     "format": "eslint --fix 'lib/**/*.ts' 'test/**/*.ts' && prettier --write 'lib/**/*.ts' 'test/**/*.ts'",
     "prepublishOnly": "npm run build",
     "cdk": "cdk",
-    "build:openapi": "cd ../../../models/video-analytics && smithy build"
+    "build:openapi": "cd ../../../source/models/video-analytics && smithy build"
   },
   "devDependencies": {
     "@eslint/js": "^9.13.0",

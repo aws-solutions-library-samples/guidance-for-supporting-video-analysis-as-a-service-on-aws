@@ -11,7 +11,7 @@
                 "service": "com.aws.videoanalytic#VideoAnalytic",
                 "protocol": "aws.protocols#restJson1",
                 "version": "3.1.0",
-                "outputFile": "../../common-constructs/VideoAnalyticsCommonConstruct/model/openapi.yaml"
+                "outputFile": "../../../assets/model/openapi.yaml"
             }
         },
         "transforms": []

@@ -1,7 +1,7 @@
 {
   "version": "1.0",
   "sources": ["models"],
-  "outputDirectory": "../../deployment/common-constructs/VideoAnalyticsCommonConstruct/model",
+  "outputDirectory": "../../../assets/model",
   "maven": {
     "dependencies": [
       "software.amazon.smithy:smithy-openapi:1.51.0",
@@ -16,7 +16,7 @@
           "service": "com.aws.videoanalytic#VideoAnalytic",
           "protocol": "aws.protocols#restJson1",
           "version": "3.1.0",
-          "outputFile": "../../common-constructs/VideoAnalyticsCommonConstruct/model/openapi.yaml"
+          "outputFile": "../../../assets/model/openapi.yaml"
         }
       }
     }
