@@ -1,0 +1,104 @@
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.gradle.api.tasks.testing.logging.TestLogEvent
+
+plugins {
+    id 'java'
+    id 'maven-publish'
+    id 'jacoco'
+}
+
+group = 'org.example'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+    maven { url "https://aws.oss.sonatype.org/content/repositories/snapshots" }
+    // CodeGuru-Profiler java agent repository
+    maven { url "https://d1osg35nybn3tt.cloudfront.net" }
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+
+    implementation 'com.amazonaws:aws-lambda-java-core:1.2.2'
+    implementation 'com.amazonaws:aws-lambda-java-events:3.11.1'
+    implementation 'com.amazonaws:aws-lambda-java-log4j2:1.5.1'
+    implementation 'software.amazon.cloudwatchlogs:aws-embedded-metrics:4.2.0'
+    implementation 'software.amazon.awssdk:dynamodb:2.28.26'
+    implementation 'com.amazonaws:aws-java-sdk-stepfunctions:1.12.776'
+    implementation 'com.google.code.gson:gson:2.10.1'
+
+    implementation 'com.google.dagger:dagger-compiler:2.48'
+    
+    // Test dependencies
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.3'
+    testImplementation 'org.mockito:mockito-core:5.11.0'
+    testImplementation 'com.github.stefanbirkner:system-rules:1.16.0'
+    testImplementation 'com.fasterxml.jackson.core:jackson-core:2.12.7'
+    testImplementation 'com.fasterxml.jackson.core:jackson-databind:2.12.7.1'
+
+    // Annotation processing
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.48'
+}
+
+test {
+    environment "JDK_JAVA_OPTIONS", "--add-opens java.base/java.util=ALL-UNNAMED"
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+    finalizedBy jacocoTestReport  
+}
+
+jacocoTestReport {
+    dependsOn test  
+    reports {
+        xml.required = false
+        csv.required = false
+        html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
+    }
+}
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.5  
+            }
+        }
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+}
+
+task cleanBuildCache {
+    doLast {
+        delete layout.buildDirectory
+
+        delete fileTree(dir: "${System.getProperty('user.home')}/.gradle/caches")
+        delete fileTree(dir: "${System.getProperty('user.home')}/.gradle/daemon")
+        delete fileTree(dir: "${System.getProperty('user.home')}/.gradle/wrapper")
+
+        // Delete the .gradle directory in the project root, if it exists
+        def projectGradleDir = new File(projectDir, '.gradle')
+        if (projectGradleDir.exists()) {
+            println "Deleting project's .gradle directory..."
+            projectGradleDir.deleteDir()
+            println "Project's .gradle directory deleted successfully."
+        }
+
+        println "Build cache cleaning completed."
+    }
+}
