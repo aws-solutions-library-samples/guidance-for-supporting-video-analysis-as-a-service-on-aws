@@ -22,22 +22,82 @@
                     "200": {
                         "description": "DeleteDevice 200 response"
                     },
-                    "429": {
-                        "description": "ThrottlingError 429 response",
+                    "400": {
+                        "description": "ValidationException 400 response",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ThrottlingErrorResponseContent"
+                                    "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "AccessDeniedException 403 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AccessDeniedExceptionResponseContent"
                                 }
                             }
                         }
                     },
                     "500": {
-                        "description": "ServiceError 500 response",
+                        "description": "InternalServerException 500 response",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ServiceErrorResponseContent"
+                                    "$ref": "#/components/schemas/InternalServerExceptionResponseContent"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/get-create-device-status/{jobId}": {
+            "get": {
+                "operationId": "GetCreateDeviceStatus",
+                "parameters": [
+                    {
+                        "name": "jobId",
+                        "in": "path",
+                        "schema": {
+                            "type": "string",
+                            "maxLength": 128,
+                            "minLength": 1,
+                            "pattern": "^[a-z0-9\\-]+$"
+                        },
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "GetCreateDeviceStatus 200 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GetCreateDeviceStatusResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "ValidationException 400 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "InternalServerException 500 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InternalServerExceptionResponseContent"
                                 }
                             }
                         }
@@ -48,6 +108,17 @@
     },
     "components": {
         "schemas": {
+            "AccessDeniedExceptionResponseContent": {
+                "type": "object",
+                "properties": {
+                    "message": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "message"
+                ]
+            },
             "DeleteDeviceRequestContent": {
                 "type": "object",
                 "properties": {
@@ -62,7 +133,38 @@
                     "deviceId"
                 ]
             },
-            "ServiceErrorResponseContent": {
+            "GetCreateDeviceStatusResponseContent": {
+                "type": "object",
+                "properties": {
+                    "jobId": {
+                        "type": "string",
+                        "maxLength": 128,
+                        "minLength": 1,
+                        "pattern": "^[a-z0-9\\-]+$"
+                    },
+                    "deviceId": {
+                        "type": "string",
+                        "maxLength": 128,
+                        "minLength": 1,
+                        "pattern": "^[a-zA-Z0-9:_\\-]+$"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/Status"
+                    },
+                    "createTime": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "modifiedTime": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "errorMessage": {
+                        "type": "string"
+                    }
+                }
+            },
+            "InternalServerExceptionResponseContent": {
                 "type": "object",
                 "properties": {
                     "message": {
@@ -73,15 +175,58 @@
                     "message"
                 ]
             },
-            "ThrottlingErrorResponseContent": {
+            "Status": {
+                "type": "string",
+                "enum": [
+                    "RUNNING",
+                    "COMPLETED",
+                    "FAILED",
+                    "CANCELLED"
+                ]
+            },
+            "ValidationExceptionField": {
                 "type": "object",
                 "properties": {
+                    "name": {
+                        "type": "string"
+                    },
                     "message": {
                         "type": "string"
                     }
                 },
                 "required": [
-                    "message"
+                    "message",
+                    "name"
+                ]
+            },
+            "ValidationExceptionReason": {
+                "type": "string",
+                "enum": [
+                    "unknownOperation",
+                    "cannotParse",
+                    "fieldValidationFailed",
+                    "other"
+                ]
+            },
+            "ValidationExceptionResponseContent": {
+                "type": "object",
+                "properties": {
+                    "message": {
+                        "type": "string"
+                    },
+                    "reason": {
+                        "$ref": "#/components/schemas/ValidationExceptionReason"
+                    },
+                    "fieldList": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ValidationExceptionField"
+                        }
+                    }
+                },
+                "required": [
+                    "message",
+                    "reason"
                 ]
             }
         }

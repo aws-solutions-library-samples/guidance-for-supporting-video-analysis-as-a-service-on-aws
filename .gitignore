@@ -3,5 +3,3 @@
 **/node_modules/
 *.DS_Store
 *.vscode
-deployment/common-constructs/VideoAnalyticsCommonConstruct/model/classpath.json
-assets/model/classpath.json

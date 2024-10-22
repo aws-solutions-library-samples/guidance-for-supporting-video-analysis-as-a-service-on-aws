@@ -1,27 +1,60 @@
 $version: "2.0"
 
-namespace com.aws.videoanalytic
+namespace com.amazonaws.videoanalytics
 
-// "error" is a trait that is used to specialize
-// a structure as an error.
-@error("client")
-@httpError(404)
-structure NoSuchResource {
+structure ValidationExceptionField {
     @required
-    resourceType: String
-}
-
-@error("client")
-@retryable
-@httpError(429)
-structure ThrottlingError {
+    name: String
     @required
     message: String
 }
 
-@error("server")
+list ValidationExceptionFieldList {
+    member: ValidationExceptionField
+}
+
+enum ValidationExceptionReason {
+    UNKNOWN_OPERATION = "unknownOperation"
+    CANNOT_PARSE = "cannotParse"
+    FIELD_VALIDATION_FAILED = "fieldValidationFailed"
+    OTHER = "other"
+}
+
+@httpError(400)
+@error("client")
+structure ValidationException {
+    @required
+    message: String,
+    @required
+    reason: ValidationExceptionReason,
+    // The field that caused the error, if applicable. If more than one field caused the error, pick one and elaborate in the message
+    fieldList: ValidationExceptionFieldList
+}
+
+@httpError(404)
+@error("client")
+structure ResourceNotFoundException {
+    @required
+    message: String
+}
+
 @httpError(500)
-structure ServiceError {
+@error("server")
+structure InternalServerException {
+    @required
+    message: String
+}
+
+@httpError(403)
+@error("client")
+structure AccessDeniedException {
+    @required
+    message: String
+}
+
+@httpError(409)
+@error("client")
+structure ConflictException {
     @required
     message: String
 }
