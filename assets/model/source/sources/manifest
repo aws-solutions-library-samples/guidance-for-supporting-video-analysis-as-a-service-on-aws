@@ -1,6 +1,10 @@
 types/Device.smithy
+types/DeviceOperation.smithy
+types/DeviceNotifications.smithy
 resources/Device.smithy
 operations/Device/DeleteDevice.smithy
 operations/Device/GetCreateDeviceStatus.smithy
+operations/DeviceNotification/GetCreateDeviceNotificationStatus.smithy
+operations/DeviceNotification/GetCreateNotificationRuleStatus.smithy
 video-analytic.smithy
 errors/errors.smithy

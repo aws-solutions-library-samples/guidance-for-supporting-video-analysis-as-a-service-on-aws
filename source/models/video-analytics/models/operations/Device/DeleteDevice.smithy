@@ -7,7 +7,7 @@ namespace com.amazonaws.videoanalytics
 operation DeleteDevice {
     input: DeleteDeviceRequest,
     output: DeleteDeviceResponse,
-    errors: [AccessDeniedException, InternalServerException, ValidationException]
+    errors: [AccessDeniedException, InternalServerException, ResourceNotFoundException, ValidationException]
 }
 
 @input
