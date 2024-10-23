@@ -23,11 +23,6 @@ enum Status {
     CANCELLED
 }
 
-union GenerateTempCert {
-    generateTempCert: Boolean,
-    notGenerateTempCert: Boolean
-}
-
 structure ShadowMap {
     shadowName: String,
     stateDocument: Document

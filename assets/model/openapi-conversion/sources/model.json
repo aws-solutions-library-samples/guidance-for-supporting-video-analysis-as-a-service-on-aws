@@ -524,17 +524,6 @@
                 }
             }
         },
-        "com.amazonaws.videoanalytics#GenerateTempCert": {
-            "type": "union",
-            "members": {
-                "generateTempCert": {
-                    "target": "smithy.api#Boolean"
-                },
-                "notGenerateTempCert": {
-                    "target": "smithy.api#Boolean"
-                }
-            }
-        },
         "com.amazonaws.videoanalytics#GetCreateDeviceNotificationStatus": {
             "type": "operation",
             "input": {
