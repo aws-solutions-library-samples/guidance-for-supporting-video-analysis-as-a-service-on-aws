@@ -22,3 +22,16 @@ enum Status {
     FAILED,
     CANCELLED
 }
+
+@length(min: 1, max: 128)
+string DeviceId
+
+union GenerateTempCert {
+    generateTempCert: Boolean,
+    notGenerateTempCert: Boolean
+}
+
+structure ShadowMap {
+    shadowName: String,
+    stateDocument: Document
+}
