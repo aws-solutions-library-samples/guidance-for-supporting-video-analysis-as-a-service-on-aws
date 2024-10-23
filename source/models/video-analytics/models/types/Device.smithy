@@ -23,9 +23,6 @@ enum Status {
     CANCELLED
 }
 
-@length(min: 1, max: 128)
-string DeviceId
-
 union GenerateTempCert {
     generateTempCert: Boolean,
     notGenerateTempCert: Boolean

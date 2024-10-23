@@ -5,6 +5,7 @@
         "com.amazonaws.videoanalytics#GetCreateDeviceNotificationStatus",
         "com.amazonaws.videoanalytics#GetCreateDeviceStatus",
         "com.amazonaws.videoanalytics#GetCreateNotificationRuleStatus",
+        "com.amazonaws.videoanalytics#GetDeleteDeviceNotificationStatus",
         "com.amazonaws.videoanalytics#GetDeviceInternal",
         "com.amazonaws.videoanalytics#GetDeviceShadowInternal",
         "com.amazonaws.videoanalytics#UpdateDeviceInternal"

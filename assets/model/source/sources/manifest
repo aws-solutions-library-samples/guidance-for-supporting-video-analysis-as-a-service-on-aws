@@ -10,6 +10,7 @@ operations/Device/DeleteDevice.smithy
 operations/Device/GetCreateDeviceStatus.smithy
 operations/DeviceNotification/GetCreateDeviceNotificationStatus.smithy
 operations/DeviceNotification/GetCreateNotificationRuleStatus.smithy
+operations/DeviceNotification/GetDeleteDeviceNotificationStatus.smithy
 operations/DeviceInternal/GetDeviceShadowInternal.smithy
 operations/DeviceInternal/UpdateDeviceInternal.smithy
 operations/DeviceInternal/GetDeviceInternal.smithy
