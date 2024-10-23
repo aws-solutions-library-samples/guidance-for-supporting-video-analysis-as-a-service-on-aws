@@ -215,6 +215,56 @@
                 }
             }
         },
+        "/get-delete-device-notification-status/{jobId}": {
+            "get": {
+                "operationId": "GetDeleteDeviceNotificationStatus",
+                "parameters": [
+                    {
+                        "name": "jobId",
+                        "in": "path",
+                        "schema": {
+                            "type": "string",
+                            "maxLength": 128,
+                            "minLength": 1,
+                            "pattern": "^[a-z0-9\\-]+$"
+                        },
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "GetDeleteDeviceNotificationStatus 200 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GetDeleteDeviceNotificationStatusResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "ValidationException 400 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "InternalServerException 500 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InternalServerExceptionResponseContent"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/get-device-internal/{deviceId}": {
             "put": {
                 "operationId": "GetDeviceInternal",
@@ -317,6 +367,66 @@
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/GetDeviceShadowInternalResponseContent"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/get-device/{deviceId}": {
+            "get": {
+                "operationId": "GetDevice",
+                "parameters": [
+                    {
+                        "name": "deviceId",
+                        "in": "path",
+                        "schema": {
+                            "type": "string",
+                            "maxLength": 128,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9:_\\-]+$"
+                        },
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "GetDevice 200 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GetDeviceResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "ValidationException 400 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "AccessDeniedException 403 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AccessDeniedExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "InternalServerException 500 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InternalServerExceptionResponseContent"
                                 }
                             }
                         }
@@ -658,6 +768,43 @@
                     }
                 }
             },
+            "GetDeleteDeviceNotificationStatusResponseContent": {
+                "type": "object",
+                "properties": {
+                    "jobId": {
+                        "type": "string",
+                        "maxLength": 128,
+                        "minLength": 1,
+                        "pattern": "^[a-z0-9\\-]+$"
+                    },
+                    "deviceId": {
+                        "type": "string",
+                        "maxLength": 128,
+                        "minLength": 1,
+                        "pattern": "^[a-zA-Z0-9:_\\-]+$"
+                    },
+                    "ruleId": {
+                        "type": "string",
+                        "maxLength": 128,
+                        "minLength": 1,
+                        "pattern": "^[a-zA-Z0-9_]+$"
+                    },
+                    "errorMessage": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/Status"
+                    },
+                    "createTime": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "modifiedTime": {
+                        "type": "number",
+                        "format": "double"
+                    }
+                }
+            },
             "GetDeviceInternalResponseContent": {
                 "type": "object",
                 "properties": {
@@ -692,6 +839,44 @@
                     },
                     "deviceState": {
                         "$ref": "#/components/schemas/DeviceState"
+                    },
+                    "createdAt": {
+                        "type": "number",
+                        "format": "double"
+                    }
+                }
+            },
+            "GetDeviceResponseContent": {
+                "type": "object",
+                "properties": {
+                    "deviceName": {
+                        "type": "string"
+                    },
+                    "deviceId": {
+                        "type": "string",
+                        "maxLength": 128,
+                        "minLength": 1,
+                        "pattern": "^[a-zA-Z0-9:_\\-]+$"
+                    },
+                    "deviceGroupIds": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "maxLength": 128,
+                            "minLength": 1
+                        }
+                    },
+                    "deviceType": {
+                        "type": "string"
+                    },
+                    "deviceMetaData": {
+                        "$ref": "#/components/schemas/DeviceMetaData"
+                    },
+                    "deviceCapabilities": {
+                        "$ref": "#/components/schemas/KeyValueMap"
+                    },
+                    "deviceSettings": {
+                        "$ref": "#/components/schemas/KeyValueMap"
                     },
                     "createdAt": {
                         "type": "number",

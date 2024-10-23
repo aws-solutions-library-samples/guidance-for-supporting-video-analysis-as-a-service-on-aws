@@ -385,6 +385,9 @@
                 },
                 {
                     "target": "com.amazonaws.videoanalytics#GetCreateNotificationRuleStatus"
+                },
+                {
+                    "target": "com.amazonaws.videoanalytics#GetDeleteDeviceNotificationStatus"
                 }
             ]
         },
@@ -431,6 +434,14 @@
                     "target": "smithy.api#String"
                 }
             }
+        },
+        "com.amazonaws.videoanalytics#DeviceOperations": {
+            "type": "resource",
+            "operations": [
+                {
+                    "target": "com.amazonaws.videoanalytics#GetDevice"
+                }
+            ]
         },
         "com.amazonaws.videoanalytics#DeviceState": {
             "type": "enum",
@@ -806,6 +817,34 @@
                 "smithy.api#output": {}
             }
         },
+        "com.amazonaws.videoanalytics#GetDevice": {
+            "type": "operation",
+            "input": {
+                "target": "com.amazonaws.videoanalytics#GetDeviceRequest"
+            },
+            "output": {
+                "target": "com.amazonaws.videoanalytics#GetDeviceResponse"
+            },
+            "errors": [
+                {
+                    "target": "com.amazonaws.videoanalytics#AccessDeniedException"
+                },
+                {
+                    "target": "com.amazonaws.videoanalytics#InternalServerException"
+                },
+                {
+                    "target": "com.amazonaws.videoanalytics#ValidationException"
+                }
+            ],
+            "traits": {
+                "smithy.api#http": {
+                    "code": 200,
+                    "method": "GET",
+                    "uri": "/get-device/{deviceId}"
+                },
+                "smithy.api#readonly": {}
+            }
+        },
         "com.amazonaws.videoanalytics#GetDeviceInternal": {
             "type": "operation",
             "input": {
@@ -878,6 +917,53 @@
                 },
                 "deviceState": {
                     "target": "com.amazonaws.videoanalytics#DeviceState"
+                },
+                "createdAt": {
+                    "target": "smithy.api#Timestamp"
+                }
+            },
+            "traits": {
+                "smithy.api#output": {}
+            }
+        },
+        "com.amazonaws.videoanalytics#GetDeviceRequest": {
+            "type": "structure",
+            "members": {
+                "deviceId": {
+                    "target": "com.amazonaws.videoanalytics#DeviceId",
+                    "traits": {
+                        "smithy.api#httpLabel": {},
+                        "smithy.api#required": {}
+                    }
+                }
+            },
+            "traits": {
+                "smithy.api#input": {}
+            }
+        },
+        "com.amazonaws.videoanalytics#GetDeviceResponse": {
+            "type": "structure",
+            "members": {
+                "deviceName": {
+                    "target": "smithy.api#String"
+                },
+                "deviceId": {
+                    "target": "com.amazonaws.videoanalytics#DeviceId"
+                },
+                "deviceGroupIds": {
+                    "target": "com.amazonaws.videoanalytics#DeviceGroupIdList"
+                },
+                "deviceType": {
+                    "target": "smithy.api#String"
+                },
+                "deviceMetaData": {
+                    "target": "com.amazonaws.videoanalytics#DeviceMetaData"
+                },
+                "deviceCapabilities": {
+                    "target": "com.amazonaws.videoanalytics#KeyValueMap"
+                },
+                "deviceSettings": {
+                    "target": "com.amazonaws.videoanalytics#KeyValueMap"
                 },
                 "createdAt": {
                     "target": "smithy.api#Timestamp"
@@ -1316,6 +1402,9 @@
                 },
                 {
                     "target": "com.amazonaws.videoanalytics#DeviceNotification"
+                },
+                {
+                    "target": "com.amazonaws.videoanalytics#DeviceOperations"
                 }
             ],
             "traits": {

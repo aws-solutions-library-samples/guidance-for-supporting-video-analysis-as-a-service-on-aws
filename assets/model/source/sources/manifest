@@ -4,6 +4,7 @@ types/DeviceNotifications.smithy
 types/DeviceGroup.smithy
 types/Common.smithy
 resources/Device.smithy
+resources/DeviceOperation.smithy
 resources/DeviceInternal.smithy
 resources/DeviceNotification.smithy
 operations/Device/DeleteDevice.smithy
@@ -14,5 +15,6 @@ operations/DeviceNotification/GetDeleteDeviceNotificationStatus.smithy
 operations/DeviceInternal/GetDeviceShadowInternal.smithy
 operations/DeviceInternal/UpdateDeviceInternal.smithy
 operations/DeviceInternal/GetDeviceInternal.smithy
+operations/DeviceOperations/GetDevice.smithy
 video-analytic.smithy
 errors/errors.smithy

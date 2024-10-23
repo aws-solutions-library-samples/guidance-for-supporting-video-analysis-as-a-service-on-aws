@@ -5,6 +5,7 @@ namespace com.amazonaws.videoanalytics
 resource DeviceNotification {
     operations: [
         GetCreateDeviceNotificationStatus,
-        GetCreateNotificationRuleStatus
+        GetCreateNotificationRuleStatus,
+        GetDeleteDeviceNotificationStatus
     ]
 }
