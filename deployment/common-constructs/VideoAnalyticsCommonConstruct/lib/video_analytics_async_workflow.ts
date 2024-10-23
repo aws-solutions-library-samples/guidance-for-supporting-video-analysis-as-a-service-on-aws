@@ -15,6 +15,7 @@ import { DynamoEventSource, SqsDlq } from 'aws-cdk-lib/aws-lambda-event-sources'
 import { StateMachine } from 'aws-cdk-lib/aws-stepfunctions';
 import { Key } from 'aws-cdk-lib/aws-kms';
 import * as fs from 'fs';
+import { Bucket } from 'aws-cdk-lib/aws-s3';
 
 import {
   DEFAULT_LAMBDA_PACKAGE_NAME,
@@ -189,8 +190,9 @@ export class Workflow extends Construct {
     if (fs.existsSync(lambdaAssetPath)) {
       code = Code.fromAsset(lambdaAssetPath);
     } else {
-      // For UT purposes, we'll use a dummy location
-      code = Code.fromAsset(path.join(__dirname, 'dummy-lambda-code'));
+      // For UT purposes, we'll use a placeholder location
+      console.log(`Using placeholder lambda code path: ${path.join(__dirname, './lambda/placeholder_lambda_code')}`);
+      code = Code.fromAsset(path.join(__dirname, './lambda/placeholder_lambda_code'));
     }
 
     this.lambda = new Function(this, `${props.tableName}-StreamProcessor`, {
@@ -242,7 +244,7 @@ export class Workflow extends Construct {
       // No need to add policy as setting the DLQ for the Lambda function below
       // will add required permissions to the Lambda role
     });
- 
+
     this.deadLetter = new Queue(this, `${props.tableName}-StreamDLQ`, {
       encryption: QueueEncryption.KMS,
       encryptionMasterKey: dlqEncryptionKey

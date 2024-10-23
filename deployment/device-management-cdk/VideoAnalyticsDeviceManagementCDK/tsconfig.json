@@ -3,11 +3,12 @@
     "target": "ES2018",
     "module": "commonjs",
     "lib": [
-      "es2018"
+      "es2018",
+      "dom"
     ],
     "declaration": true,
     "strict": true,
-    "noImplicitAny": true,
+    "noImplicitAny": false,
     "strictNullChecks": true,
     "noImplicitThis": true,
     "alwaysStrict": true,
@@ -20,14 +21,19 @@
     "experimentalDecorators": true,
     "strictPropertyInitialization": false,
     "outDir": "./dist",
-    "rootDir": "./lib",
-    "typeRoots": [
-      "./node_modules/@types"
-    ],
-    "baseUrl": ".",
+    "rootDir": ".",
+    "baseUrl": "./",
     "paths": {
-      "video_analytics_common_construct": ["../../common-constructs/VideoAnalyticsCommonConstruct"]
-    }
+      "*": [
+        "node_modules/*",
+        "../../../node_modules/*"
+      ],
+      "video_analytics_common_construct": ["../../common-constructs/VideoAnalyticsCommonConstruct/lib"]
+    },
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "composite": true
   },
   "exclude": [
     "node_modules",
@@ -35,6 +41,7 @@
     "dist"
   ],
   "include": [
-    "lib/**/*.ts"
+    "lib/**/*.ts",
+    "test/**/*.ts"
   ]
 }
