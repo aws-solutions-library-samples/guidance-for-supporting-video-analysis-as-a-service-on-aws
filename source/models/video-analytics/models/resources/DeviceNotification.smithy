@@ -6,6 +6,7 @@ resource DeviceNotification {
     operations: [
         GetCreateDeviceNotificationStatus,
         GetCreateNotificationRuleStatus,
-        GetDeleteDeviceNotificationStatus
+        GetDeleteDeviceNotificationStatus,
+        GetNotificationRule
     ]
 }

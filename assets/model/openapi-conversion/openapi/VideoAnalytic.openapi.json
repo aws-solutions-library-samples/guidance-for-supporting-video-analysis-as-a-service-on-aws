@@ -434,6 +434,66 @@
                 }
             }
         },
+        "/get-notification-rule/{ruleId}": {
+            "get": {
+                "operationId": "GetNotificationRule",
+                "parameters": [
+                    {
+                        "name": "ruleId",
+                        "in": "path",
+                        "schema": {
+                            "type": "string",
+                            "maxLength": 128,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9_]+$"
+                        },
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "GetNotificationRule 200 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GetNotificationRuleResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "ValidationException 400 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "AccessDeniedException 403 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AccessDeniedExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "InternalServerException 500 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InternalServerExceptionResponseContent"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/update-device-internal/{deviceId}": {
             "put": {
                 "operationId": "UpdateDeviceInternal",
@@ -897,6 +957,38 @@
                 "properties": {
                     "shadowPayload": {
                         "$ref": "#/components/schemas/ShadowMap"
+                    }
+                }
+            },
+            "GetNotificationRuleResponseContent": {
+                "type": "object",
+                "properties": {
+                    "jobId": {
+                        "type": "string",
+                        "maxLength": 128,
+                        "minLength": 1,
+                        "pattern": "^[a-z0-9\\-]+$"
+                    },
+                    "ruleId": {
+                        "type": "string",
+                        "maxLength": 128,
+                        "minLength": 1,
+                        "pattern": "^[a-zA-Z0-9_]+$"
+                    },
+                    "eventCategory": {
+                        "$ref": "#/components/schemas/EventCategory"
+                    },
+                    "condition": {
+                        "$ref": "#/components/schemas/Condition"
+                    },
+                    "destination": {
+                        "$ref": "#/components/schemas/Destination"
+                    },
+                    "errorDestination": {
+                        "$ref": "#/components/schemas/Destination"
+                    },
+                    "ruleDisabled": {
+                        "type": "boolean"
                     }
                 }
             },

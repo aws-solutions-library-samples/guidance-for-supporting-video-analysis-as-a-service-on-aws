@@ -9,6 +9,7 @@
         "com.amazonaws.videoanalytics#GetDevice",
         "com.amazonaws.videoanalytics#GetDeviceInternal",
         "com.amazonaws.videoanalytics#GetDeviceShadowInternal",
+        "com.amazonaws.videoanalytics#GetNotificationRule",
         "com.amazonaws.videoanalytics#UpdateDeviceInternal"
     ],
     "projection": {

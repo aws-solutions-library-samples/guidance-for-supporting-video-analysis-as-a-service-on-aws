@@ -9,6 +9,7 @@ resources/DeviceInternal.smithy
 resources/DeviceNotification.smithy
 operations/Device/DeleteDevice.smithy
 operations/Device/GetCreateDeviceStatus.smithy
+operations/DeviceNotification/GetNotificationRule.smithy
 operations/DeviceNotification/GetCreateDeviceNotificationStatus.smithy
 operations/DeviceNotification/GetCreateNotificationRuleStatus.smithy
 operations/DeviceNotification/GetDeleteDeviceNotificationStatus.smithy
