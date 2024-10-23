@@ -4,7 +4,14 @@
         "com.amazonaws.videoanalytics#DeleteDevice",
         "com.amazonaws.videoanalytics#GetCreateDeviceNotificationStatus",
         "com.amazonaws.videoanalytics#GetCreateDeviceStatus",
-        "com.amazonaws.videoanalytics#GetCreateNotificationRuleStatus"
+        "com.amazonaws.videoanalytics#GetCreateNotificationRuleStatus",
+        "com.amazonaws.videoanalytics#GetDeleteDeviceNotificationStatus",
+        "com.amazonaws.videoanalytics#GetDevice",
+        "com.amazonaws.videoanalytics#GetDeviceInternal",
+        "com.amazonaws.videoanalytics#GetDeviceShadowInternal",
+        "com.amazonaws.videoanalytics#GetNotificationRule",
+        "com.amazonaws.videoanalytics#GetUpdateDeviceStatus",
+        "com.amazonaws.videoanalytics#UpdateDeviceInternal"
     ],
     "projection": {
         "abstract": false,
@@ -14,7 +21,10 @@
     },
     "projectionName": "source",
     "resourceShapeIds": [
-        "com.amazonaws.videoanalytics#Device"
+        "com.amazonaws.videoanalytics#Device",
+        "com.amazonaws.videoanalytics#DeviceInternal",
+        "com.amazonaws.videoanalytics#DeviceNotification",
+        "com.amazonaws.videoanalytics#DeviceOperations"
     ],
     "serviceShapeIds": [
         "com.amazonaws.videoanalytics#VideoAnalytic"
@@ -31,6 +41,12 @@
         "aws.api#service",
         "aws.api#tagEnabled",
         "aws.api#taggable",
+        "aws.apigateway#apiKeySource",
+        "aws.apigateway#authorizer",
+        "aws.apigateway#authorizers",
+        "aws.apigateway#integration",
+        "aws.apigateway#mockIntegration",
+        "aws.apigateway#requestValidator",
         "aws.auth#cognitoUserPools",
         "aws.auth#sigv4",
         "aws.auth#sigv4a",
@@ -126,6 +142,7 @@
         "smithy.openapi#specificationExtension"
     ],
     "traitNames": [
+        "aws.api#arnReference",
         "aws.protocols#restJson1",
         "smithy.api#authDefinition",
         "smithy.api#box",

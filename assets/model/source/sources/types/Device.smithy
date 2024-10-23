@@ -22,3 +22,8 @@ enum Status {
     FAILED,
     CANCELLED
 }
+
+structure ShadowMap {
+    shadowName: String,
+    stateDocument: Document
+}
