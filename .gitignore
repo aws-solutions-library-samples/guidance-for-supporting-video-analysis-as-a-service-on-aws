@@ -3,5 +3,8 @@
 **/node_modules/
 deployment/common-constructs/VideoAnalyticsCommonConstruct/dist/
 deployment/common-constructs/VideoAnalyticsCommonConstruct/node_modules/
+*.DS_Store
+*.vscode
+.idea/
 
 
