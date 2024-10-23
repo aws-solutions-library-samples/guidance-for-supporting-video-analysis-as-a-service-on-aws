@@ -10,6 +10,13 @@ export function createLambdaRole(
   roleName: string,
   statements: PolicyStatement[]
 ): Role {
+  // Check if all statements have at least one resource
+  statements.forEach((statement, index) => {
+    if (statement.resources.length === 0) {
+      throw new Error(`PolicyStatement at index ${index} in role ${roleName} does not specify any resources.`);
+    }
+  });
+
   return new Role(scope, roleName, {
     roleName: roleName,
     assumedBy: new ServicePrincipal(LAMBDA_SERVICE_PRINCIPAL),

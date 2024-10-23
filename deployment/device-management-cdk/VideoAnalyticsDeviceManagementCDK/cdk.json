@@ -1,5 +1,5 @@
 {
-  "app": "npx ts-node --prefer-ts-exts bin/video_analytics_device_management_cdk.ts",
+  "app": "npx ts-node --prefer-ts-exts lib/app.ts",
   "watch": {
     "include": [
       "**"
