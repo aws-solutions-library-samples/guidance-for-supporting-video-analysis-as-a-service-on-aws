@@ -1093,6 +1093,72 @@
                 "smithy.api#output": {}
             }
         },
+        "com.amazonaws.videoanalytics#GetUpdateDeviceStatus": {
+            "type": "operation",
+            "input": {
+                "target": "com.amazonaws.videoanalytics#GetUpdateDeviceStatusRequest"
+            },
+            "output": {
+                "target": "com.amazonaws.videoanalytics#GetUpdateDeviceStatusResponse"
+            },
+            "errors": [
+                {
+                    "target": "com.amazonaws.videoanalytics#InternalServerException"
+                },
+                {
+                    "target": "com.amazonaws.videoanalytics#ValidationException"
+                }
+            ],
+            "traits": {
+                "smithy.api#http": {
+                    "code": 200,
+                    "method": "GET",
+                    "uri": "/get-update-device-status/{jobId}"
+                },
+                "smithy.api#readonly": {}
+            }
+        },
+        "com.amazonaws.videoanalytics#GetUpdateDeviceStatusRequest": {
+            "type": "structure",
+            "members": {
+                "jobId": {
+                    "target": "com.amazonaws.videoanalytics#JobId",
+                    "traits": {
+                        "smithy.api#httpLabel": {},
+                        "smithy.api#required": {}
+                    }
+                }
+            },
+            "traits": {
+                "smithy.api#input": {}
+            }
+        },
+        "com.amazonaws.videoanalytics#GetUpdateDeviceStatusResponse": {
+            "type": "structure",
+            "members": {
+                "jobId": {
+                    "target": "com.amazonaws.videoanalytics#JobId"
+                },
+                "deviceId": {
+                    "target": "com.amazonaws.videoanalytics#DeviceId"
+                },
+                "status": {
+                    "target": "com.amazonaws.videoanalytics#Status"
+                },
+                "createTime": {
+                    "target": "smithy.api#Timestamp"
+                },
+                "modifiedTime": {
+                    "target": "smithy.api#Timestamp"
+                },
+                "errorMessage": {
+                    "target": "smithy.api#String"
+                }
+            },
+            "traits": {
+                "smithy.api#output": {}
+            }
+        },
         "com.amazonaws.videoanalytics#IAMRoleArn": {
             "type": "string",
             "traits": {

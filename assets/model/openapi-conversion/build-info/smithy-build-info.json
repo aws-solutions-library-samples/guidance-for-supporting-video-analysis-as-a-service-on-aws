@@ -10,6 +10,7 @@
         "com.amazonaws.videoanalytics#GetDeviceInternal",
         "com.amazonaws.videoanalytics#GetDeviceShadowInternal",
         "com.amazonaws.videoanalytics#GetNotificationRule",
+        "com.amazonaws.videoanalytics#GetUpdateDeviceStatus",
         "com.amazonaws.videoanalytics#UpdateDeviceInternal"
     ],
     "projection": {
@@ -20,7 +21,7 @@
                 "service": "com.amazonaws.videoanalytics#VideoAnalytic",
                 "protocol": "aws.protocols#restJson1",
                 "version": "3.1.0",
-                "outputFile": "../../../assets/model/openapi.yaml"
+                "outputFile": "openapi.yaml"
             }
         },
         "transforms": []
@@ -47,6 +48,12 @@
         "aws.api#service",
         "aws.api#tagEnabled",
         "aws.api#taggable",
+        "aws.apigateway#apiKeySource",
+        "aws.apigateway#authorizer",
+        "aws.apigateway#authorizers",
+        "aws.apigateway#integration",
+        "aws.apigateway#mockIntegration",
+        "aws.apigateway#requestValidator",
         "aws.auth#cognitoUserPools",
         "aws.auth#sigv4",
         "aws.auth#sigv4a",
@@ -142,6 +149,7 @@
         "smithy.openapi#specificationExtension"
     ],
     "traitNames": [
+        "aws.api#arnReference",
         "aws.protocols#restJson1",
         "smithy.api#authDefinition",
         "smithy.api#box",
@@ -181,36 +189,36 @@
         {
             "id": "HttpMethodSemantics.MissingReadonlyTrait",
             "severity": "WARNING",
-            "shapeId": "com.amazonaws.videoanalytics#GetCreateDeviceStatus",
+            "shapeId": "com.amazonaws.videoanalytics#GetCreateDeviceNotificationStatus",
             "message": "This operation uses the `GET` method in the `http` trait, but is not marked with the readonly trait",
-            "filename": "/Volumes/workplace/guidance-for-video-analytics-infrastructure-on-aws/source/models/video-analytics/models/operations/Device/GetCreateDeviceStatus.smithy",
+            "filename": "/Volumes/workplace/guidance-for-video-analytics-infrastructure-on-aws/source/models/video-analytics/models/operations/DeviceNotification/GetCreateDeviceNotificationStatus.smithy",
             "line": 5,
             "column": 1
         },
         {
             "id": "HttpMethodSemantics.UnnecessaryIdempotentTrait",
             "severity": "WARNING",
-            "shapeId": "com.amazonaws.videoanalytics#GetCreateDeviceStatus",
+            "shapeId": "com.amazonaws.videoanalytics#GetCreateDeviceNotificationStatus",
             "message": "This operation uses the `GET` method in the `http` trait, but is marked with the idempotent trait",
-            "filename": "/Volumes/workplace/guidance-for-video-analytics-infrastructure-on-aws/source/models/video-analytics/models/operations/Device/GetCreateDeviceStatus.smithy",
+            "filename": "/Volumes/workplace/guidance-for-video-analytics-infrastructure-on-aws/source/models/video-analytics/models/operations/DeviceNotification/GetCreateDeviceNotificationStatus.smithy",
             "line": 5,
             "column": 1
         },
         {
             "id": "HttpMethodSemantics.MissingReadonlyTrait",
             "severity": "WARNING",
-            "shapeId": "com.amazonaws.videoanalytics#GetCreateDeviceNotificationStatus",
+            "shapeId": "com.amazonaws.videoanalytics#GetCreateDeviceStatus",
             "message": "This operation uses the `GET` method in the `http` trait, but is not marked with the readonly trait",
-            "filename": "/Volumes/workplace/guidance-for-video-analytics-infrastructure-on-aws/source/models/video-analytics/models/operations/DeviceNotification/GetCreateDeviceNotificationStatus.smithy",
+            "filename": "/Volumes/workplace/guidance-for-video-analytics-infrastructure-on-aws/source/models/video-analytics/models/operations/Device/GetCreateDeviceStatus.smithy",
             "line": 5,
             "column": 1
         },
         {
             "id": "HttpMethodSemantics.UnnecessaryIdempotentTrait",
             "severity": "WARNING",
-            "shapeId": "com.amazonaws.videoanalytics#GetCreateDeviceNotificationStatus",
+            "shapeId": "com.amazonaws.videoanalytics#GetCreateDeviceStatus",
             "message": "This operation uses the `GET` method in the `http` trait, but is marked with the idempotent trait",
-            "filename": "/Volumes/workplace/guidance-for-video-analytics-infrastructure-on-aws/source/models/video-analytics/models/operations/DeviceNotification/GetCreateDeviceNotificationStatus.smithy",
+            "filename": "/Volumes/workplace/guidance-for-video-analytics-infrastructure-on-aws/source/models/video-analytics/models/operations/Device/GetCreateDeviceStatus.smithy",
             "line": 5,
             "column": 1
         }

@@ -6,7 +6,8 @@
     "dependencies": [
       "software.amazon.smithy:smithy-openapi:1.51.0",
       "software.amazon.smithy:smithy-aws-traits:1.51.0",
-      "software.amazon.smithy:smithy-model:1.51.0"
+      "software.amazon.smithy:smithy-model:1.51.0",
+      "software.amazon.smithy:smithy-aws-apigateway-openapi:1.52.0"
     ]
   },
   "projections": {
@@ -16,7 +17,7 @@
           "service": "com.amazonaws.videoanalytics#VideoAnalytic",
           "protocol": "aws.protocols#restJson1",
           "version": "3.1.0",
-          "outputFile": "../../../assets/model/openapi.yaml"
+          "outputFile": "openapi.yaml"
         }
       }
     }
