@@ -10,6 +10,7 @@
         "com.amazonaws.videoanalytics#GetDeviceShadow",
         "com.amazonaws.videoanalytics#GetNotificationRule",
         "com.amazonaws.videoanalytics#GetUpdateDeviceStatus",
+        "com.amazonaws.videoanalytics#GetUpdateNotificationRuleStatus",
         "com.amazonaws.videoanalytics#UpdateDevice"
     ],
     "projection": {

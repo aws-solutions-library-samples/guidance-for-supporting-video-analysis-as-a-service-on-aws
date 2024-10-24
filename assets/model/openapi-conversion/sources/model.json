@@ -377,6 +377,9 @@
                 },
                 {
                     "target": "com.amazonaws.videoanalytics#GetNotificationRule"
+                },
+                {
+                    "target": "com.amazonaws.videoanalytics#GetUpdateNotificationRuleStatus"
                 }
             ]
         },
@@ -1053,6 +1056,87 @@
                 },
                 "errorMessage": {
                     "target": "smithy.api#String"
+                }
+            },
+            "traits": {
+                "smithy.api#output": {}
+            }
+        },
+        "com.amazonaws.videoanalytics#GetUpdateNotificationRuleStatus": {
+            "type": "operation",
+            "input": {
+                "target": "com.amazonaws.videoanalytics#GetUpdateNotificationRuleStatusRequest"
+            },
+            "output": {
+                "target": "com.amazonaws.videoanalytics#GetUpdateNotificationRuleStatusResponse"
+            },
+            "errors": [
+                {
+                    "target": "com.amazonaws.videoanalytics#InternalServerException"
+                },
+                {
+                    "target": "com.amazonaws.videoanalytics#ValidationException"
+                }
+            ],
+            "traits": {
+                "smithy.api#http": {
+                    "code": 200,
+                    "method": "GET",
+                    "uri": "/get-update-notification-rule-status/{jobId}"
+                },
+                "smithy.api#readonly": {}
+            }
+        },
+        "com.amazonaws.videoanalytics#GetUpdateNotificationRuleStatusRequest": {
+            "type": "structure",
+            "members": {
+                "jobId": {
+                    "target": "com.amazonaws.videoanalytics#JobId",
+                    "traits": {
+                        "smithy.api#httpLabel": {},
+                        "smithy.api#required": {}
+                    }
+                }
+            },
+            "traits": {
+                "smithy.api#input": {}
+            }
+        },
+        "com.amazonaws.videoanalytics#GetUpdateNotificationRuleStatusResponse": {
+            "type": "structure",
+            "members": {
+                "jobId": {
+                    "target": "com.amazonaws.videoanalytics#JobId"
+                },
+                "ruleId": {
+                    "target": "com.amazonaws.videoanalytics#RuleId"
+                },
+                "eventCategory": {
+                    "target": "com.amazonaws.videoanalytics#EventCategory"
+                },
+                "condition": {
+                    "target": "com.amazonaws.videoanalytics#Condition"
+                },
+                "destination": {
+                    "target": "com.amazonaws.videoanalytics#Destination"
+                },
+                "errorDestination": {
+                    "target": "com.amazonaws.videoanalytics#Destination"
+                },
+                "ruleDisabled": {
+                    "target": "smithy.api#Boolean"
+                },
+                "errorMessage": {
+                    "target": "smithy.api#String"
+                },
+                "status": {
+                    "target": "com.amazonaws.videoanalytics#Status"
+                },
+                "createTime": {
+                    "target": "smithy.api#Timestamp"
+                },
+                "modifiedTime": {
+                    "target": "smithy.api#Timestamp"
                 }
             },
             "traits": {

@@ -424,6 +424,56 @@
                 }
             }
         },
+        "/get-update-notification-rule-status/{jobId}": {
+            "get": {
+                "operationId": "GetUpdateNotificationRuleStatus",
+                "parameters": [
+                    {
+                        "name": "jobId",
+                        "in": "path",
+                        "schema": {
+                            "type": "string",
+                            "maxLength": 128,
+                            "minLength": 1,
+                            "pattern": "^[a-z0-9\\-]+$"
+                        },
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "GetUpdateNotificationRuleStatus 200 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GetUpdateNotificationRuleStatusResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "ValidationException 400 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "InternalServerException 500 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InternalServerExceptionResponseContent"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/update-device/{deviceId}": {
             "put": {
                 "operationId": "UpdateDevice",
@@ -878,6 +928,52 @@
                     },
                     "ruleDisabled": {
                         "type": "boolean"
+                    }
+                }
+            },
+            "GetUpdateNotificationRuleStatusResponseContent": {
+                "type": "object",
+                "properties": {
+                    "jobId": {
+                        "type": "string",
+                        "maxLength": 128,
+                        "minLength": 1,
+                        "pattern": "^[a-z0-9\\-]+$"
+                    },
+                    "ruleId": {
+                        "type": "string",
+                        "maxLength": 128,
+                        "minLength": 1,
+                        "pattern": "^[a-zA-Z0-9_]+$"
+                    },
+                    "eventCategory": {
+                        "$ref": "#/components/schemas/EventCategory"
+                    },
+                    "condition": {
+                        "$ref": "#/components/schemas/Condition"
+                    },
+                    "destination": {
+                        "$ref": "#/components/schemas/Destination"
+                    },
+                    "errorDestination": {
+                        "$ref": "#/components/schemas/Destination"
+                    },
+                    "ruleDisabled": {
+                        "type": "boolean"
+                    },
+                    "errorMessage": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/Status"
+                    },
+                    "createTime": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "modifiedTime": {
+                        "type": "number",
+                        "format": "double"
                     }
                 }
             },
