@@ -265,84 +265,14 @@
                 }
             }
         },
-        "/get-device-internal/{deviceId}": {
-            "put": {
-                "operationId": "GetDeviceInternal",
-                "parameters": [
-                    {
-                        "name": "deviceId",
-                        "in": "path",
-                        "schema": {
-                            "type": "string",
-                            "maxLength": 128,
-                            "minLength": 1,
-                            "pattern": "^[a-zA-Z0-9:_\\-]+$"
-                        },
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "GetDeviceInternal 200 response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/GetDeviceInternalResponseContent"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "ValidationException 400 response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ValidationExceptionResponseContent"
-                                }
-                            }
-                        }
-                    },
-                    "403": {
-                        "description": "AccessDeniedException 403 response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/AccessDeniedExceptionResponseContent"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "ResourceNotFoundException 404 response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ResourceNotFoundExceptionResponseContent"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "InternalServerException 500 response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/InternalServerExceptionResponseContent"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/get-device-shadow-internal/{deviceId}": {
+        "/get-device-shadow-/{deviceId}": {
             "post": {
-                "operationId": "GetDeviceShadowInternal",
+                "operationId": "GetDeviceShadow",
                 "requestBody": {
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/GetDeviceShadowInternalRequestContent"
+                                "$ref": "#/components/schemas/GetDeviceShadowRequestContent"
                             }
                         }
                     }
@@ -362,11 +292,11 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "GetDeviceShadowInternal 200 response",
+                        "description": "GetDeviceShadow 200 response",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/GetDeviceShadowInternalResponseContent"
+                                    "$ref": "#/components/schemas/GetDeviceShadowResponseContent"
                                 }
                             }
                         }
@@ -494,14 +424,14 @@
                 }
             }
         },
-        "/update-device-internal/{deviceId}": {
+        "/update-device/{deviceId}": {
             "put": {
-                "operationId": "UpdateDeviceInternal",
+                "operationId": "UpdateDevice",
                 "requestBody": {
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/UpdateDeviceInternalRequestContent"
+                                "$ref": "#/components/schemas/UpdateDeviceRequestContent"
                             }
                         }
                     }
@@ -521,11 +451,11 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "UpdateDeviceInternal 200 response",
+                        "description": "UpdateDevice 200 response",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/UpdateDeviceInternalResponseContent"
+                                    "$ref": "#/components/schemas/UpdateDeviceResponseContent"
                                 }
                             }
                         }
@@ -865,47 +795,6 @@
                     }
                 }
             },
-            "GetDeviceInternalResponseContent": {
-                "type": "object",
-                "properties": {
-                    "deviceName": {
-                        "type": "string"
-                    },
-                    "deviceId": {
-                        "type": "string",
-                        "maxLength": 128,
-                        "minLength": 1,
-                        "pattern": "^[a-zA-Z0-9:_\\-]+$"
-                    },
-                    "deviceGroupIds": {
-                        "type": "array",
-                        "items": {
-                            "type": "string",
-                            "maxLength": 128,
-                            "minLength": 1
-                        }
-                    },
-                    "deviceType": {
-                        "type": "string"
-                    },
-                    "deviceMetaData": {
-                        "$ref": "#/components/schemas/DeviceMetaData"
-                    },
-                    "deviceCapabilities": {
-                        "$ref": "#/components/schemas/KeyValueMap"
-                    },
-                    "deviceSettings": {
-                        "$ref": "#/components/schemas/KeyValueMap"
-                    },
-                    "deviceState": {
-                        "$ref": "#/components/schemas/DeviceState"
-                    },
-                    "createdAt": {
-                        "type": "number",
-                        "format": "double"
-                    }
-                }
-            },
             "GetDeviceResponseContent": {
                 "type": "object",
                 "properties": {
@@ -944,7 +833,7 @@
                     }
                 }
             },
-            "GetDeviceShadowInternalRequestContent": {
+            "GetDeviceShadowRequestContent": {
                 "type": "object",
                 "properties": {
                     "shadowName": {
@@ -952,7 +841,7 @@
                     }
                 }
             },
-            "GetDeviceShadowInternalResponseContent": {
+            "GetDeviceShadowResponseContent": {
                 "type": "object",
                 "properties": {
                     "shadowPayload": {
@@ -1105,7 +994,7 @@
                     "NORMAL"
                 ]
             },
-            "UpdateDeviceInternalRequestContent": {
+            "UpdateDeviceRequestContent": {
                 "type": "object",
                 "properties": {
                     "attributePayload": {
@@ -1116,7 +1005,7 @@
                     }
                 }
             },
-            "UpdateDeviceInternalResponseContent": {
+            "UpdateDeviceResponseContent": {
                 "type": "object",
                 "properties": {
                     "deviceName": {

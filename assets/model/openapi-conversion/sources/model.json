@@ -328,20 +328,6 @@
                 }
             }
         },
-        "com.amazonaws.videoanalytics#DeviceInternal": {
-            "type": "resource",
-            "operations": [
-                {
-                    "target": "com.amazonaws.videoanalytics#GetDeviceInternal"
-                },
-                {
-                    "target": "com.amazonaws.videoanalytics#GetDeviceShadowInternal"
-                },
-                {
-                    "target": "com.amazonaws.videoanalytics#UpdateDeviceInternal"
-                }
-            ]
-        },
         "com.amazonaws.videoanalytics#DeviceMetaData": {
             "type": "structure",
             "members": {
@@ -443,6 +429,12 @@
             "operations": [
                 {
                     "target": "com.amazonaws.videoanalytics#GetDevice"
+                },
+                {
+                    "target": "com.amazonaws.videoanalytics#GetDeviceShadow"
+                },
+                {
+                    "target": "com.amazonaws.videoanalytics#UpdateDevice"
                 }
             ]
         },
@@ -837,87 +829,6 @@
                 "smithy.api#readonly": {}
             }
         },
-        "com.amazonaws.videoanalytics#GetDeviceInternal": {
-            "type": "operation",
-            "input": {
-                "target": "com.amazonaws.videoanalytics#GetDeviceInternalRequest"
-            },
-            "output": {
-                "target": "com.amazonaws.videoanalytics#GetDeviceInternalResponse"
-            },
-            "errors": [
-                {
-                    "target": "com.amazonaws.videoanalytics#AccessDeniedException"
-                },
-                {
-                    "target": "com.amazonaws.videoanalytics#InternalServerException"
-                },
-                {
-                    "target": "com.amazonaws.videoanalytics#ResourceNotFoundException"
-                },
-                {
-                    "target": "com.amazonaws.videoanalytics#ValidationException"
-                }
-            ],
-            "traits": {
-                "smithy.api#http": {
-                    "code": 200,
-                    "method": "PUT",
-                    "uri": "/get-device-internal/{deviceId}"
-                },
-                "smithy.api#idempotent": {}
-            }
-        },
-        "com.amazonaws.videoanalytics#GetDeviceInternalRequest": {
-            "type": "structure",
-            "members": {
-                "deviceId": {
-                    "target": "com.amazonaws.videoanalytics#DeviceId",
-                    "traits": {
-                        "smithy.api#httpLabel": {},
-                        "smithy.api#required": {}
-                    }
-                }
-            },
-            "traits": {
-                "smithy.api#input": {}
-            }
-        },
-        "com.amazonaws.videoanalytics#GetDeviceInternalResponse": {
-            "type": "structure",
-            "members": {
-                "deviceName": {
-                    "target": "smithy.api#String"
-                },
-                "deviceId": {
-                    "target": "com.amazonaws.videoanalytics#DeviceId"
-                },
-                "deviceGroupIds": {
-                    "target": "com.amazonaws.videoanalytics#DeviceGroupIdList"
-                },
-                "deviceType": {
-                    "target": "smithy.api#String"
-                },
-                "deviceMetaData": {
-                    "target": "com.amazonaws.videoanalytics#DeviceMetaData"
-                },
-                "deviceCapabilities": {
-                    "target": "com.amazonaws.videoanalytics#KeyValueMap"
-                },
-                "deviceSettings": {
-                    "target": "com.amazonaws.videoanalytics#KeyValueMap"
-                },
-                "deviceState": {
-                    "target": "com.amazonaws.videoanalytics#DeviceState"
-                },
-                "createdAt": {
-                    "target": "smithy.api#Timestamp"
-                }
-            },
-            "traits": {
-                "smithy.api#output": {}
-            }
-        },
         "com.amazonaws.videoanalytics#GetDeviceRequest": {
             "type": "structure",
             "members": {
@@ -965,23 +876,23 @@
                 "smithy.api#output": {}
             }
         },
-        "com.amazonaws.videoanalytics#GetDeviceShadowInternal": {
+        "com.amazonaws.videoanalytics#GetDeviceShadow": {
             "type": "operation",
             "input": {
-                "target": "com.amazonaws.videoanalytics#GetDeviceShadowInternalRequest"
+                "target": "com.amazonaws.videoanalytics#GetDeviceShadowRequest"
             },
             "output": {
-                "target": "com.amazonaws.videoanalytics#GetDeviceShadowInternalResponse"
+                "target": "com.amazonaws.videoanalytics#GetDeviceShadowResponse"
             },
             "traits": {
                 "smithy.api#http": {
                     "code": 200,
                     "method": "POST",
-                    "uri": "/get-device-shadow-internal/{deviceId}"
+                    "uri": "/get-device-shadow-/{deviceId}"
                 }
             }
         },
-        "com.amazonaws.videoanalytics#GetDeviceShadowInternalRequest": {
+        "com.amazonaws.videoanalytics#GetDeviceShadowRequest": {
             "type": "structure",
             "members": {
                 "deviceId": {
@@ -999,7 +910,7 @@
                 "smithy.api#input": {}
             }
         },
-        "com.amazonaws.videoanalytics#GetDeviceShadowInternalResponse": {
+        "com.amazonaws.videoanalytics#GetDeviceShadowResponse": {
             "type": "structure",
             "members": {
                 "shadowPayload": {
@@ -1374,24 +1285,24 @@
                 }
             }
         },
-        "com.amazonaws.videoanalytics#UpdateDeviceInternal": {
+        "com.amazonaws.videoanalytics#UpdateDevice": {
             "type": "operation",
             "input": {
-                "target": "com.amazonaws.videoanalytics#UpdateDeviceInternalRequest"
+                "target": "com.amazonaws.videoanalytics#UpdateDeviceRequest"
             },
             "output": {
-                "target": "com.amazonaws.videoanalytics#UpdateDeviceInternalResponse"
+                "target": "com.amazonaws.videoanalytics#UpdateDeviceResponse"
             },
             "traits": {
                 "smithy.api#http": {
                     "code": 200,
                     "method": "PUT",
-                    "uri": "/update-device-internal/{deviceId}"
+                    "uri": "/update-device/{deviceId}"
                 },
                 "smithy.api#idempotent": {}
             }
         },
-        "com.amazonaws.videoanalytics#UpdateDeviceInternalRequest": {
+        "com.amazonaws.videoanalytics#UpdateDeviceRequest": {
             "type": "structure",
             "members": {
                 "deviceId": {
@@ -1412,7 +1323,7 @@
                 "smithy.api#input": {}
             }
         },
-        "com.amazonaws.videoanalytics#UpdateDeviceInternalResponse": {
+        "com.amazonaws.videoanalytics#UpdateDeviceResponse": {
             "type": "structure",
             "members": {
                 "deviceName": {
@@ -1526,9 +1437,6 @@
             "resources": [
                 {
                     "target": "com.amazonaws.videoanalytics#Device"
-                },
-                {
-                    "target": "com.amazonaws.videoanalytics#DeviceInternal"
                 },
                 {
                     "target": "com.amazonaws.videoanalytics#DeviceNotification"

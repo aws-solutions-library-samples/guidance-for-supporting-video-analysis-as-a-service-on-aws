@@ -5,7 +5,6 @@ types/DeviceGroup.smithy
 types/Common.smithy
 resources/Device.smithy
 resources/DeviceOperation.smithy
-resources/DeviceInternal.smithy
 resources/DeviceNotification.smithy
 operations/Device/GetUpdateDeviceStatus.smithy
 operations/Device/DeleteDevice.smithy
@@ -14,9 +13,8 @@ operations/DeviceNotification/GetNotificationRule.smithy
 operations/DeviceNotification/GetCreateDeviceNotificationStatus.smithy
 operations/DeviceNotification/GetCreateNotificationRuleStatus.smithy
 operations/DeviceNotification/GetDeleteDeviceNotificationStatus.smithy
-operations/DeviceInternal/GetDeviceShadowInternal.smithy
-operations/DeviceInternal/UpdateDeviceInternal.smithy
-operations/DeviceInternal/GetDeviceInternal.smithy
+operations/DeviceOperations/GetDeviceShadow.smithy
 operations/DeviceOperations/GetDevice.smithy
+operations/DeviceOperations/UpdateDevice.smithy
 video-analytic.smithy
 errors/errors.smithy

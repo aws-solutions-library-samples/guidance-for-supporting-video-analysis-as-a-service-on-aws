@@ -2,16 +2,16 @@ $version: "2.0"
 
 namespace com.amazonaws.videoanalytics
 
-@http(code: 200, method: "PUT", uri: "/update-device-internal/{deviceId}")
+@http(code: 200, method: "PUT", uri: "/update-device/{deviceId}")
 @idempotent
 //TODO: Add idempotency token and validation
-operation UpdateDeviceInternal {
-    input: UpdateDeviceInternalRequest,
-    output: UpdateDeviceInternalResponse
+operation UpdateDevice {
+    input: UpdateDeviceRequest,
+    output: UpdateDeviceResponse
 }
 
 @input
-structure UpdateDeviceInternalRequest {
+structure UpdateDeviceRequest {
     @required
     @httpLabel
     deviceId: DeviceId,
@@ -20,7 +20,7 @@ structure UpdateDeviceInternalRequest {
 }
 
 @output
-structure UpdateDeviceInternalResponse {
+structure UpdateDeviceResponse {
     deviceName: String,
     deviceId: DeviceId,
     deviceGroupId: DeviceGroupId,

@@ -4,6 +4,8 @@ namespace com.amazonaws.videoanalytics
 
 resource DeviceOperations {
     operations: [
-        GetDevice
+        GetDevice,
+        UpdateDevice,
+        GetDeviceShadow
     ]
 }
