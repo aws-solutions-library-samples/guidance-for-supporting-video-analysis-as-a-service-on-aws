@@ -11,7 +11,6 @@ service VideoAnalytic {
     version: "2024-10-18"
     resources: [
         Device,
-        DeviceInternal,
         DeviceNotification,
         DeviceOperations
     ]

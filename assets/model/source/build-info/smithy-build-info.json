@@ -7,11 +7,10 @@
         "com.amazonaws.videoanalytics#GetCreateNotificationRuleStatus",
         "com.amazonaws.videoanalytics#GetDeleteDeviceNotificationStatus",
         "com.amazonaws.videoanalytics#GetDevice",
-        "com.amazonaws.videoanalytics#GetDeviceInternal",
-        "com.amazonaws.videoanalytics#GetDeviceShadowInternal",
+        "com.amazonaws.videoanalytics#GetDeviceShadow",
         "com.amazonaws.videoanalytics#GetNotificationRule",
         "com.amazonaws.videoanalytics#GetUpdateDeviceStatus",
-        "com.amazonaws.videoanalytics#UpdateDeviceInternal"
+        "com.amazonaws.videoanalytics#UpdateDevice"
     ],
     "projection": {
         "abstract": false,
@@ -22,7 +21,6 @@
     "projectionName": "source",
     "resourceShapeIds": [
         "com.amazonaws.videoanalytics#Device",
-        "com.amazonaws.videoanalytics#DeviceInternal",
         "com.amazonaws.videoanalytics#DeviceNotification",
         "com.amazonaws.videoanalytics#DeviceOperations"
     ],
