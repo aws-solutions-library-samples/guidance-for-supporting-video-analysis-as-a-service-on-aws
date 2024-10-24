@@ -1,0 +1,1193 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+        "title": "Video Analytic Guidance Solution",
+        "version": "2024-10-18"
+    },
+    "paths": {
+        "/delete-device": {
+            "post": {
+                "operationId": "DeleteDevice",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DeleteDeviceRequestContent"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "DeleteDevice 200 response"
+                    },
+                    "400": {
+                        "description": "ValidationException 400 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "AccessDeniedException 403 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AccessDeniedExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "ResourceNotFoundException 404 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResourceNotFoundExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "InternalServerException 500 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InternalServerExceptionResponseContent"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/get-create-device-notification-status/{jobId}": {
+            "get": {
+                "operationId": "GetCreateDeviceNotificationStatus",
+                "parameters": [
+                    {
+                        "name": "jobId",
+                        "in": "path",
+                        "schema": {
+                            "type": "string",
+                            "maxLength": 128,
+                            "minLength": 1,
+                            "pattern": "^[a-z0-9\\-]+$"
+                        },
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "GetCreateDeviceNotificationStatus 200 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GetCreateDeviceNotificationStatusResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "ValidationException 400 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "InternalServerException 500 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InternalServerExceptionResponseContent"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/get-create-device-status/{jobId}": {
+            "get": {
+                "operationId": "GetCreateDeviceStatus",
+                "parameters": [
+                    {
+                        "name": "jobId",
+                        "in": "path",
+                        "schema": {
+                            "type": "string",
+                            "maxLength": 128,
+                            "minLength": 1,
+                            "pattern": "^[a-z0-9\\-]+$"
+                        },
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "GetCreateDeviceStatus 200 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GetCreateDeviceStatusResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "ValidationException 400 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "InternalServerException 500 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InternalServerExceptionResponseContent"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/get-create-notification-rule-status/{jobId}": {
+            "get": {
+                "operationId": "GetCreateNotificationRuleStatus",
+                "parameters": [
+                    {
+                        "name": "jobId",
+                        "in": "path",
+                        "schema": {
+                            "type": "string",
+                            "maxLength": 128,
+                            "minLength": 1,
+                            "pattern": "^[a-z0-9\\-]+$"
+                        },
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "GetCreateNotificationRuleStatus 200 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GetCreateNotificationRuleStatusResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "ValidationException 400 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "InternalServerException 500 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InternalServerExceptionResponseContent"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/get-delete-device-notification-status/{jobId}": {
+            "get": {
+                "operationId": "GetDeleteDeviceNotificationStatus",
+                "parameters": [
+                    {
+                        "name": "jobId",
+                        "in": "path",
+                        "schema": {
+                            "type": "string",
+                            "maxLength": 128,
+                            "minLength": 1,
+                            "pattern": "^[a-z0-9\\-]+$"
+                        },
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "GetDeleteDeviceNotificationStatus 200 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GetDeleteDeviceNotificationStatusResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "ValidationException 400 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "InternalServerException 500 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InternalServerExceptionResponseContent"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/get-device-shadow-/{deviceId}": {
+            "post": {
+                "operationId": "GetDeviceShadow",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/GetDeviceShadowRequestContent"
+                            }
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "deviceId",
+                        "in": "path",
+                        "schema": {
+                            "type": "string",
+                            "maxLength": 128,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9:_\\-]+$"
+                        },
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "GetDeviceShadow 200 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GetDeviceShadowResponseContent"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/get-device/{deviceId}": {
+            "get": {
+                "operationId": "GetDevice",
+                "parameters": [
+                    {
+                        "name": "deviceId",
+                        "in": "path",
+                        "schema": {
+                            "type": "string",
+                            "maxLength": 128,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9:_\\-]+$"
+                        },
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "GetDevice 200 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GetDeviceResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "ValidationException 400 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "AccessDeniedException 403 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AccessDeniedExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "InternalServerException 500 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InternalServerExceptionResponseContent"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/get-notification-rule/{ruleId}": {
+            "get": {
+                "operationId": "GetNotificationRule",
+                "parameters": [
+                    {
+                        "name": "ruleId",
+                        "in": "path",
+                        "schema": {
+                            "type": "string",
+                            "maxLength": 128,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9_]+$"
+                        },
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "GetNotificationRule 200 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GetNotificationRuleResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "ValidationException 400 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "AccessDeniedException 403 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AccessDeniedExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "InternalServerException 500 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InternalServerExceptionResponseContent"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/get-update-notification-rule-status/{jobId}": {
+            "get": {
+                "operationId": "GetUpdateNotificationRuleStatus",
+                "parameters": [
+                    {
+                        "name": "jobId",
+                        "in": "path",
+                        "schema": {
+                            "type": "string",
+                            "maxLength": 128,
+                            "minLength": 1,
+                            "pattern": "^[a-z0-9\\-]+$"
+                        },
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "GetUpdateNotificationRuleStatus 200 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GetUpdateNotificationRuleStatusResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "ValidationException 400 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "InternalServerException 500 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InternalServerExceptionResponseContent"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/update-device/{deviceId}": {
+            "put": {
+                "operationId": "UpdateDevice",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateDeviceRequestContent"
+                            }
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "deviceId",
+                        "in": "path",
+                        "schema": {
+                            "type": "string",
+                            "maxLength": 128,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9:_\\-]+$"
+                        },
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "UpdateDevice 200 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UpdateDeviceResponseContent"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "AccessDeniedExceptionResponseContent": {
+                "type": "object",
+                "properties": {
+                    "message": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "message"
+                ]
+            },
+            "AiEvent": {
+                "type": "string",
+                "enum": [
+                    "INTRUSION",
+                    "CROSSLINE",
+                    "MOTION"
+                ]
+            },
+            "CloudVideoStreamingElement": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/VideoStreamingState"
+                    },
+                    "updatedAt": {
+                        "type": "number",
+                        "format": "double"
+                    }
+                }
+            },
+            "Condition": {
+                "type": "object",
+                "properties": {
+                    "connectivityStatus": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ConnectivityStatus"
+                        },
+                        "uniqueItems": true
+                    },
+                    "state": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/DeviceState"
+                        },
+                        "uniqueItems": true
+                    },
+                    "aiEvent": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/AiEvent"
+                        },
+                        "uniqueItems": true
+                    }
+                }
+            },
+            "ConnectivityStatus": {
+                "type": "string",
+                "enum": [
+                    "ON",
+                    "OFF"
+                ]
+            },
+            "DeleteDeviceRequestContent": {
+                "type": "object",
+                "properties": {
+                    "deviceId": {
+                        "type": "string",
+                        "maxLength": 128,
+                        "minLength": 1,
+                        "pattern": "^[a-zA-Z0-9:_\\-]+$"
+                    }
+                },
+                "required": [
+                    "deviceId"
+                ]
+            },
+            "Destination": {
+                "type": "object",
+                "properties": {
+                    "sns": {
+                        "$ref": "#/components/schemas/Sns"
+                    }
+                },
+                "required": [
+                    "sns"
+                ]
+            },
+            "DeviceConnection": {
+                "type": "object",
+                "properties": {
+                    "status": {
+                        "type": "boolean"
+                    },
+                    "updatedAt": {
+                        "type": "number",
+                        "format": "double"
+                    }
+                }
+            },
+            "DeviceMetaData": {
+                "type": "object",
+                "properties": {
+                    "manufacturer": {
+                        "type": "string"
+                    },
+                    "model": {
+                        "type": "string"
+                    },
+                    "mac": {
+                        "type": "string"
+                    },
+                    "ipAddress": {
+                        "$ref": "#/components/schemas/IpAddress"
+                    },
+                    "aiChipset": {
+                        "type": "string"
+                    },
+                    "firmwareVersion": {
+                        "type": "string"
+                    },
+                    "fathomSdkVersion": {
+                        "type": "string"
+                    },
+                    "aiModelVersion": {
+                        "type": "string"
+                    },
+                    "aiSdkVersion": {
+                        "type": "string"
+                    },
+                    "deviceStatus": {
+                        "$ref": "#/components/schemas/DeviceStatus"
+                    }
+                }
+            },
+            "DeviceState": {
+                "type": "string",
+                "enum": [
+                    "ENABLED",
+                    "DISABLED",
+                    "CREATED"
+                ]
+            },
+            "DeviceStatus": {
+                "type": "object",
+                "properties": {
+                    "deviceState": {
+                        "$ref": "#/components/schemas/DeviceState"
+                    },
+                    "deviceConnection": {
+                        "$ref": "#/components/schemas/DeviceConnection"
+                    },
+                    "cloudVideoStreaming": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/CloudVideoStreamingElement"
+                        }
+                    },
+                    "storage": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/StorageElement"
+                        }
+                    }
+                }
+            },
+            "EventCategory": {
+                "type": "string",
+                "enum": [
+                    "CONNECTIVITY_STATUS",
+                    "STATE",
+                    "AI_EVENT"
+                ]
+            },
+            "GetCreateDeviceNotificationStatusResponseContent": {
+                "type": "object",
+                "properties": {
+                    "jobId": {
+                        "type": "string",
+                        "maxLength": 128,
+                        "minLength": 1,
+                        "pattern": "^[a-z0-9\\-]+$"
+                    },
+                    "deviceId": {
+                        "type": "string",
+                        "maxLength": 128,
+                        "minLength": 1,
+                        "pattern": "^[a-zA-Z0-9:_\\-]+$"
+                    },
+                    "ruleId": {
+                        "type": "string",
+                        "maxLength": 128,
+                        "minLength": 1,
+                        "pattern": "^[a-zA-Z0-9_]+$"
+                    },
+                    "errorMessage": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/Status"
+                    },
+                    "createTime": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "modifiedTime": {
+                        "type": "number",
+                        "format": "double"
+                    }
+                }
+            },
+            "GetCreateDeviceStatusResponseContent": {
+                "type": "object",
+                "properties": {
+                    "jobId": {
+                        "type": "string",
+                        "maxLength": 128,
+                        "minLength": 1,
+                        "pattern": "^[a-z0-9\\-]+$"
+                    },
+                    "deviceId": {
+                        "type": "string",
+                        "maxLength": 128,
+                        "minLength": 1,
+                        "pattern": "^[a-zA-Z0-9:_\\-]+$"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/Status"
+                    },
+                    "createTime": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "modifiedTime": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "errorMessage": {
+                        "type": "string"
+                    }
+                }
+            },
+            "GetCreateNotificationRuleStatusResponseContent": {
+                "type": "object",
+                "properties": {
+                    "jobId": {
+                        "type": "string",
+                        "maxLength": 128,
+                        "minLength": 1,
+                        "pattern": "^[a-z0-9\\-]+$"
+                    },
+                    "ruleId": {
+                        "type": "string",
+                        "maxLength": 128,
+                        "minLength": 1,
+                        "pattern": "^[a-zA-Z0-9_]+$"
+                    },
+                    "eventCategory": {
+                        "$ref": "#/components/schemas/EventCategory"
+                    },
+                    "condition": {
+                        "$ref": "#/components/schemas/Condition"
+                    },
+                    "destination": {
+                        "$ref": "#/components/schemas/Destination"
+                    },
+                    "errorDestination": {
+                        "$ref": "#/components/schemas/Destination"
+                    },
+                    "ruleDisabled": {
+                        "type": "boolean"
+                    },
+                    "errorMessage": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/Status"
+                    },
+                    "createTime": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "modifiedTime": {
+                        "type": "number",
+                        "format": "double"
+                    }
+                }
+            },
+            "GetDeleteDeviceNotificationStatusResponseContent": {
+                "type": "object",
+                "properties": {
+                    "jobId": {
+                        "type": "string",
+                        "maxLength": 128,
+                        "minLength": 1,
+                        "pattern": "^[a-z0-9\\-]+$"
+                    },
+                    "deviceId": {
+                        "type": "string",
+                        "maxLength": 128,
+                        "minLength": 1,
+                        "pattern": "^[a-zA-Z0-9:_\\-]+$"
+                    },
+                    "ruleId": {
+                        "type": "string",
+                        "maxLength": 128,
+                        "minLength": 1,
+                        "pattern": "^[a-zA-Z0-9_]+$"
+                    },
+                    "errorMessage": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/Status"
+                    },
+                    "createTime": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "modifiedTime": {
+                        "type": "number",
+                        "format": "double"
+                    }
+                }
+            },
+            "GetDeviceResponseContent": {
+                "type": "object",
+                "properties": {
+                    "deviceName": {
+                        "type": "string"
+                    },
+                    "deviceId": {
+                        "type": "string",
+                        "maxLength": 128,
+                        "minLength": 1,
+                        "pattern": "^[a-zA-Z0-9:_\\-]+$"
+                    },
+                    "deviceGroupIds": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "maxLength": 128,
+                            "minLength": 1
+                        }
+                    },
+                    "deviceType": {
+                        "type": "string"
+                    },
+                    "deviceMetaData": {
+                        "$ref": "#/components/schemas/DeviceMetaData"
+                    },
+                    "deviceCapabilities": {
+                        "$ref": "#/components/schemas/KeyValueMap"
+                    },
+                    "deviceSettings": {
+                        "$ref": "#/components/schemas/KeyValueMap"
+                    },
+                    "createdAt": {
+                        "type": "number",
+                        "format": "double"
+                    }
+                }
+            },
+            "GetDeviceShadowRequestContent": {
+                "type": "object",
+                "properties": {
+                    "shadowName": {
+                        "type": "string"
+                    }
+                }
+            },
+            "GetDeviceShadowResponseContent": {
+                "type": "object",
+                "properties": {
+                    "shadowPayload": {
+                        "$ref": "#/components/schemas/ShadowMap"
+                    }
+                }
+            },
+            "GetNotificationRuleResponseContent": {
+                "type": "object",
+                "properties": {
+                    "jobId": {
+                        "type": "string",
+                        "maxLength": 128,
+                        "minLength": 1,
+                        "pattern": "^[a-z0-9\\-]+$"
+                    },
+                    "ruleId": {
+                        "type": "string",
+                        "maxLength": 128,
+                        "minLength": 1,
+                        "pattern": "^[a-zA-Z0-9_]+$"
+                    },
+                    "eventCategory": {
+                        "$ref": "#/components/schemas/EventCategory"
+                    },
+                    "condition": {
+                        "$ref": "#/components/schemas/Condition"
+                    },
+                    "destination": {
+                        "$ref": "#/components/schemas/Destination"
+                    },
+                    "errorDestination": {
+                        "$ref": "#/components/schemas/Destination"
+                    },
+                    "ruleDisabled": {
+                        "type": "boolean"
+                    }
+                }
+            },
+            "GetUpdateNotificationRuleStatusResponseContent": {
+                "type": "object",
+                "properties": {
+                    "jobId": {
+                        "type": "string",
+                        "maxLength": 128,
+                        "minLength": 1,
+                        "pattern": "^[a-z0-9\\-]+$"
+                    },
+                    "ruleId": {
+                        "type": "string",
+                        "maxLength": 128,
+                        "minLength": 1,
+                        "pattern": "^[a-zA-Z0-9_]+$"
+                    },
+                    "eventCategory": {
+                        "$ref": "#/components/schemas/EventCategory"
+                    },
+                    "condition": {
+                        "$ref": "#/components/schemas/Condition"
+                    },
+                    "destination": {
+                        "$ref": "#/components/schemas/Destination"
+                    },
+                    "errorDestination": {
+                        "$ref": "#/components/schemas/Destination"
+                    },
+                    "ruleDisabled": {
+                        "type": "boolean"
+                    },
+                    "errorMessage": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/Status"
+                    },
+                    "createTime": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "modifiedTime": {
+                        "type": "number",
+                        "format": "double"
+                    }
+                }
+            },
+            "InternalServerExceptionResponseContent": {
+                "type": "object",
+                "properties": {
+                    "message": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "message"
+                ]
+            },
+            "IpAddress": {
+                "type": "object",
+                "properties": {
+                    "publicIpAddress": {
+                        "type": "string"
+                    },
+                    "privateIpAddress": {
+                        "type": "string"
+                    }
+                }
+            },
+            "KeyValueMap": {
+                "type": "object",
+                "additionalProperties": {
+                    "type": "string",
+                    "maxLength": 256,
+                    "minLength": 0,
+                    "pattern": "^[\\s\\S]*$"
+                },
+                "propertyNames": {
+                    "type": "string",
+                    "maxLength": 128,
+                    "minLength": 1,
+                    "pattern": "^[\\s\\S]*$"
+                }
+            },
+            "ResourceNotFoundExceptionResponseContent": {
+                "type": "object",
+                "properties": {
+                    "message": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "message"
+                ]
+            },
+            "ShadowMap": {
+                "type": "object",
+                "properties": {
+                    "shadowName": {
+                        "type": "string"
+                    },
+                    "stateDocument": {}
+                }
+            },
+            "Sns": {
+                "type": "object",
+                "properties": {
+                    "targetArn": {
+                        "type": "string",
+                        "pattern": "^arn:aws[a-z0-9\\-]*:sns:[a-z0-9\\-]+:\\d{12}:([\\w\\-]{1,256})$"
+                    },
+                    "roleArn": {
+                        "type": "string",
+                        "maxLength": 2048,
+                        "minLength": 1,
+                        "pattern": "^arn:(aws[a-zA-Z0-9-]*):iam::(\\d{12})?:(role((\\u002F)|(\\u002F[\\u0021-\\u007F]+\\u002F))[\\w+=,.@-]+)$"
+                    }
+                }
+            },
+            "Status": {
+                "type": "string",
+                "enum": [
+                    "RUNNING",
+                    "COMPLETED",
+                    "FAILED",
+                    "CANCELLED"
+                ]
+            },
+            "StorageElement": {
+                "type": "object",
+                "properties": {
+                    "status": {
+                        "$ref": "#/components/schemas/StorageState"
+                    },
+                    "totalCapacity": {
+                        "type": "string"
+                    },
+                    "usedCapacity": {
+                        "type": "string"
+                    },
+                    "updatedAt": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "id": {
+                        "type": "string"
+                    }
+                }
+            },
+            "StorageState": {
+                "type": "string",
+                "enum": [
+                    "NO_CARD",
+                    "ERROR",
+                    "NOT_FORMATTED",
+                    "UNMOUNTED",
+                    "FULL",
+                    "NORMAL"
+                ]
+            },
+            "UpdateDeviceRequestContent": {
+                "type": "object",
+                "properties": {
+                    "attributePayload": {
+                        "$ref": "#/components/schemas/KeyValueMap"
+                    },
+                    "shadowPayload": {
+                        "$ref": "#/components/schemas/ShadowMap"
+                    }
+                }
+            },
+            "UpdateDeviceResponseContent": {
+                "type": "object",
+                "properties": {
+                    "deviceName": {
+                        "type": "string"
+                    },
+                    "deviceId": {
+                        "type": "string",
+                        "maxLength": 128,
+                        "minLength": 1,
+                        "pattern": "^[a-zA-Z0-9:_\\-]+$"
+                    },
+                    "deviceGroupId": {
+                        "type": "string",
+                        "maxLength": 128,
+                        "minLength": 1
+                    },
+                    "deviceType": {
+                        "type": "string"
+                    },
+                    "deviceMetaData": {
+                        "$ref": "#/components/schemas/DeviceMetaData"
+                    },
+                    "deviceCapabilities": {
+                        "$ref": "#/components/schemas/KeyValueMap"
+                    },
+                    "deviceSettings": {
+                        "$ref": "#/components/schemas/KeyValueMap"
+                    },
+                    "createdAt": {
+                        "type": "number",
+                        "format": "double"
+                    }
+                }
+            },
+            "ValidationExceptionField": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "message": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "message",
+                    "name"
+                ]
+            },
+            "ValidationExceptionReason": {
+                "type": "string",
+                "enum": [
+                    "unknownOperation",
+                    "cannotParse",
+                    "fieldValidationFailed",
+                    "other"
+                ]
+            },
+            "ValidationExceptionResponseContent": {
+                "type": "object",
+                "properties": {
+                    "message": {
+                        "type": "string"
+                    },
+                    "reason": {
+                        "$ref": "#/components/schemas/ValidationExceptionReason"
+                    },
+                    "fieldList": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ValidationExceptionField"
+                        }
+                    }
+                },
+                "required": [
+                    "message",
+                    "reason"
+                ]
+            },
+            "VideoStreamingState": {
+                "type": "string",
+                "enum": [
+                    "CONNECTED",
+                    "DISCONNECTED"
+                ]
+            }
+        }
+    }
+}
