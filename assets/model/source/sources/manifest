@@ -6,6 +6,7 @@ types/Common.smithy
 resources/Device.smithy
 resources/DeviceOperation.smithy
 resources/DeviceNotification.smithy
+operations/Device/StartCreateDevice.smithy
 operations/Device/GetUpdateDeviceStatus.smithy
 operations/Device/DeleteDevice.smithy
 operations/Device/GetCreateDeviceStatus.smithy

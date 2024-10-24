@@ -424,6 +424,56 @@
                 }
             }
         },
+        "/get-update-device-status/{jobId}": {
+            "get": {
+                "operationId": "GetUpdateDeviceStatus",
+                "parameters": [
+                    {
+                        "name": "jobId",
+                        "in": "path",
+                        "schema": {
+                            "type": "string",
+                            "maxLength": 128,
+                            "minLength": 1,
+                            "pattern": "^[a-z0-9\\-]+$"
+                        },
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "GetUpdateDeviceStatus 200 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GetUpdateDeviceStatusResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "ValidationException 400 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "InternalServerException 500 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InternalServerExceptionResponseContent"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/get-update-notification-rule-status/{jobId}": {
             "get": {
                 "operationId": "GetUpdateNotificationRuleStatus",
@@ -457,6 +507,83 @@
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "InternalServerException 500 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InternalServerExceptionResponseContent"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/start-create-device": {
+            "post": {
+                "operationId": "StartCreateDevice",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StartCreateDeviceRequestContent"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "StartCreateDevice 200 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StartCreateDeviceResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "ValidationException 400 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "AccessDeniedException 403 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AccessDeniedExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "ResourceNotFoundException 404 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResourceNotFoundExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "ConflictException 409 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ConflictExceptionResponseContent"
                                 }
                             }
                         }
@@ -575,6 +702,17 @@
                         "uniqueItems": true
                     }
                 }
+            },
+            "ConflictExceptionResponseContent": {
+                "type": "object",
+                "properties": {
+                    "message": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "message"
+                ]
             },
             "ConnectivityStatus": {
                 "type": "string",
@@ -931,6 +1069,37 @@
                     }
                 }
             },
+            "GetUpdateDeviceStatusResponseContent": {
+                "type": "object",
+                "properties": {
+                    "jobId": {
+                        "type": "string",
+                        "maxLength": 128,
+                        "minLength": 1,
+                        "pattern": "^[a-z0-9\\-]+$"
+                    },
+                    "deviceId": {
+                        "type": "string",
+                        "maxLength": 128,
+                        "minLength": 1,
+                        "pattern": "^[a-zA-Z0-9:_\\-]+$"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/Status"
+                    },
+                    "createTime": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "modifiedTime": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "errorMessage": {
+                        "type": "string"
+                    }
+                }
+            },
             "GetUpdateNotificationRuleStatusResponseContent": {
                 "type": "object",
                 "properties": {
@@ -1046,6 +1215,38 @@
                         "maxLength": 2048,
                         "minLength": 1,
                         "pattern": "^arn:(aws[a-zA-Z0-9-]*):iam::(\\d{12})?:(role((\\u002F)|(\\u002F[\\u0021-\\u007F]+\\u002F))[\\w+=,.@-]+)$"
+                    }
+                }
+            },
+            "StartCreateDeviceRequestContent": {
+                "type": "object",
+                "properties": {
+                    "deviceId": {
+                        "type": "string",
+                        "maxLength": 128,
+                        "minLength": 1,
+                        "pattern": "^[a-zA-Z0-9:_\\-]+$"
+                    },
+                    "certificateId": {
+                        "type": "string",
+                        "maxLength": 64,
+                        "minLength": 1,
+                        "pattern": "^(0x)?[a-fA-F0-9]+$"
+                    }
+                },
+                "required": [
+                    "certificateId",
+                    "deviceId"
+                ]
+            },
+            "StartCreateDeviceResponseContent": {
+                "type": "object",
+                "properties": {
+                    "jobId": {
+                        "type": "string",
+                        "maxLength": 128,
+                        "minLength": 1,
+                        "pattern": "^[a-z0-9\\-]+$"
                     }
                 }
             },

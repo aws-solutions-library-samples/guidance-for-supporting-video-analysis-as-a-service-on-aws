@@ -1571,6 +1571,12 @@
                 },
                 {
                     "target": "com.amazonaws.videoanalytics#GetCreateDeviceStatus"
+                },
+                {
+                    "target": "com.amazonaws.videoanalytics#GetUpdateDeviceStatus"
+                },
+                {
+                    "target": "com.amazonaws.videoanalytics#StartCreateDevice"
                 }
             ]
         },
@@ -2638,6 +2644,71 @@
                 "roleArn": {
                     "target": "com.amazonaws.videoanalytics#IAMRoleArn"
                 }
+            }
+        },
+        "com.amazonaws.videoanalytics#StartCreateDevice": {
+            "type": "operation",
+            "input": {
+                "target": "com.amazonaws.videoanalytics#StartCreateDeviceRequest"
+            },
+            "output": {
+                "target": "com.amazonaws.videoanalytics#StartCreateDeviceResponse"
+            },
+            "errors": [
+                {
+                    "target": "com.amazonaws.videoanalytics#AccessDeniedException"
+                },
+                {
+                    "target": "com.amazonaws.videoanalytics#ConflictException"
+                },
+                {
+                    "target": "com.amazonaws.videoanalytics#InternalServerException"
+                },
+                {
+                    "target": "com.amazonaws.videoanalytics#ResourceNotFoundException"
+                },
+                {
+                    "target": "com.amazonaws.videoanalytics#ValidationException"
+                }
+            ],
+            "traits": {
+                "smithy.api#http": {
+                    "code": 200,
+                    "method": "POST",
+                    "uri": "/start-create-device"
+                },
+                "smithy.api#idempotent": {}
+            }
+        },
+        "com.amazonaws.videoanalytics#StartCreateDeviceRequest": {
+            "type": "structure",
+            "members": {
+                "deviceId": {
+                    "target": "com.amazonaws.videoanalytics#DeviceId",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                },
+                "certificateId": {
+                    "target": "com.amazonaws.videoanalytics#CertificateId",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                }
+            },
+            "traits": {
+                "smithy.api#input": {}
+            }
+        },
+        "com.amazonaws.videoanalytics#StartCreateDeviceResponse": {
+            "type": "structure",
+            "members": {
+                "jobId": {
+                    "target": "com.amazonaws.videoanalytics#JobId"
+                }
+            },
+            "traits": {
+                "smithy.api#output": {}
             }
         },
         "com.amazonaws.videoanalytics#Status": {

@@ -5,6 +5,8 @@ namespace com.amazonaws.videoanalytics
 resource Device {
     operations: [
         GetCreateDeviceStatus,
-        DeleteDevice
+        DeleteDevice,
+        GetUpdateDeviceStatus,
+        StartCreateDevice
     ]
 }
