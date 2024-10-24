@@ -1,0 +1,31 @@
+[package]
+name = "edge-process"
+version = "0.1.0"
+edition = "2021"
+
+# This crate produces only binaries, so there's no need to publish.
+publish = false
+
+[[bin]]
+name = "edge-process"
+path = "./src/bin/main.rs"
+
+[dependencies]
+# Third Party Dependencies, inherit versions from workspace
+tokio.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+tracing-appender.workspace = true
+anyhow.workspace = true
+clap.workspace = true
+config.workspace = true
+mockall.workspace = true
+serde_derive.workspace = true
+serde.workspace = true
+# Do not inherit from cargo workspace, should only be called executable crate.
+tracing-core = "0.1.30"
+
+# internal dependencies
+device-traits.workspace = true
+mqtt-client.workspace = true
+iot-connections.workspace = true
