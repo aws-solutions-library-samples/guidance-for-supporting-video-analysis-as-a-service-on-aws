@@ -29,4 +29,3 @@ tracing-core = "0.1.30"
 device-traits.workspace = true
 mqtt-client.workspace = true
 iot-connections.workspace = true
-
