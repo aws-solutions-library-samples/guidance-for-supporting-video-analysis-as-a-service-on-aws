@@ -7,6 +7,8 @@ resource Device {
         GetCreateDeviceStatus,
         DeleteDevice,
         GetUpdateDeviceStatus,
-        StartCreateDevice
+        StartCreateDevice,
+        StartGetDeviceCapabilities,
+        StartUpdateDevice
     ]
 }
