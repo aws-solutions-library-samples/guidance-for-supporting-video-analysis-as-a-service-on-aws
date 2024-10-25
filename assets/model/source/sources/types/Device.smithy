@@ -27,3 +27,31 @@ structure ShadowMap {
     shadowName: String,
     stateDocument: Document
 }
+
+structure DeviceTypePayload {
+    deviceTypeId: DeviceTypeId,
+    removeDeviceType: Boolean
+}
+
+@length(min: 1, max: 128)
+string DeviceTypeId
+
+structure CommandPayload {
+    @required
+    command: Command,
+    @range(min: 0, max: 10)
+    retries: Integer,
+    @range(min: 1, max: 10080)
+    timeout: Integer,
+    s3Uri: S3Path
+}
+
+enum Command {
+    REBOOT
+    FACTORY_RESET
+    SD_CARD_FORMAT
+    UPDATE
+}
+
+@pattern("^(s3|s3a):\/\/.+$")
+string S3Path

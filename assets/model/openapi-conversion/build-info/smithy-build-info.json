@@ -12,6 +12,12 @@
         "com.amazonaws.videoanalytics#GetUpdateDeviceStatus",
         "com.amazonaws.videoanalytics#GetUpdateNotificationRuleStatus",
         "com.amazonaws.videoanalytics#StartCreateDevice",
+        "com.amazonaws.videoanalytics#StartCreateDeviceNotification",
+        "com.amazonaws.videoanalytics#StartCreateNotificationRule",
+        "com.amazonaws.videoanalytics#StartDeleteDeviceNotification",
+        "com.amazonaws.videoanalytics#StartGetDeviceCapabilities",
+        "com.amazonaws.videoanalytics#StartUpdateDevice",
+        "com.amazonaws.videoanalytics#StartUpdateNotificationRule",
         "com.amazonaws.videoanalytics#UpdateDevice"
     ],
     "projection": {
@@ -189,36 +195,36 @@
         {
             "id": "HttpMethodSemantics.MissingReadonlyTrait",
             "severity": "WARNING",
-            "shapeId": "com.amazonaws.videoanalytics#GetCreateDeviceNotificationStatus",
+            "shapeId": "com.amazonaws.videoanalytics#GetCreateDeviceStatus",
             "message": "This operation uses the `GET` method in the `http` trait, but is not marked with the readonly trait",
-            "filename": "/Volumes/workplace/guidance-for-video-analytics-infrastructure-on-aws/source/models/video-analytics/models/operations/DeviceNotification/GetCreateDeviceNotificationStatus.smithy",
+            "filename": "/Volumes/workplace/guidance-for-video-analytics-infrastructure-on-aws/source/models/video-analytics/models/operations/Device/GetCreateDeviceStatus.smithy",
             "line": 5,
             "column": 1
         },
         {
             "id": "HttpMethodSemantics.UnnecessaryIdempotentTrait",
             "severity": "WARNING",
-            "shapeId": "com.amazonaws.videoanalytics#GetCreateDeviceNotificationStatus",
+            "shapeId": "com.amazonaws.videoanalytics#GetCreateDeviceStatus",
             "message": "This operation uses the `GET` method in the `http` trait, but is marked with the idempotent trait",
-            "filename": "/Volumes/workplace/guidance-for-video-analytics-infrastructure-on-aws/source/models/video-analytics/models/operations/DeviceNotification/GetCreateDeviceNotificationStatus.smithy",
+            "filename": "/Volumes/workplace/guidance-for-video-analytics-infrastructure-on-aws/source/models/video-analytics/models/operations/Device/GetCreateDeviceStatus.smithy",
             "line": 5,
             "column": 1
         },
         {
             "id": "HttpMethodSemantics.MissingReadonlyTrait",
             "severity": "WARNING",
-            "shapeId": "com.amazonaws.videoanalytics#GetCreateDeviceStatus",
+            "shapeId": "com.amazonaws.videoanalytics#GetCreateDeviceNotificationStatus",
             "message": "This operation uses the `GET` method in the `http` trait, but is not marked with the readonly trait",
-            "filename": "/Volumes/workplace/guidance-for-video-analytics-infrastructure-on-aws/source/models/video-analytics/models/operations/Device/GetCreateDeviceStatus.smithy",
+            "filename": "/Volumes/workplace/guidance-for-video-analytics-infrastructure-on-aws/source/models/video-analytics/models/operations/DeviceNotification/GetCreateDeviceNotificationStatus.smithy",
             "line": 5,
             "column": 1
         },
         {
             "id": "HttpMethodSemantics.UnnecessaryIdempotentTrait",
             "severity": "WARNING",
-            "shapeId": "com.amazonaws.videoanalytics#GetCreateDeviceStatus",
+            "shapeId": "com.amazonaws.videoanalytics#GetCreateDeviceNotificationStatus",
             "message": "This operation uses the `GET` method in the `http` trait, but is marked with the idempotent trait",
-            "filename": "/Volumes/workplace/guidance-for-video-analytics-infrastructure-on-aws/source/models/video-analytics/models/operations/Device/GetCreateDeviceStatus.smithy",
+            "filename": "/Volumes/workplace/guidance-for-video-analytics-infrastructure-on-aws/source/models/video-analytics/models/operations/DeviceNotification/GetCreateDeviceNotificationStatus.smithy",
             "line": 5,
             "column": 1
         }

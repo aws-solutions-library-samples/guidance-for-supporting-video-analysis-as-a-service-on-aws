@@ -8,6 +8,10 @@ resource DeviceNotification {
         GetCreateNotificationRuleStatus,
         GetDeleteDeviceNotificationStatus,
         GetNotificationRule,
-        GetUpdateNotificationRuleStatus
+        GetUpdateNotificationRuleStatus,
+        StartCreateDeviceNotification,
+        StartCreateNotificationRule,
+        StartDeleteDeviceNotification,
+        StartUpdateNotificationRule
     ]
 }
