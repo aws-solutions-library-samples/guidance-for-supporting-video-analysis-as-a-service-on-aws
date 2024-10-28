@@ -1,9 +1,7 @@
 import type { Role } from 'aws-cdk-lib/aws-iam';
 import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
-import { Chain, Fail, JsonPath, StateMachine, Succeed, TaskInput } from 'aws-cdk-lib/aws-stepfunctions';
+import { Fail, JsonPath, StateMachine, Succeed, TaskInput } from 'aws-cdk-lib/aws-stepfunctions';
 import {
-    Workflow,
-    WorkflowProps,
     VideoAnalyticsAsyncWorkflowResource,
     createLambdaRole, AWSRegionUtils,
     AWSRegion
@@ -15,17 +13,12 @@ import { Duration } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { WorkflowStackProps } from './workflowStack';
 import {
-    DM_CONTROL_PLANE_PACKAGE,
     ERROR_MESSAGE_PATH,
-    LAMBDA_MEMORY_SIZE_KB,
-    LAMBDA_RUNTIME,
-    LAMBDA_TIMEOUT_MINUTES,
     PARTITION_KEY_PATH,
     RESULT_PATH,
     RESULT_PATH_ERROR,
     LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT,
-    DM_WORKFLOW_JAVA_PATH_PREFIX
-} from '../../const';
+} from '../const';
 
 /**
  *
