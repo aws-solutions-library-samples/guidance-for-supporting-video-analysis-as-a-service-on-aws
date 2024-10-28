@@ -26,7 +26,7 @@ export class DeviceManagementBootstrapStack extends Stack {
             assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
         });
 
-        const policy = new ManagedPolicy(this, 'detach-state-policy', {
+        new ManagedPolicy(this, 'detach-state-policy', {
             roles: [role],
             managedPolicyName: 'detach-state-policy',
             statements: [
@@ -140,7 +140,7 @@ export class DeviceManagementBootstrapStack extends Stack {
             credentialDurationSeconds: 43200,
           });
       
-        const videoAnalyticsFirmwareBucket: Bucket = new Bucket(this, 'videoAnalyticsFirmwareBucket', {
+        new Bucket(this, 'videoAnalyticsFirmwareBucket', {
             bucketName: `video-analytics-firmware-bucket-${this.account}-${this.region}`,
             publicReadAccess: false,
             blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
@@ -150,7 +150,7 @@ export class DeviceManagementBootstrapStack extends Stack {
             serverAccessLogsPrefix: 'access-logs/',
           });
 
-        const permissionToPublishToSnsRole = new CfnRole(this, 'PermissionToPublishToSNSRole', {
+        new CfnRole(this, 'PermissionToPublishToSNSRole', {
             roleName: 'PermissionToPublishToSNSRole'!,
             assumeRolePolicyDocument: {
               Version: '2012-10-17',
@@ -200,7 +200,8 @@ export class DeviceManagementBootstrapStack extends Stack {
           if (deviceS3RoleAlias == null) {
             throw new Error(`A combination of conditions caused 'deviceS3RoleAlias' to be undefined. Fixit.`);
           }
-          const deviceX509CertPolicy = new iot.CfnPolicy(this, 'DeviceX509CertPolicy', {
+        
+        new iot.CfnPolicy(this, 'DeviceX509CertPolicy', {
             policyDocument: {
               Version: '2012-10-17',
               Statement: [

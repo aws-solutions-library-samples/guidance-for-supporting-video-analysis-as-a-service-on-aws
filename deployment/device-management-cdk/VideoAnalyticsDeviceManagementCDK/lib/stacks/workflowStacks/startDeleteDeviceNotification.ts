@@ -1,21 +1,18 @@
 import type { Role } from 'aws-cdk-lib/aws-iam';
 import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
-import { Chain, Fail, JsonPath, StateMachine, Succeed, TaskInput } from 'aws-cdk-lib/aws-stepfunctions';
+import { Fail, JsonPath, StateMachine, Succeed, TaskInput } from 'aws-cdk-lib/aws-stepfunctions';
 import {
-  Workflow,
-  WorkflowProps,
   VideoAnalyticsAsyncWorkflowResource,
   createLambdaRole, AWSRegionUtils,
   AWSRegion
 } from 'video_analytics_common_construct/';
-import { Function, Runtime, Code } from 'aws-cdk-lib/aws-lambda';
+import { Function, Code } from 'aws-cdk-lib/aws-lambda';
 import { LogGroup, RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { LambdaInvoke } from 'aws-cdk-lib/aws-stepfunctions-tasks';
 import { Duration } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { WorkflowStackProps } from './workflowStack';
 import {
-  DM_CONTROL_PLANE_PACKAGE,
   ERROR_MESSAGE_PATH,
   LAMBDA_MEMORY_SIZE_KB,
   LAMBDA_RUNTIME,

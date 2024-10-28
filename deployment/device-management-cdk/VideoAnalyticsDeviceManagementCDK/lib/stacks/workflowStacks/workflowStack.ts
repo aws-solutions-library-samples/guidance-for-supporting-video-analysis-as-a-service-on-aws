@@ -1,6 +1,5 @@
 import * as cdk from 'aws-cdk-lib';
-import { Stack, StackProps } from 'aws-cdk-lib';
-import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
+import { StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { StateMachine } from 'aws-cdk-lib/aws-stepfunctions';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';

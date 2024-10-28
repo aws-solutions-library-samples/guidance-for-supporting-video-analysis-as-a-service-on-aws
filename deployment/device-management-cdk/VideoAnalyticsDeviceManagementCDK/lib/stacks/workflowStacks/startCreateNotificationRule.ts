@@ -5,9 +5,8 @@ import { LogGroup, RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { Duration } from 'aws-cdk-lib';
 import { LambdaInvoke } from 'aws-cdk-lib/aws-stepfunctions-tasks';
 import { Fail, Succeed, JsonPath, StateMachine, TaskInput } from 'aws-cdk-lib/aws-stepfunctions';
-import { Function, Runtime, Code } from 'aws-cdk-lib/aws-lambda';
+import { Function, Code } from 'aws-cdk-lib/aws-lambda';
 import {
-    DM_CONTROL_PLANE_PACKAGE,
     ERROR_MESSAGE_PATH,
     LAMBDA_MEMORY_SIZE_KB,
     LAMBDA_RUNTIME,
@@ -19,8 +18,6 @@ import {
     DM_WORKFLOW_JAVA_PATH_PREFIX
 } from '../const';
 import {
-    Workflow,
-    WorkflowProps,
     VideoAnalyticsAsyncWorkflowResource,
     createLambdaRole, AWSRegionUtils,
     AWSRegion

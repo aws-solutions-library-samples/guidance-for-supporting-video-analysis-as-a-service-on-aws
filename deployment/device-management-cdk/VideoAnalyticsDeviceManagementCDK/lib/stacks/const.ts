@@ -1,4 +1,3 @@
-import type { Table } from 'aws-cdk-lib/aws-dynamodb';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Duration } from 'aws-cdk-lib';
 // State paths
@@ -26,6 +25,6 @@ export const IS_SOFTWARE_UPDATE_PATH = '$.isSoftwareUpdate';
 // TODO: REFACTOR once DM workflow's lambda paths are updated
 export const LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT = './lambda/deviceManagement';
 
-export const IOT_CONNECTED_THING_NAME = `\$\{iot:Connection.Thing.ThingName\}`;
+export const IOT_CONNECTED_THING_NAME = `\${iot:Connection.Thing.ThingName}`;
 
-export const IOT_CREDENTIAL_THING_NAME = `\$\{credentials-iot:ThingName\}`;
+export const IOT_CREDENTIAL_THING_NAME = `\${credentials-iot:ThingName}`;
