@@ -49,7 +49,8 @@ import com.amazonaws.JSON;
  * ValidationExceptionField
  */
 @lombok.Builder
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-10-24T17:18:34.468319Z[UTC]", comments = "Generator version: 7.8.0")
+@lombok.AllArgsConstructor
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-10-28T21:16:17.605797Z[UTC]", comments = "Generator version: 7.8.0")
 public class ValidationExceptionField {
   public static final String SERIALIZED_NAME_NAME = "name";
   @SerializedName(SERIALIZED_NAME_NAME)

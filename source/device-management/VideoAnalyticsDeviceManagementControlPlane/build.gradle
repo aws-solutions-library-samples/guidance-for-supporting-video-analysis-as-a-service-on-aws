@@ -1,0 +1,145 @@
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.gradle.api.tasks.testing.logging.TestLogEvent
+
+plugins {
+    id 'java'
+    id 'maven-publish'
+    id 'io.freefair.lombok' version '8.3'
+    id 'jacoco'
+}
+
+group = 'org.example'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+    maven { url "https://aws.oss.sonatype.org/content/repositories/snapshots" }
+    // CodeGuru-Profiler java agent repository
+    maven { url "https://d1osg35nybn3tt.cloudfront.net" }
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src/main/java'
+            srcDir "$rootDir/../VideoAnalyticsDeviceManagementJavaClient/generated-src"
+        }
+    }
+    test {
+        java {
+            srcDir 'test/main/java'
+        }
+    }
+}
+
+dependencies {
+    // dependencies for OpenAPI generated java client
+    implementation 'javax.annotation:javax.annotation-api:1.3.2'
+    implementation 'org.openapitools:jackson-databind-nullable:0.2.6'
+    implementation 'com.squareup.okio:okio:3.9.1'
+    implementation 'io.gsonfire:gson-fire:1.9.0'
+    implementation 'com.squareup.okhttp3:okhttp:4.12.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.12.0'
+
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+
+    implementation 'org.projectlombok:lombok:1.18.26'
+    annotationProcessor 'org.projectlombok:lombok:1.18.26'
+
+    implementation 'software.amazon.awssdk:dynamodb-enhanced:2.20.26'
+    implementation 'software.amazon.cryptography:aws-database-encryption-sdk-dynamodb:3.1.0'
+    implementation 'software.amazon.awssdk:iot:2.20.26'
+    implementation 'software.amazon.awssdk:iotdataplane:2.20.26'
+    implementation 'software.amazon.awssdk:s3:2.20.26'
+    implementation 'com.google.code.gson:gson:2.10.1'
+    implementation 'org.apache.commons:commons-collections4:4.4'
+    implementation 'org.apache.logging.log4j:log4j-api:2.20.0'
+    implementation 'org.apache.logging.log4j:log4j-core:2.20.0'
+    implementation 'com.amazonaws:aws-lambda-java-core:1.2.2'
+    implementation 'com.amazonaws:aws-lambda-java-log4j2:1.5.1'
+    implementation 'org.apache.logging.log4j:log4j-layout-template-json:2.20.0'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.7.1'
+    implementation 'com.amazonaws:aws-lambda-java-events:3.11.1'
+
+    implementation 'com.google.dagger:dagger-compiler:2.48'
+    implementation 'com.google.auto:auto-common:1.2.1'
+    implementation 'software.amazon.awssdk:url-connection-client:2.20.26'
+
+    implementation 'com.github.wnameless.json:json-flattener:0.8.0'
+    implementation 'com.github.fge:json-schema-validator:2.2.4'
+
+    implementation 'com.amazonaws:aws-encryption-sdk-java:2.4.0'
+    
+    // Test dependencies
+    testImplementation 'software.amazon.awssdk:dynamodb-enhanced:2.20.26'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.3'
+    testImplementation 'com.github.stefanbirkner:system-rules:1.16.0'
+    testImplementation 'org.mockito:mockito-core:5.11.0'
+    testImplementation 'com.fasterxml.jackson.core:jackson-core:2.12.7'
+    testImplementation 'com.fasterxml.jackson.core:jackson-databind:2.12.7.1'
+
+    // Annotation processing
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.48'
+}
+
+test {
+    environment "JDK_JAVA_OPTIONS", "--add-opens java.base/java.util=ALL-UNNAMED"
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+    finalizedBy jacocoTestReport  
+}
+
+jacocoTestReport {
+    dependsOn test  
+    reports {
+        xml.required = false
+        csv.required = false
+        html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
+    }
+}
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.5  
+            }
+        }
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+}
+
+task cleanBuildCache {
+    doLast {
+        delete layout.buildDirectory
+
+        delete fileTree(dir: "${System.getProperty('user.home')}/.gradle/caches")
+        delete fileTree(dir: "${System.getProperty('user.home')}/.gradle/daemon")
+        delete fileTree(dir: "${System.getProperty('user.home')}/.gradle/wrapper")
+
+        // Delete the .gradle directory in the project root, if it exists
+        def projectGradleDir = new File(projectDir, '.gradle')
+        if (projectGradleDir.exists()) {
+            println "Deleting project's .gradle directory..."
+            projectGradleDir.deleteDir()
+            println "Project's .gradle directory deleted successfully."
+        }
+
+        println "Build cache cleaning completed."
+    }
+}
