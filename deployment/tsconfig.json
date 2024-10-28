@@ -5,7 +5,8 @@
   "files": [],
   "references": [
     { "path": "./common-constructs/VideoAnalyticsCommonConstruct" },
-    { "path": "./device-management-cdk/VideoAnalyticsDeviceManagementCDK" }
+    { "path": "./device-management-cdk/VideoAnalyticsDeviceManagementCDK" },
+    { "path": "./video-logistics-cdk/VideoAnalyticsVideoLogisticsCDK" }
   ]
 }
 
