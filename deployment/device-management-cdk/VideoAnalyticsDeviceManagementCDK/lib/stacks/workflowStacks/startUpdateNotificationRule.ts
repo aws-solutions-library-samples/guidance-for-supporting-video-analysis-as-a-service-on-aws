@@ -20,7 +20,7 @@ import {
   RESULT_PATH_ERROR,
   LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT,
   DM_WORKFLOW_JAVA_PATH_PREFIX
-} from '../../const';
+} from '../const';
 
 /**
  *

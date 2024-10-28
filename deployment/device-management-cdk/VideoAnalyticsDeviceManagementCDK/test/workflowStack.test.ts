@@ -1,7 +1,7 @@
 import { jest, describe, test, expect } from '@jest/globals';
 import * as cdk from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
-import { WorkflowStack } from '../lib/stacks/workflowStacks/workflow/workflowStack';
+import { WorkflowStack } from '../lib/stacks/workflowStacks/workflowStack';
 import { AWSRegion } from 'video_analytics_common_construct';
 
 describe('WorkflowStack', () => {

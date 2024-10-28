@@ -25,3 +25,7 @@ export const IS_SOFTWARE_UPDATE_PATH = '$.isSoftwareUpdate';
 
 // TODO: REFACTOR once DM workflow's lambda paths are updated
 export const LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT = './lambda/deviceManagement';
+
+export const IOT_CONNECTED_THING_NAME = `\$\{iot:Connection.Thing.ThingName\}`;
+
+export const IOT_CREDENTIAL_THING_NAME = `\$\{credentials-iot:ThingName\}`;

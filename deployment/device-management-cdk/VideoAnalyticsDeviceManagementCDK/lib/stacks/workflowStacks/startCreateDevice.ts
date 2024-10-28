@@ -9,7 +9,7 @@ import { LambdaInvoke } from 'aws-cdk-lib/aws-stepfunctions-tasks';
 import { Duration } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { WorkflowStackProps } from './workflowStack';
-import { PARTITION_KEY_PATH, RESULT_PATH, RESULT_PATH_ERROR, ERROR_MESSAGE_PATH, DM_WORKFLOW_JAVA_PATH_PREFIX, LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT } from '../../const';
+import { PARTITION_KEY_PATH, RESULT_PATH, RESULT_PATH_ERROR, ERROR_MESSAGE_PATH, DM_WORKFLOW_JAVA_PATH_PREFIX, LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT } from '../const';
 import * as iam from 'aws-cdk-lib/aws-iam';
 
 export class StartCreateDevice extends VideoAnalyticsAsyncWorkflowResource {

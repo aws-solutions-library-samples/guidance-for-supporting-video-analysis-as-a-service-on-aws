@@ -28,7 +28,7 @@ import {
   IS_SOFTWARE_UPDATE_PATH,
   IS_REGISTERED_PATH,
   DM_WORKFLOW_JAVA_PATH_PREFIX
-} from '../../const';
+} from '../const';
 import { Choice, Condition } from 'aws-cdk-lib/aws-stepfunctions';
 
 /**
