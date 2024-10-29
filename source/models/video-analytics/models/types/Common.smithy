@@ -16,6 +16,3 @@ map KeyValueMap {
     @length(min: 0, max: 256)
     value: String
 }
-
-@pattern("date-time")
-string Timestamp

@@ -1015,7 +1015,7 @@
                     },
                     "updatedAt": {
                         "type": "string",
-                        "pattern": "date-time"
+                        "format": "date-time"
                     }
                 }
             },
@@ -1130,7 +1130,7 @@
                     },
                     "updatedAt": {
                         "type": "string",
-                        "pattern": "date-time"
+                        "format": "date-time"
                     }
                 }
             },
@@ -1265,12 +1265,12 @@
                         "$ref": "#/components/schemas/Status"
                     },
                     "createTime": {
-                        "type": "string",
-                        "pattern": "date-time"
+                        "type": "number",
+                        "format": "double"
                     },
                     "modifiedTime": {
-                        "type": "string",
-                        "pattern": "date-time"
+                        "type": "number",
+                        "format": "double"
                     }
                 }
             },
@@ -1293,12 +1293,12 @@
                         "$ref": "#/components/schemas/Status"
                     },
                     "createTime": {
-                        "type": "string",
-                        "pattern": "date-time"
+                        "type": "number",
+                        "format": "double"
                     },
                     "modifiedTime": {
-                        "type": "string",
-                        "pattern": "date-time"
+                        "type": "number",
+                        "format": "double"
                     },
                     "errorMessage": {
                         "type": "string"
@@ -1342,12 +1342,12 @@
                         "$ref": "#/components/schemas/Status"
                     },
                     "createTime": {
-                        "type": "string",
-                        "pattern": "date-time"
+                        "type": "number",
+                        "format": "double"
                     },
                     "modifiedTime": {
-                        "type": "string",
-                        "pattern": "date-time"
+                        "type": "number",
+                        "format": "double"
                     }
                 }
             },
@@ -1379,12 +1379,12 @@
                         "$ref": "#/components/schemas/Status"
                     },
                     "createTime": {
-                        "type": "string",
-                        "pattern": "date-time"
+                        "type": "number",
+                        "format": "double"
                     },
                     "modifiedTime": {
-                        "type": "string",
-                        "pattern": "date-time"
+                        "type": "number",
+                        "format": "double"
                     }
                 }
             },
@@ -1422,7 +1422,7 @@
                     },
                     "createdAt": {
                         "type": "string",
-                        "pattern": "date-time"
+                        "format": "date-time"
                     }
                 }
             },
@@ -1493,12 +1493,12 @@
                         "$ref": "#/components/schemas/Status"
                     },
                     "createTime": {
-                        "type": "string",
-                        "pattern": "date-time"
+                        "type": "number",
+                        "format": "double"
                     },
                     "modifiedTime": {
-                        "type": "string",
-                        "pattern": "date-time"
+                        "type": "number",
+                        "format": "double"
                     },
                     "errorMessage": {
                         "type": "string"
@@ -1542,12 +1542,12 @@
                         "$ref": "#/components/schemas/Status"
                     },
                     "createTime": {
-                        "type": "string",
-                        "pattern": "date-time"
+                        "type": "number",
+                        "format": "double"
                     },
                     "modifiedTime": {
-                        "type": "string",
-                        "pattern": "date-time"
+                        "type": "number",
+                        "format": "double"
                     }
                 }
             },
@@ -1882,7 +1882,7 @@
                     },
                     "updatedAt": {
                         "type": "string",
-                        "pattern": "date-time"
+                        "format": "date-time"
                     },
                     "id": {
                         "type": "string"
@@ -1942,7 +1942,7 @@
                     },
                     "createdAt": {
                         "type": "string",
-                        "pattern": "date-time"
+                        "format": "date-time"
                     }
                 }
             },

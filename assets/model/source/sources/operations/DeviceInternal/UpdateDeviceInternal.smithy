@@ -28,5 +28,6 @@ structure UpdateDeviceInternalResponse {
     deviceMetaData: DeviceMetaData,
     deviceCapabilities: KeyValueMap,
     deviceSettings: KeyValueMap,
+    @timestampFormat("date-time")
     createdAt: Timestamp
 }
