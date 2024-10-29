@@ -1014,8 +1014,8 @@
                         "$ref": "#/components/schemas/VideoStreamingState"
                     },
                     "updatedAt": {
-                        "type": "number",
-                        "format": "double"
+                        "type": "string",
+                        "pattern": "date-time"
                     }
                 }
             },
@@ -1129,8 +1129,8 @@
                         "type": "boolean"
                     },
                     "updatedAt": {
-                        "type": "number",
-                        "format": "double"
+                        "type": "string",
+                        "pattern": "date-time"
                     }
                 }
             },
@@ -1171,7 +1171,7 @@
                     "firmwareVersion": {
                         "type": "string"
                     },
-                    "fathomSdkVersion": {
+                    "sdkVersion": {
                         "type": "string"
                     },
                     "aiModelVersion": {
@@ -1265,12 +1265,12 @@
                         "$ref": "#/components/schemas/Status"
                     },
                     "createTime": {
-                        "type": "number",
-                        "format": "double"
+                        "type": "string",
+                        "pattern": "date-time"
                     },
                     "modifiedTime": {
-                        "type": "number",
-                        "format": "double"
+                        "type": "string",
+                        "pattern": "date-time"
                     }
                 }
             },
@@ -1293,12 +1293,12 @@
                         "$ref": "#/components/schemas/Status"
                     },
                     "createTime": {
-                        "type": "number",
-                        "format": "double"
+                        "type": "string",
+                        "pattern": "date-time"
                     },
                     "modifiedTime": {
-                        "type": "number",
-                        "format": "double"
+                        "type": "string",
+                        "pattern": "date-time"
                     },
                     "errorMessage": {
                         "type": "string"
@@ -1342,12 +1342,12 @@
                         "$ref": "#/components/schemas/Status"
                     },
                     "createTime": {
-                        "type": "number",
-                        "format": "double"
+                        "type": "string",
+                        "pattern": "date-time"
                     },
                     "modifiedTime": {
-                        "type": "number",
-                        "format": "double"
+                        "type": "string",
+                        "pattern": "date-time"
                     }
                 }
             },
@@ -1379,12 +1379,12 @@
                         "$ref": "#/components/schemas/Status"
                     },
                     "createTime": {
-                        "type": "number",
-                        "format": "double"
+                        "type": "string",
+                        "pattern": "date-time"
                     },
                     "modifiedTime": {
-                        "type": "number",
-                        "format": "double"
+                        "type": "string",
+                        "pattern": "date-time"
                     }
                 }
             },
@@ -1421,8 +1421,8 @@
                         "$ref": "#/components/schemas/KeyValueMap"
                     },
                     "createdAt": {
-                        "type": "number",
-                        "format": "double"
+                        "type": "string",
+                        "pattern": "date-time"
                     }
                 }
             },
@@ -1493,12 +1493,12 @@
                         "$ref": "#/components/schemas/Status"
                     },
                     "createTime": {
-                        "type": "number",
-                        "format": "double"
+                        "type": "string",
+                        "pattern": "date-time"
                     },
                     "modifiedTime": {
-                        "type": "number",
-                        "format": "double"
+                        "type": "string",
+                        "pattern": "date-time"
                     },
                     "errorMessage": {
                         "type": "string"
@@ -1542,12 +1542,12 @@
                         "$ref": "#/components/schemas/Status"
                     },
                     "createTime": {
-                        "type": "number",
-                        "format": "double"
+                        "type": "string",
+                        "pattern": "date-time"
                     },
                     "modifiedTime": {
-                        "type": "number",
-                        "format": "double"
+                        "type": "string",
+                        "pattern": "date-time"
                     }
                 }
             },
@@ -1881,8 +1881,8 @@
                         "type": "string"
                     },
                     "updatedAt": {
-                        "type": "number",
-                        "format": "double"
+                        "type": "string",
+                        "pattern": "date-time"
                     },
                     "id": {
                         "type": "string"
@@ -1941,8 +1941,8 @@
                         "$ref": "#/components/schemas/KeyValueMap"
                     },
                     "createdAt": {
-                        "type": "number",
-                        "format": "double"
+                        "type": "string",
+                        "pattern": "date-time"
                     }
                 }
             },

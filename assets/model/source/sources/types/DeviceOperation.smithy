@@ -15,7 +15,7 @@ structure DeviceMetaData {
     ipAddress: IpAddress,
     aiChipset: String,
     firmwareVersion : String,
-    fathomSdkVersion : String,
+    sdkVersion : String,
     aiModelVersion: String
     aiSdkVersion : String,
     deviceStatus: DeviceStatus,
@@ -106,4 +106,3 @@ structure DeviceOperationInfo {
     errorCode: String,
     errorMessage: String
 }
-
