@@ -10,6 +10,7 @@ use iot_connections::client::IotMqttClientManager;
 use std::error::Error;
 use std::process::ExitCode;
 use tokio::try_join;
+use tracing::debug;
 
 #[tokio::main]
 async fn main() -> Result<ExitCode, Box<dyn Error>> {
@@ -23,7 +24,7 @@ async fn main() -> Result<ExitCode, Box<dyn Error>> {
     let settings = configurations.get_settings();
 
     //File Writer collects tracing logs, Returns a guard which must exist for the lifetime of the program.
-    let _log_file_guard = init_tracing(&settings);
+    let _log_file_guard = init_tracing(&settings).await;
 
     let pub_sub_client_manager =
         IotMqttClientManager::new_iot_connection_manager(configurations.get_config());
