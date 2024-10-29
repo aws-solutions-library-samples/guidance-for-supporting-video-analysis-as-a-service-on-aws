@@ -227,6 +227,15 @@
             "filename": "/Volumes/workplace/guidance-for-video-analytics-infrastructure-on-aws/source/models/video-analytics/models/operations/Device/GetCreateDeviceStatus.smithy",
             "line": 5,
             "column": 1
+        },
+        {
+            "id": "PatternTrait",
+            "severity": "WARNING",
+            "shapeId": "com.amazonaws.videoanalytics#Timestamp",
+            "message": "A pattern trait is applied without a leading '^' and trailing '$', meaning only part of the string must match the regular expression. Explicitly anchoring regular expressions is preferable because it is more restrictive by default and does not require modelers to understand that Smithy patterns are not automatically anchored.",
+            "filename": "/Volumes/workplace/guidance-for-video-analytics-infrastructure-on-aws/source/models/video-analytics/models/types/Common.smithy",
+            "line": 20,
+            "column": 1
         }
     ],
     "version": "1.0"

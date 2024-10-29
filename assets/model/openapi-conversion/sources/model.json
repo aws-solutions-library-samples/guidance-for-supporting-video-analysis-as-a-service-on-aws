@@ -68,7 +68,7 @@
                     "target": "com.amazonaws.videoanalytics#VideoStreamingState"
                 },
                 "updatedAt": {
-                    "target": "smithy.api#Timestamp"
+                    "target": "com.amazonaws.videoanalytics#Timestamp"
                 }
             }
         },
@@ -287,7 +287,7 @@
                     "target": "smithy.api#Boolean"
                 },
                 "updatedAt": {
-                    "target": "smithy.api#Timestamp"
+                    "target": "com.amazonaws.videoanalytics#Timestamp"
                 }
             }
         },
@@ -321,7 +321,7 @@
             "type": "structure",
             "members": {
                 "creationDate": {
-                    "target": "smithy.api#Timestamp"
+                    "target": "com.amazonaws.videoanalytics#Timestamp"
                 },
                 "parentGroupId": {
                     "target": "com.amazonaws.videoanalytics#DeviceGroupId"
@@ -397,7 +397,7 @@
                     "target": "com.amazonaws.videoanalytics#KeyValueMap"
                 },
                 "createdAt": {
-                    "target": "smithy.api#Timestamp"
+                    "target": "com.amazonaws.videoanalytics#Timestamp"
                 }
             }
         },
@@ -422,7 +422,7 @@
                 "firmwareVersion": {
                     "target": "smithy.api#String"
                 },
-                "fathomSdkVersion": {
+                "sdkVersion": {
                     "target": "smithy.api#String"
                 },
                 "aiModelVersion": {
@@ -493,10 +493,10 @@
                     "target": "smithy.api#String"
                 },
                 "createdAt": {
-                    "target": "smithy.api#Timestamp"
+                    "target": "com.amazonaws.videoanalytics#Timestamp"
                 },
                 "updatedAt": {
-                    "target": "smithy.api#Timestamp"
+                    "target": "com.amazonaws.videoanalytics#Timestamp"
                 },
                 "requestParameters": {
                     "target": "smithy.api#String"
@@ -683,10 +683,10 @@
                     "target": "com.amazonaws.videoanalytics#Status"
                 },
                 "createTime": {
-                    "target": "smithy.api#Timestamp"
+                    "target": "com.amazonaws.videoanalytics#Timestamp"
                 },
                 "modifiedTime": {
-                    "target": "smithy.api#Timestamp"
+                    "target": "com.amazonaws.videoanalytics#Timestamp"
                 }
             },
             "traits": {
@@ -746,10 +746,10 @@
                     "target": "com.amazonaws.videoanalytics#Status"
                 },
                 "createTime": {
-                    "target": "smithy.api#Timestamp"
+                    "target": "com.amazonaws.videoanalytics#Timestamp"
                 },
                 "modifiedTime": {
-                    "target": "smithy.api#Timestamp"
+                    "target": "com.amazonaws.videoanalytics#Timestamp"
                 },
                 "errorMessage": {
                     "target": "smithy.api#String"
@@ -830,10 +830,10 @@
                     "target": "com.amazonaws.videoanalytics#Status"
                 },
                 "createTime": {
-                    "target": "smithy.api#Timestamp"
+                    "target": "com.amazonaws.videoanalytics#Timestamp"
                 },
                 "modifiedTime": {
-                    "target": "smithy.api#Timestamp"
+                    "target": "com.amazonaws.videoanalytics#Timestamp"
                 }
             },
             "traits": {
@@ -899,10 +899,10 @@
                     "target": "com.amazonaws.videoanalytics#Status"
                 },
                 "createTime": {
-                    "target": "smithy.api#Timestamp"
+                    "target": "com.amazonaws.videoanalytics#Timestamp"
                 },
                 "modifiedTime": {
-                    "target": "smithy.api#Timestamp"
+                    "target": "com.amazonaws.videoanalytics#Timestamp"
                 }
             },
             "traits": {
@@ -977,7 +977,7 @@
                     "target": "com.amazonaws.videoanalytics#KeyValueMap"
                 },
                 "createdAt": {
-                    "target": "smithy.api#Timestamp"
+                    "target": "com.amazonaws.videoanalytics#Timestamp"
                 }
             },
             "traits": {
@@ -1154,10 +1154,10 @@
                     "target": "com.amazonaws.videoanalytics#Status"
                 },
                 "createTime": {
-                    "target": "smithy.api#Timestamp"
+                    "target": "com.amazonaws.videoanalytics#Timestamp"
                 },
                 "modifiedTime": {
-                    "target": "smithy.api#Timestamp"
+                    "target": "com.amazonaws.videoanalytics#Timestamp"
                 },
                 "errorMessage": {
                     "target": "smithy.api#String"
@@ -1238,10 +1238,10 @@
                     "target": "com.amazonaws.videoanalytics#Status"
                 },
                 "createTime": {
-                    "target": "smithy.api#Timestamp"
+                    "target": "com.amazonaws.videoanalytics#Timestamp"
                 },
                 "modifiedTime": {
-                    "target": "smithy.api#Timestamp"
+                    "target": "com.amazonaws.videoanalytics#Timestamp"
                 }
             },
             "traits": {
@@ -1875,7 +1875,7 @@
                     "target": "smithy.api#String"
                 },
                 "updatedAt": {
-                    "target": "smithy.api#Timestamp"
+                    "target": "com.amazonaws.videoanalytics#Timestamp"
                 },
                 "id": {
                     "target": "smithy.api#String"
@@ -1927,6 +1927,12 @@
                         "smithy.api#enumValue": "NORMAL"
                     }
                 }
+            }
+        },
+        "com.amazonaws.videoanalytics#Timestamp": {
+            "type": "string",
+            "traits": {
+                "smithy.api#pattern": "date-time"
             }
         },
         "com.amazonaws.videoanalytics#UpdateDevice": {
@@ -1992,7 +1998,7 @@
                     "target": "com.amazonaws.videoanalytics#KeyValueMap"
                 },
                 "createdAt": {
-                    "target": "smithy.api#Timestamp"
+                    "target": "com.amazonaws.videoanalytics#Timestamp"
                 }
             },
             "traits": {
