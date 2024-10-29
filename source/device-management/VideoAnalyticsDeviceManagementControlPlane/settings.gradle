@@ -1,0 +1,3 @@
+rootProject.name = "VideoAnalyticsDeviceManagementControlPlane"
+
+// project(':dm-java-client').projectDir = new File('../VideoAnalyticsDeviceManagementJavaClient')
