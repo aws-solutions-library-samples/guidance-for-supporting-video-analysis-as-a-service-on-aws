@@ -283,7 +283,7 @@ export class VideoLogisticsBootstrapStack extends Stack {
         topicRulePayload: {
           description: "Forward Video Timeline to destination.",
           ruleDisabled: false,
-          sql: "SELECT *, topic(2) as deviceId FROM 'analytics/+/timeline'",
+          sql: "SELECT *, topic(2) as deviceId FROM 'videoanalytics/+/timeline'",
           awsIotSqlVersion: "2016-03-23",
           actions: [
             {
@@ -549,7 +549,7 @@ export class VideoLogisticsBootstrapStack extends Stack {
       topicRulePayload: {
         description: "Forward snapshots to destination.",
         ruleDisabled: false,
-        sql: "SELECT *, topic(2) as deviceId FROM 'analytics/+/snapshot'",
+        sql: "SELECT *, topic(2) as deviceId FROM 'videoanalytics/+/snapshot'",
         awsIotSqlVersion: "2016-03-23",
         actions: [
           {
