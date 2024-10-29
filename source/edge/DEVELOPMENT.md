@@ -32,6 +32,21 @@ if `config.yaml` is placed in a `configurations` directory and the command is be
 
 This crate uses the tracing crate for logging.  See the link for additional details.
 
+#### Setting the Logger
+
+The logger is set through specific environment variables.
+
+The default behavior of the logger will be to log to the filesystem.  However, if the PRINT_LOGS_TO_TERMINAL environment variable is set to any non-null value the logs will print to the terminal.
+
+The default log level is error but by setting the LOG_LEVEL environment variable the log level can be set with the following values:
+1. DEBUG
+2. INFO
+3. WARN
+4. ERROR (default, variable does not exist)
+5. OFF
+
+See https://docs.rs/tracing/latest/tracing/struct.Level.html for more details.
+
 ### Formatter
 
 This project uses the `Rustfmt` tool to format all rust files.  IDEs can be configured to format on save or you can format all files in the project by running the `cargo fmt` command.
