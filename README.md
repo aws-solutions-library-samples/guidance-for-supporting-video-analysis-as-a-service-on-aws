@@ -1,4 +1,4 @@
-# Guidance for Retail Video Analytics on AWS
+# Guidance for Video Analytics Infrastructure on AWS
 
 
 The Guidance title should be consistent with the title established first in Alchemy.
