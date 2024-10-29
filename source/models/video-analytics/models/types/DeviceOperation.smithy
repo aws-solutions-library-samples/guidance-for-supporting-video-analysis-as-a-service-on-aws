@@ -35,6 +35,7 @@ structure DeviceStatus {
 
 structure DeviceConnection {
     status: Boolean,
+    @timestampFormat("date-time")
     updatedAt: Timestamp
 }
 
@@ -45,6 +46,7 @@ list CloudVideoStreamingList {
 structure CloudVideoStreamingElement {
     id: String,
     status: VideoStreamingState,
+    @timestampFormat("date-time")
     updatedAt: Timestamp
 }
 
@@ -61,6 +63,7 @@ structure StorageElement {
     status: StorageState,
     totalCapacity: String,
     usedCapacity: String,
+    @timestampFormat("date-time")
     updatedAt: Timestamp,
     id: String
 }
@@ -86,6 +89,7 @@ structure DeviceInfo {
     deviceMetaData: DeviceMetaData,
     deviceCapabilities: KeyValueMap,
     deviceSettings: KeyValueMap,
+    @timestampFormat("date-time")
     createdAt: Timestamp
 }
 
@@ -99,7 +103,9 @@ structure DeviceOperationInfo {
     deviceOperationStatus: String,
     callerAccount: String,
     sourceIPAddress: String,
+    @timestampFormat("date-time")
     createdAt: Timestamp,
+    @timestampFormat("date-time")
     updatedAt: Timestamp,
     requestParameters: String,
     contents: String,

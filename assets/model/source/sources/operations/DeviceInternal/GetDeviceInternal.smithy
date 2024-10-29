@@ -28,5 +28,6 @@ structure GetDeviceInternalResponse {
     deviceCapabilities: KeyValueMap,
     deviceSettings: KeyValueMap,
     deviceState: DeviceState,
+    @timestampFormat("date-time")
     createdAt: Timestamp
 }
