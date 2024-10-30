@@ -1,0 +1,183 @@
+{
+    "smithy": "2.0",
+    "shapes": {
+        "com.amazonaws.videoanalytics#AccessDeniedException": {
+            "type": "structure",
+            "members": {
+                "message": {
+                    "target": "smithy.api#String",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                }
+            },
+            "traits": {
+                "smithy.api#error": "client",
+                "smithy.api#httpError": 403
+            }
+        },
+        "com.amazonaws.videoanalytics#ConflictException": {
+            "type": "structure",
+            "members": {
+                "message": {
+                    "target": "smithy.api#String",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                }
+            },
+            "traits": {
+                "smithy.api#error": "client",
+                "smithy.api#httpError": 409
+            }
+        },
+        "com.amazonaws.videoanalytics#InternalServerException": {
+            "type": "structure",
+            "members": {
+                "message": {
+                    "target": "smithy.api#String",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                }
+            },
+            "traits": {
+                "smithy.api#error": "server",
+                "smithy.api#httpError": 500
+            }
+        },
+        "com.amazonaws.videoanalytics#KeyPair": {
+            "type": "structure",
+            "members": {
+                "privateKey": {
+                    "target": "smithy.api#String"
+                },
+                "publicKey": {
+                    "target": "smithy.api#String"
+                }
+            }
+        },
+        "com.amazonaws.videoanalytics#KeyValueMap": {
+            "type": "map",
+            "key": {
+                "target": "smithy.api#String",
+                "traits": {
+                    "smithy.api#length": {
+                        "min": 1,
+                        "max": 128
+                    },
+                    "smithy.api#pattern": "^[\\s\\S]*$"
+                }
+            },
+            "value": {
+                "target": "smithy.api#String",
+                "traits": {
+                    "smithy.api#length": {
+                        "min": 0,
+                        "max": 256
+                    },
+                    "smithy.api#pattern": "^[\\s\\S]*$"
+                }
+            }
+        },
+        "com.amazonaws.videoanalytics#ResourceNotFoundException": {
+            "type": "structure",
+            "members": {
+                "message": {
+                    "target": "smithy.api#String",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                }
+            },
+            "traits": {
+                "smithy.api#error": "client",
+                "smithy.api#httpError": 404
+            }
+        },
+        "com.amazonaws.videoanalytics#ValidationException": {
+            "type": "structure",
+            "members": {
+                "message": {
+                    "target": "smithy.api#String",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                },
+                "reason": {
+                    "target": "com.amazonaws.videoanalytics#ValidationExceptionReason",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                },
+                "fieldList": {
+                    "target": "com.amazonaws.videoanalytics#ValidationExceptionFieldList"
+                }
+            },
+            "traits": {
+                "smithy.api#error": "client",
+                "smithy.api#httpError": 400
+            }
+        },
+        "com.amazonaws.videoanalytics#ValidationExceptionField": {
+            "type": "structure",
+            "members": {
+                "name": {
+                    "target": "smithy.api#String",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                },
+                "message": {
+                    "target": "smithy.api#String",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                }
+            }
+        },
+        "com.amazonaws.videoanalytics#ValidationExceptionFieldList": {
+            "type": "list",
+            "member": {
+                "target": "com.amazonaws.videoanalytics#ValidationExceptionField"
+            }
+        },
+        "com.amazonaws.videoanalytics#ValidationExceptionReason": {
+            "type": "enum",
+            "members": {
+                "UNKNOWN_OPERATION": {
+                    "target": "smithy.api#Unit",
+                    "traits": {
+                        "smithy.api#enumValue": "unknownOperation"
+                    }
+                },
+                "CANNOT_PARSE": {
+                    "target": "smithy.api#Unit",
+                    "traits": {
+                        "smithy.api#enumValue": "cannotParse"
+                    }
+                },
+                "FIELD_VALIDATION_FAILED": {
+                    "target": "smithy.api#Unit",
+                    "traits": {
+                        "smithy.api#enumValue": "fieldValidationFailed"
+                    }
+                },
+                "OTHER": {
+                    "target": "smithy.api#Unit",
+                    "traits": {
+                        "smithy.api#enumValue": "other"
+                    }
+                }
+            }
+        },
+        "com.amazonaws.videoanalytics.videologistics#VideoAnalytic": {
+            "type": "service",
+            "version": "2024-10-18",
+            "traits": {
+                "aws.protocols#restJson1": {},
+                "smithy.api#title": "Video Analytic Guidance Solution - Video Logistics"
+            }
+        }
+    }
+}
