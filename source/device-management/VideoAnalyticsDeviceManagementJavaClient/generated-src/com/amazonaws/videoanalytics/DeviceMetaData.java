@@ -52,7 +52,7 @@ import com.amazonaws.JSON;
  */
 @lombok.Builder
 @lombok.AllArgsConstructor
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-10-28T21:16:17.605797Z[UTC]", comments = "Generator version: 7.8.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-10-29T21:30:28.953926Z[UTC]", comments = "Generator version: 7.8.0")
 public class DeviceMetaData {
   public static final String SERIALIZED_NAME_MANUFACTURER = "manufacturer";
   @SerializedName(SERIALIZED_NAME_MANUFACTURER)
@@ -78,9 +78,9 @@ public class DeviceMetaData {
   @SerializedName(SERIALIZED_NAME_FIRMWARE_VERSION)
   private String firmwareVersion;
 
-  public static final String SERIALIZED_NAME_FATHOM_SDK_VERSION = "fathomSdkVersion";
-  @SerializedName(SERIALIZED_NAME_FATHOM_SDK_VERSION)
-  private String fathomSdkVersion;
+  public static final String SERIALIZED_NAME_SDK_VERSION = "sdkVersion";
+  @SerializedName(SERIALIZED_NAME_SDK_VERSION)
+  private String sdkVersion;
 
   public static final String SERIALIZED_NAME_AI_MODEL_VERSION = "aiModelVersion";
   @SerializedName(SERIALIZED_NAME_AI_MODEL_VERSION)
@@ -211,22 +211,22 @@ public class DeviceMetaData {
   }
 
 
-  public DeviceMetaData fathomSdkVersion(String fathomSdkVersion) {
-    this.fathomSdkVersion = fathomSdkVersion;
+  public DeviceMetaData sdkVersion(String sdkVersion) {
+    this.sdkVersion = sdkVersion;
     return this;
   }
 
   /**
-   * Get fathomSdkVersion
-   * @return fathomSdkVersion
+   * Get sdkVersion
+   * @return sdkVersion
    */
   @javax.annotation.Nullable
-  public String getFathomSdkVersion() {
-    return fathomSdkVersion;
+  public String getSdkVersion() {
+    return sdkVersion;
   }
 
-  public void setFathomSdkVersion(String fathomSdkVersion) {
-    this.fathomSdkVersion = fathomSdkVersion;
+  public void setSdkVersion(String sdkVersion) {
+    this.sdkVersion = sdkVersion;
   }
 
 
@@ -303,7 +303,7 @@ public class DeviceMetaData {
         Objects.equals(this.ipAddress, deviceMetaData.ipAddress) &&
         Objects.equals(this.aiChipset, deviceMetaData.aiChipset) &&
         Objects.equals(this.firmwareVersion, deviceMetaData.firmwareVersion) &&
-        Objects.equals(this.fathomSdkVersion, deviceMetaData.fathomSdkVersion) &&
+        Objects.equals(this.sdkVersion, deviceMetaData.sdkVersion) &&
         Objects.equals(this.aiModelVersion, deviceMetaData.aiModelVersion) &&
         Objects.equals(this.aiSdkVersion, deviceMetaData.aiSdkVersion) &&
         Objects.equals(this.deviceStatus, deviceMetaData.deviceStatus);
@@ -311,7 +311,7 @@ public class DeviceMetaData {
 
   @Override
   public int hashCode() {
-    return Objects.hash(manufacturer, model, mac, ipAddress, aiChipset, firmwareVersion, fathomSdkVersion, aiModelVersion, aiSdkVersion, deviceStatus);
+    return Objects.hash(manufacturer, model, mac, ipAddress, aiChipset, firmwareVersion, sdkVersion, aiModelVersion, aiSdkVersion, deviceStatus);
   }
 
   @Override
@@ -324,7 +324,7 @@ public class DeviceMetaData {
     sb.append("    ipAddress: ").append(toIndentedString(ipAddress)).append("\n");
     sb.append("    aiChipset: ").append(toIndentedString(aiChipset)).append("\n");
     sb.append("    firmwareVersion: ").append(toIndentedString(firmwareVersion)).append("\n");
-    sb.append("    fathomSdkVersion: ").append(toIndentedString(fathomSdkVersion)).append("\n");
+    sb.append("    sdkVersion: ").append(toIndentedString(sdkVersion)).append("\n");
     sb.append("    aiModelVersion: ").append(toIndentedString(aiModelVersion)).append("\n");
     sb.append("    aiSdkVersion: ").append(toIndentedString(aiSdkVersion)).append("\n");
     sb.append("    deviceStatus: ").append(toIndentedString(deviceStatus)).append("\n");
@@ -356,7 +356,7 @@ public class DeviceMetaData {
     openapiFields.add("ipAddress");
     openapiFields.add("aiChipset");
     openapiFields.add("firmwareVersion");
-    openapiFields.add("fathomSdkVersion");
+    openapiFields.add("sdkVersion");
     openapiFields.add("aiModelVersion");
     openapiFields.add("aiSdkVersion");
     openapiFields.add("deviceStatus");
@@ -405,8 +405,8 @@ public class DeviceMetaData {
       if ((jsonObj.get("firmwareVersion") != null && !jsonObj.get("firmwareVersion").isJsonNull()) && !jsonObj.get("firmwareVersion").isJsonPrimitive()) {
         throw new IllegalArgumentException(String.format("Expected the field `firmwareVersion` to be a primitive type in the JSON string but got `%s`", jsonObj.get("firmwareVersion").toString()));
       }
-      if ((jsonObj.get("fathomSdkVersion") != null && !jsonObj.get("fathomSdkVersion").isJsonNull()) && !jsonObj.get("fathomSdkVersion").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `fathomSdkVersion` to be a primitive type in the JSON string but got `%s`", jsonObj.get("fathomSdkVersion").toString()));
+      if ((jsonObj.get("sdkVersion") != null && !jsonObj.get("sdkVersion").isJsonNull()) && !jsonObj.get("sdkVersion").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format("Expected the field `sdkVersion` to be a primitive type in the JSON string but got `%s`", jsonObj.get("sdkVersion").toString()));
       }
       if ((jsonObj.get("aiModelVersion") != null && !jsonObj.get("aiModelVersion").isJsonNull()) && !jsonObj.get("aiModelVersion").isJsonPrimitive()) {
         throw new IllegalArgumentException(String.format("Expected the field `aiModelVersion` to be a primitive type in the JSON string but got `%s`", jsonObj.get("aiModelVersion").toString()));
