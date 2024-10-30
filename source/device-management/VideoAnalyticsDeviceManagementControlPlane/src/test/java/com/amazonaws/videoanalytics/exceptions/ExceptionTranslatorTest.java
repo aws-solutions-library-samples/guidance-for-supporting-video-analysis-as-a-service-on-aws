@@ -1,12 +1,8 @@
 package com.amazonaws.videoanalytics.exceptions;
 
-import com.amazonaws.ApiException;
-import com.amazonaws.videoanalytics.exceptions.VideoAnalyticsExceptionMessage;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
-import software.amazon.awssdk.services.iot.model.ConflictingResourceUpdateException;
 import software.amazon.awssdk.services.iot.model.DeleteConflictException;
-import software.amazon.awssdk.services.iot.model.InternalException;
 import software.amazon.awssdk.services.iot.model.InternalFailureException;
 import software.amazon.awssdk.services.iot.model.InvalidRequestException;
 import software.amazon.awssdk.services.iot.model.IotException;
@@ -19,85 +15,86 @@ import software.amazon.awssdk.services.iot.model.UnauthorizedException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static com.amazonaws.videoanalytics.utils.TestConstants.REQUEST_ID;
 
 public class ExceptionTranslatorTest {
     @Test
-    public void translateIotExceptionToApiException_WhenInvalidRequestException_ThrowsInvalidInputException() {
+    public void translateIotExceptionToRuntimeException_WhenInvalidRequestException_ThrowsInvalidInputException() {
         InvalidRequestException iotException = InvalidRequestException.builder().build();
-        ApiException exception = assertThrows(ApiException.class, () -> {
-            ExceptionTranslator.translateIotExceptionToApiException(iotException);
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            ExceptionTranslator.translateIotExceptionToRuntimeException(iotException, REQUEST_ID);
         });
-        assertEquals(exception.getCode(), 400);
+        assertTrue(exception.getMessage().contains("400"));
         assertTrue(exception.getMessage().contains(VideoAnalyticsExceptionMessage.INVALID_INPUT_EXCEPTION));
     }
 
     @Test
-    public void translateIotExceptionToApiException_WhenResourceNotFoundException_ThrowsResourceNotFoundException() {
+    public void translateIotExceptionToRuntimeException_WhenResourceNotFoundException_ThrowsResourceNotFoundException() {
         ResourceNotFoundException iotException = ResourceNotFoundException.builder().build();
-        ApiException exception = assertThrows(ApiException.class, () -> {
-            ExceptionTranslator.translateIotExceptionToApiException(iotException);
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            ExceptionTranslator.translateIotExceptionToRuntimeException(iotException, REQUEST_ID);
         });
-        assertEquals(exception.getCode(), 404);
+        assertTrue(exception.getMessage().contains("404"));
         assertTrue(exception.getMessage().contains(VideoAnalyticsExceptionMessage.RESOURCE_NOT_FOUND));
     }
 
     @Test
-    public void translateIotExceptionToApiException_WhenUnauthorizedException_ThrowsUnauthorizedException() {
+    public void translateIotExceptionToRuntimeException_WhenUnauthorizedException_ThrowsUnauthorizedException() {
         UnauthorizedException iotException = UnauthorizedException.builder().build();
-        ApiException exception = assertThrows(ApiException.class, () -> {
-            ExceptionTranslator.translateIotExceptionToApiException(iotException);
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            ExceptionTranslator.translateIotExceptionToRuntimeException(iotException, REQUEST_ID);
         });
-        assertEquals(exception.getCode(), 403);
+        assertTrue(exception.getMessage().contains("403"));
         assertTrue(exception.getMessage().contains(VideoAnalyticsExceptionMessage.UNAUTHORIZED_EXCEPTION));
     }
 
     @Test
-    public void translateIotExceptionToApiException_WhenThrottlingException_ThrowsThrottlingException() {
+    public void translateIotExceptionToRuntimeException_WhenThrottlingException_ThrowsThrottlingException() {
         ThrottlingException iotException = ThrottlingException.builder().build();
-        ApiException exception = assertThrows(ApiException.class, () -> {
-            ExceptionTranslator.translateIotExceptionToApiException(iotException);
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            ExceptionTranslator.translateIotExceptionToRuntimeException(iotException, REQUEST_ID);
         });
-        assertEquals(exception.getCode(), 500);
+        assertTrue(exception.getMessage().contains("500"));
         assertTrue(exception.getMessage().contains(VideoAnalyticsExceptionMessage.THROTTLING_EXCEPTION));
     }
 
     @Test
-    public void translateIotExceptionToApiException_WhenInternalFailureException_ThrowsInternalServerException() {
+    public void translateIotExceptionToRuntimeException_WhenInternalFailureException_ThrowsInternalServerException() {
         InternalFailureException iotException = InternalFailureException.builder().build();
-        ApiException exception = assertThrows(ApiException.class, () -> {
-            ExceptionTranslator.translateIotExceptionToApiException(iotException);
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            ExceptionTranslator.translateIotExceptionToRuntimeException(iotException, REQUEST_ID);
         });
-        assertEquals(exception.getCode(), 500);
+        assertTrue(exception.getMessage().contains("500"));
         assertTrue(exception.getMessage().contains(VideoAnalyticsExceptionMessage.INTERNAL_SERVER_EXCEPTION));
     }
 
     @Test
-    public void translateIotExceptionToApiException_WhenLimitExceededException_ThrowsLimitExceededException() {
+    public void translateIotExceptionToRuntimeException_WhenLimitExceededException_ThrowsLimitExceededException() {
         LimitExceededException iotException = LimitExceededException.builder().build();
-        ApiException exception = assertThrows(ApiException.class, () -> {
-            ExceptionTranslator.translateIotExceptionToApiException(iotException);
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            ExceptionTranslator.translateIotExceptionToRuntimeException(iotException, REQUEST_ID);
         });
-        assertEquals(exception.getCode(), 500);
+        assertTrue(exception.getMessage().contains("500"));
         assertTrue(exception.getMessage().contains(VideoAnalyticsExceptionMessage.LIMIT_EXCEEDED_EXCEPTION));
     }
 
     @Test
-    public void translateIotExceptionToApiException_WhenDeleteConflictException_ThrowsDeleteConflictException() {
+    public void translateIotExceptionToRuntimeException_WhenDeleteConflictException_ThrowsDeleteConflictException() {
         DeleteConflictException iotException = DeleteConflictException.builder().build();
-        ApiException exception = assertThrows(ApiException.class, () -> {
-            ExceptionTranslator.translateIotExceptionToApiException(iotException);
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            ExceptionTranslator.translateIotExceptionToRuntimeException(iotException, REQUEST_ID);
         });
-        assertEquals(exception.getCode(), 500);
+        assertTrue(exception.getMessage().contains("500"));
         assertTrue(exception.getMessage().contains(VideoAnalyticsExceptionMessage.DELETE_CONFLICT_EXCEPTION));
     }
 
     @Test
-    public void translateIotExceptionToApiException_WhenResourceAlreadyExistsException_ThrowsResourceAlreadyExistsException() {
+    public void translateIotExceptionToRuntimeException_WhenResourceAlreadyExistsException_ThrowsResourceAlreadyExistsException() {
         ResourceAlreadyExistsException iotException = ResourceAlreadyExistsException.builder().build();
-        ApiException exception = assertThrows(ApiException.class, () -> {
-            ExceptionTranslator.translateIotExceptionToApiException(iotException);
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            ExceptionTranslator.translateIotExceptionToRuntimeException(iotException, REQUEST_ID);
         });
-        assertEquals(exception.getCode(), 409);
+        assertTrue(exception.getMessage().contains("409"));
         assertTrue(exception.getMessage().contains(VideoAnalyticsExceptionMessage.RESOURCE_ALREADY_EXISTS));
     }
 
