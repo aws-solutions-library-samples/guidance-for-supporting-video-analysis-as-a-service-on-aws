@@ -20,7 +20,7 @@ import java.net.URI;
 import java.util.Map;
 import java.util.List;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-10-28T21:16:17.605797Z[UTC]", comments = "Generator version: 7.8.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-10-29T21:30:28.953926Z[UTC]", comments = "Generator version: 7.8.0")
 public class ApiKeyAuth implements Authentication {
   private final String location;
   private final String paramName;

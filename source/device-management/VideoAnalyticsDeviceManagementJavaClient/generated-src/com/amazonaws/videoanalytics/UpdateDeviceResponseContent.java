@@ -22,6 +22,7 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -53,7 +54,7 @@ import com.amazonaws.JSON;
  */
 @lombok.Builder
 @lombok.AllArgsConstructor
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-10-28T21:16:17.605797Z[UTC]", comments = "Generator version: 7.8.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-10-29T21:30:28.953926Z[UTC]", comments = "Generator version: 7.8.0")
 public class UpdateDeviceResponseContent {
   public static final String SERIALIZED_NAME_DEVICE_NAME = "deviceName";
   @SerializedName(SERIALIZED_NAME_DEVICE_NAME)
@@ -85,7 +86,7 @@ public class UpdateDeviceResponseContent {
 
   public static final String SERIALIZED_NAME_CREATED_AT = "createdAt";
   @SerializedName(SERIALIZED_NAME_CREATED_AT)
-  private Double createdAt;
+  private Date createdAt;
 
   public UpdateDeviceResponseContent() {
   }
@@ -239,7 +240,7 @@ public class UpdateDeviceResponseContent {
   }
 
 
-  public UpdateDeviceResponseContent createdAt(Double createdAt) {
+  public UpdateDeviceResponseContent createdAt(Date createdAt) {
     this.createdAt = createdAt;
     return this;
   }
@@ -249,11 +250,11 @@ public class UpdateDeviceResponseContent {
    * @return createdAt
    */
   @javax.annotation.Nullable
-  public Double getCreatedAt() {
+  public Date getCreatedAt() {
     return createdAt;
   }
 
-  public void setCreatedAt(Double createdAt) {
+  public void setCreatedAt(Date createdAt) {
     this.createdAt = createdAt;
   }
 

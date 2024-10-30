@@ -332,28 +332,6 @@ public class ApiClient {
     }
 
     /**
-     * <p>Set OffsetDateTimeFormat.</p>
-     *
-     * @param dateFormat a {@link java.time.format.DateTimeFormatter} object
-     * @return a {@link com.amazonaws.ApiClient} object
-     */
-    public ApiClient setOffsetDateTimeFormat(DateTimeFormatter dateFormat) {
-        JSON.setOffsetDateTimeFormat(dateFormat);
-        return this;
-    }
-
-    /**
-     * <p>Set LocalDateFormat.</p>
-     *
-     * @param dateFormat a {@link java.time.format.DateTimeFormatter} object
-     * @return a {@link com.amazonaws.ApiClient} object
-     */
-    public ApiClient setLocalDateFormat(DateTimeFormatter dateFormat) {
-        JSON.setLocalDateFormat(dateFormat);
-        return this;
-    }
-
-    /**
      * <p>Set LenientOnJson.</p>
      *
      * @param lenientOnJson a boolean
@@ -644,7 +622,7 @@ public class ApiClient {
     public String parameterToString(Object param) {
         if (param == null) {
             return "";
-        } else if (param instanceof Date || param instanceof OffsetDateTime || param instanceof LocalDate) {
+        } else if (param instanceof Date ) {
             //Serialize to json string and remove the " enclosing characters
             String jsonStr = JSON.serialize(param);
             return jsonStr.substring(1, jsonStr.length() - 1);

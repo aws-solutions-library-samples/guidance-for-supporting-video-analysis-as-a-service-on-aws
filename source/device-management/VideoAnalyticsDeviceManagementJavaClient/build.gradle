@@ -15,6 +15,7 @@ openApiGenerate {
     modelPackage = "com.amazonaws.videoanalytics"
     configOptions = [
         "additionalModelTypeAnnotations": "@lombok.Builder;@lombok.AllArgsConstructor",
+        "dateLibrary": "legacy"
     ]
 
     copy {
