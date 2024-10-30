@@ -1,6 +1,7 @@
 package com.amazonaws.videoanalytics.exceptions;
 
-import com.amazonaws.ApiException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import software.amazon.awssdk.services.iot.model.CertificateStateException;
 import software.amazon.awssdk.services.iot.model.ConflictingResourceUpdateException;
 import software.amazon.awssdk.services.iot.model.DeleteConflictException;
@@ -25,30 +26,51 @@ import static com.amazonaws.videoanalytics.exceptions.VideoAnalyticsExceptionMes
 import static com.amazonaws.videoanalytics.exceptions.VideoAnalyticsExceptionMessage.THROTTLING_EXCEPTION;
 import static com.amazonaws.videoanalytics.exceptions.VideoAnalyticsExceptionMessage.UNAUTHORIZED_EXCEPTION;
 
-public class ExceptionTranslator {
+import java.util.HashMap;
+import java.util.Map;
 
-    public static Exception translateIotExceptionToApiException(final IotException e) throws ApiException {
+import com.fasterxml.jackson.core.JsonProcessingException;
+
+public class ExceptionTranslator {
+    // Followed for below link for error handling
+    // https://aws.amazon.com/blogs/compute/error-handling-patterns-in-amazon-api-gateway-and-aws-lambda/
+    public static void translateIotExceptionToRuntimeException(final IotException e, String requestId) throws RuntimeException{
         if (e instanceof InvalidRequestException) {
-            throw new ApiException(400, INVALID_INPUT_EXCEPTION);
+            throw new RuntimeException(buildErrorPayload(400, INVALID_INPUT_EXCEPTION, requestId));
         } else if (e instanceof ResourceNotFoundException) {
-            throw new ApiException(404, RESOURCE_NOT_FOUND);
+            throw new RuntimeException(buildErrorPayload(404, RESOURCE_NOT_FOUND, requestId));
         } else if (e instanceof UnauthorizedException || e.statusCode() == 403) {
-            throw new ApiException(403, UNAUTHORIZED_EXCEPTION);
+            throw new RuntimeException(buildErrorPayload(403, UNAUTHORIZED_EXCEPTION, requestId));
         } else if (e instanceof ThrottlingException) {
-            throw new ApiException(500, THROTTLING_EXCEPTION);
+            throw new RuntimeException(buildErrorPayload(500, THROTTLING_EXCEPTION, requestId));
         } else if (e instanceof InternalFailureException |
                 e instanceof ServiceUnavailableException |
                 e instanceof CertificateStateException) {
-            throw new ApiException(500, INTERNAL_SERVER_EXCEPTION);
+            throw new RuntimeException(buildErrorPayload(500, INTERNAL_SERVER_EXCEPTION, requestId));
         } else if (e instanceof LimitExceededException) {
-            throw new ApiException(500, LIMIT_EXCEEDED_EXCEPTION);
+            throw new RuntimeException(buildErrorPayload(500, LIMIT_EXCEEDED_EXCEPTION, requestId));
         } else if (e instanceof DeleteConflictException) {
-            throw new ApiException(500, DELETE_CONFLICT_EXCEPTION);
+            throw new RuntimeException(buildErrorPayload(500, DELETE_CONFLICT_EXCEPTION, requestId));
         } else if (e instanceof ResourceAlreadyExistsException) {
-            throw new ApiException(409, RESOURCE_ALREADY_EXISTS);
+            throw new RuntimeException(buildErrorPayload(409, RESOURCE_ALREADY_EXISTS, requestId));
         } else {
-            throw new ApiException(500, INTERNAL_SERVER_EXCEPTION);
+            throw new RuntimeException(buildErrorPayload(500, INTERNAL_SERVER_EXCEPTION, requestId));
         }
+    }
+
+    public static String buildErrorPayload(int errorCode, String errorMsg, String requestId) {
+        Map<String, Object> errorPayload = new HashMap();
+        errorPayload.put("httpStatus", errorCode);
+        errorPayload.put("requestId", requestId);
+        errorPayload.put("message", errorMsg);
+        String message;
+        try {
+            message = new ObjectMapper().writeValueAsString(errorPayload);
+        } catch (JsonProcessingException e) {
+            message = "";
+        }
+
+        return message;
     }
 
     // Used for checking if a lambda handler should retry after an IotException is thrown

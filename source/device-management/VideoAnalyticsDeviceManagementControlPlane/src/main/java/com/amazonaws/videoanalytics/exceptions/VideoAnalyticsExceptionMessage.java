@@ -12,6 +12,7 @@ public class VideoAnalyticsExceptionMessage {
     public static final String DELETE_CONFLICT_EXCEPTION = "Resources attached to a policy has not been fully cleaned up. " +
             "Therefore, Video Analytics Device Management fails to delete the device";
     public static final String IOT_SERVICE_RETRYABLE = "Retryable IoT error, retrying.";
+    public static final String JSON_PROCESSING_EXCEPTION = "JSON processing exception thrown, fix JSON content.";
     
     private VideoAnalyticsExceptionMessage() {
         // Private default constructor so that JaCoCo marks utility class as covered

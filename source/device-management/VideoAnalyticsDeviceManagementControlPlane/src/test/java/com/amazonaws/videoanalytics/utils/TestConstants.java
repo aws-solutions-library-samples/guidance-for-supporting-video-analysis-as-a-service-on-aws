@@ -2,12 +2,14 @@ package com.amazonaws.videoanalytics.utils;
 
 public final class TestConstants {
     public static final String MOCK_AWS_REGION = "mock-region-value";
+    public static final String REQUEST_ID = "12345678-abcd-8765-dcba-1234abcd5678";
 
     public static final String AI_CHIP_SET_VALUE = "novatek";
     public static final String AI_MODEL_VERSION_VALUE = "0.0.1";
     public static final String AI_SDK_VERSION_VALUE = "0.1.0";
     public static final String DEVICE_ID = "11111111111";
     public static final String DEVICE_TYPE_NAME = "TestThingTypeName";
+    public static final String DEVICE_GROUP_ID = "4321dcba-8765-dcba-4321dcba8765";
     public static final String FIRMWARE_VERSION_VALUE = "20230331 1.0.1";
     public static final String MAC_VALUE = "11::22::33::44::55::66";
     public static final String MANUFACTURER_VALUE = "VHT";
