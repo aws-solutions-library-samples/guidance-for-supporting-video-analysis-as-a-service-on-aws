@@ -52,13 +52,17 @@ export const VIDEO_TIMELINE_SK_NAME = "UnitTimestamp";
 export const VIDEO_TIMELINE_TTL_ATTRIBUTE_NAME = "ExpirationTimestamp";
 export const RAW_VIDEO_TIMELINE_SORT_KEY_NAME = "Timestamp";
 export const TIMELINE_BUCKET_NAME = "videoanalytics-timeline-bucket";
+// TODO: Update handler to match new lambda handler path
 export const DENSITY_UPDATE_LAMBDA_HANDLER_PATH =
   "com.amazon.awsvideoanalyticsvlcontrolplane.timeline.VideoDensityUpdateLambda::handleRequest";
 export const EXPORT_LAMBDA_HANDLER_PATH =
   "com.amazon.awsvideoanalyticsvlcontrolplane.timeline.VideoTimelineS3ExportLambda::handleRequest";
-
+export const LAMBDA_SERVICE_PRINCIPAL = 'lambda.amazonaws.com';
+export const LAMBDA_MANAGED_POLICY_NAME = 'service-role/AWSLambdaBasicExecutionRole';
+// TODO: Update handler to match new lambda handler path
 export const TIMELINE_FORWARDER_HANDLER_PATH =
+  'com.amazon.awsvideoanalyticsvlcontrolplane.timeline.TimelineForwarderLambda::handleRequest';
+export const LAMBDA_PACKAGE_NAME = 'AWSVideoAnalyticsVLControlPlane-1.0';
   "com.amazon.awsvideoanalyticsvlcontrolplane.timeline.TimelineForwarderLambda::handleRequest";
-export const LAMBDA_PACKAGE_NAME = "AWSVideoanalyticsVLControlPlane-1.0";
 // TODO: Update this once the VL's code asset path is updated
-export const LAMBDA_ASSET_PATH = "../../lambda/videologicstics-assets/";
+export const LAMBDA_ASSET_PATH = '../../../assets/lambda-built/videologicstics-assets/';
