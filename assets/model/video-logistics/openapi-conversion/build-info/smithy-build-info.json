@@ -1,6 +1,8 @@
 {
     "metadata": {},
-    "operationShapeIds": [],
+    "operationShapeIds": [
+        "com.amazonaws.videoanalytics.videologistics#CreateLivestreamSession"
+    ],
     "projection": {
         "abstract": false,
         "imports": [],
@@ -15,7 +17,9 @@
         "transforms": []
     },
     "projectionName": "openapi-conversion",
-    "resourceShapeIds": [],
+    "resourceShapeIds": [
+        "com.amazonaws.videoanalytics.videologistics#LivestreamSession"
+    ],
     "serviceShapeIds": [
         "com.amazonaws.videoanalytics.videologistics#VideoAnalytic"
     ],
@@ -142,12 +146,16 @@
         "smithy.api#enumValue",
         "smithy.api#error",
         "smithy.api#externalDocumentation",
+        "smithy.api#http",
         "smithy.api#httpError",
+        "smithy.api#idempotent",
         "smithy.api#idRef",
+        "smithy.api#input",
         "smithy.api#internal",
         "smithy.api#length",
         "smithy.api#mixin",
         "smithy.api#notProperty",
+        "smithy.api#output",
         "smithy.api#pattern",
         "smithy.api#private",
         "smithy.api#protocolDefinition",

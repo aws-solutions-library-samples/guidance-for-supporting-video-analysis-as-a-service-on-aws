@@ -3,5 +3,207 @@
     "info": {
         "title": "Video Analytic Guidance Solution - Video Logistics",
         "version": "2024-10-18"
+    },
+    "paths": {
+        "/create-livestream-session": {
+            "post": {
+                "operationId": "CreateLivestreamSession",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateLivestreamSessionRequestContent"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "CreateLivestreamSession 200 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CreateLivestreamSessionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "ValidationException 400 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "ResourceNotFoundException 404 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResourceNotFoundExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "InternalServerException 500 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InternalServerExceptionResponseContent"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "CreateLivestreamSessionRequestContent": {
+                "type": "object",
+                "properties": {
+                    "deviceId": {
+                        "type": "string",
+                        "maxLength": 128,
+                        "minLength": 1,
+                        "pattern": "^[a-zA-Z0-9:_\\-]+$"
+                    },
+                    "clientId": {
+                        "type": "string",
+                        "maxLength": 256,
+                        "minLength": 1
+                    },
+                    "temporaryUseSyncProcessing": {
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "deviceId"
+                ]
+            },
+            "CreateLivestreamSessionResponseContent": {
+                "type": "object",
+                "properties": {
+                    "sessionId": {
+                        "type": "string",
+                        "maxLength": 128,
+                        "minLength": 1
+                    },
+                    "clientId": {
+                        "type": "string",
+                        "maxLength": 256,
+                        "minLength": 1
+                    },
+                    "iceServers": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/IceServer"
+                        }
+                    },
+                    "signalingChannelURL": {
+                        "type": "string"
+                    }
+                }
+            },
+            "IceServer": {
+                "type": "object",
+                "properties": {
+                    "password": {
+                        "type": "string"
+                    },
+                    "ttl": {
+                        "type": "number",
+                        "format": "float"
+                    },
+                    "uris": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "maxLength": 100,
+                            "minLength": 1
+                        },
+                        "maxItems": 100,
+                        "minItems": 1,
+                        "uniqueItems": true
+                    },
+                    "username": {
+                        "type": "string"
+                    }
+                }
+            },
+            "InternalServerExceptionResponseContent": {
+                "type": "object",
+                "properties": {
+                    "message": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "message"
+                ]
+            },
+            "ResourceNotFoundExceptionResponseContent": {
+                "type": "object",
+                "properties": {
+                    "message": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "message"
+                ]
+            },
+            "ValidationExceptionField": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "message": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "message",
+                    "name"
+                ]
+            },
+            "ValidationExceptionReason": {
+                "type": "string",
+                "enum": [
+                    "unknownOperation",
+                    "cannotParse",
+                    "fieldValidationFailed",
+                    "other"
+                ]
+            },
+            "ValidationExceptionResponseContent": {
+                "type": "object",
+                "properties": {
+                    "message": {
+                        "type": "string"
+                    },
+                    "reason": {
+                        "$ref": "#/components/schemas/ValidationExceptionReason"
+                    },
+                    "fieldList": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ValidationExceptionField"
+                        }
+                    }
+                },
+                "required": [
+                    "message",
+                    "reason"
+                ]
+            }
+        }
     }
 }
