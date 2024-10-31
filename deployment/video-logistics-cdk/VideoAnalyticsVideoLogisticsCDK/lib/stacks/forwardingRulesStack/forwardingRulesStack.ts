@@ -1,34 +1,21 @@
-import { AWSRegion, createTable } from "video_analytics_common_construct";
-import type { Construct } from "constructs";
-import * as cdk from "aws-cdk-lib";
-import { LogGroup, RetentionDays } from "aws-cdk-lib/aws-logs";
-import { Duration, StackProps } from "aws-cdk-lib";
+import { Duration, Fn, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
+import { BlockPublicAccess, Bucket, ObjectOwnership } from 'aws-cdk-lib/aws-s3';
+import { LogGroup, RetentionDays } from 'aws-cdk-lib/aws-logs';
+import { AttributeType, BillingMode, StreamViewType } from 'aws-cdk-lib/aws-dynamodb';
+import { Code, EventSourceMapping, Function, IFunction, Runtime } from 'aws-cdk-lib/aws-lambda';
+import { Effect, ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import { Key } from 'aws-cdk-lib/aws-kms';
+import { Queue, QueueEncryption } from 'aws-cdk-lib/aws-sqs';
+import { AWSRegion, createTable } from 'video_analytics_common_construct';
+import { Construct } from 'constructs';
 import {
   FORWARDING_RULES_BUCKET_NAME,
   FORWARDING_RULES_PK_NAME,
   FORWARDING_RULES_SK_NAME,
   FORWARDING_RULES_SQS_QUEUE_NAME,
   FORWARDING_RULES_TABLE_NAME,
-  LAMBDA_ASSET_PATH,
-} from "../const";
-import type { IFunction } from "aws-cdk-lib/aws-lambda";
-import {
-  Code,
-  EventSourceMapping,
-  Function,
-  Runtime,
-} from "aws-cdk-lib/aws-lambda";
-import {
-  Effect,
-  ManagedPolicy,
-  PolicyStatement,
-  Role,
-  ServicePrincipal,
-} from "aws-cdk-lib/aws-iam";
-import { Key } from "aws-cdk-lib/aws-kms";
-import { Queue, QueueEncryption } from "aws-cdk-lib/aws-sqs";
-import type { AttributeType } from "aws-cdk-lib/aws-dynamodb";
-import { BillingMode, StreamViewType } from "aws-cdk-lib/aws-dynamodb";
+  LAMBDA_ASSET_PATH
+} from '../const';
 
 export interface ForwardingRulesProps extends StackProps {
   region: AWSRegion;
@@ -38,7 +25,7 @@ export interface ForwardingRulesProps extends StackProps {
 /**
  * Stack to manage all resources needing to be created for Forwarding Rules
  */
-export class ForwardingRulesStack extends cdk.Stack {
+export class ForwardingRulesStack extends Stack {
   public readonly dataForwarderLambda: IFunction;
   constructor(scope: Construct, id: string, props: ForwardingRulesProps) {
     super(scope, id, props);
@@ -207,7 +194,7 @@ export class ForwardingRulesStack extends cdk.Stack {
 }
 
 function createForwardingRulesTable(
-  stack: cdk.Stack,
+  stack: Stack,
   tableName: string,
   partitionKeyName: string,
   sortKeyName: string | undefined,
