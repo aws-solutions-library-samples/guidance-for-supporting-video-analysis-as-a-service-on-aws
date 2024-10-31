@@ -17,6 +17,9 @@ pub struct Configurations {
     /// IoT Private Key Path
     #[serde(alias = "key_path")]
     pub key_path: String,
+    /// Role alias used for communicating with cloud
+    #[serde(alias = "role_alias")]
+    pub role_aliases: String,
     /// Region
     pub aws_region: String,
     /// Primary directory to be used.

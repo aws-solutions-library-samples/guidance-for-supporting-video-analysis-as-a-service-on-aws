@@ -59,5 +59,6 @@ This crate contains all rust crates related to building the edge process client.
 - `device-traits` is a supporting crate to enable local/remote communication.
 - `iot-connections` contains helper functions and utilities for publishing and parsing MQTT messages exchanged between cloud and edge.
 - `mqtt-client` is a wrapper over `rumqttc` which allows the edge process to communicate with AWS IoT.
+- `iot-client` is a wrapper over `aws-iot-sdk` which allows the edge processs to communicate with AWS IoT.
 
 Code Organization: TBD.

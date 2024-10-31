@@ -9,7 +9,7 @@
 
 use crate::utils::config::settings::Settings;
 use std::{env, io, path::PathBuf};
-use tracing::{debug};
+use tracing::debug;
 use tracing_appender::{non_blocking::WorkerGuard, rolling::hourly};
 use tracing_subscriber::{prelude::*, registry::LookupSpan, EnvFilter, Layer};
 
