@@ -52,3 +52,12 @@ This project contains the CDK code for deploying the Video Analytics Device Mana
 
 To remove the deployed resources:
 
+
+## Development Notes
+
+### Lambda Asset Locations
+The Device Managment Application Lambda compiled jar is expected to be located at:
+```
+guidance-for-video-analytics-infrastructure-on-aws/assets/lambda-built/device-management-assets
+```
+
