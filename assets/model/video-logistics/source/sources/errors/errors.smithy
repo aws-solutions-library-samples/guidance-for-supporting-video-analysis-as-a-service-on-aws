@@ -1,6 +1,6 @@
 $version: "2.0"
 
-namespace com.amazonaws.videoanalytics
+namespace com.amazonaws.videoanalytics.videologistics
 
 structure ValidationExceptionField {
     @required
