@@ -146,3 +146,13 @@ module.exports = {
   },
 };
 ```
+
+## Development Notes
+
+### Lambda Asset Locations
+The Sync Path Lambda or Application Lambda would be shared for Async workflow processing. The compiled jar is expected to be located at:
+```
+guidance-for-video-analytics-infrastructure-on-aws//assets/lambda-built/common-construct-assets/
+```
+
+

@@ -268,5 +268,4 @@ If you encounter issues with snapshot tests:
 2. Check that all dependencies are correctly installed and configured.
 3. Verify that your CDK stack is correctly implemented and creating resources as expected.
 4. If snapshots are consistently empty, review your stack implementation and consider adding specific resource assertions to your tests.
-
-Remember, snapshot tests are a powerful tool for catching unintended changes, but they should be used judiciously and in conjunction with other testing strategies.
+5. Always review the changes in the updated snapshot files (located in the `__snapshots__` directory) to ensure they match your expectations, and update the snapshot with command: `npm run test:update` if you have made intentional changes to the snapshot.

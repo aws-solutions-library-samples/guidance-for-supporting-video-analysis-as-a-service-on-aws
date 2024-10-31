@@ -185,14 +185,12 @@ export class Workflow extends Construct {
     const lambdaDirectory =
       props.workflowLambdaProps?.lambdaHandlerDirectory ?? DEFAULT_LAMBDA_HANDLER_DIRECTORY;
 
-    const lambdaAssetPath = path.join(__dirname, '..', 'lambda');
+    const lambdaAssetPath = path.join(__dirname, '../../../', 'lambda-built', lambdaName);
     let code: Code;
     if (fs.existsSync(lambdaAssetPath)) {
       code = Code.fromAsset(lambdaAssetPath);
     } else {
-      // For UT purposes, we'll use a placeholder location
-      console.log(`Using placeholder lambda code path: ${path.join(__dirname, './lambda/placeholder_lambda_code')}`);
-      code = Code.fromAsset(path.join(__dirname, './lambda/placeholder_lambda_code'));
+      code = Code.fromAsset(path.join(__dirname, '../../../../assets/lambda-built/common-construct-assets/'));
     }
 
     this.lambda = new Function(this, `${props.tableName}-StreamProcessor`, {
