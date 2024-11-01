@@ -1,0 +1,6 @@
+types/Livestream.smithy
+types/Common.smithy
+resources/LivestreamSession.smithy
+operations/LivestreamSession/CreateLivestreamSession.smithy
+video-analytic.smithy
+errors/errors.smithy

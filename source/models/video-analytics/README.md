@@ -1,4 +1,4 @@
-# VideoGuidance Solution Models [WIP]
+# VideoGuidance Solution Models - Video Logistics [WIP]
 Convert the Video Analytics smithy models into the [OpenAPI](https://spec.openapis.org/oas/latest.html) format.
 
 ## Build

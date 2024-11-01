@@ -9,12 +9,13 @@ openApiGenerate {
     delete "$rootDir/generated-src/"
     validateSpec = true
     generatorName = "java"
-    inputSpec = "$rootDir/../../../assets/model/openapi-conversion/openapi/VideoAnalytic.openapi.json"
+    inputSpec = "$rootDir/../../../assets/model/device-management/openapi-conversion/openapi/VideoAnalytic.openapi.json"
     cleanupOutput = true
     outputDir = "$buildDir/generated"
-    modelPackage = "com.amazonaws.videoanalytics"
+    modelPackage = "com.amazonaws.videoanalytics.devicemanagement"
     configOptions = [
         "additionalModelTypeAnnotations": "@lombok.Builder;@lombok.AllArgsConstructor",
+        "dateLibrary": "legacy"
     ]
 
     copy {
