@@ -143,8 +143,7 @@ impl IotCredentialProvider {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::constants::SIGV4_SIGNER;
-    use crate::iot::http::MockRequestHttp;
+    use crate::http::MockRequestHttp;
 
     const MOCK_CORRECT_IOT_RESPONSE: &str = r#"{"credentials":{"accessKeyId":"a","secretAccessKey":"b","sessionToken":"c","expiration":"2024-03-26T19:33:10Z"}}"#;
     const MOCK_ERROR_IOT_RESPONSE: &str = r#"{"message":"??????"}"#;
