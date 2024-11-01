@@ -1,3 +1,6 @@
+use crate::client::configuration::ConfigurationHelper;
+use crate::client::topics::TopicHelper;
+use crate::constants::{LOGGER_SETTINGS_FIELD, PROVISION_SHADOW_NAME};
 use async_trait::async_trait;
 use config::Config;
 use device_traits::connections::{
@@ -10,8 +13,13 @@ use mqtt_client::{
 };
 use rumqttc::LastWill;
 use serde_derive::Deserialize;
+use serde_json::Value;
 use std::{path::PathBuf, time::Duration};
-use tracing::instrument;
+use tracing::{info, instrument};
+
+mod configuration;
+///Helper methods for working with IoT topics.
+pub mod topics;
 
 /// Struct implements IotConnectionManager for MQTT with IoT
 #[derive(Debug, Clone, Deserialize)]
@@ -38,7 +46,25 @@ impl IotClientManager for IotMqttClientManager {
     /// Create a new mqtt client using customer certs and configurations
     #[instrument]
     async fn new_pub_sub_client(&self) -> anyhow::Result<AsyncPubSubClient> {
-        let mqtt_client = self.setup_mqtt_client(self.get_tls_credentials()).await?;
+        let mut mqtt_client = self.setup_mqtt_client(self.get_tls_credentials()).await?;
+        info!("MQTT client created");
+
+        // subscribe to delta, accepted, and rejected shadow topics for all named shadow
+        let shadows = &[PROVISION_SHADOW_NAME];
+
+        for shadow in shadows {
+            let topic_helper =
+                TopicHelper::new(self.client_id.to_owned(), Some(shadow.to_string()));
+
+            let shadow_accepted_topic = topic_helper.get_shadow_update_accepted();
+            let shadow_rejected_topic = topic_helper.get_shadow_update_rejected();
+            let shadow_delta_topic = topic_helper.get_shadow_update_delta_topic();
+
+            mqtt_client.subscribe(shadow_accepted_topic.as_str(), QoS::AtLeastOnce).await?;
+            mqtt_client.subscribe(shadow_rejected_topic.as_str(), QoS::AtLeastOnce).await?;
+            mqtt_client.subscribe(shadow_delta_topic.as_str(), QoS::AtLeastOnce).await?;
+        }
+
         Ok(mqtt_client)
     }
 
@@ -51,6 +77,20 @@ impl IotClientManager for IotMqttClientManager {
         let retain = false;
 
         Box::new(MqttMessage::new(topic, qos, payload, retain))
+    }
+
+    /// Checks if message is logger settings message
+    fn received_logger_settings_message(
+        &self,
+        msg: &(dyn PubSubMessage + Send + Sync),
+    ) -> Option<Value> {
+        let topic_helper =
+            TopicHelper::new(self.client_id.to_string(), Some(PROVISION_SHADOW_NAME.to_string()));
+        ConfigurationHelper::received_expected_shadow_message(
+            msg,
+            topic_helper.get_shadow_update_delta_topic(),
+            LOGGER_SETTINGS_FIELD,
+        )
     }
 }
 
@@ -131,6 +171,9 @@ impl ManagerLastWill {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::constants::STATE_SHADOW_FIELD;
+    use mqtt_client::builder::MQTTMessageBuilder;
+    use serde_json::json;
     const TEST_STR: &str = "Content of str does not matter.";
     const AWS_QOS: QoS = QoS::AtLeastOnce;
     const MQTT_QOS: rumqttc::QoS = rumqttc::QoS::AtLeastOnce;
@@ -182,6 +225,29 @@ mod tests {
         let mqtt_client_manager = get_mqtt_client_manager();
         let tls_credentials = mqtt_client_manager.get_tls_credentials();
         assert!(tls_credentials.is_some());
+    }
+
+    #[test]
+    fn received_logger_settings_message_test() {
+        let mqtt_client_manager = get_mqtt_client_manager();
+
+        let topic_helper =
+            TopicHelper::new(CLIENT_ID.to_string(), Some(PROVISION_SHADOW_NAME.to_string()));
+
+        let mut message_builder = MQTTMessageBuilder::new_pub_sub_message_builder();
+        message_builder.set_topic(topic_helper.get_shadow_update_delta_topic().as_str());
+
+        let settings = json!({"isEnabled": true, "syncFrequency": 300, "logLevel": "INFO"});
+        let payload = json!({ STATE_SHADOW_FIELD: { LOGGER_SETTINGS_FIELD: settings } });
+        let payload = serde_json::to_string::<Value>(&payload)
+            .expect("Issue formatting Json.  Invalid code change.");
+        message_builder.set_payload(payload);
+        let message = message_builder.build_box_message();
+
+        let received_settings =
+            mqtt_client_manager.received_logger_settings_message(message.as_ref());
+
+        assert_eq!(received_settings.unwrap(), settings);
     }
 
     /// Helper function to generate last will for tests.

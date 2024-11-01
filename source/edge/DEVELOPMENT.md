@@ -36,16 +36,18 @@ This crate uses the tracing crate for logging.  See the link for additional deta
 
 The logger is set through specific environment variables.
 
-The default behavior of the logger will be to log to the filesystem.  However, if the PRINT_LOGS_TO_TERMINAL environment variable is set to any non-null value the logs will print to the terminal.
+The default behavior of the logger will be to log to the filesystem.  However, if the `PRINT_LOGS_TO_TERMINAL` environment variable is set to any non-null value the logs will print to the terminal.
 
-The default log level is error but by setting the LOG_LEVEL environment variable the log level can be set with the following values:
-1. DEBUG
-2. INFO
-3. WARN
-4. ERROR (default, variable does not exist)
-5. OFF
+The default log level is error but by setting the `LOG_LEVEL` environment variable the log level can be set with the following values:
+1. `DEBUG`
+2. `INFO`
+3. `WARN`
+4. `ERROR` (default, variable does not exist)
+5. `OFF`
 
 See https://docs.rs/tracing/latest/tracing/struct.Level.html for more details.
+
+Set `LOG_SYNC` environment variable to `TRUE` if you want to enable the log sync feature(`export LOG_SYNC=TRUE`). The default value is `FALSE`. Also make sure `PRINT_LOGS_TO_TERMINAL` environment variable is unset. Log sync only happens for logs written to local log files - log sync will not sync logs printed to terminal. All logs from the edge process will be published to AWS CloudWatch if the value is set to `TRUE`.
 
 ### Formatter
 
