@@ -4,3 +4,7 @@ pub mod connections;
 pub mod constants;
 /// This module holds various utilities
 pub mod utils;
+/// This module handles dependency injection for log sync logic
+pub mod log_sync;
+/// This module handles dependency injection for log metadata storage
+pub mod data_storage;

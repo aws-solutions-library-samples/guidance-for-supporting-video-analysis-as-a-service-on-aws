@@ -1,0 +1,14 @@
+# Test + example config file for iot-connections
+ca_cert_path: "./files-for-integration-tests/integration-test-CA1.crt"
+pem_cert_path: "./files-for-integration-tests/integration-test.pem.crt"
+key_path: "./files-for-integration-tests/integration-test-private.pem.key"
+dir_path: "./files-for-integration-tests"
+client_id: "integration_test_client"
+aws_iot_endpoint: "foobar.iot.region.aws.com"
+last_will:
+  topic: "management/integration_test_client/connection"
+  payload: "\"state\":{\"reported\":{\"connection-status\":\"ungraceful-disconnected\"}}"
+  qos: "AtLeastOnce"
+  retain: false
+keep_alive_milli_sec: 10000
+mqtt_port: 8883

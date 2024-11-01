@@ -1,13 +1,37 @@
+use std::fmt::Debug;
 use async_trait::async_trait;
 use mockall::automock;
 use serde_derive::{Deserialize, Serialize};
-use serde_json::json;
+use serde_json::{json, Value};
 use std::sync::Arc;
 type BoxedMessage = Box<dyn PubSubMessage + Send + Sync>;
 /// Type to manage client that can be shared across awaits
 pub type AsyncPubSubClient = Box<dyn PubSubClient + Send + Sync>;
 /// Type to manage client manager that can be shared across awaits
 pub type AsyncIotClientManager = Box<dyn IotClientManager + Send + Sync>;
+
+/// Trait to manage shadow interactions.
+/// The struct implementing this trait will take in shadow messages from Cloud.
+/// Update the local copy of the shadow in the filesystem.
+/// The IotShadow manager should also add outgoing update messages to the channel.
+#[automock]
+#[async_trait]
+pub trait ShadowManager {
+    /// Update the reported state in the shadow.
+    /// Success means the local state has been updated + a message was passed to the MQTT client.
+    /// The cloud may not receive the update until device connects.
+    async fn update_reported_state(&mut self, update_doc: Value) -> anyhow::Result<()>;
+    /// Update the desired state in the shadow.  This should come from cloud based messages.
+    /// Success means the local state has been updated + a message was passed to the MQTT client.
+    /// The cloud may not receive the update until device connects.
+    async fn update_desired_state(&mut self, update_doc: Value) -> anyhow::Result<()>;
+
+    /// Get the list of topics the MQTT client must subscribe to receive shadow messages from the cloud.
+    fn get_shadow_topics(&self) -> Vec<(String, QoS)>;
+    /// Turn on local storage of Shadow's desired state set by the cloud.  This is used to
+    /// restore a device to the last instructed state in the event of a restart while disconnected from the cloud.
+    async fn enable_storage(&mut self) -> anyhow::Result<()>;
+}
 
 /// Trait to manage IoT connections for edge process
 /// This trait can be used to manage certificates + create pub-sub clients + create pub-sub messages
@@ -18,11 +42,16 @@ pub trait IotClientManager {
     async fn new_pub_sub_client(&self) -> anyhow::Result<AsyncPubSubClient>;
     /// Create a new pub sub message for IoT communication.
     fn new_pub_sub_message(&self) -> Box<dyn PubSubMessage + Send + Sync>;
+    /// Received logger settings message from cloud
+    fn received_logger_settings_message(
+        &self,
+        msg: &(dyn PubSubMessage + Send + Sync),
+    ) -> Option<Value>;
 }
 
 #[async_trait]
 /// PubSubClient trait can be implemented by any Client which implements a pubsub format.
-pub trait PubSubClient {
+pub trait PubSubClient: Debug {
     /// subscribe to the given mqtt topic given the qos
     async fn subscribe(&mut self, topic: &str, qos: QoS) -> anyhow::Result<()>;
     /// subscribe to the given mqtt topic

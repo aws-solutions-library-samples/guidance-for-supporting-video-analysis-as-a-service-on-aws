@@ -8,6 +8,7 @@
 // Example of custom functionality https://burgers.io/custom-logging-in-rust-using-tracing
 
 use crate::utils::config::settings::Settings;
+use chrono::{DateTime, Datelike, Duration, NaiveDate, Timelike, Utc};
 use std::{env, io, path::PathBuf};
 use tracing::{debug};
 use tracing_appender::{non_blocking::WorkerGuard, rolling::hourly};
@@ -51,6 +52,58 @@ pub async fn init_tracing(settings: &Settings) -> Option<WorkerGuard> {
 
     //Return guard or output to the log-files will stop.
     _guard
+}
+
+pub fn match_log_level(log_level: String) -> u8 {
+    if log_level.contains("ERROR") {
+        3
+    } else if log_level.contains("WARN") {
+        2
+    } else if log_level.contains("INFO") {
+        1
+    } else {
+        0
+    }
+}
+
+pub fn is_log_eligible(log_level: String, required_log_level: u8) -> bool {
+    let current_log_level: u8 = match_log_level(log_level);
+    debug!("Current log level is: {:?}", current_log_level);
+    debug!("Required log level is: {:?}", required_log_level);
+    current_log_level >= required_log_level
+}
+
+pub fn construct_current_log_name() -> String {
+    let current_time = Utc::now();
+    let year = current_time.year();
+    let month = current_time.month();
+    let day = current_time.day();
+    let hour = current_time.hour();
+
+    format!("{}.{:04}-{:02}-{:02}-{:02}", LOG_FILE_PREFIX, year, month, day, hour)
+}
+
+pub fn get_next_log_name(current_log_name: &String) -> String {
+    let input_log_date = current_log_name.split('.').nth(1).unwrap_or("").to_string();
+    let date_vec: Vec<&str> = input_log_date.split('-').collect();
+    let hour: u32 = date_vec[3].parse().unwrap_or(0);
+    let day: u32 = date_vec[2].parse().unwrap_or(0);
+    let month: u32 = date_vec[1].parse().unwrap_or(0);
+    let year: u32 = date_vec[0].parse().unwrap_or(0);
+
+    let naive_date = NaiveDate::from_ymd_opt(year as i32, month, day).expect("Invalid date");
+    let naive_datetime = naive_date.and_hms_opt(hour, 0, 0).expect("Invalid time");
+    let datetime_utc: DateTime<Utc> = DateTime::from_utc(naive_datetime, Utc);
+    let next_datetime = datetime_utc + Duration::hours(1);
+
+    format!(
+        "{}.{:04}-{:02}-{:02}-{:02}",
+        LOG_FILE_PREFIX,
+        next_datetime.year(),
+        next_datetime.month(),
+        next_datetime.day(),
+        next_datetime.hour()
+    )
 }
 
 #[allow(dead_code)]
