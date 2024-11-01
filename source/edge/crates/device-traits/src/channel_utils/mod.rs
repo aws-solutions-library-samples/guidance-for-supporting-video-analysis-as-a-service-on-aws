@@ -1,7 +1,7 @@
 //! This module holds utilities to organize tokio channels
 //! By using static thread-safe objects we can make it easier for the various services in edge process to send messages to each other.
 use crate::channel_utils::global_settings::Configurations;
-use crate::channel_utils::traits::{IoTServiceSender, DeviceInformationSetup, IoTServiceSetup};
+use crate::channel_utils::traits::{DeviceInformationSetup, IoTServiceSender, IoTServiceSetup};
 use crate::{
     channel_utils::error::ChannelUtilError,
     connections::{PubSubMessage, PubSubMessageBuilder},

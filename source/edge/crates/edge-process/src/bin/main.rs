@@ -6,6 +6,10 @@ use edge_process::utils::{
 
 use device_traits::connections::PubSubClient;
 use edge_process::connections::aws_iot::{new_iot_shadow_manager, setup_and_start_iot_event_loop};
+use edge_process::constants::{
+    BUFFER_SIZE, IS_ENABLED, IS_STATUS_CHANGED, LOG_LEVEL, LOG_SYNC, PROVISION_SHADOW_NAME,
+    SYNC_FREQUENCY,
+};
 use edge_process::log_sync::log_sync::setup_and_start_log_sync_loop;
 use iot_connections::client::IotMqttClientManager;
 use once_cell::sync::Lazy;
@@ -17,7 +21,6 @@ use std::time::Duration;
 use tokio::sync::mpsc::channel;
 use tokio::time::sleep;
 use tokio::{select, try_join};
-use edge_process::constants::{BUFFER_SIZE, IS_ENABLED, IS_STATUS_CHANGED, LOG_LEVEL, LOG_SYNC, PROVISION_SHADOW_NAME, SYNC_FREQUENCY};
 use tracing::{debug, info};
 
 #[tokio::main]
@@ -50,7 +53,8 @@ async fn main() -> Result<ExitCode, Box<dyn Error>> {
         settings.get_client_id(),
         Some(PROVISION_SHADOW_NAME.to_string()),
         dir.to_owned(),
-    ).await;
+    )
+    .await;
 
     let (logger_config_tx, mut logger_config_rx) = channel::<String>(BUFFER_SIZE);
     let (log_tx, log_rx) = channel::<Value>(BUFFER_SIZE);
@@ -58,7 +62,7 @@ async fn main() -> Result<ExitCode, Box<dyn Error>> {
     static LOG_SYNC_STATUS: Lazy<Arc<Mutex<bool>>> = Lazy::new(|| Arc::new(Mutex::new(true)));
     static LOG_SYNC_LEVEL: Lazy<Arc<Mutex<String>>> =
         Lazy::new(|| Arc::new(Mutex::new("INFO".to_string())));
-    static LOG_SYNC_FREQUENCY: Lazy<Arc<Mutex<u64>>> = Lazy::new(|| Arc::new(Mutex::new(1)));
+    static LOG_SYNC_FREQUENCY: Lazy<Arc<Mutex<u64>>> = Lazy::new(|| Arc::new(Mutex::new(300)));
 
     let _config_join_handle = tokio::spawn(async move {
         loop {
@@ -72,17 +76,19 @@ async fn main() -> Result<ExitCode, Box<dyn Error>> {
                         }
                     */
                     if log_sync {
-                        let logger_settings_value: Value = serde_json::from_str(logger_settings.as_str()).unwrap();
-                        let logger_settings_object = logger_settings_value.as_object().unwrap();
+                        // LOG SYNC env variable is set to true, code has received new log settings from cloud
+                        // if we are unable to parse those settings, code should panic and stop
+                        let logger_settings_value: Value = serde_json::from_str(logger_settings.as_str()).expect("received invalid JSON for log sync settings");
+                        let logger_settings_object = logger_settings_value.as_object().expect("unable to parse log sync JSON as a map");
                         info!("Logger settings: {:?}", logger_settings_value);
 
                         let mut data = json!({});
                         data[IS_STATUS_CHANGED] = json!(false);
 
                         if !logger_settings_object.is_empty() {
-                            let mut global_sync_status = LOG_SYNC_STATUS.lock().unwrap();
-                            let mut global_sync_frequency = LOG_SYNC_FREQUENCY.lock().unwrap();
-                            let mut global_sync_level = LOG_SYNC_LEVEL.lock().unwrap();
+                            let mut global_sync_status = LOG_SYNC_STATUS.lock().expect("Global Logger Sync Setting is Poisoned");
+                            let mut global_sync_frequency = LOG_SYNC_FREQUENCY.lock().expect("Global Logger Frequency Setting is Poisoned");
+                            let mut global_sync_level = LOG_SYNC_LEVEL.lock().expect("Global Logger Level Setting is Poisoned");
                             if logger_settings_object.contains_key(IS_ENABLED) {
                                 let value = logger_settings_object.get(IS_ENABLED);
                                 *global_sync_status = value.expect("Can not get log sync status").as_bool().unwrap_or(true);
@@ -103,6 +109,7 @@ async fn main() -> Result<ExitCode, Box<dyn Error>> {
                             let sync_level = (*global_sync_level).clone();
                             data[LOG_LEVEL] = json!(sync_level);
                         }
+
                         let _ = log_tx.send(data.clone()).await;
 
                         let report_logger_settings = json!({"loggerSettings": logger_settings_value});
@@ -121,13 +128,13 @@ async fn main() -> Result<ExitCode, Box<dyn Error>> {
 
     let logger_config_tx_clone = logger_config_tx.clone();
 
-    let _iot_loop_handle =
-        setup_and_start_iot_event_loop(
-            &configurations,
-            logger_config_tx_clone,
-            pub_sub_client_manager,
-            iot_client
-        ).await?;
+    let _iot_loop_handle = setup_and_start_iot_event_loop(
+        &configurations,
+        logger_config_tx_clone,
+        pub_sub_client_manager,
+        iot_client,
+    )
+    .await?;
 
     let _log_loop_handle =
         setup_and_start_log_sync_loop(dir_path, local_log_file_path, log_rx).await?;

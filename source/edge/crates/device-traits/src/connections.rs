@@ -1,8 +1,8 @@
-use std::fmt::Debug;
 use async_trait::async_trait;
 use mockall::automock;
 use serde_derive::{Deserialize, Serialize};
 use serde_json::{json, Value};
+use std::fmt::Debug;
 use std::sync::Arc;
 type BoxedMessage = Box<dyn PubSubMessage + Send + Sync>;
 /// Type to manage client that can be shared across awaits

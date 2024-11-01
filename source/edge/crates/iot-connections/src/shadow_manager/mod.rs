@@ -341,8 +341,7 @@ mod tests {
         let mut named_shadow =
             get_iot_shadow_manager(THING_NAME, Some(SHADOW_NAME.to_owned()), None);
         let input_value = json!({"status":"enabled","connected":true});
-        let correct_output =
-            json!({"state":{"reported":{"status":"enabled","connected":true}}});
+        let correct_output = json!({"state":{"reported":{"status":"enabled","connected":true}}});
         named_shadow.reported_state = input_value.clone();
 
         let message = named_shadow.build_message_for_shadow_update(input_value).unwrap();
@@ -377,8 +376,7 @@ mod tests {
     #[tokio::test]
     async fn update_reported_state_test() {
         // Update and make sure the message is sent on the channel
-        let correct_payload =
-            json!({"state":{"reported":{"status":"enabled","connected":"true"}}});
+        let correct_payload = json!({"state":{"reported":{"status":"enabled","connected":"true"}}});
         let mut mock_sender = Box::new(MockIoTServiceSender::new());
         let _ = mock_sender
             .expect_send_iot_message()

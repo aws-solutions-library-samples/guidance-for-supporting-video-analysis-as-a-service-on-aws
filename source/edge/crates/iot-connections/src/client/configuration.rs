@@ -5,7 +5,6 @@ use device_traits::connections::PubSubClient;
 use device_traits::connections::PubSubMessage;
 use serde_json::Value;
 
-
 ///Helper class to aid in device configuration.
 #[derive(Debug)]
 pub struct ConfigurationHelper<'a> {

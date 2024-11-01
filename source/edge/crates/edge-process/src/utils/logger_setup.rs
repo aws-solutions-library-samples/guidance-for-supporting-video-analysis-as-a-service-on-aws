@@ -55,14 +55,11 @@ pub async fn init_tracing(settings: &Settings) -> Option<WorkerGuard> {
 }
 
 pub fn match_log_level(log_level: String) -> u8 {
-    if log_level.contains("ERROR") {
-        3
-    } else if log_level.contains("WARN") {
-        2
-    } else if log_level.contains("INFO") {
-        1
-    } else {
-        0
+    match log_level.as_str() {
+        "ERROR" => 3,
+        "WARN" => 2,
+        "INFO" => 1,
+        _ => 0,
     }
 }
 

@@ -1,3 +1,6 @@
+use crate::client::configuration::ConfigurationHelper;
+use crate::client::topics::TopicHelper;
+use crate::constants::{LOGGER_SETTINGS_FIELD, PROVISION_SHADOW_NAME};
 use async_trait::async_trait;
 use config::Config;
 use device_traits::connections::{
@@ -13,13 +16,10 @@ use serde_derive::Deserialize;
 use serde_json::Value;
 use std::{path::PathBuf, time::Duration};
 use tracing::{info, instrument};
-use crate::client::configuration::ConfigurationHelper;
-use crate::client::topics::TopicHelper;
-use crate::constants::{LOGGER_SETTINGS_FIELD, PROVISION_SHADOW_NAME};
 
+mod configuration;
 ///Helper methods for working with IoT topics.
 pub mod topics;
-mod configuration;
 
 /// Struct implements IotConnectionManager for MQTT with IoT
 #[derive(Debug, Clone, Deserialize)]
@@ -170,10 +170,10 @@ impl ManagerLastWill {
 
 #[cfg(test)]
 mod tests {
+    use super::*;
+    use crate::constants::STATE_SHADOW_FIELD;
     use mqtt_client::builder::MQTTMessageBuilder;
     use serde_json::json;
-    use crate::constants::STATE_SHADOW_FIELD;
-    use super::*;
     const TEST_STR: &str = "Content of str does not matter.";
     const AWS_QOS: QoS = QoS::AtLeastOnce;
     const MQTT_QOS: rumqttc::QoS = rumqttc::QoS::AtLeastOnce;

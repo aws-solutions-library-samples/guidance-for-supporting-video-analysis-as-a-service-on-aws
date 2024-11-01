@@ -14,4 +14,3 @@ pub(crate) const SHADOW_TOPICS_TO_SUBSCRIBE: &[&str] =
 pub(crate) const PROVISION_SHADOW_NAME: &str = "provision";
 pub(crate) const STATE_SHADOW_FIELD: &str = "state";
 pub(crate) const LOGGER_SETTINGS_FIELD: &str = "loggerSettings";
-

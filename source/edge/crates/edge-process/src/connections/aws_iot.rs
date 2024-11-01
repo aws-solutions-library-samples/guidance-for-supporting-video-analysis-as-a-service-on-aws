@@ -5,9 +5,13 @@
 use crate::constants::{BUFFER_SIZE, LOG_SYNC, PROVISION_SHADOW_NAME};
 use crate::utils::config::Config;
 use crate::utils::config::ConfigImpl;
-use device_traits::channel_utils::traits::{DeviceInformationSetup, IoTServiceSender, IoTServiceSetup};
+use device_traits::channel_utils::traits::{
+    DeviceInformationSetup, IoTServiceSender, IoTServiceSetup,
+};
 use device_traits::channel_utils::ServiceCommunicationManager;
-use device_traits::connections::{AsyncPubSubClient, IotClientManager, PubSubMessageBuilder, ShadowManager};
+use device_traits::connections::{
+    AsyncPubSubClient, IotClientManager, PubSubMessageBuilder, ShadowManager,
+};
 use iot_connections::shadow_manager::IotShadowManager;
 use mqtt_client::builder::MQTTMessageBuilder;
 use serde_json::json;
@@ -16,7 +20,6 @@ use tokio::select;
 use tokio::sync::mpsc::Sender;
 use tokio::task::JoinHandle;
 use tracing::{debug, error, info, instrument, warn};
-
 
 /// This creates a shadow which automatically sends messages to connections layer to update
 /// the cloud based shadow.  The iot communication service is injected into the shadow manager.

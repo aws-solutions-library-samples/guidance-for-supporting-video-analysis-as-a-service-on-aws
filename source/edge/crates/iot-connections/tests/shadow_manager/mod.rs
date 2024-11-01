@@ -8,9 +8,7 @@ mod tests {
     use mqtt_client::builder::MQTTMessageBuilder;
     use serde_json::{json, Value};
     use std::path::{Path, PathBuf};
-    use tokio::{
-        fs::{remove_file, write},
-    };
+    use tokio::fs::{remove_file, write};
 
     const THING_NAME: &str = "ThingName";
     const SHADOW_NAME: &str = "ShadowName";
@@ -23,13 +21,9 @@ mod tests {
         let dir = std::env::current_dir().unwrap().join(DIR);
         let shadow_file = dir.join(format!("{}_{}.json", THING_NAME, SHADOW_NAME));
 
-        let mut named_shadow = get_iot_shadow_manager(
-            THING_NAME,
-            Some(SHADOW_NAME.to_owned()),
-            dir.to_owned(),
-            None,
-        )
-            .await;
+        let mut named_shadow =
+            get_iot_shadow_manager(THING_NAME, Some(SHADOW_NAME.to_owned()), dir.to_owned(), None)
+                .await;
         // Test multiple updates
         shadow_update_and_check(
             json!({"connected":true}),
@@ -37,21 +31,21 @@ mod tests {
             &shadow_file,
             &mut named_shadow,
         )
-            .await;
+        .await;
         shadow_update_and_check(
             json!({"status":"enabled"}),
             json!({"status":"enabled","connected":true}),
             &shadow_file,
             &mut named_shadow,
         )
-            .await;
+        .await;
         shadow_update_and_check(
             json!({"connected":false}),
             json!({"status":"enabled","connected":false}),
             &shadow_file,
             &mut named_shadow,
         )
-            .await;
+        .await;
         cleanup(&shadow_file).await;
     }
 
@@ -73,7 +67,7 @@ mod tests {
             &shadow_file,
             &mut classic_shadow,
         )
-            .await;
+        .await;
         cleanup(&shadow_file).await;
     }
 
