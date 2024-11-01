@@ -25,7 +25,7 @@ use http::Uri;
 use iot_client::client::IotCredentialProvider;
 use tracing::error;
 
-const NUMBER_OF_RETRIES_FOR_FATHOM: u32 = 3;
+const NUMBER_OF_RETRIES_FOR_VIDEO_ANALYTICS: u32 = 3;
 
 #[derive(Debug, Default, Clone)]
 pub struct KinesisVideoStreamClient {
@@ -46,7 +46,7 @@ impl KinesisVideoStreamClient {
         let config = Config::builder()
             .region(Region::new(iot_credential_provider.region.to_owned()))
             .credentials_provider(credentials_provider.clone())
-            .retry_config(RetryConfig::standard().with_max_attempts(NUMBER_OF_RETRIES_FOR_FATHOM))
+            .retry_config(RetryConfig::standard().with_max_attempts(NUMBER_OF_RETRIES_FOR_VIDEO_ANALYTICS))
             .build();
 
         let client = Client::from_conf(config.clone());
@@ -233,7 +233,7 @@ impl KinesisVideoStreamClient {
         let signaling_config = aws_sdk_kinesisvideosignaling::Config::builder()
             .region(Region::new(region))
             .credentials_provider(credentials_provider.clone())
-            .retry_config(RetryConfig::standard().with_max_attempts(NUMBER_OF_RETRIES_FOR_FATHOM))
+            .retry_config(RetryConfig::standard().with_max_attempts(NUMBER_OF_RETRIES_FOR_VIDEO_ANALYTICS))
             .endpoint_url(endpoint_https_uri)
             .build();
         let signaling_client = SignalingClient::from_conf(signaling_config);
