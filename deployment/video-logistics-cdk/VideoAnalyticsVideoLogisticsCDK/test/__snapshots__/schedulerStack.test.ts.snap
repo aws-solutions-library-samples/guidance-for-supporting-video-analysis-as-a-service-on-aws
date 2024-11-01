@@ -1,0 +1,240 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SchedulerStack Snapshot test 1`] = `
+{
+  "Parameters": {
+    "BootstrapVersion": {
+      "Default": "/cdk-bootstrap/hnb659fds/version",
+      "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]",
+      "Type": "AWS::SSM::Parameter::Value<String>",
+    },
+  },
+  "Resources": {
+    "OpenSearchPitTable9E876004": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "CustomerAccountIdModelName",
+            "AttributeType": "S",
+          },
+          {
+            "AttributeName": "Endpoint",
+            "AttributeType": "S",
+          },
+        ],
+        "BillingMode": "PAY_PER_REQUEST",
+        "DeletionProtectionEnabled": true,
+        "KeySchema": [
+          {
+            "AttributeName": "CustomerAccountIdModelName",
+            "KeyType": "HASH",
+          },
+          {
+            "AttributeName": "Endpoint",
+            "KeyType": "RANGE",
+          },
+        ],
+        "PointInTimeRecoverySpecification": {
+          "PointInTimeRecoveryEnabled": true,
+        },
+        "SSESpecification": {
+          "SSEEnabled": true,
+        },
+        "StreamSpecification": {
+          "StreamViewType": "NEW_AND_OLD_IMAGES",
+        },
+        "TableClass": "STANDARD",
+        "TableName": "OpenSearchPitTable",
+      },
+      "Type": "AWS::DynamoDB::Table",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "PitCreationLambdaA1846F89": {
+      "DependsOn": [
+        "PitCreationLambdaRoleDefaultPolicy52558BEE",
+        "PitCreationLambdaRole760A75E2",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
+          "S3Key": "575091b14cc0a71903849debebd74c9f138bf394b0321388f525de34eb38d3aa.zip",
+        },
+        "Description": "Lambda responsible for PIT creation in Open Search",
+        "Environment": {
+          "Variables": {
+            "AWSRegion": "us-east-1",
+          },
+        },
+        "Handler": "com.amazon.awsvideoanalyticsvlcontrolplane.inference.PitCreationLambda::handleRequest",
+        "LoggingConfig": {
+          "LogGroup": {
+            "Ref": "PitCreationLambdaLogGroupCFF655DE",
+          },
+        },
+        "MemorySize": 2048,
+        "Role": {
+          "Fn::GetAtt": [
+            "PitCreationLambdaRole760A75E2",
+            "Arn",
+          ],
+        },
+        "Runtime": "java17",
+        "Timeout": 720,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "PitCreationLambdaLogGroupCFF655DE": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "LogGroupName": "PitCreationLambdaLogGroup",
+        "RetentionInDays": 3653,
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "PitCreationLambdaRole760A75E2": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "Description": "Allows lambda to make a pit creation request to open search",
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+        "RoleName": "PitCreationLambdaRole",
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "PitCreationLambdaRoleDefaultPolicy52558BEE": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "es:ESHttpPost",
+                "es:ESHttpPut",
+                "es:ESHttpGet",
+                "es:ESHttpHead",
+                "es:ESHttpDelete",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            {
+              "Action": [
+                "dynamodb:GetItem",
+                "dynamodb:PutItem",
+                "dynamodb:UpdateItem",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "OpenSearchPitTable9E876004",
+                  "Arn",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "PitCreationLambdaRoleDefaultPolicy52558BEE",
+        "Roles": [
+          {
+            "Ref": "PitCreationLambdaRole760A75E2",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "PitCreationXMinutesRule8054C0B9": {
+      "Properties": {
+        "ScheduleExpression": "cron(0/2 * * * ? *)",
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Fn::GetAtt": [
+                "PitCreationLambdaA1846F89",
+                "Arn",
+              ],
+            },
+            "Id": "Target0",
+            "RetryPolicy": {
+              "MaximumEventAgeInSeconds": 120,
+              "MaximumRetryAttempts": 1,
+            },
+          },
+        ],
+      },
+      "Type": "AWS::Events::Rule",
+    },
+    "PitCreationXMinutesRuleAllowEventRuleSchedulerStackPitCreationLambda787229CCD9F4B6A0": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "PitCreationLambdaA1846F89",
+            "Arn",
+          ],
+        },
+        "Principal": "events.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "PitCreationXMinutesRule8054C0B9",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+  },
+  "Rules": {
+    "CheckBootstrapVersion": {
+      "Assertions": [
+        {
+          "Assert": {
+            "Fn::Not": [
+              {
+                "Fn::Contains": [
+                  [
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5",
+                  ],
+                  {
+                    "Ref": "BootstrapVersion",
+                  },
+                ],
+              },
+            ],
+          },
+          "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI.",
+        },
+      ],
+    },
+  },
+}
+`;

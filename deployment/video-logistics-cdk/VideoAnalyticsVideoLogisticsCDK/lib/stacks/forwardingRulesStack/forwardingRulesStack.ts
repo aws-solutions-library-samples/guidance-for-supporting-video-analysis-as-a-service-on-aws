@@ -26,9 +26,13 @@ export interface ForwardingRulesProps extends StackProps {
  * Stack to manage all resources needing to be created for Forwarding Rules
  */
 export class ForwardingRulesStack extends Stack {
+  private readonly stackRegion: string;
   public readonly dataForwarderLambda: IFunction;
   constructor(scope: Construct, id: string, props: ForwardingRulesProps) {
     super(scope, id, props);
+
+    // Store the region from props
+    this.stackRegion = props.region;
 
     // SQS Queue for forwarding rules
     // Create a KMS key for the queue where S3 has permission to use it when sending messages
@@ -105,8 +109,8 @@ export class ForwardingRulesStack extends Stack {
         effect: Effect.ALLOW,
         actions: ["s3:List*", "s3:Get*", "s3:DeleteObject"],
         resources: [
-          `arn:aws:s3:::${FORWARDING_RULES_BUCKET_NAME}-${this.region}*`,
-          `arn:aws:s3:::${FORWARDING_RULES_BUCKET_NAME}-${this.region}*/*`,
+          `arn:aws:s3:::${FORWARDING_RULES_BUCKET_NAME}-${this.stackRegion}*`,
+          `arn:aws:s3:::${FORWARDING_RULES_BUCKET_NAME}-${this.stackRegion}*/*`,
         ],
       })
     );

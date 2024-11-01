@@ -1,0 +1,3336 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`WorkflowStack Snapshot test 1`] = `
+{
+  "Outputs": {
+    "VideoExportTemporarilyOutputRefVideoExportStartVideoExportStateMachineF56DA0E178A1F62F65782433": {
+      "Export": {
+        "Name": "WorkflowStack:ExportsOutputRefVideoExportStartVideoExportStateMachineF56DA0E178A1F62F",
+      },
+      "Value": {
+        "Ref": "VideoExportVideoExportStateMachine44F3D7FB",
+      },
+    },
+  },
+  "Parameters": {
+    "BootstrapVersion": {
+      "Default": "/cdk-bootstrap/hnb659fds/version",
+      "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]",
+      "Type": "AWS::SSM::Parameter::Value<String>",
+    },
+  },
+  "Resources": {
+    "FVLRegisterDeviceJobTable62B0BD14": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "CustomerAccountId",
+            "AttributeType": "S",
+          },
+          {
+            "AttributeName": "JobId",
+            "AttributeType": "S",
+          },
+        ],
+        "BillingMode": "PAY_PER_REQUEST",
+        "DeletionProtectionEnabled": true,
+        "KeySchema": [
+          {
+            "AttributeName": "CustomerAccountId",
+            "KeyType": "HASH",
+          },
+          {
+            "AttributeName": "JobId",
+            "KeyType": "RANGE",
+          },
+        ],
+        "PointInTimeRecoverySpecification": {
+          "PointInTimeRecoveryEnabled": true,
+        },
+        "SSESpecification": {
+          "SSEEnabled": true,
+        },
+        "StreamSpecification": {
+          "StreamViewType": "NEW_AND_OLD_IMAGES",
+        },
+        "TableClass": "STANDARD",
+        "TableName": "FVLRegisterDeviceJobTable",
+      },
+      "Type": "AWS::DynamoDB::Table",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "LivestreamLivestreamSessionRoleE18273AD": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
+                    "dynamodb:GetRecords",
+                    "dynamodb:GetItem",
+                    "dynamodb:Query",
+                    "dynamodb:PutItem",
+                    "dynamodb:UpdateItem",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": [
+                    {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "arn:",
+                          {
+                            "Ref": "AWS::Partition",
+                          },
+                          ":dynamodb:us-east-1:123456789012:table/LivestreamSessionTable",
+                        ],
+                      ],
+                    },
+                    {
+                      "Fn::GetAtt": [
+                        "LivestreamSessionTable3B611ED8",
+                        "Arn",
+                      ],
+                    },
+                  ],
+                },
+                {
+                  "Action": [
+                    "kms:Decrypt",
+                    "kms:Encrypt",
+                    "kms:ReEncrypt*",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:",
+                        {
+                          "Ref": "AWS::Partition",
+                        },
+                        ":kms:us-east-1:123456789012:key/*",
+                      ],
+                    ],
+                  },
+                },
+                {
+                  "Action": [
+                    "kinesisvideo:GetHLSStreamingSessionURL",
+                    "kinesisvideo:GetDataEndpoint",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:",
+                        {
+                          "Ref": "AWS::Partition",
+                        },
+                        ":kinesisvideo:us-east-1:123456789012:*",
+                      ],
+                    ],
+                  },
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": "AccessPolicy",
+          },
+        ],
+        "RoleName": "LivestreamSessionRole",
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "LivestreamLivestreamSessionStateMachineDF398B82": {
+      "DeletionPolicy": "Delete",
+      "DependsOn": [
+        "LivestreamLivestreamSessionStateMachineRoleDefaultPolicy22931454",
+        "LivestreamLivestreamSessionStateMachineRole4C49FD88",
+      ],
+      "Properties": {
+        "DefinitionString": {
+          "Fn::Join": [
+            "",
+            [
+              "{"StartAt":"WebRTCSessionState","States":{"WebRTCSessionState":{"Next":"UpdateLivestreamSessionStatusState","Retry":[{"ErrorEquals":["Lambda.ClientExecutionTimeoutException","Lambda.ServiceException","Lambda.AWSLambdaException","Lambda.SdkClientException"],"IntervalSeconds":2,"MaxAttempts":6,"BackoffRate":2}],"Catch":[{"ErrorEquals":["States.ALL"],"ResultPath":"$.error","Next":"FailLivestreamSessionStatusState"}],"Type":"Task","ResultPath":"$.output","Resource":"arn:",
+              {
+                "Ref": "AWS::Partition",
+              },
+              ":states:::lambda:invoke","Parameters":{"FunctionName":"",
+              {
+                "Fn::GetAtt": [
+                  "LivestreamWebRtcLambda9E123F66",
+                  "Arn",
+                ],
+              },
+              "","Payload":{"customerAccountId.$":"$.partitionKey","sessionId.$":"$.sortKey"}}},"UpdateLivestreamSessionStatusState":{"Next":"Successful","Retry":[{"ErrorEquals":["Lambda.ClientExecutionTimeoutException","Lambda.ServiceException","Lambda.AWSLambdaException","Lambda.SdkClientException"],"IntervalSeconds":2,"MaxAttempts":6,"BackoffRate":2}],"Type":"Task","Resource":"arn:",
+              {
+                "Ref": "AWS::Partition",
+              },
+              ":states:::lambda:invoke","Parameters":{"FunctionName":"",
+              {
+                "Fn::GetAtt": [
+                  "LivestreamUpdateLivestreamSessionStatusLambda04544320",
+                  "Arn",
+                ],
+              },
+              "","Payload":{"customerAccountId.$":"$.partitionKey","sessionId.$":"$.sortKey","sessionStatus":"COMPLETED"}}},"Successful":{"Type":"Succeed"},"FailLivestreamSessionStatusState":{"Next":"Fail","Retry":[{"ErrorEquals":["Lambda.ClientExecutionTimeoutException","Lambda.ServiceException","Lambda.AWSLambdaException","Lambda.SdkClientException"],"IntervalSeconds":2,"MaxAttempts":6,"BackoffRate":2}],"Type":"Task","Resource":"arn:",
+              {
+                "Ref": "AWS::Partition",
+              },
+              ":states:::lambda:invoke","Parameters":{"FunctionName":"",
+              {
+                "Fn::GetAtt": [
+                  "LivestreamUpdateLivestreamSessionStatusLambda04544320",
+                  "Arn",
+                ],
+              },
+              "","Payload":{"customerAccountId.$":"$.partitionKey","sessionId.$":"$.sortKey","sessionStatus":"FAILED","failureReason.$":"$.error.Cause"}}},"Fail":{"Type":"Fail"}}}",
+            ],
+          ],
+        },
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "LivestreamLivestreamSessionStateMachineRole4C49FD88",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "AWS::StepFunctions::StateMachine",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "LivestreamLivestreamSessionStateMachineRole4C49FD88": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "states.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "LivestreamLivestreamSessionStateMachineRoleDefaultPolicy22931454": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "LivestreamWebRtcLambda9E123F66",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "LivestreamWebRtcLambda9E123F66",
+                          "Arn",
+                        ],
+                      },
+                      ":*",
+                    ],
+                  ],
+                },
+              ],
+            },
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "LivestreamUpdateLivestreamSessionStatusLambda04544320",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "LivestreamUpdateLivestreamSessionStatusLambda04544320",
+                          "Arn",
+                        ],
+                      },
+                      ":*",
+                    ],
+                  ],
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "LivestreamLivestreamSessionStateMachineRoleDefaultPolicy22931454",
+        "Roles": [
+          {
+            "Ref": "LivestreamLivestreamSessionStateMachineRole4C49FD88",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "LivestreamLivestreamWebRtcLambdaLogGroup66D99C81": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "LogGroupName": "LivestreamWebRtcLambdaLogGroup",
+        "RetentionInDays": 3653,
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "LivestreamSessionTable3B611ED8": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "CustomerAccountId",
+            "AttributeType": "S",
+          },
+          {
+            "AttributeName": "SessionId",
+            "AttributeType": "S",
+          },
+        ],
+        "BillingMode": "PAY_PER_REQUEST",
+        "DeletionProtectionEnabled": true,
+        "KeySchema": [
+          {
+            "AttributeName": "CustomerAccountId",
+            "KeyType": "HASH",
+          },
+          {
+            "AttributeName": "SessionId",
+            "KeyType": "RANGE",
+          },
+        ],
+        "PointInTimeRecoverySpecification": {
+          "PointInTimeRecoveryEnabled": true,
+        },
+        "SSESpecification": {
+          "SSEEnabled": true,
+        },
+        "StreamSpecification": {
+          "StreamViewType": "NEW_AND_OLD_IMAGES",
+        },
+        "TableClass": "STANDARD",
+        "TableName": "LivestreamSessionTable",
+      },
+      "Type": "AWS::DynamoDB::Table",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "LivestreamUpdateLivestreamSessionStatusLambda04544320": {
+      "DependsOn": [
+        "LivestreamLivestreamSessionRoleE18273AD",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
+          "S3Key": "575091b14cc0a71903849debebd74c9f138bf394b0321388f525de34eb38d3aa.zip",
+        },
+        "Description": "Lambda responsible for updating livestream session status",
+        "Handler": "com.amazon.awsvideoanalyticsvlcontrolplane.livestream.UpdateLivestreamSessionStatus::handleRequest",
+        "LoggingConfig": {
+          "LogGroup": {
+            "Ref": "LivestreamUpdateLivestreamSessionStatusLambdaLogGroupCB23007D",
+          },
+        },
+        "MemorySize": 2048,
+        "Role": {
+          "Fn::GetAtt": [
+            "LivestreamLivestreamSessionRoleE18273AD",
+            "Arn",
+          ],
+        },
+        "Runtime": "java17",
+        "Timeout": 720,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "LivestreamUpdateLivestreamSessionStatusLambdaLogGroupCB23007D": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "LogGroupName": "UpdateLivestreamSessionStatusLambdaLogGroup",
+        "RetentionInDays": 3653,
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "LivestreamWebRtcLambda9E123F66": {
+      "DependsOn": [
+        "LivestreamLivestreamSessionRoleE18273AD",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
+          "S3Key": "575091b14cc0a71903849debebd74c9f138bf394b0321388f525de34eb38d3aa.zip",
+        },
+        "Description": "Lambda responsible for handling P2P connections",
+        "Environment": {
+          "Variables": {
+            "airportCode": "iad",
+            "tableName": "LivestreamSessionTable",
+          },
+        },
+        "Handler": "com.amazon.awsvideoanalyticsvlcontrolplane.livestream.WebRTCLivestreamConnectionHandler::handleRequest",
+        "LoggingConfig": {
+          "LogGroup": {
+            "Ref": "LivestreamLivestreamWebRtcLambdaLogGroup66D99C81",
+          },
+        },
+        "MemorySize": 2048,
+        "Role": {
+          "Fn::GetAtt": [
+            "LivestreamLivestreamSessionRoleE18273AD",
+            "Arn",
+          ],
+        },
+        "Runtime": "java17",
+        "Timeout": 720,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "LivestreamWorkflowLivestreamSessionTableDDBStreamProcessorLambdaRole4DA50ED6": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "LivestreamWorkflowLivestreamSessionTableDDBStreamProcessorLambdaRoleDefaultPolicyA78056C4": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "states:StartExecution",
+              "Effect": "Allow",
+              "Resource": {
+                "Ref": "LivestreamLivestreamSessionStateMachineDF398B82",
+              },
+            },
+            {
+              "Action": [
+                "sqs:SendMessage",
+                "sqs:GetQueueAttributes",
+                "sqs:GetQueueUrl",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "LivestreamWorkflowLivestreamSessionTableLivestreamSessionTableStreamDLQ1A40556B",
+                  "Arn",
+                ],
+              },
+            },
+            {
+              "Action": [
+                "kms:Decrypt",
+                "kms:Encrypt",
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey*",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "LivestreamWorkflowLivestreamSessionTableLivestreamSessionTableStreamDlqEncryptionKey531808F9",
+                  "Arn",
+                ],
+              },
+            },
+            {
+              "Action": "dynamodb:ListStreams",
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            {
+              "Action": [
+                "dynamodb:DescribeStream",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "LivestreamSessionTable3B611ED8",
+                  "StreamArn",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "LivestreamWorkflowLivestreamSessionTableDDBStreamProcessorLambdaRoleDefaultPolicyA78056C4",
+        "Roles": [
+          {
+            "Ref": "LivestreamWorkflowLivestreamSessionTableDDBStreamProcessorLambdaRole4DA50ED6",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "LivestreamWorkflowLivestreamSessionTableLivestreamSessionTableStreamDLQ1A40556B": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "KmsMasterKeyId": {
+          "Fn::GetAtt": [
+            "LivestreamWorkflowLivestreamSessionTableLivestreamSessionTableStreamDlqEncryptionKey531808F9",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "AWS::SQS::Queue",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "LivestreamWorkflowLivestreamSessionTableLivestreamSessionTableStreamDlqEncryptionKey531808F9": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "EnableKeyRotation": true,
+        "KeyPolicy": {
+          "Statement": [
+            {
+              "Action": "kms:*",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":iam::123456789012:root",
+                    ],
+                  ],
+                },
+              },
+              "Resource": "*",
+            },
+            {
+              "Action": [
+                "kms:Create*",
+                "kms:Describe*",
+                "kms:Enable*",
+                "kms:List*",
+                "kms:Put*",
+                "kms:Update*",
+                "kms:Revoke*",
+                "kms:Disable*",
+                "kms:Get*",
+                "kms:Delete*",
+                "kms:TagResource",
+                "kms:UntagResource",
+                "kms:ScheduleKeyDeletion",
+                "kms:CancelKeyDeletion",
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":iam::123456789012:root",
+                    ],
+                  ],
+                },
+              },
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::KMS::Key",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "LivestreamWorkflowLivestreamSessionTableLivestreamSessionTableStreamProcessor988CF5B4": {
+      "DependsOn": [
+        "LivestreamWorkflowLivestreamSessionTableDDBStreamProcessorLambdaRoleDefaultPolicyA78056C4",
+        "LivestreamWorkflowLivestreamSessionTableDDBStreamProcessorLambdaRole4DA50ED6",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
+          "S3Key": "575091b14cc0a71903849debebd74c9f138bf394b0321388f525de34eb38d3aa.zip",
+        },
+        "Description": "Lambda responsible for invocation of StepFunction",
+        "Environment": {
+          "Variables": {
+            "PARTITION_KEY": "CustomerAccountId",
+            "SORT_KEY": "SessionId",
+            "STATE_MACHINE_ARN": {
+              "Ref": "LivestreamLivestreamSessionStateMachineDF398B82",
+            },
+          },
+        },
+        "Handler": "com.amazon.aws.videoanalytics.common.workflow.StreamProcessor::handleRequest",
+        "MemorySize": 1028,
+        "Role": {
+          "Fn::GetAtt": [
+            "LivestreamWorkflowLivestreamSessionTableDDBStreamProcessorLambdaRole4DA50ED6",
+            "Arn",
+          ],
+        },
+        "Runtime": "java17",
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "LivestreamWorkflowLivestreamSessionTableLivestreamSessionTableStreamProcessorDynamoDBEventSourceWorkflowStackLivestreamSessionTable8490E8AF3ECFED14": {
+      "Properties": {
+        "BatchSize": 10,
+        "BisectBatchOnFunctionError": true,
+        "DestinationConfig": {
+          "OnFailure": {
+            "Destination": {
+              "Fn::GetAtt": [
+                "LivestreamWorkflowLivestreamSessionTableLivestreamSessionTableStreamDLQ1A40556B",
+                "Arn",
+              ],
+            },
+          },
+        },
+        "Enabled": true,
+        "EventSourceArn": {
+          "Fn::GetAtt": [
+            "LivestreamSessionTable3B611ED8",
+            "StreamArn",
+          ],
+        },
+        "FunctionName": {
+          "Ref": "LivestreamWorkflowLivestreamSessionTableLivestreamSessionTableStreamProcessor988CF5B4",
+        },
+        "MaximumRetryAttempts": 2,
+        "StartingPosition": "LATEST",
+      },
+      "Type": "AWS::Lambda::EventSourceMapping",
+    },
+    "ModelSchemaModelSchemaLambda7C0B018C": {
+      "DependsOn": [
+        "ModelSchemaModelSchemaRoleF2BBA8C0",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
+          "S3Key": "575091b14cc0a71903849debebd74c9f138bf394b0321388f525de34eb38d3aa.zip",
+        },
+        "Description": "Lambda responsible for invocation of StepFunction",
+        "Environment": {
+          "Variables": {
+            "tableName": "ModelSchemaTable",
+          },
+        },
+        "Handler": "com.amazon.awsvideoanalyticsvlcontrolplane.lambda.KVSResourceCreateLambda::handleRequest",
+        "LoggingConfig": {
+          "LogGroup": {
+            "Ref": "ModelSchemaModelSchemaLambdaLogGroupEEA2E713",
+          },
+        },
+        "MemorySize": 2048,
+        "Role": {
+          "Fn::GetAtt": [
+            "ModelSchemaModelSchemaRoleF2BBA8C0",
+            "Arn",
+          ],
+        },
+        "Runtime": "java17",
+        "Timeout": 720,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "ModelSchemaModelSchemaLambdaLogGroupEEA2E713": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "LogGroupName": "ModelSchemaLambdaLogGroup",
+        "RetentionInDays": 3653,
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "ModelSchemaModelSchemaRoleF2BBA8C0": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
+                    "dynamodb:GetRecords",
+                    "dynamodb:GetItem",
+                    "dynamodb:Query",
+                    "dynamodb:PutItem",
+                    "dynamodb:UpdateItem",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": [
+                    {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "arn:",
+                          {
+                            "Ref": "AWS::Partition",
+                          },
+                          ":dynamodb:us-east-1:123456789012:table/ModelSchemaTable",
+                        ],
+                      ],
+                    },
+                    {
+                      "Fn::GetAtt": [
+                        "ModelSchemaTableC01709D1",
+                        "Arn",
+                      ],
+                    },
+                  ],
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": "AccessPolicy",
+          },
+        ],
+        "RoleName": "ModelSchemaRole",
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "ModelSchemaModelSchemaStateMachine06537C9E": {
+      "DeletionPolicy": "Delete",
+      "DependsOn": [
+        "ModelSchemaModelSchemaStateMachineRoleDefaultPolicyAEFD2AE0",
+        "ModelSchemaModelSchemaStateMachineRoleEBAF26F9",
+      ],
+      "Properties": {
+        "DefinitionString": {
+          "Fn::Join": [
+            "",
+            [
+              "{"StartAt":"ModelSchemaIndexTemplateCreate","States":{"ModelSchemaIndexTemplateCreate":{"End":true,"Retry":[{"ErrorEquals":["Lambda.ClientExecutionTimeoutException","Lambda.ServiceException","Lambda.AWSLambdaException","Lambda.SdkClientException"],"IntervalSeconds":2,"MaxAttempts":6,"BackoffRate":2}],"Type":"Task","Resource":"arn:",
+              {
+                "Ref": "AWS::Partition",
+              },
+              ":states:::lambda:invoke","Parameters":{"FunctionName":"",
+              {
+                "Fn::GetAtt": [
+                  "ModelSchemaModelSchemaLambda7C0B018C",
+                  "Arn",
+                ],
+              },
+              "","Payload.$":"$"}}}}",
+            ],
+          ],
+        },
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "ModelSchemaModelSchemaStateMachineRoleEBAF26F9",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "AWS::StepFunctions::StateMachine",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "ModelSchemaModelSchemaStateMachineRoleDefaultPolicyAEFD2AE0": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "ModelSchemaModelSchemaLambda7C0B018C",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "ModelSchemaModelSchemaLambda7C0B018C",
+                          "Arn",
+                        ],
+                      },
+                      ":*",
+                    ],
+                  ],
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "ModelSchemaModelSchemaStateMachineRoleDefaultPolicyAEFD2AE0",
+        "Roles": [
+          {
+            "Ref": "ModelSchemaModelSchemaStateMachineRoleEBAF26F9",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "ModelSchemaModelSchemaStateMachineRoleEBAF26F9": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "states.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "ModelSchemaTableC01709D1": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "CustomerAccountId",
+            "AttributeType": "S",
+          },
+          {
+            "AttributeName": "ModelSchemaId",
+            "AttributeType": "S",
+          },
+        ],
+        "BillingMode": "PAY_PER_REQUEST",
+        "DeletionProtectionEnabled": true,
+        "KeySchema": [
+          {
+            "AttributeName": "CustomerAccountId",
+            "KeyType": "HASH",
+          },
+          {
+            "AttributeName": "ModelSchemaId",
+            "KeyType": "RANGE",
+          },
+        ],
+        "PointInTimeRecoverySpecification": {
+          "PointInTimeRecoveryEnabled": true,
+        },
+        "SSESpecification": {
+          "SSEEnabled": true,
+        },
+        "StreamSpecification": {
+          "StreamViewType": "NEW_AND_OLD_IMAGES",
+        },
+        "TableClass": "STANDARD",
+        "TableName": "ModelSchemaTable",
+      },
+      "Type": "AWS::DynamoDB::Table",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "ModelSchemaWorkflowModelSchemaTableDDBStreamProcessorLambdaRoleDefaultPolicy2DBB85B8": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "states:StartExecution",
+              "Effect": "Allow",
+              "Resource": {
+                "Ref": "ModelSchemaModelSchemaStateMachine06537C9E",
+              },
+            },
+            {
+              "Action": [
+                "sqs:SendMessage",
+                "sqs:GetQueueAttributes",
+                "sqs:GetQueueUrl",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "ModelSchemaWorkflowModelSchemaTableModelSchemaTableStreamDLQE6DC2F5D",
+                  "Arn",
+                ],
+              },
+            },
+            {
+              "Action": [
+                "kms:Decrypt",
+                "kms:Encrypt",
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey*",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "ModelSchemaWorkflowModelSchemaTableModelSchemaTableStreamDlqEncryptionKey2820D9A0",
+                  "Arn",
+                ],
+              },
+            },
+            {
+              "Action": "dynamodb:ListStreams",
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            {
+              "Action": [
+                "dynamodb:DescribeStream",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "ModelSchemaTableC01709D1",
+                  "StreamArn",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "ModelSchemaWorkflowModelSchemaTableDDBStreamProcessorLambdaRoleDefaultPolicy2DBB85B8",
+        "Roles": [
+          {
+            "Ref": "ModelSchemaWorkflowModelSchemaTableDDBStreamProcessorLambdaRoleE0CD8D72",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "ModelSchemaWorkflowModelSchemaTableDDBStreamProcessorLambdaRoleE0CD8D72": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "ModelSchemaWorkflowModelSchemaTableModelSchemaTableStreamDLQE6DC2F5D": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "KmsMasterKeyId": {
+          "Fn::GetAtt": [
+            "ModelSchemaWorkflowModelSchemaTableModelSchemaTableStreamDlqEncryptionKey2820D9A0",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "AWS::SQS::Queue",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "ModelSchemaWorkflowModelSchemaTableModelSchemaTableStreamDlqEncryptionKey2820D9A0": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "EnableKeyRotation": true,
+        "KeyPolicy": {
+          "Statement": [
+            {
+              "Action": "kms:*",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":iam::123456789012:root",
+                    ],
+                  ],
+                },
+              },
+              "Resource": "*",
+            },
+            {
+              "Action": [
+                "kms:Create*",
+                "kms:Describe*",
+                "kms:Enable*",
+                "kms:List*",
+                "kms:Put*",
+                "kms:Update*",
+                "kms:Revoke*",
+                "kms:Disable*",
+                "kms:Get*",
+                "kms:Delete*",
+                "kms:TagResource",
+                "kms:UntagResource",
+                "kms:ScheduleKeyDeletion",
+                "kms:CancelKeyDeletion",
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":iam::123456789012:root",
+                    ],
+                  ],
+                },
+              },
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::KMS::Key",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "ModelSchemaWorkflowModelSchemaTableModelSchemaTableStreamProcessorB8011CEA": {
+      "DependsOn": [
+        "ModelSchemaWorkflowModelSchemaTableDDBStreamProcessorLambdaRoleDefaultPolicy2DBB85B8",
+        "ModelSchemaWorkflowModelSchemaTableDDBStreamProcessorLambdaRoleE0CD8D72",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
+          "S3Key": "575091b14cc0a71903849debebd74c9f138bf394b0321388f525de34eb38d3aa.zip",
+        },
+        "Description": "Lambda responsible for invocation of StepFunction",
+        "Environment": {
+          "Variables": {
+            "PARTITION_KEY": "CustomerAccountId",
+            "SORT_KEY": "ModelSchemaId",
+            "STATE_MACHINE_ARN": {
+              "Ref": "ModelSchemaModelSchemaStateMachine06537C9E",
+            },
+          },
+        },
+        "Handler": "com.amazon.aws.videoanalytics.common.workflow.StreamProcessor::handleRequest",
+        "MemorySize": 1028,
+        "Role": {
+          "Fn::GetAtt": [
+            "ModelSchemaWorkflowModelSchemaTableDDBStreamProcessorLambdaRoleE0CD8D72",
+            "Arn",
+          ],
+        },
+        "Runtime": "java17",
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "ModelSchemaWorkflowModelSchemaTableModelSchemaTableStreamProcessorDynamoDBEventSourceWorkflowStackModelSchemaTable4BC6CA14796F6299": {
+      "Properties": {
+        "BatchSize": 10,
+        "BisectBatchOnFunctionError": true,
+        "DestinationConfig": {
+          "OnFailure": {
+            "Destination": {
+              "Fn::GetAtt": [
+                "ModelSchemaWorkflowModelSchemaTableModelSchemaTableStreamDLQE6DC2F5D",
+                "Arn",
+              ],
+            },
+          },
+        },
+        "Enabled": true,
+        "EventSourceArn": {
+          "Fn::GetAtt": [
+            "ModelSchemaTableC01709D1",
+            "StreamArn",
+          ],
+        },
+        "FunctionName": {
+          "Ref": "ModelSchemaWorkflowModelSchemaTableModelSchemaTableStreamProcessorB8011CEA",
+        },
+        "MaximumRetryAttempts": 2,
+        "StartingPosition": "LATEST",
+      },
+      "Type": "AWS::Lambda::EventSourceMapping",
+    },
+    "PlaybackSessionDetermineIfCloudOrPeerToPeerLambda98CA24D5": {
+      "DependsOn": [
+        "PlaybackSessionPlaybackSessionRole8F9838A3",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
+          "S3Key": "575091b14cc0a71903849debebd74c9f138bf394b0321388f525de34eb38d3aa.zip",
+        },
+        "Description": "Lambda responsible for determining to try WebRTC or HLS for playback session",
+        "Environment": {
+          "Variables": {
+            "tableName": "PlaybackSessionTable",
+          },
+        },
+        "Handler": "com.amazon.awsvideoanalyticsvlcontrolplane.playback.PlaybackSessionDetermination::handleRequest",
+        "LoggingConfig": {
+          "LogGroup": {
+            "Ref": "PlaybackSessionDetermineIfCloudOrPeerToPeerLambdaLogGroup1D6C342E",
+          },
+        },
+        "MemorySize": 2048,
+        "Role": {
+          "Fn::GetAtt": [
+            "PlaybackSessionPlaybackSessionRole8F9838A3",
+            "Arn",
+          ],
+        },
+        "Runtime": "java17",
+        "Timeout": 720,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "PlaybackSessionDetermineIfCloudOrPeerToPeerLambdaLogGroup1D6C342E": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "LogGroupName": "DetermineIfCloudOrPeerToPeerLambdaLogGroup",
+        "RetentionInDays": 3653,
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "PlaybackSessionHLSStreamingLambda6B4EFA61": {
+      "DependsOn": [
+        "PlaybackSessionPlaybackSessionRole8F9838A3",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
+          "S3Key": "575091b14cc0a71903849debebd74c9f138bf394b0321388f525de34eb38d3aa.zip",
+        },
+        "Description": "Lambda responsible for fetching and updating the table with hls streaming URL",
+        "Environment": {
+          "Variables": {
+            "airportCode": "iad",
+            "tableName": "PlaybackSessionTable",
+          },
+        },
+        "Handler": "com.amazon.awsvideoanalyticsvlcontrolplane.playback.HLSStreamingSessionHandler::handleRequest",
+        "LoggingConfig": {
+          "LogGroup": {
+            "Ref": "PlaybackSessionHLSStreamingLambdaLogGroup9A91CA33",
+          },
+        },
+        "MemorySize": 2048,
+        "Role": {
+          "Fn::GetAtt": [
+            "PlaybackSessionPlaybackSessionRole8F9838A3",
+            "Arn",
+          ],
+        },
+        "Runtime": "java17",
+        "Timeout": 720,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "PlaybackSessionHLSStreamingLambdaLogGroup9A91CA33": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "LogGroupName": "HLSStreamingLambdaLogGroup",
+        "RetentionInDays": 3653,
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "PlaybackSessionPlaybackSessionRole8F9838A3": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
+                    "dynamodb:GetRecords",
+                    "dynamodb:GetItem",
+                    "dynamodb:Query",
+                    "dynamodb:PutItem",
+                    "dynamodb:UpdateItem",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": [
+                    {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "arn:",
+                          {
+                            "Ref": "AWS::Partition",
+                          },
+                          ":dynamodb:us-east-1:123456789012:table/PlaybackSessionTable",
+                        ],
+                      ],
+                    },
+                    {
+                      "Fn::GetAtt": [
+                        "PlaybackSessionTableF310C758",
+                        "Arn",
+                      ],
+                    },
+                  ],
+                },
+                {
+                  "Action": [
+                    "kms:Decrypt",
+                    "kms:Encrypt",
+                    "kms:ReEncrypt*",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:",
+                        {
+                          "Ref": "AWS::Partition",
+                        },
+                        ":kms:us-east-1:123456789012:key/*",
+                      ],
+                    ],
+                  },
+                },
+                {
+                  "Action": [
+                    "kinesisvideo:GetHLSStreamingSessionURL",
+                    "kinesisvideo:GetDataEndpoint",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": "*",
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": "AccessPolicy",
+          },
+        ],
+        "RoleName": "PlaybackSessionRole",
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "PlaybackSessionPlaybackSessionStateMachineCEE81F05": {
+      "DeletionPolicy": "Delete",
+      "DependsOn": [
+        "PlaybackSessionPlaybackSessionStateMachineRoleDefaultPolicy76181CE7",
+        "PlaybackSessionPlaybackSessionStateMachineRole95AE6239",
+      ],
+      "Properties": {
+        "DefinitionString": {
+          "Fn::Join": [
+            "",
+            [
+              "{"StartAt":"DetermineIfCloudOrPeerToPeer","States":{"DetermineIfCloudOrPeerToPeer":{"Next":"ShouldStreamFromDevice","Retry":[{"ErrorEquals":["Lambda.ClientExecutionTimeoutException","Lambda.ServiceException","Lambda.AWSLambdaException","Lambda.SdkClientException"],"IntervalSeconds":2,"MaxAttempts":6,"BackoffRate":2}],"Catch":[{"ErrorEquals":["States.ALL"],"ResultPath":"$.error","Next":"FailPlaybackSessionStatusState"}],"Type":"Task","ResultPath":"$.shouldStreamFromDevice","Resource":"arn:",
+              {
+                "Ref": "AWS::Partition",
+              },
+              ":states:::lambda:invoke","Parameters":{"FunctionName":"",
+              {
+                "Fn::GetAtt": [
+                  "PlaybackSessionDetermineIfCloudOrPeerToPeerLambda98CA24D5",
+                  "Arn",
+                ],
+              },
+              "","Payload":{"customerAccountId.$":"$.partitionKey","sessionId.$":"$.sortKey"}}},"ShouldStreamFromDevice":{"Type":"Choice","Choices":[{"Variable":"$.shouldStreamFromDevice.Payload","BooleanEquals":false,"Next":"StartHLSStreamingSession"},{"Variable":"$.shouldStreamFromDevice.Payload","BooleanEquals":true,"Next":"WebRTCSessionState"}]},"StartHLSStreamingSession":{"Next":"UpdatePlaybackSessionStatusState","Retry":[{"ErrorEquals":["Lambda.ClientExecutionTimeoutException","Lambda.ServiceException","Lambda.AWSLambdaException","Lambda.SdkClientException"],"IntervalSeconds":2,"MaxAttempts":6,"BackoffRate":2}],"Catch":[{"ErrorEquals":["States.ALL"],"ResultPath":"$.error","Next":"FailPlaybackSessionStatusState"}],"Type":"Task","ResultPath":"$.output","Resource":"arn:",
+              {
+                "Ref": "AWS::Partition",
+              },
+              ":states:::lambda:invoke","Parameters":{"FunctionName":"",
+              {
+                "Fn::GetAtt": [
+                  "PlaybackSessionHLSStreamingLambda6B4EFA61",
+                  "Arn",
+                ],
+              },
+              "","Payload":{"customerAccountId.$":"$.partitionKey","sessionId.$":"$.sortKey"}}},"WasWebRTCConnectionSuccessful":{"Type":"Choice","Choices":[{"Variable":"$.output.Payload","BooleanEquals":false,"Next":"StartHLSStreamingSession"},{"Variable":"$.output.Payload","BooleanEquals":true,"Next":"UpdatePlaybackSessionStatusState"}]},"WebRTCSessionState":{"Next":"WasWebRTCConnectionSuccessful","Retry":[{"ErrorEquals":["Lambda.ClientExecutionTimeoutException","Lambda.ServiceException","Lambda.AWSLambdaException","Lambda.SdkClientException"],"IntervalSeconds":2,"MaxAttempts":6,"BackoffRate":2}],"Catch":[{"ErrorEquals":["States.ALL"],"ResultPath":"$.error","Next":"FailPlaybackSessionStatusState"}],"Type":"Task","ResultPath":"$.output","Resource":"arn:",
+              {
+                "Ref": "AWS::Partition",
+              },
+              ":states:::lambda:invoke","Parameters":{"FunctionName":"",
+              {
+                "Fn::GetAtt": [
+                  "PlaybackSessionWebRtcLambdaA298E8CD",
+                  "Arn",
+                ],
+              },
+              "","Payload":{"customerAccountId.$":"$.partitionKey","sessionId.$":"$.sortKey"}}},"FailPlaybackSessionStatusState":{"Next":"Fail","Retry":[{"ErrorEquals":["Lambda.ClientExecutionTimeoutException","Lambda.ServiceException","Lambda.AWSLambdaException","Lambda.SdkClientException"],"IntervalSeconds":2,"MaxAttempts":6,"BackoffRate":2}],"Type":"Task","Resource":"arn:",
+              {
+                "Ref": "AWS::Partition",
+              },
+              ":states:::lambda:invoke","Parameters":{"FunctionName":"",
+              {
+                "Fn::GetAtt": [
+                  "PlaybackSessionUpdatePlaybackSessionStatusLambdaC51FBA63",
+                  "Arn",
+                ],
+              },
+              "","Payload":{"customerAccountId.$":"$.partitionKey","sessionId.$":"$.sortKey","sessionStatus":"FAILED","failureReason.$":"$.error.Cause"}}},"Fail":{"Type":"Fail"},"UpdatePlaybackSessionStatusState":{"Next":"Successful","Retry":[{"ErrorEquals":["Lambda.ClientExecutionTimeoutException","Lambda.ServiceException","Lambda.AWSLambdaException","Lambda.SdkClientException"],"IntervalSeconds":2,"MaxAttempts":6,"BackoffRate":2}],"Type":"Task","Resource":"arn:",
+              {
+                "Ref": "AWS::Partition",
+              },
+              ":states:::lambda:invoke","Parameters":{"FunctionName":"",
+              {
+                "Fn::GetAtt": [
+                  "PlaybackSessionUpdatePlaybackSessionStatusLambdaC51FBA63",
+                  "Arn",
+                ],
+              },
+              "","Payload":{"customerAccountId.$":"$.partitionKey","sessionId.$":"$.sortKey","sessionStatus":"COMPLETED"}}},"Successful":{"Type":"Succeed"}}}",
+            ],
+          ],
+        },
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "PlaybackSessionPlaybackSessionStateMachineRole95AE6239",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "AWS::StepFunctions::StateMachine",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "PlaybackSessionPlaybackSessionStateMachineRole95AE6239": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "states.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "PlaybackSessionPlaybackSessionStateMachineRoleDefaultPolicy76181CE7": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "PlaybackSessionDetermineIfCloudOrPeerToPeerLambda98CA24D5",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "PlaybackSessionDetermineIfCloudOrPeerToPeerLambda98CA24D5",
+                          "Arn",
+                        ],
+                      },
+                      ":*",
+                    ],
+                  ],
+                },
+              ],
+            },
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "PlaybackSessionHLSStreamingLambda6B4EFA61",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "PlaybackSessionHLSStreamingLambda6B4EFA61",
+                          "Arn",
+                        ],
+                      },
+                      ":*",
+                    ],
+                  ],
+                },
+              ],
+            },
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "PlaybackSessionWebRtcLambdaA298E8CD",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "PlaybackSessionWebRtcLambdaA298E8CD",
+                          "Arn",
+                        ],
+                      },
+                      ":*",
+                    ],
+                  ],
+                },
+              ],
+            },
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "PlaybackSessionUpdatePlaybackSessionStatusLambdaC51FBA63",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "PlaybackSessionUpdatePlaybackSessionStatusLambdaC51FBA63",
+                          "Arn",
+                        ],
+                      },
+                      ":*",
+                    ],
+                  ],
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "PlaybackSessionPlaybackSessionStateMachineRoleDefaultPolicy76181CE7",
+        "Roles": [
+          {
+            "Ref": "PlaybackSessionPlaybackSessionStateMachineRole95AE6239",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "PlaybackSessionPlaybackWebRtcLambdaLogGroupE87B59FA": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "LogGroupName": "PlaybackWebRtcLambdaLogGroup",
+        "RetentionInDays": 3653,
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "PlaybackSessionTableF310C758": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "CustomerAccountId",
+            "AttributeType": "S",
+          },
+          {
+            "AttributeName": "SessionId",
+            "AttributeType": "S",
+          },
+        ],
+        "BillingMode": "PAY_PER_REQUEST",
+        "DeletionProtectionEnabled": true,
+        "KeySchema": [
+          {
+            "AttributeName": "CustomerAccountId",
+            "KeyType": "HASH",
+          },
+          {
+            "AttributeName": "SessionId",
+            "KeyType": "RANGE",
+          },
+        ],
+        "PointInTimeRecoverySpecification": {
+          "PointInTimeRecoveryEnabled": true,
+        },
+        "SSESpecification": {
+          "SSEEnabled": true,
+        },
+        "StreamSpecification": {
+          "StreamViewType": "NEW_AND_OLD_IMAGES",
+        },
+        "TableClass": "STANDARD",
+        "TableName": "PlaybackSessionTable",
+      },
+      "Type": "AWS::DynamoDB::Table",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "PlaybackSessionUpdatePlaybackSessionStatusLambdaC51FBA63": {
+      "DependsOn": [
+        "PlaybackSessionPlaybackSessionRole8F9838A3",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
+          "S3Key": "575091b14cc0a71903849debebd74c9f138bf394b0321388f525de34eb38d3aa.zip",
+        },
+        "Description": "Lambda responsible for updating playback session status",
+        "Handler": "com.amazon.awsvideoanalyticsvlcontrolplane.playback.UpdatePlaybackSessionStatus::handleRequest",
+        "LoggingConfig": {
+          "LogGroup": {
+            "Ref": "PlaybackSessionUpdatePlaybackSessionStatusLambdaLogGroupD70071F8",
+          },
+        },
+        "MemorySize": 2048,
+        "Role": {
+          "Fn::GetAtt": [
+            "PlaybackSessionPlaybackSessionRole8F9838A3",
+            "Arn",
+          ],
+        },
+        "Runtime": "java17",
+        "Timeout": 720,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "PlaybackSessionUpdatePlaybackSessionStatusLambdaLogGroupD70071F8": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "LogGroupName": "UpdatePlaybackSessionStatusLambdaLogGroup",
+        "RetentionInDays": 3653,
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "PlaybackSessionWebRtcLambdaA298E8CD": {
+      "DependsOn": [
+        "PlaybackSessionPlaybackSessionRole8F9838A3",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
+          "S3Key": "575091b14cc0a71903849debebd74c9f138bf394b0321388f525de34eb38d3aa.zip",
+        },
+        "Description": "Lambda responsible for handling P2P connections",
+        "Environment": {
+          "Variables": {
+            "airportCode": "iad",
+            "tableName": "PlaybackSessionTable",
+          },
+        },
+        "Handler": "com.amazon.awsvideoanalyticsvlcontrolplane.playback.WebRTCConnectionHandler::handleRequest",
+        "LoggingConfig": {
+          "LogGroup": {
+            "Ref": "PlaybackSessionPlaybackWebRtcLambdaLogGroupE87B59FA",
+          },
+        },
+        "MemorySize": 2048,
+        "Role": {
+          "Fn::GetAtt": [
+            "PlaybackSessionPlaybackSessionRole8F9838A3",
+            "Arn",
+          ],
+        },
+        "Runtime": "java17",
+        "Timeout": 720,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "PlaybackSessionWorkflowPlaybackSessionTableDDBStreamProcessorLambdaRole010B2D40": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "PlaybackSessionWorkflowPlaybackSessionTableDDBStreamProcessorLambdaRoleDefaultPolicy056D6365": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "states:StartExecution",
+              "Effect": "Allow",
+              "Resource": {
+                "Ref": "PlaybackSessionPlaybackSessionStateMachineCEE81F05",
+              },
+            },
+            {
+              "Action": [
+                "sqs:SendMessage",
+                "sqs:GetQueueAttributes",
+                "sqs:GetQueueUrl",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "PlaybackSessionWorkflowPlaybackSessionTablePlaybackSessionTableStreamDLQ1F9D6E47",
+                  "Arn",
+                ],
+              },
+            },
+            {
+              "Action": [
+                "kms:Decrypt",
+                "kms:Encrypt",
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey*",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "PlaybackSessionWorkflowPlaybackSessionTablePlaybackSessionTableStreamDlqEncryptionKey21431498",
+                  "Arn",
+                ],
+              },
+            },
+            {
+              "Action": "dynamodb:ListStreams",
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            {
+              "Action": [
+                "dynamodb:DescribeStream",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "PlaybackSessionTableF310C758",
+                  "StreamArn",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "PlaybackSessionWorkflowPlaybackSessionTableDDBStreamProcessorLambdaRoleDefaultPolicy056D6365",
+        "Roles": [
+          {
+            "Ref": "PlaybackSessionWorkflowPlaybackSessionTableDDBStreamProcessorLambdaRole010B2D40",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "PlaybackSessionWorkflowPlaybackSessionTablePlaybackSessionTableStreamDLQ1F9D6E47": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "KmsMasterKeyId": {
+          "Fn::GetAtt": [
+            "PlaybackSessionWorkflowPlaybackSessionTablePlaybackSessionTableStreamDlqEncryptionKey21431498",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "AWS::SQS::Queue",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "PlaybackSessionWorkflowPlaybackSessionTablePlaybackSessionTableStreamDlqEncryptionKey21431498": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "EnableKeyRotation": true,
+        "KeyPolicy": {
+          "Statement": [
+            {
+              "Action": "kms:*",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":iam::123456789012:root",
+                    ],
+                  ],
+                },
+              },
+              "Resource": "*",
+            },
+            {
+              "Action": [
+                "kms:Create*",
+                "kms:Describe*",
+                "kms:Enable*",
+                "kms:List*",
+                "kms:Put*",
+                "kms:Update*",
+                "kms:Revoke*",
+                "kms:Disable*",
+                "kms:Get*",
+                "kms:Delete*",
+                "kms:TagResource",
+                "kms:UntagResource",
+                "kms:ScheduleKeyDeletion",
+                "kms:CancelKeyDeletion",
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":iam::123456789012:root",
+                    ],
+                  ],
+                },
+              },
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::KMS::Key",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "PlaybackSessionWorkflowPlaybackSessionTablePlaybackSessionTableStreamProcessor2947CF6C": {
+      "DependsOn": [
+        "PlaybackSessionWorkflowPlaybackSessionTableDDBStreamProcessorLambdaRoleDefaultPolicy056D6365",
+        "PlaybackSessionWorkflowPlaybackSessionTableDDBStreamProcessorLambdaRole010B2D40",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
+          "S3Key": "575091b14cc0a71903849debebd74c9f138bf394b0321388f525de34eb38d3aa.zip",
+        },
+        "Description": "Lambda responsible for invocation of StepFunction",
+        "Environment": {
+          "Variables": {
+            "PARTITION_KEY": "CustomerAccountId",
+            "SORT_KEY": "SessionId",
+            "STATE_MACHINE_ARN": {
+              "Ref": "PlaybackSessionPlaybackSessionStateMachineCEE81F05",
+            },
+          },
+        },
+        "Handler": "com.amazon.aws.videoanalytics.common.workflow.StreamProcessor::handleRequest",
+        "MemorySize": 1028,
+        "Role": {
+          "Fn::GetAtt": [
+            "PlaybackSessionWorkflowPlaybackSessionTableDDBStreamProcessorLambdaRole010B2D40",
+            "Arn",
+          ],
+        },
+        "Runtime": "java17",
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "PlaybackSessionWorkflowPlaybackSessionTablePlaybackSessionTableStreamProcessorDynamoDBEventSourceWorkflowStackPlaybackSessionTableCD0433C6C4BF4AC0": {
+      "Properties": {
+        "BatchSize": 10,
+        "BisectBatchOnFunctionError": true,
+        "DestinationConfig": {
+          "OnFailure": {
+            "Destination": {
+              "Fn::GetAtt": [
+                "PlaybackSessionWorkflowPlaybackSessionTablePlaybackSessionTableStreamDLQ1F9D6E47",
+                "Arn",
+              ],
+            },
+          },
+        },
+        "Enabled": true,
+        "EventSourceArn": {
+          "Fn::GetAtt": [
+            "PlaybackSessionTableF310C758",
+            "StreamArn",
+          ],
+        },
+        "FunctionName": {
+          "Ref": "PlaybackSessionWorkflowPlaybackSessionTablePlaybackSessionTableStreamProcessor2947CF6C",
+        },
+        "MaximumRetryAttempts": 2,
+        "StartingPosition": "LATEST",
+      },
+      "Type": "AWS::Lambda::EventSourceMapping",
+    },
+    "RegisterDeviceWorkflowDataForwarderLambdaLogGroup2C7FBF4F": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "LogGroupName": "KvsCreateLambdaLogGroup",
+        "RetentionInDays": 3653,
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "RegisterDeviceWorkflowFVLRegisterDeviceStateMachine1996E5D0": {
+      "DeletionPolicy": "Delete",
+      "DependsOn": [
+        "RegisterDeviceWorkflowFVLRegisterDeviceStateMachineRoleDefaultPolicyDC211720",
+        "RegisterDeviceWorkflowFVLRegisterDeviceStateMachineRole90233537",
+      ],
+      "Properties": {
+        "DefinitionString": {
+          "Fn::Join": [
+            "",
+            [
+              "{"StartAt":"Create KVS ARN","States":{"Create KVS ARN":{"Next":"Successful","Retry":[{"ErrorEquals":["Lambda.ClientExecutionTimeoutException","Lambda.ServiceException","Lambda.AWSLambdaException","Lambda.SdkClientException"],"IntervalSeconds":2,"MaxAttempts":6,"BackoffRate":2}],"Catch":[{"ErrorEquals":["States.ALL"],"ResultPath":"$.error","Next":"FailAndCleanupFVLRegStatus"}],"Type":"Task","ResultPath":"$.output","Resource":"arn:",
+              {
+                "Ref": "AWS::Partition",
+              },
+              ":states:::lambda:invoke","Parameters":{"FunctionName":"",
+              {
+                "Fn::GetAtt": [
+                  "RegisterDeviceWorkflowKvsCreateLambdaA83CDBA5",
+                  "Arn",
+                ],
+              },
+              "","Payload":{"CustomerAccountId.$":"$.partitionKey","JobId.$":"$.sortKey"}}},"Successful":{"Type":"Succeed"},"FailAndCleanupFVLRegStatus":{"Next":"Fail","Retry":[{"ErrorEquals":["Lambda.ClientExecutionTimeoutException","Lambda.ServiceException","Lambda.AWSLambdaException","Lambda.SdkClientException"],"IntervalSeconds":2,"MaxAttempts":6,"BackoffRate":2},{"ErrorEquals":["States.ALL"],"IntervalSeconds":2,"MaxAttempts":5,"BackoffRate":2}],"Type":"Task","ResultPath":"$.output","Resource":"arn:",
+              {
+                "Ref": "AWS::Partition",
+              },
+              ":states:::lambda:invoke","Parameters":{"FunctionName":"",
+              {
+                "Fn::GetAtt": [
+                  "RegisterDeviceWorkflowFailAndCleanupFvlRegHandlerE47882A9",
+                  "Arn",
+                ],
+              },
+              "","Payload":{"CustomerAccountId.$":"$.partitionKey","JobId.$":"$.sortKey","FailureReason.$":"$.error.Cause"}}},"Fail":{"Type":"Fail"}}}",
+            ],
+          ],
+        },
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "RegisterDeviceWorkflowFVLRegisterDeviceStateMachineRole90233537",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "AWS::StepFunctions::StateMachine",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "RegisterDeviceWorkflowFVLRegisterDeviceStateMachineRole90233537": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "states.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "RegisterDeviceWorkflowFVLRegisterDeviceStateMachineRoleDefaultPolicyDC211720": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "RegisterDeviceWorkflowKvsCreateLambdaA83CDBA5",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "RegisterDeviceWorkflowKvsCreateLambdaA83CDBA5",
+                          "Arn",
+                        ],
+                      },
+                      ":*",
+                    ],
+                  ],
+                },
+              ],
+            },
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "RegisterDeviceWorkflowFailAndCleanupFvlRegHandlerE47882A9",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "RegisterDeviceWorkflowFailAndCleanupFvlRegHandlerE47882A9",
+                          "Arn",
+                        ],
+                      },
+                      ":*",
+                    ],
+                  ],
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "RegisterDeviceWorkflowFVLRegisterDeviceStateMachineRoleDefaultPolicyDC211720",
+        "Roles": [
+          {
+            "Ref": "RegisterDeviceWorkflowFVLRegisterDeviceStateMachineRole90233537",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "RegisterDeviceWorkflowFailAndCleanupFvlRegHandlerE47882A9": {
+      "DependsOn": [
+        "RegisterDeviceWorkflowFailAndCleanupFvlRegHandlerRole331A94CC",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
+          "S3Key": "575091b14cc0a71903849debebd74c9f138bf394b0321388f525de34eb38d3aa.zip",
+        },
+        "Description": "Lambda responsible for cleaning up KVS resources and updating the failure status in ddb.",
+        "Environment": {
+          "Variables": {
+            "airportCode": "iad",
+            "tableName": "FVLRegisterDeviceJobTable",
+          },
+        },
+        "Handler": "com.amazon.awsvideoanalyticsvlcontrolplane.workflow.FailAndCleanupFVLDeviceRegistrationHandler::handleRequest",
+        "LoggingConfig": {
+          "LogGroup": {
+            "Ref": "RegisterDeviceWorkflowFailAndCleanupFvlRegHandlerLogGroupFB8AF6F7",
+          },
+        },
+        "MemorySize": 2048,
+        "Role": {
+          "Fn::GetAtt": [
+            "RegisterDeviceWorkflowFailAndCleanupFvlRegHandlerRole331A94CC",
+            "Arn",
+          ],
+        },
+        "Runtime": "java17",
+        "Timeout": 720,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "RegisterDeviceWorkflowFailAndCleanupFvlRegHandlerLogGroupFB8AF6F7": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "LogGroupName": "FailAndCleanupFvlRegHandlerLogGroup",
+        "RetentionInDays": 3653,
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "RegisterDeviceWorkflowFailAndCleanupFvlRegHandlerRole331A94CC": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
+                    "dynamodb:GetItem",
+                    "dynamodb:PutItem",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": [
+                    {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "arn:",
+                          {
+                            "Ref": "AWS::Partition",
+                          },
+                          ":dynamodb:us-east-1:123456789012:table/FVLRegisterDeviceJobTable",
+                        ],
+                      ],
+                    },
+                    {
+                      "Fn::GetAtt": [
+                        "FVLRegisterDeviceJobTable62B0BD14",
+                        "Arn",
+                      ],
+                    },
+                  ],
+                },
+                {
+                  "Action": "sts:AssumeRole",
+                  "Effect": "Allow",
+                  "Resource": [
+                    {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "arn:",
+                          {
+                            "Ref": "AWS::Partition",
+                          },
+                          ":iam::*:role/CrossAccountRoleForStartFVLRegisterDevice",
+                        ],
+                      ],
+                    },
+                    "arn:aws:iam::*:role/CrossAccountRoleForStartFVLRegisterDevice-iad",
+                  ],
+                },
+                {
+                  "Action": [
+                    "kinesisvideo:DeleteStream",
+                    "kinesisvideo:DeleteSignalingChannel",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:",
+                        {
+                          "Ref": "AWS::Partition",
+                        },
+                        ":kinesisvideo:us-east-1:123456789012:*",
+                      ],
+                    ],
+                  },
+                },
+                {
+                  "Action": [
+                    "kms:Decrypt",
+                    "kms:Encrypt",
+                    "kms:ReEncrypt*",
+                    "kms:GenerateDataKey*",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:",
+                        {
+                          "Ref": "AWS::Partition",
+                        },
+                        ":kms:us-east-1:123456789012:key/*",
+                      ],
+                    ],
+                  },
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": "AccessPolicy",
+          },
+        ],
+        "RoleName": "FailAndCleanupFvlRegHandlerRole",
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "RegisterDeviceWorkflowKVSStreamCreatorLambdaRole92F0C304": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
+                    "dynamodb:GetRecords",
+                    "dynamodb:GetItem",
+                    "dynamodb:Query",
+                    "dynamodb:PutItem",
+                    "dynamodb:UpdateItem",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": [
+                    {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "arn:",
+                          {
+                            "Ref": "AWS::Partition",
+                          },
+                          ":dynamodb:us-east-1:123456789012:table/FVLRegisterDeviceJobTable",
+                        ],
+                      ],
+                    },
+                    {
+                      "Fn::GetAtt": [
+                        "FVLRegisterDeviceJobTable62B0BD14",
+                        "Arn",
+                      ],
+                    },
+                  ],
+                },
+                {
+                  "Action": "sts:AssumeRole",
+                  "Effect": "Allow",
+                  "Resource": [
+                    {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "arn:",
+                          {
+                            "Ref": "AWS::Partition",
+                          },
+                          ":iam::*:role/CrossAccountRoleForStartFVLRegisterDevice",
+                        ],
+                      ],
+                    },
+                    "arn:aws:iam::*:role/CrossAccountRoleForStartFVLRegisterDevice-iad",
+                  ],
+                },
+                {
+                  "Action": [
+                    "kinesisvideo:CreateStream",
+                    "kinesisvideo:CreateSignalingChannel",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:",
+                        {
+                          "Ref": "AWS::Partition",
+                        },
+                        ":kinesisvideo:us-east-1:123456789012:*",
+                      ],
+                    ],
+                  },
+                },
+                {
+                  "Action": [
+                    "kms:Decrypt",
+                    "kms:Encrypt",
+                    "kms:ReEncrypt*",
+                    "kms:GenerateDataKey*",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:",
+                        {
+                          "Ref": "AWS::Partition",
+                        },
+                        ":kms:us-east-1:123456789012:key/*",
+                      ],
+                    ],
+                  },
+                },
+                {
+                  "Action": [
+                    "kms:Decrypt",
+                    "kms:GenerateDataKey*",
+                    "kms:ReEncrypt*",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": "arn:*:kms:*:*:key/*",
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": "AccessPolicy",
+          },
+        ],
+        "RoleName": "KVSStreamCreatorLambdaRole",
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "RegisterDeviceWorkflowKvsCreateLambdaA83CDBA5": {
+      "DependsOn": [
+        "RegisterDeviceWorkflowKVSStreamCreatorLambdaRole92F0C304",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
+          "S3Key": "575091b14cc0a71903849debebd74c9f138bf394b0321388f525de34eb38d3aa.zip",
+        },
+        "Description": "Lambda responsible for invocation of StepFunction",
+        "Environment": {
+          "Variables": {
+            "airportCode": "iad",
+            "tableName": "FVLRegisterDeviceJobTable",
+          },
+        },
+        "Handler": "com.amazon.awsvideoanalyticsvlcontrolplane.workflow.KVSResourceCreateLambda::handleRequest",
+        "LoggingConfig": {
+          "LogGroup": {
+            "Ref": "RegisterDeviceWorkflowDataForwarderLambdaLogGroup2C7FBF4F",
+          },
+        },
+        "MemorySize": 2048,
+        "Role": {
+          "Fn::GetAtt": [
+            "RegisterDeviceWorkflowKVSStreamCreatorLambdaRole92F0C304",
+            "Arn",
+          ],
+        },
+        "Runtime": "java17",
+        "Timeout": 720,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "RegisterDeviceWorkflowWorkflowFVLRegisterDeviceJobTableDDBStreamProcessorLambdaRole637CC470": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "RegisterDeviceWorkflowWorkflowFVLRegisterDeviceJobTableDDBStreamProcessorLambdaRoleDefaultPolicy38089778": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "states:StartExecution",
+              "Effect": "Allow",
+              "Resource": {
+                "Ref": "RegisterDeviceWorkflowFVLRegisterDeviceStateMachine1996E5D0",
+              },
+            },
+            {
+              "Action": [
+                "sqs:SendMessage",
+                "sqs:GetQueueAttributes",
+                "sqs:GetQueueUrl",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "RegisterDeviceWorkflowWorkflowFVLRegisterDeviceJobTableFVLRegisterDeviceJobTableStreamDLQA7868005",
+                  "Arn",
+                ],
+              },
+            },
+            {
+              "Action": [
+                "kms:Decrypt",
+                "kms:Encrypt",
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey*",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "RegisterDeviceWorkflowWorkflowFVLRegisterDeviceJobTableFVLRegisterDeviceJobTableStreamDlqEncryptionKey212D7076",
+                  "Arn",
+                ],
+              },
+            },
+            {
+              "Action": "dynamodb:ListStreams",
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            {
+              "Action": [
+                "dynamodb:DescribeStream",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "FVLRegisterDeviceJobTable62B0BD14",
+                  "StreamArn",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "RegisterDeviceWorkflowWorkflowFVLRegisterDeviceJobTableDDBStreamProcessorLambdaRoleDefaultPolicy38089778",
+        "Roles": [
+          {
+            "Ref": "RegisterDeviceWorkflowWorkflowFVLRegisterDeviceJobTableDDBStreamProcessorLambdaRole637CC470",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "RegisterDeviceWorkflowWorkflowFVLRegisterDeviceJobTableFVLRegisterDeviceJobTableStreamDLQA7868005": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "KmsMasterKeyId": {
+          "Fn::GetAtt": [
+            "RegisterDeviceWorkflowWorkflowFVLRegisterDeviceJobTableFVLRegisterDeviceJobTableStreamDlqEncryptionKey212D7076",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "AWS::SQS::Queue",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "RegisterDeviceWorkflowWorkflowFVLRegisterDeviceJobTableFVLRegisterDeviceJobTableStreamDlqEncryptionKey212D7076": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "EnableKeyRotation": true,
+        "KeyPolicy": {
+          "Statement": [
+            {
+              "Action": "kms:*",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":iam::123456789012:root",
+                    ],
+                  ],
+                },
+              },
+              "Resource": "*",
+            },
+            {
+              "Action": [
+                "kms:Create*",
+                "kms:Describe*",
+                "kms:Enable*",
+                "kms:List*",
+                "kms:Put*",
+                "kms:Update*",
+                "kms:Revoke*",
+                "kms:Disable*",
+                "kms:Get*",
+                "kms:Delete*",
+                "kms:TagResource",
+                "kms:UntagResource",
+                "kms:ScheduleKeyDeletion",
+                "kms:CancelKeyDeletion",
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":iam::123456789012:root",
+                    ],
+                  ],
+                },
+              },
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::KMS::Key",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "RegisterDeviceWorkflowWorkflowFVLRegisterDeviceJobTableFVLRegisterDeviceJobTableStreamProcessor3C61509E": {
+      "DependsOn": [
+        "RegisterDeviceWorkflowWorkflowFVLRegisterDeviceJobTableDDBStreamProcessorLambdaRoleDefaultPolicy38089778",
+        "RegisterDeviceWorkflowWorkflowFVLRegisterDeviceJobTableDDBStreamProcessorLambdaRole637CC470",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
+          "S3Key": "575091b14cc0a71903849debebd74c9f138bf394b0321388f525de34eb38d3aa.zip",
+        },
+        "Description": "Lambda responsible for invocation of StepFunction",
+        "Environment": {
+          "Variables": {
+            "PARTITION_KEY": "CustomerAccountId",
+            "SORT_KEY": "JobId",
+            "STATE_MACHINE_ARN": {
+              "Ref": "RegisterDeviceWorkflowFVLRegisterDeviceStateMachine1996E5D0",
+            },
+          },
+        },
+        "Handler": "com.amazon.aws.videoanalytics.common.workflow.StreamProcessor::handleRequest",
+        "MemorySize": 1028,
+        "Role": {
+          "Fn::GetAtt": [
+            "RegisterDeviceWorkflowWorkflowFVLRegisterDeviceJobTableDDBStreamProcessorLambdaRole637CC470",
+            "Arn",
+          ],
+        },
+        "Runtime": "java17",
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "RegisterDeviceWorkflowWorkflowFVLRegisterDeviceJobTableFVLRegisterDeviceJobTableStreamProcessorDynamoDBEventSourceWorkflowStackFVLRegisterDeviceJobTable1AE46AAEBAF8499D": {
+      "Properties": {
+        "BatchSize": 10,
+        "BisectBatchOnFunctionError": true,
+        "DestinationConfig": {
+          "OnFailure": {
+            "Destination": {
+              "Fn::GetAtt": [
+                "RegisterDeviceWorkflowWorkflowFVLRegisterDeviceJobTableFVLRegisterDeviceJobTableStreamDLQA7868005",
+                "Arn",
+              ],
+            },
+          },
+        },
+        "Enabled": true,
+        "EventSourceArn": {
+          "Fn::GetAtt": [
+            "FVLRegisterDeviceJobTable62B0BD14",
+            "StreamArn",
+          ],
+        },
+        "FunctionName": {
+          "Ref": "RegisterDeviceWorkflowWorkflowFVLRegisterDeviceJobTableFVLRegisterDeviceJobTableStreamProcessor3C61509E",
+        },
+        "MaximumRetryAttempts": 2,
+        "StartingPosition": "LATEST",
+      },
+      "Type": "AWS::Lambda::EventSourceMapping",
+    },
+    "VideoExportExportVideoAndUploadLambdaDAC661E4": {
+      "DependsOn": [
+        "VideoExportStartVideoExportRole4AA5CCD7",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
+          "S3Key": "575091b14cc0a71903849debebd74c9f138bf394b0321388f525de34eb38d3aa.zip",
+        },
+        "Description": "Lambda to handle export Video and upload to S3",
+        "EphemeralStorage": {
+          "Size": 10240,
+        },
+        "Handler": "com.amazon.awsvideoanalyticsvlcontrolplane.videologistics.videoExport.ProcessVideoExportHandler::handleRequest",
+        "LoggingConfig": {
+          "LogGroup": {
+            "Ref": "VideoExportExportVideoAndUploadLambdaLogGroupC78942E9",
+          },
+        },
+        "MemorySize": 2048,
+        "Role": {
+          "Fn::GetAtt": [
+            "VideoExportStartVideoExportRole4AA5CCD7",
+            "Arn",
+          ],
+        },
+        "Runtime": "java17",
+        "Timeout": 900,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "VideoExportExportVideoAndUploadLambdaLogGroupC78942E9": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "LogGroupName": "ExportVideoAndUploadLambdaLogGroup",
+        "RetentionInDays": 3653,
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "VideoExportJobTableC8C47CE3": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "CustomerAccountId_DeviceId",
+            "AttributeType": "S",
+          },
+          {
+            "AttributeName": "JobId",
+            "AttributeType": "S",
+          },
+          {
+            "AttributeName": "CustomerAccountId",
+            "AttributeType": "S",
+          },
+        ],
+        "BillingMode": "PAY_PER_REQUEST",
+        "DeletionProtectionEnabled": true,
+        "GlobalSecondaryIndexes": [
+          {
+            "IndexName": "DeviceJobStatus-Index",
+            "KeySchema": [
+              {
+                "AttributeName": "CustomerAccountId_DeviceId",
+                "KeyType": "HASH",
+              },
+            ],
+            "Projection": {
+              "ProjectionType": "ALL",
+            },
+          },
+          {
+            "IndexName": "AccountIDJobID-Index",
+            "KeySchema": [
+              {
+                "AttributeName": "CustomerAccountId",
+                "KeyType": "HASH",
+              },
+            ],
+            "Projection": {
+              "ProjectionType": "ALL",
+            },
+          },
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "CustomerAccountId_DeviceId",
+            "KeyType": "HASH",
+          },
+          {
+            "AttributeName": "JobId",
+            "KeyType": "RANGE",
+          },
+        ],
+        "PointInTimeRecoverySpecification": {
+          "PointInTimeRecoveryEnabled": true,
+        },
+        "SSESpecification": {
+          "SSEEnabled": true,
+        },
+        "StreamSpecification": {
+          "StreamViewType": "NEW_AND_OLD_IMAGES",
+        },
+        "TableClass": "STANDARD",
+        "TableName": "VideoExportJobTable",
+      },
+      "Type": "AWS::DynamoDB::Table",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "VideoExportStartVideoExportRole4AA5CCD7": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
+                    "dynamodb:GetRecords",
+                    "dynamodb:GetItem",
+                    "dynamodb:Query",
+                    "dynamodb:PutItem",
+                    "dynamodb:UpdateItem",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": [
+                    {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "arn:",
+                          {
+                            "Ref": "AWS::Partition",
+                          },
+                          ":dynamodb:us-east-1:123456789012:table/VideoExportResultTable",
+                        ],
+                      ],
+                    },
+                    {
+                      "Fn::GetAtt": [
+                        "VideoExportJobTableC8C47CE3",
+                        "Arn",
+                      ],
+                    },
+                  ],
+                },
+                {
+                  "Action": [
+                    "kms:Decrypt",
+                    "kms:Encrypt",
+                    "kms:ReEncrypt*",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:",
+                        {
+                          "Ref": "AWS::Partition",
+                        },
+                        ":kms:us-east-1:123456789012:key/*",
+                      ],
+                    ],
+                  },
+                },
+                {
+                  "Action": [
+                    "kinesisvideo:GetClip",
+                    "kinesisvideo:GetDataEndpoint",
+                    "kinesisvideo:ListFragments",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:",
+                        {
+                          "Ref": "AWS::Partition",
+                        },
+                        ":kinesisvideo:us-east-1:123456789012:*",
+                      ],
+                    ],
+                  },
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": "AccessPolicy",
+          },
+        ],
+        "RoleName": "StartVideoExportRole",
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "VideoExportUpdateJobStatusLambda5AC51E6E": {
+      "DependsOn": [
+        "VideoExportStartVideoExportRole4AA5CCD7",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
+          "S3Key": "575091b14cc0a71903849debebd74c9f138bf394b0321388f525de34eb38d3aa.zip",
+        },
+        "Description": "Lambda to handle updating the status of the video export job",
+        "Handler": "com.amazon.awsvideoanalyticsvlcontrolplane.videologistics.videoExport.UpdateVideoExportJobStatusHandler::handleRequest",
+        "LoggingConfig": {
+          "LogGroup": {
+            "Ref": "VideoExportUpdateJobStatusLambdaLogGroupEEAB1B7A",
+          },
+        },
+        "MemorySize": 2048,
+        "Role": {
+          "Fn::GetAtt": [
+            "VideoExportStartVideoExportRole4AA5CCD7",
+            "Arn",
+          ],
+        },
+        "Runtime": "java17",
+        "Timeout": 120,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "VideoExportUpdateJobStatusLambdaLogGroupEEAB1B7A": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "LogGroupName": "UpdateJobStatusLambdaLogGroup",
+        "RetentionInDays": 3653,
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "VideoExportVideoExportStateMachine44F3D7FB": {
+      "DeletionPolicy": "Delete",
+      "DependsOn": [
+        "VideoExportVideoExportStateMachineRoleDefaultPolicyA8C62B9A",
+        "VideoExportVideoExportStateMachineRole1C25EBBA",
+      ],
+      "Properties": {
+        "DefinitionString": {
+          "Fn::Join": [
+            "",
+            [
+              "{"StartAt":"InitializeCounter","States":{"InitializeCounter":{"Type":"Pass","Parameters":{"Counter":0,"sortKey.$":"$.sortKey","partitionKey.$":"$.partitionKey"},"Next":"ExportVideoAndUpload-Execution"},"ExportVideoAndUpload-Execution":{"Next":"CheckJobComplete","Retry":[{"ErrorEquals":["Lambda.ClientExecutionTimeoutException","Lambda.ServiceException","Lambda.AWSLambdaException","Lambda.SdkClientException"],"IntervalSeconds":2,"MaxAttempts":6,"BackoffRate":2},{"ErrorEquals":["States.TaskFailed"],"IntervalSeconds":5,"MaxAttempts":3,"BackoffRate":2}],"Catch":[{"ErrorEquals":["States.ALL"],"ResultPath":"$.executionResult","Next":"UpdateJobStatus-BreakLoop"}],"Type":"Task","ResultPath":"$.exportResult","Resource":"arn:",
+              {
+                "Ref": "AWS::Partition",
+              },
+              ":states:::lambda:invoke","Parameters":{"FunctionName":"",
+              {
+                "Fn::GetAtt": [
+                  "VideoExportExportVideoAndUploadLambdaDAC661E4",
+                  "Arn",
+                ],
+              },
+              "","Payload":{"jobId.$":"$.sortKey","customerIDDeviceID.$":"$.partitionKey","counter.$":"$.Counter"}}},"IncrementCounter":{"Type":"Pass","Parameters":{"Counter.$":"States.MathAdd($.Counter, 1)","lastProcessedTimestamp.$":"$.exportResult.Payload.newLastProcessedTimestamp","sortKey.$":"$.sortKey","partitionKey.$":"$.partitionKey"},"Next":"ExportVideoAndUpload-Execution"},"WaitBeforeNextAttempt":{"Type":"Wait","SecondsPath":"$.exportResult.Payload.waitTime","Next":"IncrementCounter"},"UpdateLastProcessedTimestamp":{"Type":"Pass","ResultPath":"$.lastProcessedTimestamp","Parameters":{"lastProcessedTimestamp.$":"$.exportResult.Payload.newLastProcessedTimestamp"},"Next":"WaitBeforeNextAttempt"},"CheckJobComplete":{"Type":"Choice","Choices":[{"Variable":"$.exportResult.Payload.isJobComplete","BooleanEquals":true,"Next":"UpdateJobStatus-JobCompleted"}],"Default":"UpdateLastProcessedTimestamp"},"UpdateJobStatus-JobCompleted":{"Next":"JobComplete","Retry":[{"ErrorEquals":["Lambda.ClientExecutionTimeoutException","Lambda.ServiceException","Lambda.AWSLambdaException","Lambda.SdkClientException"],"IntervalSeconds":2,"MaxAttempts":6,"BackoffRate":2}],"Catch":[{"ErrorEquals":["States.ALL"],"Next":"CompleteJobUpdateStatusFailed"}],"Type":"Task","Resource":"arn:",
+              {
+                "Ref": "AWS::Partition",
+              },
+              ":states:::lambda:invoke","Parameters":{"FunctionName":"",
+              {
+                "Fn::GetAtt": [
+                  "VideoExportUpdateJobStatusLambda5AC51E6E",
+                  "Arn",
+                ],
+              },
+              "","Payload":{"jobId.$":"$.sortKey","customerIDDeviceID.$":"$.partitionKey","counter.$":"$.Counter"}}},"JobComplete":{"Type":"Succeed"},"CompleteJobUpdateStatusFailed":{"Type":"Fail","Error":"UpdateStatusJob Failed For Completed Export Job","CausePath":"$.Cause"},"UpdateJobStatus-BreakLoop":{"Next":"FailedExecutionInLoop","Retry":[{"ErrorEquals":["Lambda.ClientExecutionTimeoutException","Lambda.ServiceException","Lambda.AWSLambdaException","Lambda.SdkClientException"],"IntervalSeconds":2,"MaxAttempts":6,"BackoffRate":2}],"Catch":[{"ErrorEquals":["States.ALL"],"Next":"FailedJobUpdateStatusFailed"}],"Type":"Task","Resource":"arn:",
+              {
+                "Ref": "AWS::Partition",
+              },
+              ":states:::lambda:invoke","Parameters":{"FunctionName":"",
+              {
+                "Fn::GetAtt": [
+                  "VideoExportUpdateJobStatusLambda5AC51E6E",
+                  "Arn",
+                ],
+              },
+              "","Payload":{"jobId.$":"$.sortKey","customerIDDeviceID.$":"$.partitionKey","counter.$":"$.Counter","executionResult.$":"$.executionResult"}}},"FailedExecutionInLoop":{"Type":"Fail","Error":"Execution in Loop failed","CausePath":"$.Payload.Cause"},"FailedJobUpdateStatusFailed":{"Type":"Fail","Error":"UpdateStatusJob Failed For Uncompleted Export Job","CausePath":"$.Cause"}},"TimeoutSeconds":41100}",
+            ],
+          ],
+        },
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "VideoExportVideoExportStateMachineRole1C25EBBA",
+            "Arn",
+          ],
+        },
+        "StateMachineName": "VideoExportStateMachine",
+      },
+      "Type": "AWS::StepFunctions::StateMachine",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "VideoExportVideoExportStateMachineRole1C25EBBA": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "states.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "VideoExportVideoExportStateMachineRoleDefaultPolicyA8C62B9A": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "VideoExportExportVideoAndUploadLambdaDAC661E4",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "VideoExportExportVideoAndUploadLambdaDAC661E4",
+                          "Arn",
+                        ],
+                      },
+                      ":*",
+                    ],
+                  ],
+                },
+              ],
+            },
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "VideoExportUpdateJobStatusLambda5AC51E6E",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "VideoExportUpdateJobStatusLambda5AC51E6E",
+                          "Arn",
+                        ],
+                      },
+                      ":*",
+                    ],
+                  ],
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "VideoExportVideoExportStateMachineRoleDefaultPolicyA8C62B9A",
+        "Roles": [
+          {
+            "Ref": "VideoExportVideoExportStateMachineRole1C25EBBA",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "VideoExportWorkflowVideoExportJobTableDDBStreamProcessorLambdaRoleDefaultPolicyB5F0FAAB": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "states:StartExecution",
+              "Effect": "Allow",
+              "Resource": {
+                "Ref": "VideoExportVideoExportStateMachine44F3D7FB",
+              },
+            },
+            {
+              "Action": [
+                "sqs:SendMessage",
+                "sqs:GetQueueAttributes",
+                "sqs:GetQueueUrl",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "VideoExportWorkflowVideoExportJobTableVideoExportJobTableStreamDLQEF967104",
+                  "Arn",
+                ],
+              },
+            },
+            {
+              "Action": [
+                "kms:Decrypt",
+                "kms:Encrypt",
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey*",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "VideoExportWorkflowVideoExportJobTableVideoExportJobTableStreamDlqEncryptionKey30D36578",
+                  "Arn",
+                ],
+              },
+            },
+            {
+              "Action": "dynamodb:ListStreams",
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            {
+              "Action": [
+                "dynamodb:DescribeStream",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "VideoExportJobTableC8C47CE3",
+                  "StreamArn",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "VideoExportWorkflowVideoExportJobTableDDBStreamProcessorLambdaRoleDefaultPolicyB5F0FAAB",
+        "Roles": [
+          {
+            "Ref": "VideoExportWorkflowVideoExportJobTableDDBStreamProcessorLambdaRoleF090CC90",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "VideoExportWorkflowVideoExportJobTableDDBStreamProcessorLambdaRoleF090CC90": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "VideoExportWorkflowVideoExportJobTableVideoExportJobTableStreamDLQEF967104": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "KmsMasterKeyId": {
+          "Fn::GetAtt": [
+            "VideoExportWorkflowVideoExportJobTableVideoExportJobTableStreamDlqEncryptionKey30D36578",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "AWS::SQS::Queue",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "VideoExportWorkflowVideoExportJobTableVideoExportJobTableStreamDlqEncryptionKey30D36578": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "EnableKeyRotation": true,
+        "KeyPolicy": {
+          "Statement": [
+            {
+              "Action": "kms:*",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":iam::123456789012:root",
+                    ],
+                  ],
+                },
+              },
+              "Resource": "*",
+            },
+            {
+              "Action": [
+                "kms:Create*",
+                "kms:Describe*",
+                "kms:Enable*",
+                "kms:List*",
+                "kms:Put*",
+                "kms:Update*",
+                "kms:Revoke*",
+                "kms:Disable*",
+                "kms:Get*",
+                "kms:Delete*",
+                "kms:TagResource",
+                "kms:UntagResource",
+                "kms:ScheduleKeyDeletion",
+                "kms:CancelKeyDeletion",
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":iam::123456789012:root",
+                    ],
+                  ],
+                },
+              },
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::KMS::Key",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "VideoExportWorkflowVideoExportJobTableVideoExportJobTableStreamProcessor6D19F24A": {
+      "DependsOn": [
+        "VideoExportWorkflowVideoExportJobTableDDBStreamProcessorLambdaRoleDefaultPolicyB5F0FAAB",
+        "VideoExportWorkflowVideoExportJobTableDDBStreamProcessorLambdaRoleF090CC90",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
+          "S3Key": "575091b14cc0a71903849debebd74c9f138bf394b0321388f525de34eb38d3aa.zip",
+        },
+        "Description": "Lambda responsible for invocation of StepFunction",
+        "Environment": {
+          "Variables": {
+            "PARTITION_KEY": "CustomerAccountId_DeviceId",
+            "SORT_KEY": "JobId",
+            "STATE_MACHINE_ARN": {
+              "Ref": "VideoExportVideoExportStateMachine44F3D7FB",
+            },
+          },
+        },
+        "Handler": "com.amazon.aws.videoanalytics.common.workflow.StreamProcessor::handleRequest",
+        "MemorySize": 1028,
+        "Role": {
+          "Fn::GetAtt": [
+            "VideoExportWorkflowVideoExportJobTableDDBStreamProcessorLambdaRoleF090CC90",
+            "Arn",
+          ],
+        },
+        "Runtime": "java17",
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "VideoExportWorkflowVideoExportJobTableVideoExportJobTableStreamProcessorDynamoDBEventSourceWorkflowStackVideoExportJobTable18B360E27C2DEFD8": {
+      "Properties": {
+        "BatchSize": 10,
+        "BisectBatchOnFunctionError": true,
+        "DestinationConfig": {
+          "OnFailure": {
+            "Destination": {
+              "Fn::GetAtt": [
+                "VideoExportWorkflowVideoExportJobTableVideoExportJobTableStreamDLQEF967104",
+                "Arn",
+              ],
+            },
+          },
+        },
+        "Enabled": true,
+        "EventSourceArn": {
+          "Fn::GetAtt": [
+            "VideoExportJobTableC8C47CE3",
+            "StreamArn",
+          ],
+        },
+        "FunctionName": {
+          "Ref": "VideoExportWorkflowVideoExportJobTableVideoExportJobTableStreamProcessor6D19F24A",
+        },
+        "MaximumRetryAttempts": 2,
+        "StartingPosition": "LATEST",
+      },
+      "Type": "AWS::Lambda::EventSourceMapping",
+    },
+  },
+  "Rules": {
+    "CheckBootstrapVersion": {
+      "Assertions": [
+        {
+          "Assert": {
+            "Fn::Not": [
+              {
+                "Fn::Contains": [
+                  [
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5",
+                  ],
+                  {
+                    "Ref": "BootstrapVersion",
+                  },
+                ],
+              },
+            ],
+          },
+          "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI.",
+        },
+      ],
+    },
+  },
+}
+`;
