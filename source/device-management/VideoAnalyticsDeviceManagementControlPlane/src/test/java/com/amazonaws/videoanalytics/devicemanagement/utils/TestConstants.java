@@ -2,7 +2,6 @@ package com.amazonaws.videoanalytics.devicemanagement.utils;
 
 public final class TestConstants {
     public static final String MOCK_AWS_REGION = "mock-region-value";
-    public static final String REQUEST_ID = "12345678-abcd-8765-dcba-1234abcd5678";
 
     public static final String AI_CHIP_SET_VALUE = "novatek";
     public static final String AI_MODEL_VERSION_VALUE = "0.0.1";
