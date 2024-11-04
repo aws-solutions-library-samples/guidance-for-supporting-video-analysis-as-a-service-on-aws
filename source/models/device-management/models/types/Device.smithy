@@ -12,6 +12,11 @@ string CertificateId
 @length(min: 1, max: 128)
 string DeviceId
 
+// Shadow Name has the same pattern as IoT shadow name: https://docs.aws.amazon.com/iot/latest/apireference/API_iotdata_GetThingShadow.html#API_iotdata_GetThingShadow_RequestParameters
+@pattern("^[a-zA-Z0-9:_\\-]+$")
+@length(min: 1, max: 64)
+string ShadowName
+
 @pattern("^[a-z0-9\\-]+$")
 @length(min: 1, max: 128)
 string JobId
@@ -24,7 +29,7 @@ enum Status {
 }
 
 structure ShadowMap {
-    shadowName: String,
+    shadowName: ShadowName,
     stateDocument: Document
 }
 

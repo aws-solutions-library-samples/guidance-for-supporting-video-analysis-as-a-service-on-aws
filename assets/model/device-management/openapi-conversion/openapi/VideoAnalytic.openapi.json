@@ -265,7 +265,7 @@
                 }
             }
         },
-        "/get-device-shadow-/{deviceId}": {
+        "/get-device-shadow/{deviceId}": {
             "post": {
                 "operationId": "GetDeviceShadow",
                 "requestBody": {
@@ -300,6 +300,46 @@
                                 }
                             }
                         }
+                    },
+                    "400": {
+                        "description": "ValidationException 400 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "AccessDeniedException 403 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AccessDeniedExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "InternalServerException 500 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InternalServerExceptionResponseContent"
+                                }
+                            }
+                        }
+                    }
+                },
+                "x-amazon-apigateway-integration": {
+                    "httpMethod": "POST",
+                    "type": "aws_proxy",
+                    "uri": {
+                        "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${GetDeviceShadowActivity}/invocations"
+                    },
+                    "credentials": {
+                        "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/ApiGatewayRole"
                     }
                 }
             }
@@ -1440,7 +1480,10 @@
                 "type": "object",
                 "properties": {
                     "shadowName": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 64,
+                        "minLength": 1,
+                        "pattern": "^[a-zA-Z0-9:_\\-]+$"
                     }
                 }
             },
@@ -1607,7 +1650,10 @@
                 "type": "object",
                 "properties": {
                     "shadowName": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 64,
+                        "minLength": 1,
+                        "pattern": "^[a-zA-Z0-9:_\\-]+$"
                     },
                     "stateDocument": {}
                 }

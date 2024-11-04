@@ -7,6 +7,7 @@ import software.amazon.awssdk.services.iot.model.InternalException;
 import software.amazon.awssdk.services.iot.model.InternalFailureException;
 import software.amazon.awssdk.services.iot.model.InvalidRequestException;
 import software.amazon.awssdk.services.iot.model.IotException;
+import software.amazon.awssdk.awscore.exception.AwsServiceException;
 import software.amazon.awssdk.services.iot.model.LimitExceededException;
 import software.amazon.awssdk.services.iot.model.ResourceAlreadyExistsException;
 import software.amazon.awssdk.services.iot.model.ResourceNotFoundException;
@@ -29,18 +30,19 @@ import static com.amazonaws.videoanalytics.devicemanagement.exceptions.VideoAnal
 import static com.amazonaws.videoanalytics.devicemanagement.utils.LambdaProxyUtils.serializeResponse;
 
 public class ExceptionTranslator {
-    public static Map<String, Object> translateIotExceptionToLambdaResponse(IotException e) {
+    public static Map<String, Object> translateIotExceptionToLambdaResponse(AwsServiceException e) {
         if (e instanceof InvalidRequestException) {
             return serializeResponse(400, INVALID_INPUT_EXCEPTION);
-        } else if (e instanceof ResourceNotFoundException) {
+        } else if (e instanceof ResourceNotFoundException |
+                   e instanceof software.amazon.awssdk.services.iotdataplane.model.ResourceNotFoundException) {
             return serializeResponse(404, RESOURCE_NOT_FOUND_EXCEPTION);
         } else if (e instanceof UnauthorizedException || e.statusCode() == 403) {
             return serializeResponse(403, UNAUTHORIZED_EXCEPTION);
         } else if (e instanceof ThrottlingException) {
             return serializeResponse(500, THROTTLING_EXCEPTION);
         } else if (e instanceof InternalFailureException |
-                e instanceof ServiceUnavailableException |
-                e instanceof CertificateStateException) {
+                   e instanceof ServiceUnavailableException |
+                   e instanceof CertificateStateException) {
             return serializeResponse(500, INTERNAL_SERVER_EXCEPTION);
         } else if (e instanceof LimitExceededException) {
             return serializeResponse(500, LIMIT_EXCEEDED_EXCEPTION);

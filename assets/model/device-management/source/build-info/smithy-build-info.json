@@ -206,15 +206,6 @@
             "column": 1
         },
         {
-            "id": "HttpMethodSemantics.UnnecessaryReadonlyTrait",
-            "severity": "WARNING",
-            "shapeId": "com.amazonaws.videoanalytics.devicemanagement#GetDevice",
-            "message": "This operation uses the `POST` method in the `http` trait, but is marked with the readonly trait",
-            "filename": "/Volumes/workplace/guidance-for-video-analytics-infrastructure-on-aws/source/models/device-management/models/operations/DeviceOperations/GetDevice.smithy",
-            "line": 12,
-            "column": 1
-        },
-        {
             "id": "HttpMethodSemantics.MissingReadonlyTrait",
             "severity": "WARNING",
             "shapeId": "com.amazonaws.videoanalytics.devicemanagement#GetCreateDeviceNotificationStatus",
@@ -230,6 +221,15 @@
             "message": "This operation uses the `GET` method in the `http` trait, but is marked with the idempotent trait",
             "filename": "/Volumes/workplace/guidance-for-video-analytics-infrastructure-on-aws/source/models/device-management/models/operations/DeviceNotification/GetCreateDeviceNotificationStatus.smithy",
             "line": 5,
+            "column": 1
+        },
+        {
+            "id": "HttpMethodSemantics.UnnecessaryReadonlyTrait",
+            "severity": "WARNING",
+            "shapeId": "com.amazonaws.videoanalytics.devicemanagement#GetDevice",
+            "message": "This operation uses the `POST` method in the `http` trait, but is marked with the readonly trait",
+            "filename": "/Volumes/workplace/guidance-for-video-analytics-infrastructure-on-aws/source/models/device-management/models/operations/DeviceOperations/GetDevice.smithy",
+            "line": 12,
             "column": 1
         }
     ],

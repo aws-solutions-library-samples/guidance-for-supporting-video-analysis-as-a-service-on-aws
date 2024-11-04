@@ -16,8 +16,7 @@ public final class TestConstants {
     public static final String PRIVATE_IP_VALUE = "192.168.6.10";
     public static final String PUBLIC_IP_VALUE  = "10.15.1.100";
     public static final String SD_CARD_ID = "sc1";
-    public static final String SHADOW_REPORTED_KEY = "reported";
-    public static final String SHADOW_STATE_KEY = "state";
+    public static final String SHADOW_NAME = "testShadowName";
     public static final String TEST_ATTRIBUTE_KEY = "testKey";
     public static final String TEST_ATTRIBUTE_VALUE = "testValue";
     public static final String TEST_DEVICE_CAP_KEY = "deviceCapabilities";

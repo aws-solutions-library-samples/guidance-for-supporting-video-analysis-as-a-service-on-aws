@@ -5,6 +5,7 @@ import com.amazonaws.videoanalytics.devicemanagement.dependency.iot.IotService;
 import com.amazonaws.videoanalytics.devicemanagement.dagger.modules.AWSModule;
 
 import com.amazonaws.videoanalytics.devicemanagement.activity.GetDeviceActivity;
+import com.amazonaws.videoanalytics.devicemanagement.activity.GetDeviceShadowActivity;
 
 import dagger.Component;
 
@@ -20,6 +21,7 @@ import javax.inject.Singleton;
 @Singleton
 public interface AWSVideoAnalyticsDMControlPlaneComponent {
     void inject(GetDeviceActivity lambda);
+    void inject(GetDeviceShadowActivity lambda);
 
     IotService iotService();
 }

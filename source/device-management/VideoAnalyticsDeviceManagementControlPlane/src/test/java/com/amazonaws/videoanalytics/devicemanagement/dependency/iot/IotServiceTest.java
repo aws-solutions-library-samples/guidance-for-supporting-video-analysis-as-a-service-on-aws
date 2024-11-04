@@ -6,6 +6,7 @@ import com.amazonaws.videoanalytics.devicemanagement.DeviceMetaData;
 import com.amazonaws.videoanalytics.devicemanagement.DeviceState;
 import com.amazonaws.videoanalytics.devicemanagement.DeviceStatus;
 import com.amazonaws.videoanalytics.devicemanagement.GetDeviceResponseContent;
+import com.amazonaws.videoanalytics.devicemanagement.GetDeviceShadowResponseContent;
 import com.amazonaws.videoanalytics.devicemanagement.IpAddress;
 import com.amazonaws.videoanalytics.devicemanagement.StorageElement;
 import com.amazonaws.videoanalytics.devicemanagement.StorageState;
@@ -13,7 +14,7 @@ import com.amazonaws.videoanalytics.devicemanagement.VideoStreamingState;
 import com.amazonaws.videoanalytics.devicemanagement.utils.UpdateDeviceUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.ImmutableList;
-import com.google.gson.JsonObject;
+import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -56,6 +57,8 @@ import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyt
 import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyticsServiceLambdaConstants.RECORDING;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyticsServiceLambdaConstants.SHADOW_DESIRED_KEY;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyticsServiceLambdaConstants.SHADOW_METADATA_KEY;
+import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyticsServiceLambdaConstants.SHADOW_REPORTED_KEY;
+import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyticsServiceLambdaConstants.SHADOW_STATE_KEY;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.TestConstants.AI_CHIP_SET_VALUE;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.TestConstants.AI_MODEL_VERSION_VALUE;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.TestConstants.AI_SDK_VERSION_VALUE;
@@ -76,8 +79,7 @@ import static com.amazonaws.videoanalytics.devicemanagement.utils.TestConstants.
 import static com.amazonaws.videoanalytics.devicemanagement.utils.TestConstants.SD_CARD_ID;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.TestConstants.SD_CARD_TOTAL_CAPACITY;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.TestConstants.SD_CARD_USED_CAPACITY;
-import static com.amazonaws.videoanalytics.devicemanagement.utils.TestConstants.SHADOW_REPORTED_KEY;
-import static com.amazonaws.videoanalytics.devicemanagement.utils.TestConstants.SHADOW_STATE_KEY;
+import static com.amazonaws.videoanalytics.devicemanagement.utils.TestConstants.SHADOW_NAME;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.TestConstants.TEST_ATTRIBUTE_KEY;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.TestConstants.TEST_ATTRIBUTE_VALUE;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.TestConstants.TEST_DEVICE_CAP_KEY;
@@ -92,6 +94,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -425,52 +428,93 @@ public class IotServiceTest {
         verify(iotClient).searchIndex(eq(searchIndexRequest));
     }
 
-    private String buildProvisionShadowPayload(String sdCardStatus) {
-        JsonObject provisionShadow = new JsonObject();
+    @Test
+    public void getDeviceShadow_WhenShadowNameExists_ReturnsResponse() {
+        GetThingShadowResponse getThingShadowResponse = GetThingShadowResponse
+                .builder()
+                .payload(SdkBytes.fromUtf8String(buildEmptyDesiredStateShadow()))
+                .build();
 
-        JsonObject sdCardObject = new JsonObject();
-        sdCardObject.addProperty("status", sdCardStatus);
-        sdCardObject.addProperty("totalCapacity", SD_CARD_TOTAL_CAPACITY);
-        sdCardObject.addProperty("usedCapacity", SD_CARD_USED_CAPACITY);
-        sdCardObject.addProperty("updatedAt", DATE_LONG_IN_MILLIS);
-        sdCardObject.addProperty("id", SD_CARD_ID);
+        when(iotDataPlaneClient.getThingShadow(any(GetThingShadowRequest.class))).thenReturn(getThingShadowResponse);
+        
+        GetDeviceShadowResponseContent response = iotService.getDeviceShadow(DEVICE_ID, SHADOW_NAME);
+        JSONObject expectedJsonObject = new JSONObject();
+        assertTrue(expectedJsonObject.similar(response.getShadowPayload().getStateDocument()));
+        assertEquals(response.getShadowPayload().getShadowName(), SHADOW_NAME);
+    }
+
+    @Test
+    public void getDeviceShadow_WhenNullShadowName_ReturnsResponse() {
+        GetThingShadowResponse getThingShadowResponse = GetThingShadowResponse
+                .builder()
+                .payload(SdkBytes.fromUtf8String(buildEmptyDesiredStateShadow()))
+                .build();
+
+        when(iotDataPlaneClient.getThingShadow(any(GetThingShadowRequest.class))).thenReturn(getThingShadowResponse);
+
+        GetDeviceShadowResponseContent response = iotService.getDeviceShadow(DEVICE_ID, null);
+        JSONObject expectedJsonObject = new JSONObject();
+        assertTrue(expectedJsonObject.similar(response.getShadowPayload().getStateDocument()));
+        assertEquals(response.getShadowPayload().getShadowName(), null);
+    }
+
+    @Test
+    public void getDeviceShadow_WhenResourceNotFound_ThrowsResourceNotFoundException() {
+        when(iotDataPlaneClient.getThingShadow(any(GetThingShadowRequest.class))).thenThrow(
+                ResourceNotFoundException.class
+        );
+
+        assertThrows(ResourceNotFoundException.class, () -> {
+                iotService.getDeviceShadow(DEVICE_ID, SHADOW_NAME);
+        });
+    }
+
+    private String buildProvisionShadowPayload(String sdCardStatus) {
+        JSONObject provisionShadow = new JSONObject();
+
+        JSONObject sdCardObject = new JSONObject();
+        sdCardObject.put("status", sdCardStatus);
+        sdCardObject.put("totalCapacity", SD_CARD_TOTAL_CAPACITY);
+        sdCardObject.put("usedCapacity", SD_CARD_USED_CAPACITY);
+        sdCardObject.put("updatedAt", DATE_LONG_IN_MILLIS);
+        sdCardObject.put("id", SD_CARD_ID);
         
         // provision shadow's state.reported
-        JsonObject capabilitiesObject = new JsonObject();
-        capabilitiesObject.addProperty(TEST_DEVICE_CAP_KEY, TEST_DEVICE_CAP_VAL);
-        capabilitiesObject.addProperty(PUBLIC_IP_KEY, PUBLIC_IP_VALUE);
-        capabilitiesObject.addProperty(AI_CHIP_SET_KEY, AI_CHIP_SET_VALUE);
-        capabilitiesObject.addProperty(AI_SDK_VERSION_KEY, AI_SDK_VERSION_VALUE);
+        JSONObject capabilitiesObject = new JSONObject();
+        capabilitiesObject.put(TEST_DEVICE_CAP_KEY, TEST_DEVICE_CAP_VAL);
+        capabilitiesObject.put(PUBLIC_IP_KEY, PUBLIC_IP_VALUE);
+        capabilitiesObject.put(AI_CHIP_SET_KEY, AI_CHIP_SET_VALUE);
+        capabilitiesObject.put(AI_SDK_VERSION_KEY, AI_SDK_VERSION_VALUE);
 
-        JsonObject reportedStateObject = new JsonObject();
-        reportedStateObject.add("sdCard", sdCardObject);
-        reportedStateObject.add("capabilities", capabilitiesObject);
-        reportedStateObject.addProperty(MAC_KEY, MAC_VALUE);
-        reportedStateObject.addProperty(AI_MODEL_VERSION_KEY, AI_MODEL_VERSION_VALUE);
-        reportedStateObject.addProperty(AI_SDK_VERSION_KEY, AI_SDK_VERSION_VALUE);
-        reportedStateObject.addProperty(FIRMWARE_VERSION_KEY, FIRMWARE_VERSION_VALUE);
-        reportedStateObject.addProperty(MODEL_KEY, MODEL_VALUE);
-        reportedStateObject.addProperty(MANUFACTURER_KEY, MANUFACTURER_VALUE);
-        reportedStateObject.addProperty(PRIVATE_IP_KEY, PRIVATE_IP_VALUE);
-        reportedStateObject.addProperty(RECORDING, true);
+        JSONObject reportedStateObject = new JSONObject();
+        reportedStateObject.put("sdCard", sdCardObject);
+        reportedStateObject.put("capabilities", capabilitiesObject);
+        reportedStateObject.put(MAC_KEY, MAC_VALUE);
+        reportedStateObject.put(AI_MODEL_VERSION_KEY, AI_MODEL_VERSION_VALUE);
+        reportedStateObject.put(AI_SDK_VERSION_KEY, AI_SDK_VERSION_VALUE);
+        reportedStateObject.put(FIRMWARE_VERSION_KEY, FIRMWARE_VERSION_VALUE);
+        reportedStateObject.put(MODEL_KEY, MODEL_VALUE);
+        reportedStateObject.put(MANUFACTURER_KEY, MANUFACTURER_VALUE);
+        reportedStateObject.put(PRIVATE_IP_KEY, PRIVATE_IP_VALUE);
+        reportedStateObject.put(RECORDING, true);
 
-        JsonObject reportedState = new JsonObject();
-        reportedState.add(SHADOW_REPORTED_KEY, reportedStateObject);
-        provisionShadow.add(SHADOW_STATE_KEY, reportedState);
+        JSONObject reportedState = new JSONObject();
+        reportedState.put(SHADOW_REPORTED_KEY, reportedStateObject);
+        provisionShadow.put(SHADOW_STATE_KEY, reportedState);
 
         // provision shadow's metadata.reported
-        JsonObject timestamp = new JsonObject();
-        timestamp.addProperty("timestamp", TIMESTAMP);
-        JsonObject reportedMetadataObject = new JsonObject();
-        reportedMetadataObject.add(TEST_DEVICE_CAP_KEY, timestamp);
-        reportedMetadataObject.add(RECORDING, timestamp);
-        JsonObject reportedMetadata = new JsonObject();
-        reportedMetadata.add(SHADOW_REPORTED_KEY, reportedMetadataObject);
-        provisionShadow.add(SHADOW_METADATA_KEY, reportedMetadata);
+        JSONObject timestamp = new JSONObject();
+        timestamp.put("timestamp", TIMESTAMP);
+        JSONObject reportedMetadataObject = new JSONObject();
+        reportedMetadataObject.put(TEST_DEVICE_CAP_KEY, timestamp);
+        reportedMetadataObject.put(RECORDING, timestamp);
+        JSONObject reportedMetadata = new JSONObject();
+        reportedMetadata.put(SHADOW_REPORTED_KEY, reportedMetadataObject);
+        provisionShadow.put(SHADOW_METADATA_KEY, reportedMetadata);
 
-        provisionShadow.addProperty("timestamp", DATE);
-        provisionShadow.addProperty("clientToken", "token");
-        provisionShadow.addProperty("version",  "version");
+        provisionShadow.put("timestamp", DATE);
+        provisionShadow.put("clientToken", "token");
+        provisionShadow.put("version",  "version");
         return provisionShadow.toString();
     }
 
@@ -490,49 +534,49 @@ public class IotServiceTest {
          }
         }
          */
-        JsonObject videoEncoderShadow = new JsonObject();
+        JSONObject videoEncoderShadow = new JSONObject();
 
-        JsonObject resolutionForProfileOne = new JsonObject();
-        resolutionForProfileOne.addProperty("width", 1280);
-        resolutionForProfileOne.addProperty("height", 720);
-        JsonObject profileOneVideoSettings = new JsonObject();
-        profileOneVideoSettings.addProperty("codec", "H264");
-        profileOneVideoSettings.addProperty("bitRateType", "CBR");
-        profileOneVideoSettings.addProperty("frameRateLimit", 30);
-        profileOneVideoSettings.addProperty("bitRateLimit", 800);
-        profileOneVideoSettings.addProperty("gopLength", 10);
-        profileOneVideoSettings.add("resolution", resolutionForProfileOne);
+        JSONObject resolutionForProfileOne = new JSONObject();
+        resolutionForProfileOne.put("width", 1280);
+        resolutionForProfileOne.put("height", 720);
+        JSONObject profileOneVideoSettings = new JSONObject();
+        profileOneVideoSettings.put("codec", "H264");
+        profileOneVideoSettings.put("bitRateType", "CBR");
+        profileOneVideoSettings.put("frameRateLimit", 30);
+        profileOneVideoSettings.put("bitRateLimit", 800);
+        profileOneVideoSettings.put("gopLength", 10);
+        profileOneVideoSettings.put("resolution", resolutionForProfileOne);
 
-        JsonObject resolutionForProfileTwo = new JsonObject();
-        resolutionForProfileTwo.addProperty("width", 320);
-        resolutionForProfileTwo.addProperty("height", 240);
+        JSONObject resolutionForProfileTwo = new JSONObject();
+        resolutionForProfileTwo.put("width", 320);
+        resolutionForProfileTwo.put("height", 240);
 
-        JsonObject profileTwoVideoSettings = new JsonObject();
-        profileTwoVideoSettings.addProperty("codec", "H264");
-        profileTwoVideoSettings.addProperty("bitRateType", "VBR");
-        profileTwoVideoSettings.addProperty("frameRateLimit", 15.0);
-        profileTwoVideoSettings.addProperty("bitRateLimit", 128);
-        profileTwoVideoSettings.addProperty("gopLength", 30);
-        profileTwoVideoSettings.add("resolution", resolutionForProfileTwo);
+        JSONObject profileTwoVideoSettings = new JSONObject();
+        profileTwoVideoSettings.put("codec", "H264");
+        profileTwoVideoSettings.put("bitRateType", "VBR");
+        profileTwoVideoSettings.put("frameRateLimit", 15.0);
+        profileTwoVideoSettings.put("bitRateLimit", 128);
+        profileTwoVideoSettings.put("gopLength", 30);
+        profileTwoVideoSettings.put("resolution", resolutionForProfileTwo);
 
-        JsonObject videoSettings = new JsonObject();
-        videoSettings.add("vec1", profileOneVideoSettings);
-        videoSettings.add("vec2", profileTwoVideoSettings);
+        JSONObject videoSettings = new JSONObject();
+        videoSettings.put("vec1", profileOneVideoSettings);
+        videoSettings.put("vec2", profileTwoVideoSettings);
 
-        JsonObject imagingSettings = new JsonObject();
-        imagingSettings.addProperty("reversal", "V-FLIP");
+        JSONObject imagingSettings = new JSONObject();
+        imagingSettings.put("reversal", "V-FLIP");
 
-        JsonObject streamingSettings = new JsonObject();
-        streamingSettings.addProperty("type", "CONTINUOUS");
+        JSONObject streamingSettings = new JSONObject();
+        streamingSettings.put("type", "CONTINUOUS");
 
-        JsonObject allSettings = new JsonObject();
-        allSettings.add("videoSettings", videoSettings);
-        allSettings.add("imagingSettings", imagingSettings);
-        allSettings.add("streamingSettings", streamingSettings);
+        JSONObject allSettings = new JSONObject();
+        allSettings.put("videoSettings", videoSettings);
+        allSettings.put("imagingSettings", imagingSettings);
+        allSettings.put("streamingSettings", streamingSettings);
 
-        JsonObject videoEncoderReportedShadow = new JsonObject();
-        videoEncoderReportedShadow.add(SHADOW_REPORTED_KEY, allSettings);
-        videoEncoderShadow.add(SHADOW_STATE_KEY, videoEncoderReportedShadow);
+        JSONObject videoEncoderReportedShadow = new JSONObject();
+        videoEncoderReportedShadow.put(SHADOW_REPORTED_KEY, allSettings);
+        videoEncoderShadow.put(SHADOW_STATE_KEY, videoEncoderReportedShadow);
 
         return videoEncoderShadow.toString();
     }
@@ -549,31 +593,31 @@ public class IotServiceTest {
          }
         }
          */
-        JsonObject aiSettings = new JsonObject();
-        aiSettings.addProperty("mode", "intrusion");
+        JSONObject aiSettings = new JSONObject();
+        aiSettings.put("mode", "intrusion");
 
-        JsonObject aiProfiles = new JsonObject();
-        aiProfiles.add(AI_SETTINGS, aiSettings);
+        JSONObject aiProfiles = new JSONObject();
+        aiProfiles.put(AI_SETTINGS, aiSettings);
 
-        JsonObject aiReportedShadow = new JsonObject();
-        aiReportedShadow.add(SHADOW_REPORTED_KEY, aiProfiles);
+        JSONObject aiReportedShadow = new JSONObject();
+        aiReportedShadow.put(SHADOW_REPORTED_KEY, aiProfiles);
 
-        JsonObject aiShadow = new JsonObject();
-        aiShadow.add(SHADOW_STATE_KEY, aiReportedShadow);
+        JSONObject aiShadow = new JSONObject();
+        aiShadow.put(SHADOW_STATE_KEY, aiReportedShadow);
 
         return aiShadow.toString();
     }
 
     private String buildEmptyDesiredStateShadow() {
-        JsonObject emptyReported = new JsonObject();
-        JsonObject reportedStateObject = new JsonObject();
-        JsonObject reportedState = new JsonObject();
+        JSONObject emptyReported = new JSONObject();
+        JSONObject reportedStateObject = new JSONObject();
+        JSONObject reportedState = new JSONObject();
 
-        reportedState.add(SHADOW_DESIRED_KEY, reportedStateObject);
-        emptyReported.add(SHADOW_STATE_KEY, reportedState);
-        emptyReported.addProperty("timestamp", DATE);
-        emptyReported.addProperty("clientToken", "token");
-        emptyReported.addProperty("version",  "version");
+        reportedState.put(SHADOW_DESIRED_KEY, reportedStateObject);
+        emptyReported.put(SHADOW_STATE_KEY, reportedState);
+        emptyReported.put("timestamp", DATE);
+        emptyReported.put("clientToken", "token");
+        emptyReported.put("version",  "version");
 
         return emptyReported.toString();
     }

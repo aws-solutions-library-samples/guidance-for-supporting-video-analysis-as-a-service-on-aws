@@ -75,6 +75,36 @@ export class ServiceStack extends Stack {
       }),
     });
 
+    const getDeviceShadowRole = createLambdaRole(this, "GetDeviceShadowRole", [
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        actions: [
+          "iot:GetThingShadow"
+        ],
+        resources: [
+          `arn:aws:iot:${props.region}:${props.account}:thing/*`,
+        ],
+      })
+    ]);
+
+    const getDeviceShadowLambda = new Function(this, "GetDeviceShadowActivity", {
+      runtime: Runtime.JAVA_17,
+      //TODO: Update this if any changes are made to the lambda handler path or asset built jar location
+      handler: `${DM_ACTIVITY_JAVA_PATH_PREFIX}.GetDeviceShadowActivity::handleRequest`,
+      code: Code.fromAsset(`${LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT}`),
+      memorySize: 512,
+      timeout: Duration.minutes(5),
+      environment: {
+          ACCOUNT_ID: this.account,
+          LAMBDA_ROLE_ARN: getDeviceShadowRole.roleArn,
+      },
+      role: getDeviceShadowRole,
+      logGroup: new LogGroup(this, "GetDeviceShadowActivityLogGroup", {
+          retention: RetentionDays.TEN_YEARS,
+          logGroupName: "/aws/lambda/GetDeviceShadowActivity",
+      }),
+    });
+
     apiGatewayRole.addToPolicy(new PolicyStatement({
       resources: ['*'],
       actions: ['lambda:InvokeFunction']
@@ -84,6 +114,8 @@ export class ServiceStack extends Stack {
     // This must match the variables defined in the Smithy model
     const getDeviceCfnLambda = getDeviceLambda.node.defaultChild as CfnFunction;
     getDeviceCfnLambda.overrideLogicalId("GetDeviceActivity");
+    const getDeviceShadowCfnLambda = getDeviceShadowLambda.node.defaultChild as CfnFunction;
+    getDeviceShadowCfnLambda.overrideLogicalId("GetDeviceShadowActivity");
 
     // Upload spec to S3
     const originalSpec = new Asset(this, "openApiFile", {
