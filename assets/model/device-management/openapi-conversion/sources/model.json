@@ -1016,11 +1016,28 @@
             "output": {
                 "target": "com.amazonaws.videoanalytics.devicemanagement#GetDeviceShadowResponse"
             },
+            "errors": [
+                {
+                    "target": "com.amazonaws.videoanalytics.devicemanagement#AccessDeniedException"
+                },
+                {
+                    "target": "com.amazonaws.videoanalytics.devicemanagement#InternalServerException"
+                },
+                {
+                    "target": "com.amazonaws.videoanalytics.devicemanagement#ValidationException"
+                }
+            ],
             "traits": {
+                "aws.apigateway#integration": {
+                    "httpMethod": "POST",
+                    "type": "aws_proxy",
+                    "uri": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${GetDeviceShadowActivity}/invocations",
+                    "credentials": "arn:aws:iam::${AWS::AccountId}:role/ApiGatewayRole"
+                },
                 "smithy.api#http": {
                     "code": 200,
                     "method": "POST",
-                    "uri": "/get-device-shadow-/{deviceId}"
+                    "uri": "/get-device-shadow/{deviceId}"
                 }
             }
         },
@@ -1035,7 +1052,7 @@
                     }
                 },
                 "shadowName": {
-                    "target": "smithy.api#String"
+                    "target": "com.amazonaws.videoanalytics.devicemanagement#ShadowName"
                 }
             },
             "traits": {
@@ -1387,11 +1404,21 @@
             "type": "structure",
             "members": {
                 "shadowName": {
-                    "target": "smithy.api#String"
+                    "target": "com.amazonaws.videoanalytics.devicemanagement#ShadowName"
                 },
                 "stateDocument": {
                     "target": "smithy.api#Document"
                 }
+            }
+        },
+        "com.amazonaws.videoanalytics.devicemanagement#ShadowName": {
+            "type": "string",
+            "traits": {
+                "smithy.api#length": {
+                    "min": 1,
+                    "max": 64
+                },
+                "smithy.api#pattern": "^[a-zA-Z0-9:_\\-]+$"
             }
         },
         "com.amazonaws.videoanalytics.devicemanagement#Sns": {

@@ -1,39 +1,38 @@
 package com.amazonaws.videoanalytics.devicemanagement.activity;
 
-import javax.inject.Inject;
-
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
-import com.amazonaws.videoanalytics.devicemanagement.GetDeviceResponseContent;
+import com.amazonaws.videoanalytics.devicemanagement.GetDeviceShadowRequestContent;
+import com.amazonaws.videoanalytics.devicemanagement.GetDeviceShadowResponseContent;
 import com.amazonaws.videoanalytics.devicemanagement.dagger.AWSVideoAnalyticsDMControlPlaneComponent;
 import com.amazonaws.videoanalytics.devicemanagement.dagger.DaggerAWSVideoAnalyticsDMControlPlaneComponent;
-import com.amazonaws.videoanalytics.devicemanagement.dependency.iot.IotService;
-import com.amazonaws.videoanalytics.devicemanagement.exceptions.ExceptionTranslator;
 import com.amazonaws.videoanalytics.devicemanagement.utils.annotations.ExcludeFromJacocoGeneratedReport;
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.amazonaws.videoanalytics.devicemanagement.exceptions.ExceptionTranslator;
+import com.amazonaws.videoanalytics.devicemanagement.dependency.iot.IotService;
+import software.amazon.awssdk.awscore.exception.AwsServiceException;
 
 import java.util.Map;
 
-import software.amazon.awssdk.services.iot.model.IotException;
+import javax.inject.Inject;
 
 import static com.amazonaws.videoanalytics.devicemanagement.exceptions.VideoAnalyticsExceptionMessage.INTERNAL_SERVER_EXCEPTION;
 import static com.amazonaws.videoanalytics.devicemanagement.exceptions.VideoAnalyticsExceptionMessage.INVALID_INPUT_EXCEPTION;
-import static com.amazonaws.videoanalytics.devicemanagement.exceptions.VideoAnalyticsExceptionMessage.JSON_PROCESSING_EXCEPTION;
+import static com.amazonaws.videoanalytics.devicemanagement.utils.LambdaProxyUtils.parseBody;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.LambdaProxyUtils.parsePathParameter;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.LambdaProxyUtils.serializeResponse;
 import static software.amazon.awssdk.utils.StringUtils.isBlank;
 
-public class GetDeviceActivity implements RequestHandler<Map<String, Object>, Map<String, Object>> {
+public class GetDeviceShadowActivity implements RequestHandler<Map<String, Object>, Map<String, Object>> {
     private final IotService iotService;
 
     @Inject
-    public GetDeviceActivity(IotService iotService) {
+    public GetDeviceShadowActivity(IotService iotService) {
         this.iotService = iotService;
     }
 
     @ExcludeFromJacocoGeneratedReport
-    public GetDeviceActivity() {
+    public GetDeviceShadowActivity() {
         AWSVideoAnalyticsDMControlPlaneComponent component = DaggerAWSVideoAnalyticsDMControlPlaneComponent.create();
         component.inject(this);
         this.iotService = component.iotService();
@@ -43,11 +42,14 @@ public class GetDeviceActivity implements RequestHandler<Map<String, Object>, Ma
     public Map<String, Object> handleRequest(Map<String, Object> input, Context context) {
         LambdaLogger logger = context.getLogger();
 
-        logger.log("Entered getDeviceRequest method");
+        logger.log("Entered getDeviceShadow method");
 
         String deviceId;
+        String shadowName;
         try {
             deviceId = parsePathParameter(input, "deviceId");
+            String requestBody = parseBody(input);
+            shadowName = GetDeviceShadowRequestContent.fromJson(requestBody).getShadowName();
         } catch (Exception e) {
             logger.log(e.toString());
             return serializeResponse(400, INVALID_INPUT_EXCEPTION);
@@ -57,24 +59,19 @@ public class GetDeviceActivity implements RequestHandler<Map<String, Object>, Ma
             logger.log("deviceId is null or empty");
             return serializeResponse(400, INVALID_INPUT_EXCEPTION);
         }
-        return getResponseForValidRequest(deviceId, logger);
-    }
 
-    private Map<String, Object> getResponseForValidRequest(String deviceId, LambdaLogger logger) {
-        GetDeviceResponseContent getDeviceResponse;
+        GetDeviceShadowResponseContent getDeviceShadowResponse;
         try {
-            getDeviceResponse = iotService.getDevice(deviceId);  
-        } catch (IotException e) {
+            getDeviceShadowResponse = iotService.getDeviceShadow(deviceId, shadowName);
+        // generalizing from IotException to AwsServiceException because getDeviceShadow is an IoTDataPlane action
+        } catch (AwsServiceException e) {
             logger.log(e.toString());
             return ExceptionTranslator.translateIotExceptionToLambdaResponse(e);
-        } catch (JsonProcessingException e) {
-            logger.log(e.toString());
-            return serializeResponse(500, JSON_PROCESSING_EXCEPTION);
-        } catch (Exception e){
+        } catch (Exception e) {
             logger.log(e.toString());
             return serializeResponse(500, INTERNAL_SERVER_EXCEPTION);
         }
-        
-        return serializeResponse(200, getDeviceResponse.toJson());
+    
+        return serializeResponse(200, getDeviceShadowResponse.toJson());
     }
 }

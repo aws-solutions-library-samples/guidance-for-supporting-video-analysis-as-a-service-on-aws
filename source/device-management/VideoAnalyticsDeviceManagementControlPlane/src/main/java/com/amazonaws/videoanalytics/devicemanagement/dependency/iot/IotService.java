@@ -6,7 +6,9 @@ import com.amazonaws.videoanalytics.devicemanagement.DeviceMetaData;
 import com.amazonaws.videoanalytics.devicemanagement.DeviceState;
 import com.amazonaws.videoanalytics.devicemanagement.DeviceStatus;
 import com.amazonaws.videoanalytics.devicemanagement.GetDeviceResponseContent;
+import com.amazonaws.videoanalytics.devicemanagement.GetDeviceShadowResponseContent;
 import com.amazonaws.videoanalytics.devicemanagement.IpAddress;
+import com.amazonaws.videoanalytics.devicemanagement.ShadowMap;
 import com.amazonaws.videoanalytics.devicemanagement.StorageElement;
 import com.amazonaws.videoanalytics.devicemanagement.StorageState;
 import com.amazonaws.videoanalytics.devicemanagement.VideoStreamingState;
@@ -47,7 +49,6 @@ import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyt
 import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyticsServiceLambdaConstants.AI_MODEL_VERSION_KEY;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyticsServiceLambdaConstants.AI_SDK_VERSION_KEY;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyticsServiceLambdaConstants.AI_SETTINGS;
-import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyticsServiceLambdaConstants.CREATED_AT_KEY;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyticsServiceLambdaConstants.SDK_VERSION_KEY;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyticsServiceLambdaConstants.FIRMWARE_VERSION_KEY;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyticsServiceLambdaConstants.IMAGING_SETTINGS;
@@ -62,6 +63,7 @@ import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyt
 import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyticsServiceLambdaConstants.PUBLIC_IP_KEY;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyticsServiceLambdaConstants.RECORDING;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyticsServiceLambdaConstants.SD_CARD_KEY;
+import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyticsServiceLambdaConstants.SHADOW_DESIRED_KEY;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyticsServiceLambdaConstants.SHADOW_METADATA_KEY;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyticsServiceLambdaConstants.SHADOW_REPORTED_KEY;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyticsServiceLambdaConstants.SHADOW_STATE_KEY;
@@ -90,8 +92,8 @@ public class IotService {
         return iotClient.describeThing(describeThingRequest);
     }
 
-    public JSONObject getThingShadow(String deviceIdentifier, String shadowName) throws JSONException, ResourceNotFoundException {
-
+    public JSONObject getThingShadow(String deviceIdentifier, String shadowName) 
+            throws JSONException, software.amazon.awssdk.services.iotdataplane.model.ResourceNotFoundException {
         GetThingShadowRequest.Builder getThingShadowRequestBuilder = GetThingShadowRequest.builder();
         getThingShadowRequestBuilder.thingName(deviceIdentifier);
 
@@ -99,14 +101,8 @@ public class IotService {
             getThingShadowRequestBuilder.shadowName(shadowName);
         }
 
-        String shadowStr;
-        try {
-            GetThingShadowResponse getThingShadowResponse = iotDataPlaneClient.getThingShadow(getThingShadowRequestBuilder.build());
-            shadowStr = getThingShadowResponse.payload().asUtf8String();
-        } catch (software.amazon.awssdk.services.iotdataplane.model.ResourceNotFoundException e) {
-            // shadow does not exist
-            shadowStr = String.format("{%s: {}}", SHADOW_STATE_KEY);
-        }
+        GetThingShadowResponse getThingShadowResponse = iotDataPlaneClient.getThingShadow(getThingShadowRequestBuilder.build());
+        String shadowStr = getThingShadowResponse.payload().asUtf8String();
 
         JSONObject shadowObject = new JSONObject(shadowStr);
         return shadowObject;
@@ -137,7 +133,7 @@ public class IotService {
         JSONObject getThingShadowResponseProvision;
         try {
             getThingShadowResponseProvision = getThingShadow(deviceIdentifier, PROVISIONING_SHADOW_NAME);
-        } catch (ResourceNotFoundException e) {
+        } catch (software.amazon.awssdk.services.iotdataplane.model.ResourceNotFoundException e) {
             getThingShadowResponseProvision = new JSONObject();
         }
 
@@ -158,7 +154,7 @@ public class IotService {
         JSONObject getThingShadowResponseVideoAndImagingSettings;
         try {
             getThingShadowResponseVideoAndImagingSettings = getThingShadow(deviceIdentifier, VIDEO_ENCODER_SHADOW_NAME);
-        } catch (ResourceNotFoundException e) {
+        } catch (software.amazon.awssdk.services.iotdataplane.model.ResourceNotFoundException e) {
             getThingShadowResponseVideoAndImagingSettings = new JSONObject();
         }
         JSONObject shadowStateReportedVideoAndImagingSettings = getThingShadowResponseVideoAndImagingSettings
@@ -189,7 +185,7 @@ public class IotService {
         JSONObject getThingShadowResponseAiSettings;
         try {
             getThingShadowResponseAiSettings = getThingShadow(deviceIdentifier, AI_SHADOW_NAME);
-        } catch (ResourceNotFoundException e) {
+        } catch (software.amazon.awssdk.services.iotdataplane.model.ResourceNotFoundException e) {
             getThingShadowResponseAiSettings = new JSONObject();
         }
         JSONObject shadowStateReportedAiSettings = getThingShadowResponseAiSettings
@@ -367,5 +363,15 @@ public class IotService {
                 .build();
 
         return iotClient.searchIndex(searchIndexRequest);
+    }
+
+    public GetDeviceShadowResponseContent getDeviceShadow(String deviceId, String shadowName) {
+        JSONObject thingShadow = this.getThingShadow(deviceId, shadowName);
+        JSONObject desiredShadowObject = thingShadow.optJSONObject(SHADOW_STATE_KEY).optJSONObject(SHADOW_DESIRED_KEY);
+        ShadowMap shadowPayload = ShadowMap.builder()
+                .stateDocument(desiredShadowObject)
+                .shadowName(shadowName)
+                .build();
+        return GetDeviceShadowResponseContent.builder().shadowPayload(shadowPayload).build();
     }
 }

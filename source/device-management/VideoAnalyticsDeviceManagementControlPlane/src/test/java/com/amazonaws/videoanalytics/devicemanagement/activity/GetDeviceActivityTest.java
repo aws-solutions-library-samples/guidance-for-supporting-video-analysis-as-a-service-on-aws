@@ -12,7 +12,6 @@ import com.amazonaws.videoanalytics.devicemanagement.IpAddress;
 import com.amazonaws.videoanalytics.devicemanagement.StorageElement;
 import com.amazonaws.videoanalytics.devicemanagement.StorageState;
 import com.amazonaws.videoanalytics.devicemanagement.dependency.iot.IotService;
-import com.amazonaws.videoanalytics.devicemanagement.exceptions.VideoAnalyticsExceptionMessage;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -46,8 +45,6 @@ import static com.amazonaws.videoanalytics.devicemanagement.utils.TestConstants.
 import static com.amazonaws.videoanalytics.devicemanagement.utils.TestConstants.DEVICE_TYPE_NAME;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 public class GetDeviceActivityTest {
@@ -73,8 +70,7 @@ public class GetDeviceActivityTest {
     }
 
     @Test
-    public void getDeviceActivity_WhenValidRequest_ReturnsResponse() 
-            throws IOException, JsonProcessingException, ParseException, RuntimeException {
+    public void getDeviceActivity_WhenValidRequest_ReturnsResponse() throws IOException, JsonProcessingException, ParseException {
         Map<String, String> deviceSettings = new HashMap<>();
         deviceSettings.put("videoSettings", "{\"profile1\":{\"codec\":\"H264\"}}");
 
