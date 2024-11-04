@@ -277,6 +277,50 @@ dependencies = [
 ]
 
 [[package]]
+name = "aws-sdk-kinesisvideo"
+version = "1.49.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "39a969ab42a24f8748182810a79aa88da3c7298d9e53f2c82eb5622135914531"
+dependencies = [
+ "aws-credential-types",
+ "aws-runtime",
+ "aws-smithy-async",
+ "aws-smithy-http",
+ "aws-smithy-json",
+ "aws-smithy-runtime",
+ "aws-smithy-runtime-api",
+ "aws-smithy-types",
+ "aws-types",
+ "bytes",
+ "http 0.2.12",
+ "once_cell",
+ "regex-lite",
+ "tracing",
+]
+
+[[package]]
+name = "aws-sdk-kinesisvideosignaling"
+version = "1.48.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "25ba64d85b64e159f53697d99a7b1351f54b2effc3dc4e20d396de280398bb02"
+dependencies = [
+ "aws-credential-types",
+ "aws-runtime",
+ "aws-smithy-async",
+ "aws-smithy-http",
+ "aws-smithy-json",
+ "aws-smithy-runtime",
+ "aws-smithy-runtime-api",
+ "aws-smithy-types",
+ "aws-types",
+ "bytes",
+ "http 0.2.12",
+ "once_cell",
+ "regex-lite",
+ "tracing",
+]
+
+[[package]]
 name = "aws-sdk-sso"
 version = "1.48.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -469,6 +513,7 @@ dependencies = [
  "base64-simd",
  "bytes",
  "bytes-utils",
+ "futures-core",
  "http 0.2.12",
  "http 1.1.0",
  "http-body 0.4.6",
@@ -481,6 +526,8 @@ dependencies = [
  "ryu",
  "serde",
  "time",
+ "tokio",
+ "tokio-util",
 ]
 
 [[package]]
@@ -1777,6 +1824,33 @@ dependencies = [
  "serde_json",
  "url",
  "uuid-simd",
+]
+
+[[package]]
+name = "kvs-client"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "aws-config",
+ "aws-credential-types",
+ "aws-sdk-kinesisvideo",
+ "aws-sdk-kinesisvideosignaling",
+ "aws-sigv4",
+ "aws-smithy-http",
+ "aws-smithy-types",
+ "aws-types",
+ "chrono",
+ "device-traits",
+ "http 1.1.0",
+ "iot-client",
+ "mockall",
+ "reqwest 0.11.27",
+ "serde",
+ "serde_json",
+ "thiserror",
+ "tokio",
+ "tracing",
+ "url-escape",
 ]
 
 [[package]]
