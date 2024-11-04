@@ -8,6 +8,8 @@ This project contains the CDK code for deploying the Video Analytics Device Mana
 - Node.js and npm installed
 - AWS CDK CLI installed globally (`npm install -g aws-cdk`)
 
+Note: The OpenAPI spec passed into `createApiGateway` must have lambda integration defined. Remove any APIs that do not have lambda integrations yet.
+
 ## Deployment Steps
 
 1. **Clone the repository**

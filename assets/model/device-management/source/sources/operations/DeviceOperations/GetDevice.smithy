@@ -2,7 +2,14 @@ $version: "2.0"
 
 namespace com.amazonaws.videoanalytics.devicemanagement
 
-@http(code: 200, method: "GET", uri: "/get-device/{deviceId}")
+use aws.apigateway#integration
+
+// For Lambda function invocations, the httpMethod must be POST.
+// https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-swagger-extensions-integration.html
+@integration(httpMethod: "POST", type: "aws_proxy"
+    uri: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${GetDeviceActivity}/invocations",
+    credentials: "arn:aws:iam::${AWS::AccountId}:role/ApiGatewayRole")
+@http(code: 200, method: "POST", uri: "/get-device/{deviceId}")
 @readonly
 operation GetDevice {
     input: GetDeviceRequest

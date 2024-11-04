@@ -132,9 +132,7 @@ public class IotService {
     }
 
     public GetDeviceResponseContent getDevice(String deviceIdentifier) throws JsonProcessingException, ParseException {
-        DescribeThingResponse describeThingResponse = null;
-
-        describeThingResponse = describeThing(deviceIdentifier);
+        DescribeThingResponse describeThingResponse = describeThing(deviceIdentifier);
 
         JSONObject getThingShadowResponseProvision;
         try {
@@ -169,7 +167,7 @@ public class IotService {
         if (shadowStateReportedVideoAndImagingSettings != null && !shadowStateReportedVideoAndImagingSettings.isEmpty()) {
             JSONObject videoSettings = shadowStateReportedVideoAndImagingSettings.optJSONObject(VIDEO_SETTINGS);
             if (videoSettings != null && !videoSettings.isEmpty()) {
-                ArrayList<String> videoSettingsList = new ArrayList<String>();
+                ArrayList<String> videoSettingsList = new ArrayList<>();
                 for (String key: videoSettings.keySet()) {
                     JSONObject value = videoSettings.optJSONObject(key);
                     value.put(PROFILE_ID, key);

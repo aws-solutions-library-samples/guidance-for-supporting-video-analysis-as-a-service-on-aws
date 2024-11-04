@@ -4,7 +4,7 @@ import com.amazonaws.videoanalytics.devicemanagement.dagger.modules.AWSVideoAnal
 import com.amazonaws.videoanalytics.devicemanagement.dependency.iot.IotService;
 import com.amazonaws.videoanalytics.devicemanagement.dagger.modules.AWSModule;
 
-import com.amazonaws.videoanalytics.activity.GetDeviceActivity;
+import com.amazonaws.videoanalytics.devicemanagement.activity.GetDeviceActivity;
 
 import dagger.Component;
 

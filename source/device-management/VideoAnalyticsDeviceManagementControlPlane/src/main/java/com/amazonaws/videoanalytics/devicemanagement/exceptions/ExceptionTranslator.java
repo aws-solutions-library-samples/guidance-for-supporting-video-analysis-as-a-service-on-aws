@@ -1,7 +1,5 @@
 package com.amazonaws.videoanalytics.devicemanagement.exceptions;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import software.amazon.awssdk.services.iot.model.CertificateStateException;
 import software.amazon.awssdk.services.iot.model.ConflictingResourceUpdateException;
 import software.amazon.awssdk.services.iot.model.DeleteConflictException;
@@ -16,61 +14,43 @@ import software.amazon.awssdk.services.iot.model.ServiceUnavailableException;
 import software.amazon.awssdk.services.iot.model.ThrottlingException;
 import software.amazon.awssdk.services.iot.model.UnauthorizedException;
 
+import java.util.Map;
+
 import static com.amazonaws.videoanalytics.devicemanagement.exceptions.VideoAnalyticsExceptionMessage.DELETE_CONFLICT_EXCEPTION;
 import static com.amazonaws.videoanalytics.devicemanagement.exceptions.VideoAnalyticsExceptionMessage.INTERNAL_SERVER_EXCEPTION;
 import static com.amazonaws.videoanalytics.devicemanagement.exceptions.VideoAnalyticsExceptionMessage.INVALID_INPUT_EXCEPTION;
-import static com.amazonaws.videoanalytics.devicemanagement.exceptions.VideoAnalyticsExceptionMessage.RESOURCE_ALREADY_EXISTS;
+import static com.amazonaws.videoanalytics.devicemanagement.exceptions.VideoAnalyticsExceptionMessage.RESOURCE_ALREADY_EXISTS_EXCEPTION;
 import static com.amazonaws.videoanalytics.devicemanagement.exceptions.VideoAnalyticsExceptionMessage.IOT_SERVICE_RETRYABLE;
 import static com.amazonaws.videoanalytics.devicemanagement.exceptions.VideoAnalyticsExceptionMessage.LIMIT_EXCEEDED_EXCEPTION;
-import static com.amazonaws.videoanalytics.devicemanagement.exceptions.VideoAnalyticsExceptionMessage.RESOURCE_NOT_FOUND;
+import static com.amazonaws.videoanalytics.devicemanagement.exceptions.VideoAnalyticsExceptionMessage.RESOURCE_NOT_FOUND_EXCEPTION;
 import static com.amazonaws.videoanalytics.devicemanagement.exceptions.VideoAnalyticsExceptionMessage.THROTTLING_EXCEPTION;
 import static com.amazonaws.videoanalytics.devicemanagement.exceptions.VideoAnalyticsExceptionMessage.UNAUTHORIZED_EXCEPTION;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
+import static com.amazonaws.videoanalytics.devicemanagement.utils.LambdaProxyUtils.serializeResponse;
 
 public class ExceptionTranslator {
-    // Followed for below link for error handling
-    // https://aws.amazon.com/blogs/compute/error-handling-patterns-in-amazon-api-gateway-and-aws-lambda/
-    public static void translateIotExceptionToRuntimeException(final IotException e, String requestId) throws RuntimeException{
+    public static Map<String, Object> translateIotExceptionToLambdaResponse(IotException e) {
         if (e instanceof InvalidRequestException) {
-            throw new RuntimeException(buildErrorPayload(400, INVALID_INPUT_EXCEPTION, requestId));
+            return serializeResponse(400, INVALID_INPUT_EXCEPTION);
         } else if (e instanceof ResourceNotFoundException) {
-            throw new RuntimeException(buildErrorPayload(404, RESOURCE_NOT_FOUND, requestId));
+            return serializeResponse(404, RESOURCE_NOT_FOUND_EXCEPTION);
         } else if (e instanceof UnauthorizedException || e.statusCode() == 403) {
-            throw new RuntimeException(buildErrorPayload(403, UNAUTHORIZED_EXCEPTION, requestId));
+            return serializeResponse(403, UNAUTHORIZED_EXCEPTION);
         } else if (e instanceof ThrottlingException) {
-            throw new RuntimeException(buildErrorPayload(500, THROTTLING_EXCEPTION, requestId));
+            return serializeResponse(500, THROTTLING_EXCEPTION);
         } else if (e instanceof InternalFailureException |
                 e instanceof ServiceUnavailableException |
                 e instanceof CertificateStateException) {
-            throw new RuntimeException(buildErrorPayload(500, INTERNAL_SERVER_EXCEPTION, requestId));
+            return serializeResponse(500, INTERNAL_SERVER_EXCEPTION);
         } else if (e instanceof LimitExceededException) {
-            throw new RuntimeException(buildErrorPayload(500, LIMIT_EXCEEDED_EXCEPTION, requestId));
+            return serializeResponse(500, LIMIT_EXCEEDED_EXCEPTION);
         } else if (e instanceof DeleteConflictException) {
-            throw new RuntimeException(buildErrorPayload(500, DELETE_CONFLICT_EXCEPTION, requestId));
+            return serializeResponse(500, DELETE_CONFLICT_EXCEPTION);
         } else if (e instanceof ResourceAlreadyExistsException) {
-            throw new RuntimeException(buildErrorPayload(409, RESOURCE_ALREADY_EXISTS, requestId));
+            return serializeResponse(409, RESOURCE_ALREADY_EXISTS_EXCEPTION);
         } else {
-            throw new RuntimeException(buildErrorPayload(500, INTERNAL_SERVER_EXCEPTION, requestId));
+            return serializeResponse(500, INTERNAL_SERVER_EXCEPTION);
         }
-    }
-
-    public static String buildErrorPayload(int errorCode, String errorMsg, String requestId) {
-        Map<String, Object> errorPayload = new HashMap();
-        errorPayload.put("httpStatus", errorCode);
-        errorPayload.put("requestId", requestId);
-        errorPayload.put("message", errorMsg);
-        String message;
-        try {
-            message = new ObjectMapper().writeValueAsString(errorPayload);
-        } catch (JsonProcessingException e) {
-            message = "";
-        }
-
-        return message;
     }
 
     // Used for checking if a lambda handler should retry after an IotException is thrown

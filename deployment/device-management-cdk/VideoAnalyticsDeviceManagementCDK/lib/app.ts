@@ -1,4 +1,5 @@
 import { App } from "aws-cdk-lib";
+import { ServiceStack } from "./stacks/serviceStack/serviceStack";
 import { WorkflowStack } from "./stacks/workflowStacks/workflowStack";
 import { AWSRegion } from "video_analytics_common_construct";
 import { DeviceManagementBootstrapStack } from "./stacks/bootstrapStack/deviceManagementBootstrapStack";
@@ -23,6 +24,15 @@ new WorkflowStack(app, "WorkflowStack", {
   region: region,
   account: account,
 });
+
+// new ServiceStack(app, "ServiceStack", {
+//   env: {
+//     account: account,
+//     region: region,
+//   },
+//   region: region,
+//   account: account,
+// });
 
 new DeviceManagementBootstrapStack(app, "DeviceManagementBootstrapStack", {
   env: {

@@ -2311,9 +2311,15 @@
                 }
             ],
             "traits": {
+                "aws.apigateway#integration": {
+                    "httpMethod": "POST",
+                    "type": "aws_proxy",
+                    "uri": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${GetDeviceActivity}/invocations",
+                    "credentials": "arn:aws:iam::${AWS::AccountId}:role/ApiGatewayRole"
+                },
                 "smithy.api#http": {
                     "code": 200,
-                    "method": "GET",
+                    "method": "POST",
                     "uri": "/get-device/{deviceId}"
                 },
                 "smithy.api#readonly": {}

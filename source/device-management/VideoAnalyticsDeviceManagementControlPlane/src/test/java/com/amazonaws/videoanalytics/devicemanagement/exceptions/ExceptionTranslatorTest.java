@@ -1,6 +1,5 @@
 package com.amazonaws.videoanalytics.devicemanagement.exceptions;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import software.amazon.awssdk.services.iot.model.DeleteConflictException;
 import software.amazon.awssdk.services.iot.model.InternalFailureException;
@@ -12,90 +11,76 @@ import software.amazon.awssdk.services.iot.model.ResourceNotFoundException;
 import software.amazon.awssdk.services.iot.model.ThrottlingException;
 import software.amazon.awssdk.services.iot.model.UnauthorizedException;
 
+import java.util.Map;
+
+import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyticsServiceLambdaConstants.PROXY_LAMBDA_RESPONSE_BODY_KEY;
+import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyticsServiceLambdaConstants.PROXY_LAMBDA_RESPONSE_STATUS_CODE_KEY;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static com.amazonaws.videoanalytics.devicemanagement.utils.TestConstants.REQUEST_ID;
 
 public class ExceptionTranslatorTest {
     @Test
     public void translateIotExceptionToRuntimeException_WhenInvalidRequestException_ThrowsInvalidInputException() {
         InvalidRequestException iotException = InvalidRequestException.builder().build();
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            ExceptionTranslator.translateIotExceptionToRuntimeException(iotException, REQUEST_ID);
-        });
-        assertTrue(exception.getMessage().contains("400"));
-        assertTrue(exception.getMessage().contains(VideoAnalyticsExceptionMessage.INVALID_INPUT_EXCEPTION));
+        Map<String, Object> responseMap = ExceptionTranslator.translateIotExceptionToLambdaResponse(iotException);
+        assertEquals(responseMap.get(PROXY_LAMBDA_RESPONSE_STATUS_CODE_KEY), 400);
+        assertEquals(responseMap.get(PROXY_LAMBDA_RESPONSE_BODY_KEY), VideoAnalyticsExceptionMessage.INVALID_INPUT_EXCEPTION);
     }
 
     @Test
     public void translateIotExceptionToRuntimeException_WhenResourceNotFoundException_ThrowsResourceNotFoundException() {
         ResourceNotFoundException iotException = ResourceNotFoundException.builder().build();
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            ExceptionTranslator.translateIotExceptionToRuntimeException(iotException, REQUEST_ID);
-        });
-        assertTrue(exception.getMessage().contains("404"));
-        assertTrue(exception.getMessage().contains(VideoAnalyticsExceptionMessage.RESOURCE_NOT_FOUND));
+        Map<String, Object> responseMap = ExceptionTranslator.translateIotExceptionToLambdaResponse(iotException);
+        assertEquals(responseMap.get(PROXY_LAMBDA_RESPONSE_STATUS_CODE_KEY), 404);
+        assertEquals(responseMap.get(PROXY_LAMBDA_RESPONSE_BODY_KEY), VideoAnalyticsExceptionMessage.RESOURCE_NOT_FOUND_EXCEPTION);
     }
 
     @Test
     public void translateIotExceptionToRuntimeException_WhenUnauthorizedException_ThrowsUnauthorizedException() {
         UnauthorizedException iotException = UnauthorizedException.builder().build();
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            ExceptionTranslator.translateIotExceptionToRuntimeException(iotException, REQUEST_ID);
-        });
-        assertTrue(exception.getMessage().contains("403"));
-        assertTrue(exception.getMessage().contains(VideoAnalyticsExceptionMessage.UNAUTHORIZED_EXCEPTION));
+        Map<String, Object> responseMap = ExceptionTranslator.translateIotExceptionToLambdaResponse(iotException);
+        assertEquals(responseMap.get(PROXY_LAMBDA_RESPONSE_STATUS_CODE_KEY), 403);
+        assertEquals(responseMap.get(PROXY_LAMBDA_RESPONSE_BODY_KEY), VideoAnalyticsExceptionMessage.UNAUTHORIZED_EXCEPTION);
     }
 
     @Test
     public void translateIotExceptionToRuntimeException_WhenThrottlingException_ThrowsThrottlingException() {
         ThrottlingException iotException = ThrottlingException.builder().build();
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            ExceptionTranslator.translateIotExceptionToRuntimeException(iotException, REQUEST_ID);
-        });
-        assertTrue(exception.getMessage().contains("500"));
-        assertTrue(exception.getMessage().contains(VideoAnalyticsExceptionMessage.THROTTLING_EXCEPTION));
+        Map<String, Object> responseMap = ExceptionTranslator.translateIotExceptionToLambdaResponse(iotException);
+        assertEquals(responseMap.get(PROXY_LAMBDA_RESPONSE_STATUS_CODE_KEY), 500);
+        assertEquals(responseMap.get(PROXY_LAMBDA_RESPONSE_BODY_KEY), VideoAnalyticsExceptionMessage.THROTTLING_EXCEPTION);
     }
 
     @Test
     public void translateIotExceptionToRuntimeException_WhenInternalFailureException_ThrowsInternalServerException() {
         InternalFailureException iotException = InternalFailureException.builder().build();
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            ExceptionTranslator.translateIotExceptionToRuntimeException(iotException, REQUEST_ID);
-        });
-        assertTrue(exception.getMessage().contains("500"));
-        assertTrue(exception.getMessage().contains(VideoAnalyticsExceptionMessage.INTERNAL_SERVER_EXCEPTION));
+        Map<String, Object> responseMap = ExceptionTranslator.translateIotExceptionToLambdaResponse(iotException);
+        assertEquals(responseMap.get(PROXY_LAMBDA_RESPONSE_STATUS_CODE_KEY), 500);
+        assertEquals(responseMap.get(PROXY_LAMBDA_RESPONSE_BODY_KEY), VideoAnalyticsExceptionMessage.INTERNAL_SERVER_EXCEPTION);
     }
 
     @Test
     public void translateIotExceptionToRuntimeException_WhenLimitExceededException_ThrowsLimitExceededException() {
         LimitExceededException iotException = LimitExceededException.builder().build();
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            ExceptionTranslator.translateIotExceptionToRuntimeException(iotException, REQUEST_ID);
-        });
-        assertTrue(exception.getMessage().contains("500"));
-        assertTrue(exception.getMessage().contains(VideoAnalyticsExceptionMessage.LIMIT_EXCEEDED_EXCEPTION));
+        Map<String, Object> responseMap = ExceptionTranslator.translateIotExceptionToLambdaResponse(iotException);
+        assertEquals(responseMap.get(PROXY_LAMBDA_RESPONSE_STATUS_CODE_KEY), 500);
+        assertEquals(responseMap.get(PROXY_LAMBDA_RESPONSE_BODY_KEY), VideoAnalyticsExceptionMessage.LIMIT_EXCEEDED_EXCEPTION);
     }
 
     @Test
     public void translateIotExceptionToRuntimeException_WhenDeleteConflictException_ThrowsDeleteConflictException() {
         DeleteConflictException iotException = DeleteConflictException.builder().build();
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            ExceptionTranslator.translateIotExceptionToRuntimeException(iotException, REQUEST_ID);
-        });
-        assertTrue(exception.getMessage().contains("500"));
-        assertTrue(exception.getMessage().contains(VideoAnalyticsExceptionMessage.DELETE_CONFLICT_EXCEPTION));
+        Map<String, Object> responseMap = ExceptionTranslator.translateIotExceptionToLambdaResponse(iotException);
+        assertEquals(responseMap.get(PROXY_LAMBDA_RESPONSE_STATUS_CODE_KEY), 500);
+        assertEquals(responseMap.get(PROXY_LAMBDA_RESPONSE_BODY_KEY), VideoAnalyticsExceptionMessage.DELETE_CONFLICT_EXCEPTION);
     }
 
     @Test
     public void translateIotExceptionToRuntimeException_WhenResourceAlreadyExistsException_ThrowsResourceAlreadyExistsException() {
         ResourceAlreadyExistsException iotException = ResourceAlreadyExistsException.builder().build();
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            ExceptionTranslator.translateIotExceptionToRuntimeException(iotException, REQUEST_ID);
-        });
-        assertTrue(exception.getMessage().contains("409"));
-        assertTrue(exception.getMessage().contains(VideoAnalyticsExceptionMessage.RESOURCE_ALREADY_EXISTS));
+        Map<String, Object> responseMap = ExceptionTranslator.translateIotExceptionToLambdaResponse(iotException);
+        assertEquals(responseMap.get(PROXY_LAMBDA_RESPONSE_STATUS_CODE_KEY), 409);
+        assertEquals(responseMap.get(PROXY_LAMBDA_RESPONSE_BODY_KEY), VideoAnalyticsExceptionMessage.RESOURCE_ALREADY_EXISTS_EXCEPTION);
     }
 
     @Test

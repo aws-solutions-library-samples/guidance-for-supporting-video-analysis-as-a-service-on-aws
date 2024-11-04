@@ -6,6 +6,8 @@ plugins {
     id 'maven-publish'
     id 'io.freefair.lombok' version '8.3'
     id 'jacoco'
+    // for packaging compiled dependencies in jar file
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
 group = 'org.example'
@@ -92,6 +94,16 @@ dependencies {
     annotationProcessor 'com.google.dagger:dagger-compiler:2.48'
 }
 
+shadowJar {
+    archiveClassifier.set('')
+    mergeServiceFiles()
+    zip64 true
+}
+
+build {
+    dependsOn shadowJar
+}
+
 test {
     environment "JDK_JAVA_OPTIONS", "--add-opens java.base/java.util=ALL-UNNAMED"
     useJUnitPlatform()
@@ -103,6 +115,7 @@ test {
 
 jacocoTestReport {
     dependsOn test
+
     reports {
         xml.required = false
         csv.required = false

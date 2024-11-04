@@ -12,19 +12,17 @@ export const LAMBDA_TIMEOUT_MINUTES = Duration.minutes(12);
 export const LAMBDA_RUNTIME = Runtime.JAVA_17;
 export const LAMBDA_MEMORY_SIZE_KB = 2048;
 // TODO: REFACTOR once DM workflow's lambda paths are updated
+export const DM_ACTIVITY_JAVA_PATH_PREFIX =
+  "com.amazonaws.videoanalytics.devicemanagement.activity";
 export const DM_WORKFLOW_JAVA_PATH_PREFIX =
-  "com.amazon.awsvideoanalyticsdmcontrolplane.workflow.";
-// Messages to Edge devices: This allows the reuse of lambdas in our workflows.
-export const enum MESSAGE_TO_DEVICE {
-  CREATE_KEYS_MESSAGE = "createCredentials",
-  CREDENTIALS_ARE_ACTIVATED_MESSAGE = "credentialsActivated",
-}
+  "com.amazonaws.videoanalytics.devicemanagement.workflow";
 export const IS_REGISTERED_PATH = "$.isRegistered";
 export const IS_COMMAND_PATH = "$.isCommand";
 export const IS_SOFTWARE_UPDATE_PATH = "$.isSoftwareUpdate";
 
 // TODO: REFACTOR once DM workflow's lambda paths are updated
-export const LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT = "../../../assets/lambda-built/device-management-assets";
+export const LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT =
+  "../../../source/device-management/VideoAnalyticsDeviceManagementControlPlane/build/libs/VideoAnalyticsDeviceManagementControlPlane-1.0-SNAPSHOT.jar";
 
 export const IOT_CONNECTED_THING_NAME = `\${iot:Connection.Thing.ThingName}`;
 
