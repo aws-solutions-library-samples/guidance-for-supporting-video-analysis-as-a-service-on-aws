@@ -103,8 +103,17 @@ shadowJar {
     dependsOn classes  // Ensure Java compilation happens first
 }
 
-// Define the task first
+
+/**
+ * Copies the built JAR file to the lambda deployment assets directory.
+ * The JAR file is copied from the build directory to a centralized assets location
+ * that is used by the CDK deployment stack.
+ *
+ * This task depends on the shadowJar task to ensure the JAR is built before copying.
+ * The task will always run regardless of whether inputs have changed.
+ */
 task transformJarToDeploymentAsset(type: Copy) {
+    description = 'Copies the built JAR file to the lambda deployment assets directory'
     from "${buildDir}/libs/${rootProject.name}-${version}.jar"
     into "../../../assets/lambda-built/device-management-assets"
     outputs.upToDateWhen { false }
