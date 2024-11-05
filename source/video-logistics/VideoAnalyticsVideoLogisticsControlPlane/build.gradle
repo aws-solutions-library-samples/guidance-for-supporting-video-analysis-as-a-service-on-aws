@@ -170,3 +170,4 @@ build {
     dependsOn classes
     finalizedBy transformJarToDeploymentAsset
 }
+
