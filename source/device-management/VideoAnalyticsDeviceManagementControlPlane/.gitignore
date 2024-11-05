@@ -1,6 +1,5 @@
 .gradle
 build/
-gradle/
 bin/
 !**/src/main/**/build/
 !**/src/test/**/build/
@@ -19,5 +18,9 @@ out/
 .DS_Store
 .idea
 
-gradlew
-gradlew.bat
+# But don't ignore the wrapper files for build reproduction and consistency
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
+!gradlew
+!gradlew.bat
+

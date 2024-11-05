@@ -1,6 +1,5 @@
 .gradle
 build/
-!gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
 
@@ -25,7 +24,10 @@ bin/
 .vscode
 .DS_Store
 .idea
-
-gradlew
-gradlew.bat
 *.iml
+
+# But don't ignore the wrapper files for build reproduction and consistency
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
+!gradlew
+!gradlew.bat
