@@ -15,24 +15,24 @@ const region = (process.env.CDK_DEPLOY_REGION ||
   process.env.CDK_DEFAULT_REGION ||
   "us-east-1") as AWSRegion;
 
-new WorkflowStack(app, "WorkflowStack", {
-  env: {
-    account: account,
-    region: region,
-  },
-  resources: [], // this will be populated by the workflowStack.ts since resources are created in the workflowStack.ts
-  region: region,
-  account: account,
-});
-
-// new ServiceStack(app, "ServiceStack", {
+// new WorkflowStack(app, "WorkflowStack", {
 //   env: {
 //     account: account,
 //     region: region,
 //   },
+//   resources: [], // this will be populated by the workflowStack.ts since resources are created in the workflowStack.ts
 //   region: region,
 //   account: account,
 // });
+
+new ServiceStack(app, "ServiceStack", {
+  env: {
+    account: account,
+    region: region,
+  },
+  region: region,
+  account: account,
+});
 
 new DeviceManagementBootstrapStack(app, "DeviceManagementBootstrapStack", {
   env: {

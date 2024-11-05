@@ -1,5 +1,11 @@
 package com.amazonaws.videoanalytics.devicemanagement.exceptions;
 
+import com.amazonaws.videoanalytics.devicemanagement.AccessDeniedExceptionResponseContent;
+import com.amazonaws.videoanalytics.devicemanagement.ConflictExceptionResponseContent;
+import com.amazonaws.videoanalytics.devicemanagement.InternalServerExceptionResponseContent;
+import com.amazonaws.videoanalytics.devicemanagement.ResourceNotFoundExceptionResponseContent;
+import com.amazonaws.videoanalytics.devicemanagement.ValidationExceptionResponseContent;
+
 import software.amazon.awssdk.services.iot.model.CertificateStateException;
 import software.amazon.awssdk.services.iot.model.ConflictingResourceUpdateException;
 import software.amazon.awssdk.services.iot.model.DeleteConflictException;
@@ -31,27 +37,60 @@ import static com.amazonaws.videoanalytics.devicemanagement.utils.LambdaProxyUti
 
 public class ExceptionTranslator {
     public static Map<String, Object> translateIotExceptionToLambdaResponse(AwsServiceException e) {
-        if (e instanceof InvalidRequestException) {
-            return serializeResponse(400, INVALID_INPUT_EXCEPTION);
-        } else if (e instanceof ResourceNotFoundException |
+        if (e instanceof InvalidRequestException ||
+            e instanceof software.amazon.awssdk.services.iotdataplane.model.InvalidRequestException) {
+            ValidationExceptionResponseContent exception = ValidationExceptionResponseContent.builder()
+                    .message(INVALID_INPUT_EXCEPTION)
+                    .build();
+            return serializeResponse(400, exception.toJson());
+        } else if (e instanceof ResourceNotFoundException ||
                    e instanceof software.amazon.awssdk.services.iotdataplane.model.ResourceNotFoundException) {
-            return serializeResponse(404, RESOURCE_NOT_FOUND_EXCEPTION);
-        } else if (e instanceof UnauthorizedException || e.statusCode() == 403) {
-            return serializeResponse(403, UNAUTHORIZED_EXCEPTION);
-        } else if (e instanceof ThrottlingException) {
-            return serializeResponse(500, THROTTLING_EXCEPTION);
-        } else if (e instanceof InternalFailureException |
-                   e instanceof ServiceUnavailableException |
-                   e instanceof CertificateStateException) {
-            return serializeResponse(500, INTERNAL_SERVER_EXCEPTION);
+            ResourceNotFoundExceptionResponseContent exception = ResourceNotFoundExceptionResponseContent.builder()
+                    .message(RESOURCE_NOT_FOUND_EXCEPTION)
+                    .build();
+            return serializeResponse(404, exception.toJson());
+        } else if (e instanceof UnauthorizedException || 
+                   e instanceof software.amazon.awssdk.services.iotdataplane.model.UnauthorizedException || 
+                   e.statusCode() == 403) {
+            AccessDeniedExceptionResponseContent exception = AccessDeniedExceptionResponseContent.builder()
+                    .message(UNAUTHORIZED_EXCEPTION)
+                    .build();
+            return serializeResponse(403, exception.toJson());
+        } else if (e instanceof ThrottlingException ||
+                   e instanceof software.amazon.awssdk.services.iotdataplane.model.ThrottlingException) {
+            InternalServerExceptionResponseContent exception = InternalServerExceptionResponseContent.builder()
+                    .message(THROTTLING_EXCEPTION)
+                    .build();
+            return serializeResponse(500, exception.toJson());
+        } else if (e instanceof InternalFailureException ||
+                   e instanceof ServiceUnavailableException ||
+                   e instanceof CertificateStateException || 
+                   e instanceof software.amazon.awssdk.services.iotdataplane.model.InternalFailureException ||
+                   e instanceof software.amazon.awssdk.services.iotdataplane.model.ServiceUnavailableException) {
+            InternalServerExceptionResponseContent exception = InternalServerExceptionResponseContent.builder()
+                    .message(INTERNAL_SERVER_EXCEPTION)
+                    .build();
+            return serializeResponse(500, exception.toJson());
         } else if (e instanceof LimitExceededException) {
-            return serializeResponse(500, LIMIT_EXCEEDED_EXCEPTION);
+            InternalServerExceptionResponseContent exception = InternalServerExceptionResponseContent.builder()
+                    .message(LIMIT_EXCEEDED_EXCEPTION)
+                    .build();
+            return serializeResponse(500, exception.toJson());
         } else if (e instanceof DeleteConflictException) {
-            return serializeResponse(500, DELETE_CONFLICT_EXCEPTION);
+            ConflictExceptionResponseContent exception = ConflictExceptionResponseContent.builder()
+                    .message(DELETE_CONFLICT_EXCEPTION)
+                    .build();
+            return serializeResponse(409, exception.toJson());
         } else if (e instanceof ResourceAlreadyExistsException) {
-            return serializeResponse(409, RESOURCE_ALREADY_EXISTS_EXCEPTION);
+            ConflictExceptionResponseContent exception = ConflictExceptionResponseContent.builder()
+                    .message(RESOURCE_ALREADY_EXISTS_EXCEPTION)
+                    .build();
+            return serializeResponse(409, exception.toJson());
         } else {
-            return serializeResponse(500, INTERNAL_SERVER_EXCEPTION);
+            InternalServerExceptionResponseContent exception = InternalServerExceptionResponseContent.builder()
+                    .message(INTERNAL_SERVER_EXCEPTION)
+                    .build();
+            return serializeResponse(500, exception.toJson());
         }
     }
 

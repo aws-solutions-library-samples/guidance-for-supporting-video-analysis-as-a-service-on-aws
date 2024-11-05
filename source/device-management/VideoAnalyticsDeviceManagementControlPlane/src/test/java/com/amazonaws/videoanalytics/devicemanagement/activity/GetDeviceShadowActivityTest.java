@@ -3,7 +3,9 @@ package com.amazonaws.videoanalytics.devicemanagement.activity;
 import java.io.IOException;
 
 import com.amazonaws.videoanalytics.devicemanagement.ShadowMap;
+import com.amazonaws.videoanalytics.devicemanagement.ValidationExceptionResponseContent;
 import com.amazonaws.videoanalytics.devicemanagement.GetDeviceShadowResponseContent;
+import com.amazonaws.videoanalytics.devicemanagement.InternalServerExceptionResponseContent;
 import com.amazonaws.videoanalytics.devicemanagement.dependency.iot.IotService;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
@@ -17,17 +19,16 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import software.amazon.awssdk.services.iot.model.ThrottlingException;
+import software.amazon.awssdk.services.iotdataplane.model.ThrottlingException;
 
 import java.text.ParseException;
 import java.util.Map;
 import static java.util.Map.entry;
-
 import static com.amazonaws.videoanalytics.devicemanagement.exceptions.VideoAnalyticsExceptionMessage.INTERNAL_SERVER_EXCEPTION;
 import static com.amazonaws.videoanalytics.devicemanagement.exceptions.VideoAnalyticsExceptionMessage.INVALID_INPUT_EXCEPTION;
 import static com.amazonaws.videoanalytics.devicemanagement.exceptions.VideoAnalyticsExceptionMessage.THROTTLING_EXCEPTION;
-import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyticsServiceLambdaConstants.PROXY_LAMBDA_RESPONSE_BODY_KEY;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyticsServiceLambdaConstants.PROXY_LAMBDA_RESPONSE_STATUS_CODE_KEY;
+import static com.amazonaws.videoanalytics.devicemanagement.utils.LambdaProxyUtils.parseBody;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.TestConstants.DEVICE_ID;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.TestConstants.SHADOW_NAME;
 
@@ -97,7 +98,7 @@ public class GetDeviceShadowActivityTest {
     }
 
     @Test
-    public void getDeviceShadowActivity_WhenEmptyDeviceId_ThrowsInvalidInputException() {
+    public void getDeviceShadowActivity_WhenEmptyDeviceId_ThrowsValidationException() throws IOException {
         Map<String, Object> lambdaProxyRequestEmptyDeviceId = Map.ofEntries(
             entry("pathParameters", Map.ofEntries(
                 entry("deviceId", ""),
@@ -106,22 +107,25 @@ public class GetDeviceShadowActivityTest {
         );
         Map<String, Object> responseMap = getDeviceShadowActivity.handleRequest(lambdaProxyRequestEmptyDeviceId, context);
         assertEquals(responseMap.get(PROXY_LAMBDA_RESPONSE_STATUS_CODE_KEY), 400);
-        assertEquals(responseMap.get(PROXY_LAMBDA_RESPONSE_BODY_KEY), INVALID_INPUT_EXCEPTION);
+        ValidationExceptionResponseContent exception = ValidationExceptionResponseContent.fromJson(parseBody(responseMap));
+        assertEquals(exception.getMessage(), INVALID_INPUT_EXCEPTION);
     }
 
     @Test
-    public void getDeviceShadowActivity_WhenThrottlingException_ThrowsThrottlingException() throws ParseException, JsonProcessingException {
+    public void getDeviceShadowActivity_WhenThrottlingException_ThrowsInternalServerException() throws IOException, ParseException, JsonProcessingException {
         when(iotService.getDeviceShadow(DEVICE_ID, SHADOW_NAME)).thenThrow(ThrottlingException.builder().build());
         Map<String, Object> responseMap = getDeviceShadowActivity.handleRequest(lambdaProxyRequest, context);
         assertEquals(responseMap.get(PROXY_LAMBDA_RESPONSE_STATUS_CODE_KEY), 500);
-        assertEquals(responseMap.get(PROXY_LAMBDA_RESPONSE_BODY_KEY), THROTTLING_EXCEPTION);
+        InternalServerExceptionResponseContent exception = InternalServerExceptionResponseContent.fromJson(parseBody(responseMap));
+        assertEquals(exception.getMessage(), THROTTLING_EXCEPTION);
     }
 
     @Test
-    public void getDeviceShadowActivity_WhenRuntimeException_ThrowsInternalException() throws ParseException, JsonProcessingException {
+    public void getDeviceShadowActivity_WhenRuntimeException_ThrowsInternalServerException() throws IOException, ParseException, JsonProcessingException {
         when(iotService.getDeviceShadow(DEVICE_ID, SHADOW_NAME)).thenThrow(RuntimeException.class);
         Map<String, Object> responseMap = getDeviceShadowActivity.handleRequest(lambdaProxyRequest, context);
         assertEquals(responseMap.get(PROXY_LAMBDA_RESPONSE_STATUS_CODE_KEY), 500);
-        assertEquals(responseMap.get(PROXY_LAMBDA_RESPONSE_BODY_KEY), INTERNAL_SERVER_EXCEPTION);
+        InternalServerExceptionResponseContent exception = InternalServerExceptionResponseContent.fromJson(parseBody(responseMap));
+        assertEquals(exception.getMessage(), INTERNAL_SERVER_EXCEPTION);
     }
 }

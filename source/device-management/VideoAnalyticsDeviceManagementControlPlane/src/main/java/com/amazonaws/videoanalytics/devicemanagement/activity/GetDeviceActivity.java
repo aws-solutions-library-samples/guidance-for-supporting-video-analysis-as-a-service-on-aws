@@ -6,6 +6,8 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.videoanalytics.devicemanagement.GetDeviceResponseContent;
+import com.amazonaws.videoanalytics.devicemanagement.InternalServerExceptionResponseContent;
+import com.amazonaws.videoanalytics.devicemanagement.ValidationExceptionResponseContent;
 import com.amazonaws.videoanalytics.devicemanagement.dagger.AWSVideoAnalyticsDMControlPlaneComponent;
 import com.amazonaws.videoanalytics.devicemanagement.dagger.DaggerAWSVideoAnalyticsDMControlPlaneComponent;
 import com.amazonaws.videoanalytics.devicemanagement.dependency.iot.IotService;
@@ -15,7 +17,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import java.util.Map;
 
-import software.amazon.awssdk.services.iot.model.IotException;
+import software.amazon.awssdk.awscore.exception.AwsServiceException;
 
 import static com.amazonaws.videoanalytics.devicemanagement.exceptions.VideoAnalyticsExceptionMessage.INTERNAL_SERVER_EXCEPTION;
 import static com.amazonaws.videoanalytics.devicemanagement.exceptions.VideoAnalyticsExceptionMessage.INVALID_INPUT_EXCEPTION;
@@ -50,12 +52,18 @@ public class GetDeviceActivity implements RequestHandler<Map<String, Object>, Ma
             deviceId = parsePathParameter(input, "deviceId");
         } catch (Exception e) {
             logger.log(e.toString());
-            return serializeResponse(400, INVALID_INPUT_EXCEPTION);
+            ValidationExceptionResponseContent exception = ValidationExceptionResponseContent.builder()
+                    .message(INVALID_INPUT_EXCEPTION)
+                    .build();
+            return serializeResponse(400, exception.toJson());
         }
 
         if (isBlank(deviceId)) {
             logger.log("deviceId is null or empty");
-            return serializeResponse(400, INVALID_INPUT_EXCEPTION);
+            ValidationExceptionResponseContent exception = ValidationExceptionResponseContent.builder()
+                    .message(INVALID_INPUT_EXCEPTION)
+                    .build();
+            return serializeResponse(400, exception.toJson());
         }
         return getResponseForValidRequest(deviceId, logger);
     }
@@ -64,15 +72,22 @@ public class GetDeviceActivity implements RequestHandler<Map<String, Object>, Ma
         GetDeviceResponseContent getDeviceResponse;
         try {
             getDeviceResponse = iotService.getDevice(deviceId);  
-        } catch (IotException e) {
+        // generalizing from IotException to AwsServiceException because getDeviceShadow is an IoTDataPlane action
+        } catch (AwsServiceException e) {
             logger.log(e.toString());
             return ExceptionTranslator.translateIotExceptionToLambdaResponse(e);
         } catch (JsonProcessingException e) {
             logger.log(e.toString());
-            return serializeResponse(500, JSON_PROCESSING_EXCEPTION);
+            InternalServerExceptionResponseContent exception = InternalServerExceptionResponseContent.builder()
+                    .message(JSON_PROCESSING_EXCEPTION)
+                    .build();
+            return serializeResponse(500, exception.toJson());
         } catch (Exception e){
             logger.log(e.toString());
-            return serializeResponse(500, INTERNAL_SERVER_EXCEPTION);
+            InternalServerExceptionResponseContent exception = InternalServerExceptionResponseContent.builder()
+                    .message(INTERNAL_SERVER_EXCEPTION)
+                    .build();
+            return serializeResponse(500, exception.toJson());
         }
         
         return serializeResponse(200, getDeviceResponse.toJson());

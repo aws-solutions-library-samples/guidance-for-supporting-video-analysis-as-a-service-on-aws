@@ -2066,10 +2066,7 @@
                     }
                 },
                 "reason": {
-                    "target": "com.amazonaws.videoanalytics.devicemanagement#ValidationExceptionReason",
-                    "traits": {
-                        "smithy.api#required": {}
-                    }
+                    "target": "com.amazonaws.videoanalytics.devicemanagement#ValidationExceptionReason"
                 },
                 "fieldList": {
                     "target": "com.amazonaws.videoanalytics.devicemanagement#ValidationExceptionFieldList"

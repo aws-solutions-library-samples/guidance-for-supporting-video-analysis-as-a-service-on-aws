@@ -5,6 +5,8 @@ import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.videoanalytics.devicemanagement.GetDeviceShadowRequestContent;
 import com.amazonaws.videoanalytics.devicemanagement.GetDeviceShadowResponseContent;
+import com.amazonaws.videoanalytics.devicemanagement.InternalServerExceptionResponseContent;
+import com.amazonaws.videoanalytics.devicemanagement.ValidationExceptionResponseContent;
 import com.amazonaws.videoanalytics.devicemanagement.dagger.AWSVideoAnalyticsDMControlPlaneComponent;
 import com.amazonaws.videoanalytics.devicemanagement.dagger.DaggerAWSVideoAnalyticsDMControlPlaneComponent;
 import com.amazonaws.videoanalytics.devicemanagement.utils.annotations.ExcludeFromJacocoGeneratedReport;
@@ -52,12 +54,18 @@ public class GetDeviceShadowActivity implements RequestHandler<Map<String, Objec
             shadowName = GetDeviceShadowRequestContent.fromJson(requestBody).getShadowName();
         } catch (Exception e) {
             logger.log(e.toString());
-            return serializeResponse(400, INVALID_INPUT_EXCEPTION);
+            ValidationExceptionResponseContent exception = ValidationExceptionResponseContent.builder()
+                    .message(INVALID_INPUT_EXCEPTION)
+                    .build();
+            return serializeResponse(400, exception.toJson());
         }
 
         if (isBlank(deviceId)) {
             logger.log("deviceId is null or empty");
-            return serializeResponse(400, INVALID_INPUT_EXCEPTION);
+            ValidationExceptionResponseContent exception = ValidationExceptionResponseContent.builder()
+                    .message(INVALID_INPUT_EXCEPTION)
+                    .build();
+            return serializeResponse(400, exception.toJson());
         }
 
         GetDeviceShadowResponseContent getDeviceShadowResponse;
@@ -69,7 +77,10 @@ public class GetDeviceShadowActivity implements RequestHandler<Map<String, Objec
             return ExceptionTranslator.translateIotExceptionToLambdaResponse(e);
         } catch (Exception e) {
             logger.log(e.toString());
-            return serializeResponse(500, INTERNAL_SERVER_EXCEPTION);
+            InternalServerExceptionResponseContent exception = InternalServerExceptionResponseContent.builder()
+                    .message(INTERNAL_SERVER_EXCEPTION)
+                    .build();
+            return serializeResponse(500, exception.toJson());
         }
     
         return serializeResponse(200, getDeviceShadowResponse.toJson());
