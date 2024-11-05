@@ -11,7 +11,8 @@ plugins {
 }
 
 group = 'org.example'
-version = '1.0-SNAPSHOT'
+version = '1.0-beta'
+
 
 repositories {
     mavenCentral()
@@ -98,10 +99,37 @@ shadowJar {
     archiveClassifier.set('')
     mergeServiceFiles()
     zip64 true
+    outputs.upToDateWhen { false }
+    dependsOn classes  // Ensure Java compilation happens first
+}
+
+
+/**
+ * Copies the built JAR file to the lambda deployment assets directory.
+ * The JAR file is copied from the build directory to a centralized assets location
+ * that is used by the CDK deployment stack.
+ *
+ * This task depends on the shadowJar task to ensure the JAR is built before copying.
+ * The task will always run regardless of whether inputs have changed.
+ */
+task transformJarToDeploymentAsset(type: Copy) {
+    description = 'Copies the built JAR file to the lambda deployment assets directory'
+    from "${buildDir}/libs/${rootProject.name}-${version}.jar"
+    into "../../../assets/lambda-built/device-management-assets"
+    outputs.upToDateWhen { false }
+    dependsOn shadowJar  // Ensure jar is created before copying
+    
+    doLast {
+        println "JAR file copied from: ${buildDir}/libs/${rootProject.name}-${version}.jar"
+        println "JAR file copied to: ../../../assets/lambda-built/device-management-assets"
+    }
 }
 
 build {
     dependsOn shadowJar
+     // Ensure Java compilation happens
+    dependsOn classes 
+    finalizedBy transformJarToDeploymentAsset
 }
 
 test {
@@ -160,3 +188,4 @@ task cleanBuildCache {
         println "Build cache cleaning completed."
     }
 }
+

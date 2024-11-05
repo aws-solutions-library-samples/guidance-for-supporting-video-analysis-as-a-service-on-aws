@@ -65,4 +65,4 @@ export const TIMELINE_FORWARDER_HANDLER_PATH =
 export const LAMBDA_PACKAGE_NAME = 'AWSVideoAnalyticsVLControlPlane-1.0';
   "com.amazon.awsvideoanalyticsvlcontrolplane.timeline.TimelineForwarderLambda::handleRequest";
 // TODO: Update this once the VL's code asset path is updated
-export const LAMBDA_ASSET_PATH = '../../../assets/lambda-built/video-logicstics-assets/';
+export const LAMBDA_ASSET_PATH = '../../../assets/lambda-built/video-logistics-assets/';

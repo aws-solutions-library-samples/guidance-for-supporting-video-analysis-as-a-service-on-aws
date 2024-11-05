@@ -6,6 +6,7 @@ plugins {
     id 'maven-publish'
     id 'io.freefair.lombok' version '8.3'
     id 'jacoco'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
 group = 'org.example'
@@ -143,3 +144,38 @@ task cleanBuildCache {
         println "Build cache cleaning completed."
     }
 }
+
+shadowJar {
+    archiveClassifier.set('')
+    mergeServiceFiles()
+    zip64 true
+    outputs.upToDateWhen { false }
+    dependsOn classes
+}
+
+/**
+ * Copies the built JAR file to the lambda deployment assets directory.
+ * The JAR file is copied from the build directory to a centralized assets location
+ * that is used by the CDK deployment stack.
+ *
+ * This task depends on the shadowJar task to ensure the JAR is built before copying.
+ * The task will always run regardless of whether inputs have changed.
+ */
+task transformJarToDeploymentAsset(type: Copy) {
+    from "${buildDir}/libs/${rootProject.name}-${version}.jar"
+    into "../../../assets/lambda-built/video-logistics-assets"
+    outputs.upToDateWhen { false }
+    dependsOn shadowJar
+    
+    doLast {
+        println "JAR file copied from: ${buildDir}/libs/${rootProject.name}-${version}.jar"
+        println "JAR file copied to: ../../../assets/lambda-built/video-logistics-assets"
+    }
+}
+
+build {
+    dependsOn shadowJar
+    dependsOn classes
+    finalizedBy transformJarToDeploymentAsset
+}
+
