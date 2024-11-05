@@ -2043,8 +2043,7 @@
                     }
                 },
                 "required": [
-                    "message",
-                    "reason"
+                    "message"
                 ]
             },
             "VideoStreamingState": {

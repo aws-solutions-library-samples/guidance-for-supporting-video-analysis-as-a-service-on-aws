@@ -25,7 +25,6 @@ enum ValidationExceptionReason {
 structure ValidationException {
     @required
     message: String,
-    @required
     reason: ValidationExceptionReason,
     // The field that caused the error, if applicable. If more than one field caused the error, pick one and elaborate in the message
     fieldList: ValidationExceptionFieldList
