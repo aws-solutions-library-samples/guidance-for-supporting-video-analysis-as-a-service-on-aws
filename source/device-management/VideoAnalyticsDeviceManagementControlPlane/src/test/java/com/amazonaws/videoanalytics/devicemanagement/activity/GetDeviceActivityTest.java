@@ -17,7 +17,6 @@ import com.amazonaws.videoanalytics.devicemanagement.dependency.iot.IotService;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.apache.logging.log4j.util.Strings;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,6 +38,8 @@ import static java.util.Map.entry;
 import static com.amazonaws.videoanalytics.devicemanagement.exceptions.VideoAnalyticsExceptionMessage.INTERNAL_SERVER_EXCEPTION;
 import static com.amazonaws.videoanalytics.devicemanagement.exceptions.VideoAnalyticsExceptionMessage.INVALID_INPUT_EXCEPTION;
 import static com.amazonaws.videoanalytics.devicemanagement.exceptions.VideoAnalyticsExceptionMessage.THROTTLING_EXCEPTION;
+import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyticsServiceLambdaConstants.PROXY_LAMBDA_REQUEST_DEVICE_ID_PATH_PARAMETER_KEY;
+import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyticsServiceLambdaConstants.PROXY_LAMBDA_REQUEST_PATH_PARAMETERS_KEY;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyticsServiceLambdaConstants.PROXY_LAMBDA_RESPONSE_STATUS_CODE_KEY;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.LambdaProxyUtils.parseBody;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.TestConstants.DATE;
@@ -60,8 +61,8 @@ public class GetDeviceActivityTest {
     private LambdaLogger logger;
 
     private final Map<String, Object> lambdaProxyRequest = Map.ofEntries(
-        entry("pathParameters", Map.ofEntries(
-            entry("deviceId", DEVICE_ID)
+        entry(PROXY_LAMBDA_REQUEST_PATH_PARAMETERS_KEY, Map.ofEntries(
+            entry(PROXY_LAMBDA_REQUEST_DEVICE_ID_PATH_PARAMETER_KEY, DEVICE_ID)
         ))
     );
 
@@ -93,9 +94,8 @@ public class GetDeviceActivityTest {
                 .build();
 
         when(iotService.getDevice(DEVICE_ID)).thenReturn(responseFromIotService);
-        Map<String, Object> response = getDeviceActivity.handleRequest(lambdaProxyRequest, context);
-        ObjectMapper mapper = new ObjectMapper();
-        GetDeviceResponseContent getDeviceResponse = GetDeviceResponseContent.fromJson(mapper.convertValue(response.get("body"), String.class));
+        Map<String, Object> responseMap = getDeviceActivity.handleRequest(lambdaProxyRequest, context);
+        GetDeviceResponseContent getDeviceResponse = GetDeviceResponseContent.fromJson(parseBody(responseMap));
         assertEquals(DEVICE_ID, getDeviceResponse.getDeviceId());
         assertEquals(DEVICE_GROUP_ID, getDeviceResponse.getDeviceGroupIds().get(0));
         assertEquals(DEVICE_TYPE_NAME, getDeviceResponse.getDeviceType());
@@ -107,8 +107,8 @@ public class GetDeviceActivityTest {
     @Test
     public void getDeviceActivity_WhenEmptyDeviceId_ThrowsValidationException() throws IOException {
         Map<String, Object> lambdaProxyRequestEmptyDeviceId = Map.ofEntries(
-            entry("pathParameters", Map.ofEntries(
-                entry("deviceId", "")
+            entry(PROXY_LAMBDA_REQUEST_PATH_PARAMETERS_KEY, Map.ofEntries(
+                entry(PROXY_LAMBDA_REQUEST_DEVICE_ID_PATH_PARAMETER_KEY, "")
             ))
         );
         Map<String, Object> responseMap = getDeviceActivity.handleRequest(lambdaProxyRequestEmptyDeviceId, context);

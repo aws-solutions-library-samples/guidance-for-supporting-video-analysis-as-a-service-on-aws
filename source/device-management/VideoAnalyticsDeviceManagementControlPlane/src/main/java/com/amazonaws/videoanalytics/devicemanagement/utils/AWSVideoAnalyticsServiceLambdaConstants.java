@@ -6,8 +6,11 @@ public final class AWSVideoAnalyticsServiceLambdaConstants {
     public static final String SERVICE_ENDPOINT ="SERVICE_ENDPOINT";
     public static final String HTTP_CLIENT = "HTTP_CLIENT";
 
+    // body key for request and response
+    public static final String PROXY_LAMBDA_BODY_KEY = "body";
+    public static final String PROXY_LAMBDA_REQUEST_PATH_PARAMETERS_KEY = "pathParameters";
+    public static final String PROXY_LAMBDA_REQUEST_DEVICE_ID_PATH_PARAMETER_KEY = "deviceId";
     public static final String PROXY_LAMBDA_RESPONSE_STATUS_CODE_KEY = "statusCode";
-    public static final String PROXY_LAMBDA_RESPONSE_BODY_KEY = "body";
 
     public static final String DEV = "Dev";
     public static final String ALPHA = "Alpha";

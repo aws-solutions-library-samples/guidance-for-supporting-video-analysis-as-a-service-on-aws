@@ -993,14 +993,14 @@
                 }
             }
         },
-        "/update-device/{deviceId}": {
-            "put": {
-                "operationId": "UpdateDevice",
+        "/update-device-shadow/{deviceId}": {
+            "post": {
+                "operationId": "UpdateDeviceShadow",
                 "requestBody": {
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/UpdateDeviceRequestContent"
+                                "$ref": "#/components/schemas/UpdateDeviceShadowRequestContent"
                             }
                         }
                     }
@@ -1020,14 +1020,54 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "UpdateDevice 200 response",
+                        "description": "UpdateDeviceShadow 200 response",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/UpdateDeviceResponseContent"
+                                    "$ref": "#/components/schemas/UpdateDeviceShadowResponseContent"
                                 }
                             }
                         }
+                    },
+                    "400": {
+                        "description": "ValidationException 400 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "AccessDeniedException 403 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AccessDeniedExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "InternalServerException 500 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InternalServerExceptionResponseContent"
+                                }
+                            }
+                        }
+                    }
+                },
+                "x-amazon-apigateway-integration": {
+                    "httpMethod": "POST",
+                    "type": "aws_proxy",
+                    "uri": {
+                        "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${UpdateDeviceShadowActivity}/invocations"
+                    },
+                    "credentials": {
+                        "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/ApiGatewayRole"
                     }
                 }
             }
@@ -1956,49 +1996,22 @@
                     "NORMAL"
                 ]
             },
-            "UpdateDeviceRequestContent": {
+            "UpdateDeviceShadowRequestContent": {
                 "type": "object",
                 "properties": {
-                    "attributePayload": {
-                        "$ref": "#/components/schemas/KeyValueMap"
-                    },
                     "shadowPayload": {
                         "$ref": "#/components/schemas/ShadowMap"
                     }
                 }
             },
-            "UpdateDeviceResponseContent": {
+            "UpdateDeviceShadowResponseContent": {
                 "type": "object",
                 "properties": {
-                    "deviceName": {
-                        "type": "string"
-                    },
                     "deviceId": {
                         "type": "string",
                         "maxLength": 128,
                         "minLength": 1,
                         "pattern": "^[a-zA-Z0-9:_\\-]+$"
-                    },
-                    "deviceGroupId": {
-                        "type": "string",
-                        "maxLength": 128,
-                        "minLength": 1
-                    },
-                    "deviceType": {
-                        "type": "string"
-                    },
-                    "deviceMetaData": {
-                        "$ref": "#/components/schemas/DeviceMetaData"
-                    },
-                    "deviceCapabilities": {
-                        "$ref": "#/components/schemas/KeyValueMap"
-                    },
-                    "deviceSettings": {
-                        "$ref": "#/components/schemas/KeyValueMap"
-                    },
-                    "createdAt": {
-                        "type": "string",
-                        "format": "date-time"
                     }
                 }
             },

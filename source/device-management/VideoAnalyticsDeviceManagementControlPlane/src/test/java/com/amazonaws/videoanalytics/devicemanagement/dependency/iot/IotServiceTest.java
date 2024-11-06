@@ -8,8 +8,10 @@ import com.amazonaws.videoanalytics.devicemanagement.DeviceStatus;
 import com.amazonaws.videoanalytics.devicemanagement.GetDeviceResponseContent;
 import com.amazonaws.videoanalytics.devicemanagement.GetDeviceShadowResponseContent;
 import com.amazonaws.videoanalytics.devicemanagement.IpAddress;
+import com.amazonaws.videoanalytics.devicemanagement.ShadowMap;
 import com.amazonaws.videoanalytics.devicemanagement.StorageElement;
 import com.amazonaws.videoanalytics.devicemanagement.StorageState;
+import com.amazonaws.videoanalytics.devicemanagement.UpdateDeviceShadowResponseContent;
 import com.amazonaws.videoanalytics.devicemanagement.VideoStreamingState;
 import com.amazonaws.videoanalytics.devicemanagement.utils.UpdateDeviceUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -35,6 +37,8 @@ import software.amazon.awssdk.services.iot.model.ThingDocument;
 import software.amazon.awssdk.services.iotdataplane.IotDataPlaneClient;
 import software.amazon.awssdk.services.iotdataplane.model.GetThingShadowRequest;
 import software.amazon.awssdk.services.iotdataplane.model.GetThingShadowResponse;
+import software.amazon.awssdk.services.iotdataplane.model.UpdateThingShadowRequest;
+import software.amazon.awssdk.services.iotdataplane.model.UpdateThingShadowResponse;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -94,7 +98,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -438,8 +441,8 @@ public class IotServiceTest {
         when(iotDataPlaneClient.getThingShadow(any(GetThingShadowRequest.class))).thenReturn(getThingShadowResponse);
         
         GetDeviceShadowResponseContent response = iotService.getDeviceShadow(DEVICE_ID, SHADOW_NAME);
-        JSONObject expectedJsonObject = new JSONObject();
-        assertTrue(expectedJsonObject.similar(response.getShadowPayload().getStateDocument()));
+        Map<String, Object> expectedStateDocument = new HashMap<String, Object>();
+        assertEquals(expectedStateDocument, response.getShadowPayload().getStateDocument());
         assertEquals(response.getShadowPayload().getShadowName(), SHADOW_NAME);
     }
 
@@ -453,19 +456,48 @@ public class IotServiceTest {
         when(iotDataPlaneClient.getThingShadow(any(GetThingShadowRequest.class))).thenReturn(getThingShadowResponse);
 
         GetDeviceShadowResponseContent response = iotService.getDeviceShadow(DEVICE_ID, null);
-        JSONObject expectedJsonObject = new JSONObject();
-        assertTrue(expectedJsonObject.similar(response.getShadowPayload().getStateDocument()));
+        Map<String, Object> expectedStateDocument = new HashMap<String, Object>();
+        assertEquals(expectedStateDocument, response.getShadowPayload().getStateDocument());
         assertEquals(response.getShadowPayload().getShadowName(), null);
     }
 
     @Test
     public void getDeviceShadow_WhenResourceNotFound_ThrowsResourceNotFoundException() {
         when(iotDataPlaneClient.getThingShadow(any(GetThingShadowRequest.class))).thenThrow(
-                ResourceNotFoundException.class
+                software.amazon.awssdk.services.iotdataplane.model.ResourceNotFoundException.class
         );
 
-        assertThrows(ResourceNotFoundException.class, () -> {
+        assertThrows(software.amazon.awssdk.services.iotdataplane.model.ResourceNotFoundException.class, () -> {
                 iotService.getDeviceShadow(DEVICE_ID, SHADOW_NAME);
+        });
+    }
+
+    @Test
+    public void updateDeviceShadow_WhenShadowPayload_ReturnsResponse() throws JsonProcessingException {
+        when(iotDataPlaneClient.updateThingShadow(any(UpdateThingShadowRequest.class))).thenReturn(UpdateThingShadowResponse.builder().build());
+
+        Map<String, Object> shadowPayloadMap = new HashMap<>();
+        ShadowMap shadowMap = ShadowMap
+                .builder()
+                .shadowName(SHADOW_NAME)
+                .stateDocument(shadowPayloadMap)
+                .build();
+        UpdateDeviceShadowResponseContent response = iotService.updateDeviceShadow(DEVICE_ID, shadowMap);
+        assertEquals(response.getDeviceId(), DEVICE_ID);
+    }
+
+    @Test
+    public void updateDeviceShadow_WhenInvalidRequest_ThrowsInvalidRequestException() {
+        when(iotDataPlaneClient.updateThingShadow(any(UpdateThingShadowRequest.class))).thenThrow(software.amazon.awssdk.services.iotdataplane.model.ResourceNotFoundException.builder().build());
+
+        Map<String, Object> shadowPayloadMap = new HashMap<>();
+        ShadowMap shadowMap = ShadowMap
+                .builder()
+                .shadowName(SHADOW_NAME)
+                .stateDocument(shadowPayloadMap)
+                .build();
+        assertThrows(software.amazon.awssdk.services.iotdataplane.model.ResourceNotFoundException.class, () -> {
+            iotService.updateDeviceShadow(DEVICE_ID, shadowMap);
         });
     }
 
