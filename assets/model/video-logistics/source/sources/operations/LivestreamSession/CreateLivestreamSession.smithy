@@ -14,7 +14,6 @@ operation CreateLivestreamSession {
 structure CreateLivestreamSessionRequest {
     @required deviceId: DeviceId
     clientId: ClientId,
-    temporaryUseSyncProcessing: Boolean
 }
 
 @output
