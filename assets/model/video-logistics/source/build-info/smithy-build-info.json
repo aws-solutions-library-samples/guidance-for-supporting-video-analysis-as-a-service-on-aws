@@ -1,7 +1,8 @@
 {
     "metadata": {},
     "operationShapeIds": [
-        "com.amazonaws.videoanalytics.videologistics#CreateLivestreamSession"
+        "com.amazonaws.videoanalytics.videologistics#CreateLivestreamSession",
+        "com.amazonaws.videoanalytics.videologistics#StartExportVideos"
     ],
     "projection": {
         "abstract": false,
@@ -11,6 +12,7 @@
     },
     "projectionName": "source",
     "resourceShapeIds": [
+        "com.amazonaws.videoanalytics.videologistics#ExportVideo",
         "com.amazonaws.videoanalytics.videologistics#LivestreamSession"
     ],
     "serviceShapeIds": [
