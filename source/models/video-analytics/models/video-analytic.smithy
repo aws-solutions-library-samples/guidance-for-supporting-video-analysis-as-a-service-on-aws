@@ -10,6 +10,7 @@ use aws.protocols#restJson1
 service VideoAnalytic {
     version: "2024-10-18"
     resources: [
-        LivestreamSession
+        LivestreamSession,
+        ExportVideo
     ]
 }

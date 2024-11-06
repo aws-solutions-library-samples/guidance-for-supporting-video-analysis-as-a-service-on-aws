@@ -1,6 +1,9 @@
-types/Livestream.smithy
+types/ExportVideo.smithy
 types/Common.smithy
+types/Livestream.smithy
 resources/LivestreamSession.smithy
+resources/ExportVideo.smithy
 operations/LivestreamSession/CreateLivestreamSession.smithy
+operations/ExportVideo/StartExportVideos.smithy
 video-analytic.smithy
 errors/errors.smithy

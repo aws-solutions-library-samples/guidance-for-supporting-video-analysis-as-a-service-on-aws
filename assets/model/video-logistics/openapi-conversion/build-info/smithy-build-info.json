@@ -1,7 +1,8 @@
 {
     "metadata": {},
     "operationShapeIds": [
-        "com.amazonaws.videoanalytics.videologistics#CreateLivestreamSession"
+        "com.amazonaws.videoanalytics.videologistics#CreateLivestreamSession",
+        "com.amazonaws.videoanalytics.videologistics#StartExportVideos"
     ],
     "projection": {
         "abstract": false,
@@ -18,6 +19,7 @@
     },
     "projectionName": "openapi-conversion",
     "resourceShapeIds": [
+        "com.amazonaws.videoanalytics.videologistics#ExportVideo",
         "com.amazonaws.videoanalytics.videologistics#LivestreamSession"
     ],
     "serviceShapeIds": [

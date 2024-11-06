@@ -34,3 +34,21 @@ string ClientId
 
 @length(min: 1, max: 128)
 string SessionId
+
+@pattern("^s3://[a-z0-9][a-z0-9\\.-]{1,61}[a-z0-9](/.*)?$")
+@length(min: 1, max: 2048)
+string S3Path
+
+@pattern("^[a-z0-9\\-]+$")
+@length(min: 1, max: 128)
+string JobId
+
+enum Status {
+    RUNNING,
+    COMPLETED,
+    FAILED,
+    CANCELLED
+}
+
+@length(min: 1, max: 1024)
+string FailureReason
