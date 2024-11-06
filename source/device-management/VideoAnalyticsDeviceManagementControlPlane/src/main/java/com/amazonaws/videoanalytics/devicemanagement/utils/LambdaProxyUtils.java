@@ -11,6 +11,10 @@ import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyt
 import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyticsServiceLambdaConstants.PROXY_LAMBDA_RESPONSE_STATUS_CODE_KEY;
 
 public class LambdaProxyUtils {
+    private LambdaProxyUtils() {
+        // Private default constructor so that JaCoCo marks utility class as covered
+    }
+
     // https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html#api-gateway-simple-proxy-for-lambda-input-format
     public static String parsePathParameter(Map<String, Object> request, String key) {
         ObjectMapper mapper = new ObjectMapper();

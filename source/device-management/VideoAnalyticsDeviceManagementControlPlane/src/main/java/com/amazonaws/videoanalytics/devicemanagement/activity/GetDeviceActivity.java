@@ -42,6 +42,14 @@ public class GetDeviceActivity implements RequestHandler<Map<String, Object>, Ma
         this.iotService = component.iotService();
     }
 
+    // used for unit tests
+    @ExcludeFromJacocoGeneratedReport
+    public void assertPrivateFieldNotNull() {
+        if (iotService == null) {
+            throw new AssertionError("iotService is null");
+        }
+    }
+
     @Override
     public Map<String, Object> handleRequest(Map<String, Object> input, Context context) {
         LambdaLogger logger = context.getLogger();
