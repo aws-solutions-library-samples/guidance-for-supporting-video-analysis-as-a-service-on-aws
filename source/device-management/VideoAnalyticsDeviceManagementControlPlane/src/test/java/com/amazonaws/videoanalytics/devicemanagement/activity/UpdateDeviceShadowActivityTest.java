@@ -91,8 +91,8 @@ public class UpdateDeviceShadowActivityTest {
     public void updateDeviceShadowActivity_WhenEmptyDeviceId_ThrowsInvalidInputException() throws IOException {
         Map<String, Object> lambdaProxyRequestEmptyDeviceId = Map.ofEntries(
             entry(PROXY_LAMBDA_REQUEST_PATH_PARAMETERS_KEY, Map.ofEntries(
-                entry(PROXY_LAMBDA_REQUEST_DEVICE_ID_PATH_PARAMETER_KEY, ""),
-                entry(PROXY_LAMBDA_BODY_KEY, "{\"shadowName\": \"" + SHADOW_NAME + "\"}")
+                entry(PROXY_LAMBDA_REQUEST_DEVICE_ID_PATH_PARAMETER_KEY, " "),
+                entry(PROXY_LAMBDA_BODY_KEY, "{\"shadowPayload\": { \"shadowName\": \"" + SHADOW_NAME + "\", \"stateDocument\": { \"test\": true } } }")
             ))
         );
         Map<String, Object> responseMap = updateDeviceShadowActivity.handleRequest(lambdaProxyRequestEmptyDeviceId, context);

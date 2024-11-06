@@ -41,6 +41,14 @@ public class GetDeviceShadowActivity implements RequestHandler<Map<String, Objec
         this.iotService = component.iotService();
     }
 
+    // used for unit tests
+    @ExcludeFromJacocoGeneratedReport
+    public void assertPrivateFieldNotNull() {
+        if (iotService == null) {
+            throw new AssertionError("iotService is null");
+        }
+    }
+
     @Override
     public Map<String, Object> handleRequest(Map<String, Object> input, Context context) {
         LambdaLogger logger = context.getLogger();
@@ -50,18 +58,11 @@ public class GetDeviceShadowActivity implements RequestHandler<Map<String, Objec
         String shadowName;
         try {
             deviceId = parsePathParameter(input, PROXY_LAMBDA_REQUEST_DEVICE_ID_PATH_PARAMETER_KEY);
+            // parseBody will throw an exception if deviceId is empty
             String requestBody = parseBody(input);
             shadowName = GetDeviceShadowRequestContent.fromJson(requestBody).getShadowName();
         } catch (Exception e) {
             logger.log(e.toString());
-            ValidationExceptionResponseContent exception = ValidationExceptionResponseContent.builder()
-                    .message(INVALID_INPUT_EXCEPTION)
-                    .build();
-            return serializeResponse(400, exception.toJson());
-        }
-
-        if (isBlank(deviceId)) {
-            logger.log("deviceId is null or empty");
             ValidationExceptionResponseContent exception = ValidationExceptionResponseContent.builder()
                     .message(INVALID_INPUT_EXCEPTION)
                     .build();

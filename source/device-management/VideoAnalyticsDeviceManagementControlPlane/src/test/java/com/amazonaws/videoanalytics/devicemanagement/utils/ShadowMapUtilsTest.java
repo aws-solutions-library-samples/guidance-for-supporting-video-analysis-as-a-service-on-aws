@@ -23,7 +23,6 @@ public class ShadowMapUtilsTest {
             .stateDocument(Map.of("test", true))
             .build();
         SdkBytes responseBytes = ShadowMapUtils.serialize(shadowMap);
-        System.out.println(responseBytes.asUtf8String());
         SdkBytes expectedBytes = SdkBytes.fromUtf8String("{\"" + SHADOW_STATE_KEY + "\":{\"" + SHADOW_DESIRED_KEY + "\":{\"test\":true}}}");
         assertEquals(responseBytes, expectedBytes);
     }
