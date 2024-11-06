@@ -537,7 +537,7 @@
                     "target": "com.amazonaws.videoanalytics.devicemanagement#GetDeviceShadow"
                 },
                 {
-                    "target": "com.amazonaws.videoanalytics.devicemanagement#UpdateDevice"
+                    "target": "com.amazonaws.videoanalytics.devicemanagement#UpdateDeviceShadow"
                 }
             ]
         },
@@ -1983,24 +1983,41 @@
                 }
             }
         },
-        "com.amazonaws.videoanalytics.devicemanagement#UpdateDevice": {
+        "com.amazonaws.videoanalytics.devicemanagement#UpdateDeviceShadow": {
             "type": "operation",
             "input": {
-                "target": "com.amazonaws.videoanalytics.devicemanagement#UpdateDeviceRequest"
+                "target": "com.amazonaws.videoanalytics.devicemanagement#UpdateDeviceShadowRequest"
             },
             "output": {
-                "target": "com.amazonaws.videoanalytics.devicemanagement#UpdateDeviceResponse"
+                "target": "com.amazonaws.videoanalytics.devicemanagement#UpdateDeviceShadowResponse"
             },
+            "errors": [
+                {
+                    "target": "com.amazonaws.videoanalytics.devicemanagement#AccessDeniedException"
+                },
+                {
+                    "target": "com.amazonaws.videoanalytics.devicemanagement#InternalServerException"
+                },
+                {
+                    "target": "com.amazonaws.videoanalytics.devicemanagement#ValidationException"
+                }
+            ],
             "traits": {
+                "aws.apigateway#integration": {
+                    "httpMethod": "POST",
+                    "type": "aws_proxy",
+                    "uri": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${UpdateDeviceShadowActivity}/invocations",
+                    "credentials": "arn:aws:iam::${AWS::AccountId}:role/ApiGatewayRole"
+                },
                 "smithy.api#http": {
                     "code": 200,
-                    "method": "PUT",
-                    "uri": "/update-device/{deviceId}"
+                    "method": "POST",
+                    "uri": "/update-device-shadow/{deviceId}"
                 },
                 "smithy.api#idempotent": {}
             }
         },
-        "com.amazonaws.videoanalytics.devicemanagement#UpdateDeviceRequest": {
+        "com.amazonaws.videoanalytics.devicemanagement#UpdateDeviceShadowRequest": {
             "type": "structure",
             "members": {
                 "deviceId": {
@@ -2010,9 +2027,6 @@
                         "smithy.api#required": {}
                     }
                 },
-                "attributePayload": {
-                    "target": "com.amazonaws.videoanalytics.devicemanagement#KeyValueMap"
-                },
                 "shadowPayload": {
                     "target": "com.amazonaws.videoanalytics.devicemanagement#ShadowMap"
                 }
@@ -2021,35 +2035,11 @@
                 "smithy.api#input": {}
             }
         },
-        "com.amazonaws.videoanalytics.devicemanagement#UpdateDeviceResponse": {
+        "com.amazonaws.videoanalytics.devicemanagement#UpdateDeviceShadowResponse": {
             "type": "structure",
             "members": {
-                "deviceName": {
-                    "target": "smithy.api#String"
-                },
                 "deviceId": {
                     "target": "com.amazonaws.videoanalytics.devicemanagement#DeviceId"
-                },
-                "deviceGroupId": {
-                    "target": "com.amazonaws.videoanalytics.devicemanagement#DeviceGroupId"
-                },
-                "deviceType": {
-                    "target": "smithy.api#String"
-                },
-                "deviceMetaData": {
-                    "target": "com.amazonaws.videoanalytics.devicemanagement#DeviceMetaData"
-                },
-                "deviceCapabilities": {
-                    "target": "com.amazonaws.videoanalytics.devicemanagement#KeyValueMap"
-                },
-                "deviceSettings": {
-                    "target": "com.amazonaws.videoanalytics.devicemanagement#KeyValueMap"
-                },
-                "createdAt": {
-                    "target": "smithy.api#Timestamp",
-                    "traits": {
-                        "smithy.api#timestampFormat": "date-time"
-                    }
                 }
             },
             "traits": {

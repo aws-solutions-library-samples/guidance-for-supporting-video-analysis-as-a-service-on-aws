@@ -22,8 +22,6 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -49,51 +47,20 @@ import java.util.Set;
 import com.amazonaws.videoanalytics.JSON;
 
 /**
- * UpdateDeviceRequestContent
+ * UpdateDeviceShadowRequestContent
  */
 @lombok.Builder
 @lombok.AllArgsConstructor
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
-public class UpdateDeviceRequestContent {
-  public static final String SERIALIZED_NAME_ATTRIBUTE_PAYLOAD = "attributePayload";
-  @SerializedName(SERIALIZED_NAME_ATTRIBUTE_PAYLOAD)
-  private Map<String, String> attributePayload = new HashMap<>();
-
+public class UpdateDeviceShadowRequestContent {
   public static final String SERIALIZED_NAME_SHADOW_PAYLOAD = "shadowPayload";
   @SerializedName(SERIALIZED_NAME_SHADOW_PAYLOAD)
   private ShadowMap shadowPayload;
 
-  public UpdateDeviceRequestContent() {
+  public UpdateDeviceShadowRequestContent() {
   }
 
-  public UpdateDeviceRequestContent attributePayload(Map<String, String> attributePayload) {
-    this.attributePayload = attributePayload;
-    return this;
-  }
-
-  public UpdateDeviceRequestContent putAttributePayloadItem(String key, String attributePayloadItem) {
-    if (this.attributePayload == null) {
-      this.attributePayload = new HashMap<>();
-    }
-    this.attributePayload.put(key, attributePayloadItem);
-    return this;
-  }
-
-  /**
-   * Get attributePayload
-   * @return attributePayload
-   */
-  @javax.annotation.Nullable
-  public Map<String, String> getAttributePayload() {
-    return attributePayload;
-  }
-
-  public void setAttributePayload(Map<String, String> attributePayload) {
-    this.attributePayload = attributePayload;
-  }
-
-
-  public UpdateDeviceRequestContent shadowPayload(ShadowMap shadowPayload) {
+  public UpdateDeviceShadowRequestContent shadowPayload(ShadowMap shadowPayload) {
     this.shadowPayload = shadowPayload;
     return this;
   }
@@ -121,21 +88,19 @@ public class UpdateDeviceRequestContent {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    UpdateDeviceRequestContent updateDeviceRequestContent = (UpdateDeviceRequestContent) o;
-    return Objects.equals(this.attributePayload, updateDeviceRequestContent.attributePayload) &&
-        Objects.equals(this.shadowPayload, updateDeviceRequestContent.shadowPayload);
+    UpdateDeviceShadowRequestContent updateDeviceShadowRequestContent = (UpdateDeviceShadowRequestContent) o;
+    return Objects.equals(this.shadowPayload, updateDeviceShadowRequestContent.shadowPayload);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(attributePayload, shadowPayload);
+    return Objects.hash(shadowPayload);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class UpdateDeviceRequestContent {\n");
-    sb.append("    attributePayload: ").append(toIndentedString(attributePayload)).append("\n");
+    sb.append("class UpdateDeviceShadowRequestContent {\n");
     sb.append("    shadowPayload: ").append(toIndentedString(shadowPayload)).append("\n");
     sb.append("}");
     return sb.toString();
@@ -159,7 +124,6 @@ public class UpdateDeviceRequestContent {
   static {
     // a set of all properties/fields (JSON key names)
     openapiFields = new HashSet<String>();
-    openapiFields.add("attributePayload");
     openapiFields.add("shadowPayload");
 
     // a set of required properties/fields (JSON key names)
@@ -170,20 +134,20 @@ public class UpdateDeviceRequestContent {
    * Validates the JSON Element and throws an exception if issues found
    *
    * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to UpdateDeviceRequestContent
+   * @throws IOException if the JSON Element is invalid with respect to UpdateDeviceShadowRequestContent
    */
   public static void validateJsonElement(JsonElement jsonElement) throws IOException {
       if (jsonElement == null) {
-        if (!UpdateDeviceRequestContent.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in UpdateDeviceRequestContent is not found in the empty JSON string", UpdateDeviceRequestContent.openapiRequiredFields.toString()));
+        if (!UpdateDeviceShadowRequestContent.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format("The required field(s) %s in UpdateDeviceShadowRequestContent is not found in the empty JSON string", UpdateDeviceShadowRequestContent.openapiRequiredFields.toString()));
         }
       }
 
       Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
       // check to see if the JSON string contains additional fields
       for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!UpdateDeviceRequestContent.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `UpdateDeviceRequestContent` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        if (!UpdateDeviceShadowRequestContent.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `UpdateDeviceShadowRequestContent` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
         }
       }
         JsonObject jsonObj = jsonElement.getAsJsonObject();
@@ -197,22 +161,22 @@ public class UpdateDeviceRequestContent {
     @SuppressWarnings("unchecked")
     @Override
     public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!UpdateDeviceRequestContent.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'UpdateDeviceRequestContent' and its subtypes
+       if (!UpdateDeviceShadowRequestContent.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'UpdateDeviceShadowRequestContent' and its subtypes
        }
        final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<UpdateDeviceRequestContent> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(UpdateDeviceRequestContent.class));
+       final TypeAdapter<UpdateDeviceShadowRequestContent> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(UpdateDeviceShadowRequestContent.class));
 
-       return (TypeAdapter<T>) new TypeAdapter<UpdateDeviceRequestContent>() {
+       return (TypeAdapter<T>) new TypeAdapter<UpdateDeviceShadowRequestContent>() {
            @Override
-           public void write(JsonWriter out, UpdateDeviceRequestContent value) throws IOException {
+           public void write(JsonWriter out, UpdateDeviceShadowRequestContent value) throws IOException {
              JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
              elementAdapter.write(out, obj);
            }
 
            @Override
-           public UpdateDeviceRequestContent read(JsonReader in) throws IOException {
+           public UpdateDeviceShadowRequestContent read(JsonReader in) throws IOException {
              JsonElement jsonElement = elementAdapter.read(in);
              validateJsonElement(jsonElement);
              return thisAdapter.fromJsonTree(jsonElement);
@@ -223,18 +187,18 @@ public class UpdateDeviceRequestContent {
   }
 
   /**
-   * Create an instance of UpdateDeviceRequestContent given an JSON string
+   * Create an instance of UpdateDeviceShadowRequestContent given an JSON string
    *
    * @param jsonString JSON string
-   * @return An instance of UpdateDeviceRequestContent
-   * @throws IOException if the JSON string is invalid with respect to UpdateDeviceRequestContent
+   * @return An instance of UpdateDeviceShadowRequestContent
+   * @throws IOException if the JSON string is invalid with respect to UpdateDeviceShadowRequestContent
    */
-  public static UpdateDeviceRequestContent fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, UpdateDeviceRequestContent.class);
+  public static UpdateDeviceShadowRequestContent fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, UpdateDeviceShadowRequestContent.class);
   }
 
   /**
-   * Convert an instance of UpdateDeviceRequestContent to an JSON string
+   * Convert an instance of UpdateDeviceShadowRequestContent to an JSON string
    *
    * @return JSON string
    */

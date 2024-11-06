@@ -105,6 +105,36 @@ export class ServiceStack extends Stack {
       }),
     });
 
+    const updateDeviceShadowRole = createLambdaRole(this, "UpdateDeviceShadowRole", [
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        actions: [
+          "iot:UpdateThingShadow"
+        ],
+        resources: [
+          `arn:aws:iot:${props.region}:${props.account}:thing/*`,
+        ],
+      })
+    ]);
+
+    const updateDeviceShadowLambda = new Function(this, "UpdateDeviceShadowActivity", {
+      runtime: Runtime.JAVA_17,
+      //TODO: Update this if any changes are made to the lambda handler path or asset built jar location
+      handler: `${DM_ACTIVITY_JAVA_PATH_PREFIX}.UpdateDeviceShadowActivity::handleRequest`,
+      code: Code.fromAsset(`${LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT}`),
+      memorySize: 512,
+      timeout: Duration.minutes(5),
+      environment: {
+          ACCOUNT_ID: this.account,
+          LAMBDA_ROLE_ARN: updateDeviceShadowRole.roleArn,
+      },
+      role: updateDeviceShadowRole,
+      logGroup: new LogGroup(this, "UpdateDeviceShadowActivityLogGroup", {
+          retention: RetentionDays.TEN_YEARS,
+          logGroupName: "/aws/lambda/UpdateDeviceShadowActivity",
+      }),
+    });
+
     apiGatewayRole.addToPolicy(new PolicyStatement({
       resources: ['*'],
       actions: ['lambda:InvokeFunction']
@@ -116,6 +146,8 @@ export class ServiceStack extends Stack {
     getDeviceCfnLambda.overrideLogicalId("GetDeviceActivity");
     const getDeviceShadowCfnLambda = getDeviceShadowLambda.node.defaultChild as CfnFunction;
     getDeviceShadowCfnLambda.overrideLogicalId("GetDeviceShadowActivity");
+    const updateDeviceShadowCfnLambda = updateDeviceShadowLambda.node.defaultChild as CfnFunction;
+    updateDeviceShadowCfnLambda.overrideLogicalId("UpdateDeviceShadowActivity");
 
     // Upload spec to S3
     const originalSpec = new Asset(this, "openApiFile", {

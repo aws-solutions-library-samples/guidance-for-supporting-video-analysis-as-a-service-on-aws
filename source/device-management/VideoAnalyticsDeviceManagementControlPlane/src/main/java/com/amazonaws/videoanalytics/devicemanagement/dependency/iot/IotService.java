@@ -11,7 +11,10 @@ import com.amazonaws.videoanalytics.devicemanagement.IpAddress;
 import com.amazonaws.videoanalytics.devicemanagement.ShadowMap;
 import com.amazonaws.videoanalytics.devicemanagement.StorageElement;
 import com.amazonaws.videoanalytics.devicemanagement.StorageState;
+import com.amazonaws.videoanalytics.devicemanagement.UpdateDeviceShadowRequestContent;
+import com.amazonaws.videoanalytics.devicemanagement.UpdateDeviceShadowResponseContent;
 import com.amazonaws.videoanalytics.devicemanagement.VideoStreamingState;
+import com.amazonaws.videoanalytics.devicemanagement.utils.ShadowMapUtils;
 import com.amazonaws.videoanalytics.devicemanagement.utils.UpdateDeviceUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.commons.lang3.EnumUtils;
@@ -19,7 +22,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 import org.json.JSONException;
+
+import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.services.iot.IotClient;
+import software.amazon.awssdk.services.iot.model.AttributePayload;
 import software.amazon.awssdk.services.iot.model.DescribeThingRequest;
 import software.amazon.awssdk.services.iot.model.DescribeThingResponse;
 import software.amazon.awssdk.services.iot.model.GroupNameAndArn;
@@ -29,9 +35,12 @@ import software.amazon.awssdk.services.iot.model.ResourceNotFoundException;
 import software.amazon.awssdk.services.iot.model.SearchIndexRequest;
 import software.amazon.awssdk.services.iot.model.SearchIndexResponse;
 import software.amazon.awssdk.services.iot.model.ThingConnectivity;
+import software.amazon.awssdk.services.iot.model.UpdateThingRequest;
+import software.amazon.awssdk.services.iot.model.UpdateThingResponse;
 import software.amazon.awssdk.services.iotdataplane.IotDataPlaneClient;
 import software.amazon.awssdk.services.iotdataplane.model.GetThingShadowRequest;
 import software.amazon.awssdk.services.iotdataplane.model.GetThingShadowResponse;
+import software.amazon.awssdk.services.iotdataplane.model.UpdateThingShadowRequest;
 import software.amazon.awssdk.utils.StringUtils;
 
 import javax.inject.Inject;
@@ -85,10 +94,9 @@ public class IotService {
         this.iotDataPlaneClient = iotDataPlaneClient;
     }
 
-    public DescribeThingResponse describeThing(String deviceName) {
-        // Call describeThing
-        DescribeThingRequest describeThingRequest = DescribeThingRequest.builder().thingName(deviceName).build();
-        LOG.info("Describing Thing");
+    public DescribeThingResponse describeThing(String deviceId) {
+        DescribeThingRequest describeThingRequest = DescribeThingRequest.builder().thingName(deviceId).build();
+        LOG.info("Describing device: %s", deviceId);
         return iotClient.describeThing(describeThingRequest);
     }
 
@@ -115,7 +123,7 @@ public class IotService {
      * @return list of thing groups
      */
     public List<GroupNameAndArn> listThingGroupsForThing(String deviceId) {
-        LOG.info(String.format("Get thing group for device: %s", deviceId));
+        LOG.info(String.format("Listing thing groups for device: %s", deviceId));
 
         // A thing can only present in 10 static thing groups, use static result number for now
         ListThingGroupsForThingResponse response = iotClient.listThingGroupsForThing(
@@ -369,9 +377,37 @@ public class IotService {
         JSONObject thingShadow = this.getThingShadow(deviceId, shadowName);
         JSONObject desiredShadowObject = thingShadow.optJSONObject(SHADOW_STATE_KEY).optJSONObject(SHADOW_DESIRED_KEY);
         ShadowMap shadowPayload = ShadowMap.builder()
-                .stateDocument(desiredShadowObject)
+                .stateDocument(desiredShadowObject.toMap())
                 .shadowName(shadowName)
                 .build();
-        return GetDeviceShadowResponseContent.builder().shadowPayload(shadowPayload).build();
+        return GetDeviceShadowResponseContent.builder()
+                .shadowPayload(shadowPayload)
+                .build();
+    }
+
+    private void updateThingShadow(final String deviceId,
+                                   final String shadowName,
+                                   final SdkBytes payload) {
+        UpdateThingShadowRequest updateThingShadowRequest = UpdateThingShadowRequest
+                .builder()
+                .payload(payload)
+                .thingName(deviceId)
+                .shadowName(shadowName)
+                .build();
+        LOG.info(String.format("Updating thing shadow: %s of %s", shadowName, deviceId));
+        iotDataPlaneClient.updateThingShadow(updateThingShadowRequest);
+    }
+
+    public UpdateDeviceShadowResponseContent updateDeviceShadow(String deviceId, ShadowMap shadowMap) throws JsonProcessingException {
+        if (shadowMap != null) {
+            String shadowName = shadowMap.getShadowName();
+            SdkBytes payload;
+            payload = ShadowMapUtils.serialize(shadowMap);
+            updateThingShadow(deviceId, shadowName, payload);
+        }
+        return UpdateDeviceShadowResponseContent
+                .builder()
+                .deviceId(deviceId)
+                .build();
     }
 }

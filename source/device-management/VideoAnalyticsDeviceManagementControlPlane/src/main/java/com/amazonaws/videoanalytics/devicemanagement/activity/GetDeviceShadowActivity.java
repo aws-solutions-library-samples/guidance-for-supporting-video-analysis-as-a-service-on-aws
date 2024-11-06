@@ -20,6 +20,7 @@ import javax.inject.Inject;
 
 import static com.amazonaws.videoanalytics.devicemanagement.exceptions.VideoAnalyticsExceptionMessage.INTERNAL_SERVER_EXCEPTION;
 import static com.amazonaws.videoanalytics.devicemanagement.exceptions.VideoAnalyticsExceptionMessage.INVALID_INPUT_EXCEPTION;
+import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyticsServiceLambdaConstants.PROXY_LAMBDA_REQUEST_DEVICE_ID_PATH_PARAMETER_KEY;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.LambdaProxyUtils.parseBody;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.LambdaProxyUtils.parsePathParameter;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.LambdaProxyUtils.serializeResponse;
@@ -43,13 +44,12 @@ public class GetDeviceShadowActivity implements RequestHandler<Map<String, Objec
     @Override
     public Map<String, Object> handleRequest(Map<String, Object> input, Context context) {
         LambdaLogger logger = context.getLogger();
-
-        logger.log("Entered getDeviceShadow method");
+        logger.log("Entered GetDeviceShadow method");
 
         String deviceId;
         String shadowName;
         try {
-            deviceId = parsePathParameter(input, "deviceId");
+            deviceId = parsePathParameter(input, PROXY_LAMBDA_REQUEST_DEVICE_ID_PATH_PARAMETER_KEY);
             String requestBody = parseBody(input);
             shadowName = GetDeviceShadowRequestContent.fromJson(requestBody).getShadowName();
         } catch (Exception e) {

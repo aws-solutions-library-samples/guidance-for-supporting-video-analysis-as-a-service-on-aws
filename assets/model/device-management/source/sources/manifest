@@ -21,8 +21,8 @@ operations/DeviceNotification/StartUpdateNotificationRule.smithy
 operations/DeviceNotification/GetCreateDeviceNotificationStatus.smithy
 operations/DeviceNotification/GetCreateNotificationRuleStatus.smithy
 operations/DeviceNotification/GetDeleteDeviceNotificationStatus.smithy
+operations/DeviceOperations/UpdateDeviceShadow.smithy
 operations/DeviceOperations/GetDeviceShadow.smithy
 operations/DeviceOperations/GetDevice.smithy
-operations/DeviceOperations/UpdateDevice.smithy
 video-analytic.smithy
 errors/errors.smithy

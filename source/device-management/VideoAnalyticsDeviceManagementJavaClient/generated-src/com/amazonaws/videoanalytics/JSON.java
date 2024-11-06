@@ -131,8 +131,8 @@ public class JSON {
         gsonBuilder.registerTypeAdapterFactory(new com.amazonaws.videoanalytics.devicemanagement.StartUpdateNotificationRuleRequestContent.CustomTypeAdapterFactory());
         gsonBuilder.registerTypeAdapterFactory(new com.amazonaws.videoanalytics.devicemanagement.StartUpdateNotificationRuleResponseContent.CustomTypeAdapterFactory());
         gsonBuilder.registerTypeAdapterFactory(new com.amazonaws.videoanalytics.devicemanagement.StorageElement.CustomTypeAdapterFactory());
-        gsonBuilder.registerTypeAdapterFactory(new com.amazonaws.videoanalytics.devicemanagement.UpdateDeviceRequestContent.CustomTypeAdapterFactory());
-        gsonBuilder.registerTypeAdapterFactory(new com.amazonaws.videoanalytics.devicemanagement.UpdateDeviceResponseContent.CustomTypeAdapterFactory());
+        gsonBuilder.registerTypeAdapterFactory(new com.amazonaws.videoanalytics.devicemanagement.UpdateDeviceShadowRequestContent.CustomTypeAdapterFactory());
+        gsonBuilder.registerTypeAdapterFactory(new com.amazonaws.videoanalytics.devicemanagement.UpdateDeviceShadowResponseContent.CustomTypeAdapterFactory());
         gsonBuilder.registerTypeAdapterFactory(new com.amazonaws.videoanalytics.devicemanagement.ValidationExceptionField.CustomTypeAdapterFactory());
         gsonBuilder.registerTypeAdapterFactory(new com.amazonaws.videoanalytics.devicemanagement.ValidationExceptionResponseContent.CustomTypeAdapterFactory());
         gson = gsonBuilder.create();

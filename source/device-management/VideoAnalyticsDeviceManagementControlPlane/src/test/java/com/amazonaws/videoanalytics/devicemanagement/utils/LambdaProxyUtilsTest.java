@@ -3,7 +3,9 @@ package com.amazonaws.videoanalytics.devicemanagement.utils;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 
-import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyticsServiceLambdaConstants.PROXY_LAMBDA_RESPONSE_BODY_KEY;
+import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyticsServiceLambdaConstants.PROXY_LAMBDA_BODY_KEY;
+import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyticsServiceLambdaConstants.PROXY_LAMBDA_REQUEST_DEVICE_ID_PATH_PARAMETER_KEY;
+import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyticsServiceLambdaConstants.PROXY_LAMBDA_REQUEST_PATH_PARAMETERS_KEY;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyticsServiceLambdaConstants.PROXY_LAMBDA_RESPONSE_STATUS_CODE_KEY;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.TestConstants.DEVICE_ID;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.TestConstants.SHADOW_NAME;
@@ -13,16 +15,16 @@ import static org.junit.Assert.assertEquals;
 public class LambdaProxyUtilsTest {
     private final String body = "{\"shadowName\": \"" + SHADOW_NAME + "\"}";
     private final Map<String, Object> lambdaProxyRequest = Map.ofEntries(
-        entry("pathParameters", Map.ofEntries(
-            entry("deviceId", DEVICE_ID)
+        entry(PROXY_LAMBDA_REQUEST_PATH_PARAMETERS_KEY, Map.ofEntries(
+            entry(PROXY_LAMBDA_REQUEST_DEVICE_ID_PATH_PARAMETER_KEY, DEVICE_ID)
         )),
-        entry("body", body)
+        entry(PROXY_LAMBDA_BODY_KEY, body)
     );
     private final int statusCode = 200;
 
     @Test
     public void parsePathParameter_WhenValidKey_ReturnsValue() {
-        String deviceId = LambdaProxyUtils.parsePathParameter(lambdaProxyRequest, "deviceId");
+        String deviceId = LambdaProxyUtils.parsePathParameter(lambdaProxyRequest, PROXY_LAMBDA_REQUEST_DEVICE_ID_PATH_PARAMETER_KEY);
         assertEquals(deviceId, DEVICE_ID);
     }
 
