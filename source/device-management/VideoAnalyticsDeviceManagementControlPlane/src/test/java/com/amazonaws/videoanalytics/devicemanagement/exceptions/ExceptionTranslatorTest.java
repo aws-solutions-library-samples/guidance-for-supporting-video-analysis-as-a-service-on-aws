@@ -8,6 +8,7 @@ import com.amazonaws.videoanalytics.devicemanagement.InternalServerExceptionResp
 import com.amazonaws.videoanalytics.devicemanagement.ResourceNotFoundExceptionResponseContent;
 import com.amazonaws.videoanalytics.devicemanagement.ValidationExceptionResponseContent;
 
+import software.amazon.awssdk.awscore.exception.AwsServiceException;
 import software.amazon.awssdk.services.iot.model.DeleteConflictException;
 import software.amazon.awssdk.services.iot.model.InternalFailureException;
 import software.amazon.awssdk.services.iot.model.InvalidRequestException;
@@ -98,6 +99,15 @@ public class ExceptionTranslatorTest {
         assertEquals(responseMap.get(PROXY_LAMBDA_RESPONSE_STATUS_CODE_KEY), 409);
         ConflictExceptionResponseContent exception = ConflictExceptionResponseContent.fromJson(parseBody(responseMap));
         assertEquals(exception.getMessage(), VideoAnalyticsExceptionMessage.RESOURCE_ALREADY_EXISTS_EXCEPTION);
+    }
+
+    @Test
+    public void translateIotExceptionToLambdaResponse_WhenAwsServiceException_ThrowsInternalServiceException() throws IOException {
+        AwsServiceException awsServiceException = AwsServiceException.builder().build();
+        Map<String, Object> responseMap = ExceptionTranslator.translateIotExceptionToLambdaResponse(awsServiceException);
+        assertEquals(responseMap.get(PROXY_LAMBDA_RESPONSE_STATUS_CODE_KEY), 500);
+        InternalServerExceptionResponseContent exception = InternalServerExceptionResponseContent.fromJson(parseBody(responseMap));
+        assertEquals(exception.getMessage(), VideoAnalyticsExceptionMessage.INTERNAL_SERVER_EXCEPTION);
     }
 
     @Test

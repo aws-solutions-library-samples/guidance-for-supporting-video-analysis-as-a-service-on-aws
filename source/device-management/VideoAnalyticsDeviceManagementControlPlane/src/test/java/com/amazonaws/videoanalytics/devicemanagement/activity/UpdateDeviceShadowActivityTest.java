@@ -11,6 +11,7 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import org.junit.contrib.java.lang.system.EnvironmentVariables;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -32,6 +33,7 @@ import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyt
 import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyticsServiceLambdaConstants.PROXY_LAMBDA_RESPONSE_STATUS_CODE_KEY;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.LambdaProxyUtils.parseBody;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.TestConstants.DEVICE_ID;
+import static com.amazonaws.videoanalytics.devicemanagement.utils.TestConstants.MOCK_AWS_REGION;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.TestConstants.SHADOW_NAME;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
@@ -62,7 +64,7 @@ public class UpdateDeviceShadowActivityTest {
     }
 
     @Test
-    public void updateDeviceShadowActivity_WhenValidRequest_ReturnsResponse() throws IOException {
+    public void handleRequest_WhenValidRequest_ReturnsResponse() throws IOException {
         UpdateDeviceShadowResponseContent responseFromIotService = UpdateDeviceShadowResponseContent
                 .builder()
                 .deviceId(DEVICE_ID)
@@ -75,7 +77,7 @@ public class UpdateDeviceShadowActivityTest {
     }
 
     @Test
-    public void updateDeviceShadowActivity_WhenValidRequestNoShadowName_ReturnsResponse() throws IOException {
+    public void handleRequest_WhenValidRequestNoShadowName_ReturnsResponse() throws IOException {
         UpdateDeviceShadowResponseContent responseFromIotService = UpdateDeviceShadowResponseContent
                 .builder()
                 .deviceId(DEVICE_ID)
@@ -88,7 +90,7 @@ public class UpdateDeviceShadowActivityTest {
     }
 
     @Test
-    public void updateDeviceShadowActivity_WhenEmptyDeviceId_ThrowsInvalidInputException() throws IOException {
+    public void handleRequest_WhenEmptyDeviceId_ThrowsInvalidInputException() throws IOException {
         Map<String, Object> lambdaProxyRequestEmptyDeviceId = Map.ofEntries(
             entry(PROXY_LAMBDA_REQUEST_PATH_PARAMETERS_KEY, Map.ofEntries(
                 entry(PROXY_LAMBDA_REQUEST_DEVICE_ID_PATH_PARAMETER_KEY, " "),
@@ -102,7 +104,7 @@ public class UpdateDeviceShadowActivityTest {
     }
 
     @Test
-    public void updateDeviceShadowActivity_WhenThrottlingException_ThrowsThrottlingException() throws IOException, ParseException, JsonProcessingException {
+    public void handleRequest_WhenThrottlingException_ThrowsThrottlingException() throws IOException, ParseException, JsonProcessingException {
         when(iotService.updateDeviceShadow(eq(DEVICE_ID), any(ShadowMap.class))).thenThrow(ThrottlingException.builder().build());
         Map<String, Object> responseMap = updateDeviceShadowActivity.handleRequest(lambdaProxyRequest, context);
         assertEquals(responseMap.get(PROXY_LAMBDA_RESPONSE_STATUS_CODE_KEY), 500);
@@ -111,11 +113,19 @@ public class UpdateDeviceShadowActivityTest {
     }
 
     @Test
-    public void updateDeviceShadowActivity_WhenRuntimeException_ThrowsInternalException() throws IOException, ParseException, JsonProcessingException {
+    public void handleRequest_WhenRuntimeException_ThrowsInternalException() throws IOException, ParseException, JsonProcessingException {
         when(iotService.updateDeviceShadow(eq(DEVICE_ID), any(ShadowMap.class))).thenThrow(RuntimeException.class);
         Map<String, Object> responseMap = updateDeviceShadowActivity.handleRequest(lambdaProxyRequest, context);
         assertEquals(responseMap.get(PROXY_LAMBDA_RESPONSE_STATUS_CODE_KEY), 500);
         InternalServerExceptionResponseContent exception = InternalServerExceptionResponseContent.fromJson(parseBody(responseMap));
         assertEquals(exception.getMessage(), INTERNAL_SERVER_EXCEPTION);
+    }
+
+    @Test
+    public void updateDeviceShadowActivity_InjectsDependencies() {
+        EnvironmentVariables environmentVariables = new EnvironmentVariables();
+        environmentVariables.set("AWS_REGION", MOCK_AWS_REGION);
+        UpdateDeviceShadowActivity updateDeviceShadowActivityDagger = new UpdateDeviceShadowActivity();
+        updateDeviceShadowActivityDagger.assertPrivateFieldNotNull();
     }
 }

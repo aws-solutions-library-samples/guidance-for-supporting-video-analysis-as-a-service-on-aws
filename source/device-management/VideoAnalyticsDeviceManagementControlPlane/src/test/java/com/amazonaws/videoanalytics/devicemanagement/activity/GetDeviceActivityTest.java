@@ -19,6 +19,7 @@ import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import org.apache.logging.log4j.util.Strings;
+import org.junit.contrib.java.lang.system.EnvironmentVariables;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -47,7 +48,7 @@ import static com.amazonaws.videoanalytics.devicemanagement.utils.TestConstants.
 import static com.amazonaws.videoanalytics.devicemanagement.utils.TestConstants.DEVICE_ID;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.TestConstants.DEVICE_GROUP_ID;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.TestConstants.DEVICE_TYPE_NAME;
-
+import static com.amazonaws.videoanalytics.devicemanagement.utils.TestConstants.MOCK_AWS_REGION;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
@@ -74,7 +75,7 @@ public class GetDeviceActivityTest {
     }
 
     @Test
-    public void getDeviceActivity_WhenValidRequest_ReturnsResponse() throws IOException, JsonProcessingException, ParseException {
+    public void handleRequest_WhenValidRequest_ReturnsResponse() throws IOException, JsonProcessingException, ParseException {
         Map<String, String> deviceSettings = new HashMap<>();
         deviceSettings.put("videoSettings", "{\"profile1\":{\"codec\":\"H264\"}}");
 
@@ -106,7 +107,7 @@ public class GetDeviceActivityTest {
     }
 
     @Test
-    public void getDeviceActivity_WhenEmptyRequest_ThrowsValidationException() throws IOException {
+    public void handleRequest_WhenEmptyRequest_ThrowsValidationException() throws IOException {
         Map<String, Object> lambdaProxyRequestEmpty = Map.ofEntries();
         Map<String, Object> responseMap = getDeviceActivity.handleRequest(lambdaProxyRequestEmpty, context);
         assertEquals(responseMap.get(PROXY_LAMBDA_RESPONSE_STATUS_CODE_KEY), 400);
@@ -115,7 +116,7 @@ public class GetDeviceActivityTest {
     }
 
     @Test
-    public void getDeviceActivity_WhenEmptyDeviceId_ThrowsValidationException() throws IOException {
+    public void handleRequest_WhenEmptyDeviceId_ThrowsValidationException() throws IOException {
         Map<String, Object> lambdaProxyRequestEmptyDeviceId = Map.ofEntries(
             entry(PROXY_LAMBDA_REQUEST_PATH_PARAMETERS_KEY, Map.ofEntries(
                 entry(PROXY_LAMBDA_REQUEST_DEVICE_ID_PATH_PARAMETER_KEY, "")
@@ -128,7 +129,7 @@ public class GetDeviceActivityTest {
     }
 
     @Test
-    public void getDeviceActivity_WhenThrottlingException_ThrowsInternalServerException() throws IOException, ParseException, JsonProcessingException {
+    public void handleRequest_WhenThrottlingException_ThrowsInternalServerException() throws IOException, ParseException, JsonProcessingException {
         when(iotService.getDevice(DEVICE_ID)).thenThrow(ThrottlingException.builder().build());
         Map<String, Object> responseMap = getDeviceActivity.handleRequest(lambdaProxyRequest, context);
         assertEquals(responseMap.get(PROXY_LAMBDA_RESPONSE_STATUS_CODE_KEY), 500);
@@ -137,7 +138,7 @@ public class GetDeviceActivityTest {
     }
 
     @Test
-    public void getDeviceActivity_WhenJsonProcessingException_ThrowsInternalServerException() throws IOException, ParseException, JsonProcessingException {
+    public void handleRequest_WhenJsonProcessingException_ThrowsInternalServerException() throws IOException, ParseException, JsonProcessingException {
         when(iotService.getDevice(DEVICE_ID)).thenThrow(JsonProcessingException.class);
         Map<String, Object> responseMap = getDeviceActivity.handleRequest(lambdaProxyRequest, context);
         assertEquals(responseMap.get(PROXY_LAMBDA_RESPONSE_STATUS_CODE_KEY), 500);
@@ -146,12 +147,20 @@ public class GetDeviceActivityTest {
     }
 
     @Test
-    public void getDeviceActivity_WhenRuntimeException_ThrowsInternalServerException() throws IOException, ParseException, JsonProcessingException {
+    public void handleRequest_WhenRuntimeException_ThrowsInternalServerException() throws IOException, ParseException, JsonProcessingException {
         when(iotService.getDevice(DEVICE_ID)).thenThrow(RuntimeException.class);
         Map<String, Object> responseMap = getDeviceActivity.handleRequest(lambdaProxyRequest, context);
         assertEquals(responseMap.get(PROXY_LAMBDA_RESPONSE_STATUS_CODE_KEY), 500);
         InternalServerExceptionResponseContent exception = InternalServerExceptionResponseContent.fromJson(parseBody(responseMap));
         assertEquals(exception.getMessage(), INTERNAL_SERVER_EXCEPTION);
+    }
+
+    @Test
+    public void getDeviceActivity_InjectsDependencies() {
+        EnvironmentVariables environmentVariables = new EnvironmentVariables();
+        environmentVariables.set("AWS_REGION", MOCK_AWS_REGION);
+        GetDeviceActivity getDeviceActivityDagger = new GetDeviceActivity();
+        getDeviceActivityDagger.assertPrivateFieldNotNull();
     }
 
     private DeviceMetaData buildExpectedDeviceMetaData() {
