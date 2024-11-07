@@ -34,8 +34,7 @@ public class GetDeviceActivity implements RequestHandler<Map<String, Object>, Ma
     public GetDeviceActivity(IotService iotService) {
         this.iotService = iotService;
     }
-
-    @ExcludeFromJacocoGeneratedReport
+    
     public GetDeviceActivity() {
         AWSVideoAnalyticsDMControlPlaneComponent component = DaggerAWSVideoAnalyticsDMControlPlaneComponent.create();
         component.inject(this);

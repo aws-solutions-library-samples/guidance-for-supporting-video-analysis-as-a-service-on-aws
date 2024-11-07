@@ -24,7 +24,6 @@ import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyt
 import static com.amazonaws.videoanalytics.devicemanagement.utils.LambdaProxyUtils.parseBody;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.LambdaProxyUtils.parsePathParameter;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.LambdaProxyUtils.serializeResponse;
-import static software.amazon.awssdk.utils.StringUtils.isBlank;
 
 public class GetDeviceShadowActivity implements RequestHandler<Map<String, Object>, Map<String, Object>> {
     private final IotService iotService;
@@ -34,7 +33,6 @@ public class GetDeviceShadowActivity implements RequestHandler<Map<String, Objec
         this.iotService = iotService;
     }
 
-    @ExcludeFromJacocoGeneratedReport
     public GetDeviceShadowActivity() {
         AWSVideoAnalyticsDMControlPlaneComponent component = DaggerAWSVideoAnalyticsDMControlPlaneComponent.create();
         component.inject(this);
