@@ -60,10 +60,6 @@ public class CreateLivestreamSessionRequestContent {
   @SerializedName(SERIALIZED_NAME_CLIENT_ID)
   private String clientId;
 
-  public static final String SERIALIZED_NAME_TEMPORARY_USE_SYNC_PROCESSING = "temporaryUseSyncProcessing";
-  @SerializedName(SERIALIZED_NAME_TEMPORARY_USE_SYNC_PROCESSING)
-  private Boolean temporaryUseSyncProcessing;
-
   public CreateLivestreamSessionRequestContent() {
   }
 
@@ -105,25 +101,6 @@ public class CreateLivestreamSessionRequestContent {
   }
 
 
-  public CreateLivestreamSessionRequestContent temporaryUseSyncProcessing(Boolean temporaryUseSyncProcessing) {
-    this.temporaryUseSyncProcessing = temporaryUseSyncProcessing;
-    return this;
-  }
-
-  /**
-   * Get temporaryUseSyncProcessing
-   * @return temporaryUseSyncProcessing
-   */
-  @javax.annotation.Nullable
-  public Boolean getTemporaryUseSyncProcessing() {
-    return temporaryUseSyncProcessing;
-  }
-
-  public void setTemporaryUseSyncProcessing(Boolean temporaryUseSyncProcessing) {
-    this.temporaryUseSyncProcessing = temporaryUseSyncProcessing;
-  }
-
-
 
   @Override
   public boolean equals(Object o) {
@@ -135,13 +112,12 @@ public class CreateLivestreamSessionRequestContent {
     }
     CreateLivestreamSessionRequestContent createLivestreamSessionRequestContent = (CreateLivestreamSessionRequestContent) o;
     return Objects.equals(this.deviceId, createLivestreamSessionRequestContent.deviceId) &&
-        Objects.equals(this.clientId, createLivestreamSessionRequestContent.clientId) &&
-        Objects.equals(this.temporaryUseSyncProcessing, createLivestreamSessionRequestContent.temporaryUseSyncProcessing);
+        Objects.equals(this.clientId, createLivestreamSessionRequestContent.clientId);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(deviceId, clientId, temporaryUseSyncProcessing);
+    return Objects.hash(deviceId, clientId);
   }
 
   @Override
@@ -150,7 +126,6 @@ public class CreateLivestreamSessionRequestContent {
     sb.append("class CreateLivestreamSessionRequestContent {\n");
     sb.append("    deviceId: ").append(toIndentedString(deviceId)).append("\n");
     sb.append("    clientId: ").append(toIndentedString(clientId)).append("\n");
-    sb.append("    temporaryUseSyncProcessing: ").append(toIndentedString(temporaryUseSyncProcessing)).append("\n");
     sb.append("}");
     return sb.toString();
   }
@@ -175,7 +150,6 @@ public class CreateLivestreamSessionRequestContent {
     openapiFields = new HashSet<String>();
     openapiFields.add("deviceId");
     openapiFields.add("clientId");
-    openapiFields.add("temporaryUseSyncProcessing");
 
     // a set of required properties/fields (JSON key names)
     openapiRequiredFields = new HashSet<String>();

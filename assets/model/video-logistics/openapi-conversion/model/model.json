@@ -1446,9 +1446,6 @@
                 },
                 "clientId": {
                     "target": "com.amazonaws.videoanalytics.videologistics#ClientId"
-                },
-                "temporaryUseSyncProcessing": {
-                    "target": "smithy.api#Boolean"
                 }
             },
             "traits": {

@@ -135,9 +135,6 @@
                         "type": "string",
                         "maxLength": 256,
                         "minLength": 1
-                    },
-                    "temporaryUseSyncProcessing": {
-                        "type": "boolean"
                     }
                 },
                 "required": [
