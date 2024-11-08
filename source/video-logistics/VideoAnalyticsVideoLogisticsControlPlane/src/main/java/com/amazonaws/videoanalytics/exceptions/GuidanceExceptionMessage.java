@@ -36,7 +36,7 @@ public class GuidanceExceptionMessage {
             " be subtracted = %d. This is unexpected behavior, please check aggregation logic sanity.";
     public static final String NO_PARTITION_KEY_ERROR = "Partition Key cannot be null or empty! This is unexpected behavior.";
     public static final String NO_SORT_KEY_ERROR = "Sort Key cannot be null or empty! This is unexpected behavior.";
-    public static final String RESOURCE_NOT_FOUND = "Malformed input, Fathom resource you are trying to get does not exist.";
+    public static final String RESOURCE_NOT_FOUND = "Malformed input, Guidance resource you are trying to get does not exist.";
     public static final String DIFFERENT_QUERY_FROM_ORIGINAL = "Query cannot be different from original query, expected %s, but got %s";
     public static final String INVALID_NEXT_TOKEN = "Invalid next token";
     public static final String INVALID_MODEL_VERSION = "Invalid model name or version provided";

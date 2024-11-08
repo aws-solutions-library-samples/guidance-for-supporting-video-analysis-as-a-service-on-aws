@@ -28,7 +28,7 @@ public class AWSVideoAnalyticsConfigurationModule {
 
     @Provides
     @Singleton
-    final public GuidanceUUIDGenerator provideFathomUUIDGenerator() {
+    final public GuidanceUUIDGenerator provideGuidanceUUIDGenerator() {
         return new GuidanceUUIDGenerator();
     }
 
