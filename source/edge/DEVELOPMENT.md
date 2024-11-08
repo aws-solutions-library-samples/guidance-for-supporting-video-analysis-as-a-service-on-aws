@@ -62,5 +62,15 @@ This crate contains all rust crates related to building the edge process client.
 - `iot-connections` contains helper functions and utilities for publishing and parsing MQTT messages exchanged between cloud and edge.
 - `mqtt-client` is a wrapper over `rumqttc` which allows the edge process to communicate with AWS IoT.
 - `iot-client` is a wrapper over `aws-iot-sdk` which allows the edge processs to communicate with AWS IoT.
+- `http-client` is a wrapper over `reqwest`.
+- `onvif-client` is a wrapper over `http-client` which allows the edge process to communicate with the ONVIF service on devices.
 
 Code Organization: TBD.
+
+### Credentials Manager
+
+Currently, the ONVIF client reads a username and password from a local plain text config file. For better security practice, we recommend using a credentials manager like [AWS Secrets Manager](https://github.com/awsdocs/aws-doc-sdk-examples/tree/main/rustv1/examples/secretsmanager). Implementation will include:
+
+1. Initializing the Secrets Manager client
+2. Using IoT Credentials Manager to get SigV4 credentials
+3. Making API calls to Secrets Manager to get the ONVIF credentials
