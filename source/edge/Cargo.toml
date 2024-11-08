@@ -25,6 +25,7 @@ iot-connections = { path = "./crates/iot-connections"}
 iot-client = { path = "./crates/iot-client"}
 kvs-client = { path = "./crates/kvs-client"}
 http-client = { path = "./crates/http-client"}
+onvif-client = { path = "./crates/onvif-client"}
 
 # non-local crates
 tokio = { version = "1", features = ["full", "tracing"] }
