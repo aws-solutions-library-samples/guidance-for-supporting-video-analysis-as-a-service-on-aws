@@ -1,13 +1,13 @@
-package com.amazonaws.videoanalytics.dao;
+package com.amazonaws.videoanalytics.videologistics.dao;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.amazonaws.videoanalytics.helper.ddb.DynamoDbEnhancedLocalExtension;
-import com.amazonaws.videoanalytics.schema.LivestreamSession.LivestreamSession;
-import com.amazonaws.videoanalytics.schema.Source;
-import com.amazonaws.videoanalytics.schema.status.InternalStreamingSessionStatus;
-import com.amazonaws.videoanalytics.schema.status.WebRTCConnectionStatus;
+import com.amazonaws.videoanalytics.videologistics.schema.LivestreamSession.LivestreamSession;
+import com.amazonaws.videoanalytics.videologistics.schema.Source;
+import com.amazonaws.videoanalytics.videologistics.schema.status.InternalStreamingSessionStatus;
+import com.amazonaws.videoanalytics.videologistics.schema.status.WebRTCConnectionStatus;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
