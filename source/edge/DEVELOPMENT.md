@@ -64,6 +64,7 @@ This crate contains all rust crates related to building the edge process client.
 - `iot-client` is a wrapper over `aws-iot-sdk` which allows the edge processs to communicate with AWS IoT.
 - `http-client` is a wrapper over `reqwest`.
 - `onvif-client` is a wrapper over `http-client` which allows the edge process to communicate with the ONVIF service on devices.
+- `ws-discovery-client` is a wrapper over `tokio::net` which allows the edge process to discover a device's public IP address (WS-discovery spec is required for all ONVIF devices).
 
 Code Organization: TBD.
 
