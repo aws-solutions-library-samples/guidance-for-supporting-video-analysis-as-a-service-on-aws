@@ -94,6 +94,8 @@ public class JSON {
         gsonBuilder.registerTypeAdapterFactory(new com.amazonaws.videoanalytics.videologistics.IceServer.CustomTypeAdapterFactory());
         gsonBuilder.registerTypeAdapterFactory(new com.amazonaws.videoanalytics.videologistics.InternalServerExceptionResponseContent.CustomTypeAdapterFactory());
         gsonBuilder.registerTypeAdapterFactory(new com.amazonaws.videoanalytics.videologistics.ResourceNotFoundExceptionResponseContent.CustomTypeAdapterFactory());
+        gsonBuilder.registerTypeAdapterFactory(new com.amazonaws.videoanalytics.videologistics.StartExportVideosRequestContent.CustomTypeAdapterFactory());
+        gsonBuilder.registerTypeAdapterFactory(new com.amazonaws.videoanalytics.videologistics.StartExportVideosResponseContent.CustomTypeAdapterFactory());
         gsonBuilder.registerTypeAdapterFactory(new com.amazonaws.videoanalytics.videologistics.ValidationExceptionField.CustomTypeAdapterFactory());
         gsonBuilder.registerTypeAdapterFactory(new com.amazonaws.videoanalytics.videologistics.ValidationExceptionResponseContent.CustomTypeAdapterFactory());
         gson = gsonBuilder.create();
