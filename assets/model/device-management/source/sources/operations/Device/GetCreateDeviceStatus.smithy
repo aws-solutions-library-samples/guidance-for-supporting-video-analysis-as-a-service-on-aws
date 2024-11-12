@@ -2,6 +2,12 @@ $version: "2.0"
 
 namespace com.amazonaws.videoanalytics.devicemanagement
 
+use com.amazonaws.videoanalytics#DeviceId
+use com.amazonaws.videoanalytics#InternalServerException
+use com.amazonaws.videoanalytics#JobId
+use com.amazonaws.videoanalytics#Status
+use com.amazonaws.videoanalytics#ValidationException
+
 @http(code: 200, method: "GET", uri: "/get-create-device-status/{jobId}")
 @idempotent
 operation GetCreateDeviceStatus {
