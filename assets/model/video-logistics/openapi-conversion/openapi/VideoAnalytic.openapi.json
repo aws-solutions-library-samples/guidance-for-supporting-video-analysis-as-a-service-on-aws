@@ -82,6 +82,123 @@
                 }
             }
         },
+        "/create-playback-session": {
+            "post": {
+                "operationId": "CreatePlaybackSession",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreatePlaybackSessionRequestContent"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "CreatePlaybackSession 200 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CreatePlaybackSessionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "ValidationException 400 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "AccessDeniedException 403 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AccessDeniedExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "ResourceNotFoundException 404 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResourceNotFoundExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "InternalServerException 500 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InternalServerExceptionResponseContent"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/get-playback-session/{sessionId}": {
+            "post": {
+                "operationId": "GetPlaybackSession",
+                "parameters": [
+                    {
+                        "name": "sessionId",
+                        "in": "path",
+                        "schema": {
+                            "type": "string",
+                            "maxLength": 128,
+                            "minLength": 1,
+                            "pattern": "^[a-z0-9\\-]+$"
+                        },
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "GetPlaybackSession 200 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GetPlaybackSessionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "ResourceNotFoundException 404 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResourceNotFoundExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "InternalServerException 500 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InternalServerExceptionResponseContent"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/start-export-videos": {
             "put": {
                 "operationId": "StartExportVideos",
@@ -210,6 +327,86 @@
                     }
                 }
             },
+            "CreatePlaybackSessionRequestContent": {
+                "type": "object",
+                "properties": {
+                    "deviceId": {
+                        "type": "string",
+                        "maxLength": 128,
+                        "minLength": 1,
+                        "pattern": "^[a-zA-Z0-9:_\\-]+$"
+                    },
+                    "startTime": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "endTime": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "required": [
+                    "deviceId",
+                    "endTime",
+                    "startTime"
+                ]
+            },
+            "CreatePlaybackSessionResponseContent": {
+                "type": "object",
+                "properties": {
+                    "sessionId": {
+                        "type": "string",
+                        "maxLength": 128,
+                        "minLength": 1,
+                        "pattern": "^[a-z0-9\\-]+$"
+                    }
+                }
+            },
+            "GetPlaybackSessionResponseContent": {
+                "type": "object",
+                "properties": {
+                    "deviceId": {
+                        "type": "string",
+                        "maxLength": 128,
+                        "minLength": 1,
+                        "pattern": "^[a-zA-Z0-9:_\\-]+$"
+                    },
+                    "startTime": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "endTime": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "sessionId": {
+                        "type": "string",
+                        "maxLength": 128,
+                        "minLength": 1,
+                        "pattern": "^[a-z0-9\\-]+$"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/Status"
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "lastUpdatedAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "errorMessage": {
+                        "type": "string"
+                    },
+                    "streamSources": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/StreamSource"
+                        }
+                    }
+                }
+            },
             "IceServer": {
                 "type": "object",
                 "properties": {
@@ -247,6 +444,16 @@
                     "message"
                 ]
             },
+            "PeerConnectionState": {
+                "type": "string",
+                "enum": [
+                    "Pending",
+                    "Connecting",
+                    "Connected",
+                    "Disconnected",
+                    "Failed"
+                ]
+            },
             "ResourceNotFoundExceptionResponseContent": {
                 "type": "object",
                 "properties": {
@@ -256,6 +463,34 @@
                 },
                 "required": [
                     "message"
+                ]
+            },
+            "SourceInfo": {
+                "type": "object",
+                "properties": {
+                    "hLSStreamingURL": {
+                        "type": "string"
+                    },
+                    "expirationTime": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "peerConnectionState": {
+                        "$ref": "#/components/schemas/PeerConnectionState"
+                    },
+                    "SignalingChannelURL": {
+                        "type": "string"
+                    },
+                    "clientId": {
+                        "type": "string"
+                    }
+                }
+            },
+            "SourceType": {
+                "type": "string",
+                "enum": [
+                    "HLS",
+                    "WEBRTC"
                 ]
             },
             "StartExportVideosRequestContent": {
@@ -297,6 +532,30 @@
                         "maxLength": 128,
                         "minLength": 1,
                         "pattern": "^[a-z0-9\\-]+$"
+                    }
+                }
+            },
+            "Status": {
+                "type": "string",
+                "enum": [
+                    "RUNNING",
+                    "COMPLETED",
+                    "FAILED",
+                    "CANCELLED"
+                ]
+            },
+            "StreamSource": {
+                "type": "object",
+                "properties": {
+                    "sourceType": {
+                        "$ref": "#/components/schemas/SourceType"
+                    },
+                    "source": {
+                        "$ref": "#/components/schemas/SourceInfo"
+                    },
+                    "startTime": {
+                        "type": "number",
+                        "format": "double"
                     }
                 }
             },

@@ -14,9 +14,9 @@ openApiGenerate {
     outputDir = "$buildDir/generated"
     modelPackage = "com.amazonaws.videoanalytics.videologistics"
     configOptions = [
-            "additionalModelTypeAnnotations": "@lombok.Builder;@lombok.AllArgsConstructor",
-            "dateLibrary": "legacy",
-            "hideGenerationTimestamp": "true"
+        "additionalModelTypeAnnotations": "@lombok.Builder;@lombok.AllArgsConstructor",
+        "dateLibrary": "legacy",
+        "hideGenerationTimestamp": "true"
     ]
 
     copy {
