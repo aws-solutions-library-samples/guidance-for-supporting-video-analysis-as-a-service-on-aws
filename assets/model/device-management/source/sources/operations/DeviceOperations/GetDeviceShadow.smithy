@@ -2,6 +2,11 @@ $version: "2.0"
 
 namespace com.amazonaws.videoanalytics.devicemanagement
 
+use com.amazonaws.videoanalytics#AccessDeniedException
+use com.amazonaws.videoanalytics#DeviceId
+use com.amazonaws.videoanalytics#InternalServerException
+use com.amazonaws.videoanalytics#ValidationException
+
 use aws.apigateway#integration
 
 @integration(httpMethod: "POST", type: "aws_proxy"

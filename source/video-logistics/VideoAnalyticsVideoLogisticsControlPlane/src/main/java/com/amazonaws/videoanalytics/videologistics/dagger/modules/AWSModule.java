@@ -6,53 +6,51 @@ import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.core.client.config.ClientOverrideConfiguration;
 import software.amazon.awssdk.core.retry.RetryMode;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
-import software.amazon.awssdk.http.SdkHttpClient;
 import software.amazon.awssdk.http.apache.ApacheHttpClient;
+import software.amazon.awssdk.http.SdkHttpClient;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+import software.amazon.awssdk.services.kinesisvideo.KinesisVideoClient;
+import software.amazon.awssdk.services.kinesisvideosignaling.KinesisVideoSignalingClient;
+import software.amazon.awssdk.services.kinesisvideosignaling.KinesisVideoSignalingClientBuilder;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import static com.amazonaws.videoanalytics.videologistics.schema.util.GuidanceVLConstants.REGION_NAME;
 import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.CREDENTIALS_PROVIDER;
+import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.HTTP_CLIENT;
+import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.REGION_NAME;
 
 import dagger.Module;
-import software.amazon.awssdk.regions.Region;
-import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
 @Module
 public class AWSModule {
     @Provides
     @Singleton
     @Named(CREDENTIALS_PROVIDER)
-    public AwsCredentialsProvider provideAwsCredentialsProvider() {
+    public AwsCredentialsProvider providesAwsCredentialsProvider() {
         return DefaultCredentialsProvider.create();
     }
 
     @Provides
     @Singleton
-    public SdkHttpClient provideSdkHttpClient() {
+    @Named(HTTP_CLIENT)
+    public SdkHttpClient providesSdkHttpClient() {
         return ApacheHttpClient.builder().build();
     }
 
     @Provides
     @Singleton
-    @Named(REGION_NAME)
-    public String getRegionName() {
-        return System.getenv("AWS_REGION");
+    public Region providesRegion(@Named(REGION_NAME) String region) {
+        return Region.of(region);
     }
 
     @Provides
     @Singleton
-    public Region providesRegion(@Named(REGION_NAME) final String regionName) {
-        return Region.of(regionName);
-    }
-
-    @Provides
-    @Singleton
-    public DynamoDbClient getDynamoDbClient(@Named(REGION_NAME) final String regionName,
-                                            final SdkHttpClient sdkHttpClient) {
+    public DynamoDbClient providesDynamoDbClient(@Named(HTTP_CLIENT) final SdkHttpClient sdkHttpClient,
+                                                 final Region region) {
         return DynamoDbClient.builder()
-                .region(Region.of(regionName))
+                .region(region)
                 .httpClient(sdkHttpClient)
                 .overrideConfiguration(ClientOverrideConfiguration.builder()
                         .retryPolicy(RetryMode.ADAPTIVE)
@@ -62,9 +60,38 @@ public class AWSModule {
 
     @Provides
     @Singleton
-    public DynamoDbEnhancedClient getDynamoDbEnhancedClient(final DynamoDbClient dynamoDbClient) {
+    public DynamoDbEnhancedClient providesDynamoDbEnhancedClient(final DynamoDbClient dynamoDbClient) {
         return DynamoDbEnhancedClient.builder()
                 .dynamoDbClient(dynamoDbClient)
                 .build();
+    }
+
+    @Provides
+    @Singleton
+    public KinesisVideoClient providesKinesisVideoClient(@Named(CREDENTIALS_PROVIDER) final AwsCredentialsProvider credentialsProvider,
+                                                         @Named(HTTP_CLIENT) final SdkHttpClient sdkHttpClient,
+                                                         final Region region) {
+        return KinesisVideoClient.builder()
+                .credentialsProvider(credentialsProvider)
+                .region(region)
+                .httpClient(sdkHttpClient)
+                .overrideConfiguration(ClientOverrideConfiguration.builder()
+                        .retryPolicy(RetryMode.ADAPTIVE)
+                        .build())
+                .build();
+    }
+
+    @Provides
+    @Singleton
+    public KinesisVideoSignalingClientBuilder providesKvsSignalingClientBuilder(@Named(CREDENTIALS_PROVIDER) final AwsCredentialsProvider credentialsProvider,
+                                                                                 @Named(HTTP_CLIENT) final SdkHttpClient sdkHttpClient,
+                                                                                 final Region region) {
+        return KinesisVideoSignalingClient.builder()
+                .region(region)
+                .credentialsProvider(credentialsProvider)
+                .httpClient(sdkHttpClient)
+                .overrideConfiguration(ClientOverrideConfiguration.builder()
+                        .retryPolicy(RetryMode.ADAPTIVE)
+                        .build());
     }
 }

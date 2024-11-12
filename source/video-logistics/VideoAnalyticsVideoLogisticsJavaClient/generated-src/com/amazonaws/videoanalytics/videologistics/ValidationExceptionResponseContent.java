@@ -99,7 +99,7 @@ public class ValidationExceptionResponseContent {
    * Get reason
    * @return reason
    */
-  @javax.annotation.Nonnull
+  @javax.annotation.Nullable
   public ValidationExceptionReason getReason() {
     return reason;
   }
@@ -192,7 +192,6 @@ public class ValidationExceptionResponseContent {
     // a set of required properties/fields (JSON key names)
     openapiRequiredFields = new HashSet<String>();
     openapiRequiredFields.add("message");
-    openapiRequiredFields.add("reason");
   }
 
   /**
@@ -226,8 +225,10 @@ public class ValidationExceptionResponseContent {
       if (!jsonObj.get("message").isJsonPrimitive()) {
         throw new IllegalArgumentException(String.format("Expected the field `message` to be a primitive type in the JSON string but got `%s`", jsonObj.get("message").toString()));
       }
-      // validate the required field `reason`
-      ValidationExceptionReason.validateJsonElement(jsonObj.get("reason"));
+      // validate the optional field `reason`
+      if (jsonObj.get("reason") != null && !jsonObj.get("reason").isJsonNull()) {
+        ValidationExceptionReason.validateJsonElement(jsonObj.get("reason"));
+      }
       if (jsonObj.get("fieldList") != null && !jsonObj.get("fieldList").isJsonNull()) {
         JsonArray jsonArrayfieldList = jsonObj.getAsJsonArray("fieldList");
         if (jsonArrayfieldList != null) {

@@ -914,6 +914,8 @@
                 "smithy.api#documentation": "Configures an Amazon Cognito User Pools auth scheme.",
                 "smithy.api#internal": {},
                 "smithy.api#tags": [
+                    "internal",
+                    "internal",
                     "internal"
                 ],
                 "smithy.api#trait": {
@@ -1368,7 +1370,7 @@
                 }
             }
         },
-        "com.amazonaws.videoanalytics.videologistics#AccessDeniedException": {
+        "com.amazonaws.videoanalytics#AccessDeniedException": {
             "type": "structure",
             "members": {
                 "message": {
@@ -1383,16 +1385,7 @@
                 "smithy.api#httpError": 403
             }
         },
-        "com.amazonaws.videoanalytics.videologistics#ClientId": {
-            "type": "string",
-            "traits": {
-                "smithy.api#length": {
-                    "min": 1,
-                    "max": 256
-                }
-            }
-        },
-        "com.amazonaws.videoanalytics.videologistics#ConflictException": {
+        "com.amazonaws.videoanalytics#ConflictException": {
             "type": "structure",
             "members": {
                 "message": {
@@ -1407,6 +1400,237 @@
                 "smithy.api#httpError": 409
             }
         },
+        "com.amazonaws.videoanalytics#DeviceId": {
+            "type": "string",
+            "traits": {
+                "smithy.api#length": {
+                    "min": 1,
+                    "max": 128
+                },
+                "smithy.api#pattern": "^[a-zA-Z0-9:_\\-]+$"
+            }
+        },
+        "com.amazonaws.videoanalytics#InternalServerException": {
+            "type": "structure",
+            "members": {
+                "message": {
+                    "target": "smithy.api#String",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                }
+            },
+            "traits": {
+                "smithy.api#error": "server",
+                "smithy.api#httpError": 500
+            }
+        },
+        "com.amazonaws.videoanalytics#JobId": {
+            "type": "string",
+            "traits": {
+                "smithy.api#length": {
+                    "min": 1,
+                    "max": 128
+                },
+                "smithy.api#pattern": "^[a-z0-9\\-]+$"
+            }
+        },
+        "com.amazonaws.videoanalytics#KeyPair": {
+            "type": "structure",
+            "members": {
+                "privateKey": {
+                    "target": "smithy.api#String"
+                },
+                "publicKey": {
+                    "target": "smithy.api#String"
+                }
+            }
+        },
+        "com.amazonaws.videoanalytics#KeyValueMap": {
+            "type": "map",
+            "key": {
+                "target": "smithy.api#String",
+                "traits": {
+                    "smithy.api#length": {
+                        "min": 1,
+                        "max": 128
+                    },
+                    "smithy.api#pattern": "^[\\s\\S]*$"
+                }
+            },
+            "value": {
+                "target": "smithy.api#String",
+                "traits": {
+                    "smithy.api#length": {
+                        "min": 0,
+                        "max": 256
+                    },
+                    "smithy.api#pattern": "^[\\s\\S]*$"
+                }
+            }
+        },
+        "com.amazonaws.videoanalytics#NextToken": {
+            "type": "string",
+            "traits": {
+                "smithy.api#pattern": "^[^\\n\\r<>&'\"\\x08]+$"
+            }
+        },
+        "com.amazonaws.videoanalytics#ResourceNotFoundException": {
+            "type": "structure",
+            "members": {
+                "message": {
+                    "target": "smithy.api#String",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                }
+            },
+            "traits": {
+                "smithy.api#error": "client",
+                "smithy.api#httpError": 404
+            }
+        },
+        "com.amazonaws.videoanalytics#S3Path": {
+            "type": "string",
+            "traits": {
+                "smithy.api#length": {
+                    "min": 1,
+                    "max": 2048
+                },
+                "smithy.api#pattern": "^s3://[a-z0-9][a-z0-9\\.-]{1,61}[a-z0-9](/.*)?$"
+            }
+        },
+        "com.amazonaws.videoanalytics#Status": {
+            "type": "enum",
+            "members": {
+                "RUNNING": {
+                    "target": "smithy.api#Unit",
+                    "traits": {
+                        "smithy.api#enumValue": "RUNNING"
+                    }
+                },
+                "COMPLETED": {
+                    "target": "smithy.api#Unit",
+                    "traits": {
+                        "smithy.api#enumValue": "COMPLETED"
+                    }
+                },
+                "FAILED": {
+                    "target": "smithy.api#Unit",
+                    "traits": {
+                        "smithy.api#enumValue": "FAILED"
+                    }
+                },
+                "CANCELLED": {
+                    "target": "smithy.api#Unit",
+                    "traits": {
+                        "smithy.api#enumValue": "CANCELLED"
+                    }
+                }
+            }
+        },
+        "com.amazonaws.videoanalytics#StringList": {
+            "type": "list",
+            "member": {
+                "target": "smithy.api#String",
+                "traits": {
+                    "smithy.api#length": {
+                        "min": 1,
+                        "max": 100
+                    }
+                }
+            },
+            "traits": {
+                "smithy.api#length": {
+                    "min": 1,
+                    "max": 100
+                },
+                "smithy.api#uniqueItems": {}
+            }
+        },
+        "com.amazonaws.videoanalytics#ValidationException": {
+            "type": "structure",
+            "members": {
+                "message": {
+                    "target": "smithy.api#String",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                },
+                "reason": {
+                    "target": "com.amazonaws.videoanalytics#ValidationExceptionReason"
+                },
+                "fieldList": {
+                    "target": "com.amazonaws.videoanalytics#ValidationExceptionFieldList"
+                }
+            },
+            "traits": {
+                "smithy.api#error": "client",
+                "smithy.api#httpError": 400
+            }
+        },
+        "com.amazonaws.videoanalytics#ValidationExceptionField": {
+            "type": "structure",
+            "members": {
+                "name": {
+                    "target": "smithy.api#String",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                },
+                "message": {
+                    "target": "smithy.api#String",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                }
+            }
+        },
+        "com.amazonaws.videoanalytics#ValidationExceptionFieldList": {
+            "type": "list",
+            "member": {
+                "target": "com.amazonaws.videoanalytics#ValidationExceptionField"
+            }
+        },
+        "com.amazonaws.videoanalytics#ValidationExceptionReason": {
+            "type": "enum",
+            "members": {
+                "UNKNOWN_OPERATION": {
+                    "target": "smithy.api#Unit",
+                    "traits": {
+                        "smithy.api#enumValue": "unknownOperation"
+                    }
+                },
+                "CANNOT_PARSE": {
+                    "target": "smithy.api#Unit",
+                    "traits": {
+                        "smithy.api#enumValue": "cannotParse"
+                    }
+                },
+                "FIELD_VALIDATION_FAILED": {
+                    "target": "smithy.api#Unit",
+                    "traits": {
+                        "smithy.api#enumValue": "fieldValidationFailed"
+                    }
+                },
+                "OTHER": {
+                    "target": "smithy.api#Unit",
+                    "traits": {
+                        "smithy.api#enumValue": "other"
+                    }
+                }
+            }
+        },
+        "com.amazonaws.videoanalytics.videologistics#ClientId": {
+            "type": "string",
+            "traits": {
+                "smithy.api#length": {
+                    "min": 1,
+                    "max": 256
+                },
+                "smithy.api#pattern": "^(?!((A|a)(W|w)(S|s))_.*)[a-zA-Z0-9_.\\-]"
+            }
+        },
         "com.amazonaws.videoanalytics.videologistics#CreateLivestreamSession": {
             "type": "operation",
             "input": {
@@ -1417,13 +1641,19 @@
             },
             "errors": [
                 {
-                    "target": "com.amazonaws.videoanalytics.videologistics#InternalServerException"
+                    "target": "com.amazonaws.videoanalytics#AccessDeniedException"
                 },
                 {
-                    "target": "com.amazonaws.videoanalytics.videologistics#ResourceNotFoundException"
+                    "target": "com.amazonaws.videoanalytics#ConflictException"
                 },
                 {
-                    "target": "com.amazonaws.videoanalytics.videologistics#ValidationException"
+                    "target": "com.amazonaws.videoanalytics#InternalServerException"
+                },
+                {
+                    "target": "com.amazonaws.videoanalytics#ResourceNotFoundException"
+                },
+                {
+                    "target": "com.amazonaws.videoanalytics#ValidationException"
                 }
             ],
             "traits": {
@@ -1439,7 +1669,7 @@
             "type": "structure",
             "members": {
                 "deviceId": {
-                    "target": "com.amazonaws.videoanalytics.videologistics#DeviceId",
+                    "target": "com.amazonaws.videoanalytics#DeviceId",
                     "traits": {
                         "smithy.api#required": {}
                     }
@@ -1475,16 +1705,6 @@
         "com.amazonaws.videoanalytics.videologistics#DetailedFailureReason": {
             "type": "document"
         },
-        "com.amazonaws.videoanalytics.videologistics#DeviceId": {
-            "type": "string",
-            "traits": {
-                "smithy.api#length": {
-                    "min": 1,
-                    "max": 128
-                },
-                "smithy.api#pattern": "^[a-zA-Z0-9:_\\-]+$"
-            }
-        },
         "com.amazonaws.videoanalytics.videologistics#ExportVideo": {
             "type": "resource",
             "operations": [
@@ -1503,7 +1723,7 @@
                     "target": "smithy.api#String"
                 },
                 "exportVideoJobId": {
-                    "target": "com.amazonaws.videoanalytics.videologistics#JobId"
+                    "target": "com.amazonaws.videoanalytics#JobId"
                 },
                 "failureReason": {
                     "target": "smithy.api#String"
@@ -1520,7 +1740,7 @@
             "type": "structure",
             "members": {
                 "status": {
-                    "target": "com.amazonaws.videoanalytics.videologistics#Status",
+                    "target": "com.amazonaws.videoanalytics#Status",
                     "traits": {
                         "smithy.api#required": {}
                     }
@@ -1570,7 +1790,7 @@
                     "target": "smithy.api#Float"
                 },
                 "uris": {
-                    "target": "com.amazonaws.videoanalytics.videologistics#StringList"
+                    "target": "com.amazonaws.videoanalytics#StringList"
                 },
                 "username": {
                     "target": "smithy.api#String"
@@ -1583,67 +1803,8 @@
                 "target": "com.amazonaws.videoanalytics.videologistics#IceServer"
             }
         },
-        "com.amazonaws.videoanalytics.videologistics#InternalServerException": {
-            "type": "structure",
-            "members": {
-                "message": {
-                    "target": "smithy.api#String",
-                    "traits": {
-                        "smithy.api#required": {}
-                    }
-                }
-            },
-            "traits": {
-                "smithy.api#error": "server",
-                "smithy.api#httpError": 500
-            }
-        },
-        "com.amazonaws.videoanalytics.videologistics#JobId": {
-            "type": "string",
-            "traits": {
-                "smithy.api#length": {
-                    "min": 1,
-                    "max": 128
-                },
-                "smithy.api#pattern": "^[a-z0-9\\-]+$"
-            }
-        },
         "com.amazonaws.videoanalytics.videologistics#JobRunTimeInMinutes": {
             "type": "double"
-        },
-        "com.amazonaws.videoanalytics.videologistics#KeyPair": {
-            "type": "structure",
-            "members": {
-                "privateKey": {
-                    "target": "smithy.api#String"
-                },
-                "publicKey": {
-                    "target": "smithy.api#String"
-                }
-            }
-        },
-        "com.amazonaws.videoanalytics.videologistics#KeyValueMap": {
-            "type": "map",
-            "key": {
-                "target": "smithy.api#String",
-                "traits": {
-                    "smithy.api#length": {
-                        "min": 1,
-                        "max": 128
-                    },
-                    "smithy.api#pattern": "^[\\s\\S]*$"
-                }
-            },
-            "value": {
-                "target": "smithy.api#String",
-                "traits": {
-                    "smithy.api#length": {
-                        "min": 0,
-                        "max": 256
-                    },
-                    "smithy.api#pattern": "^[\\s\\S]*$"
-                }
-            }
         },
         "com.amazonaws.videoanalytics.videologistics#LivestreamSession": {
             "type": "resource",
@@ -1653,38 +1814,14 @@
                 }
             ]
         },
-        "com.amazonaws.videoanalytics.videologistics#ResourceNotFoundException": {
-            "type": "structure",
-            "members": {
-                "message": {
-                    "target": "smithy.api#String",
-                    "traits": {
-                        "smithy.api#required": {}
-                    }
-                }
-            },
-            "traits": {
-                "smithy.api#error": "client",
-                "smithy.api#httpError": 404
-            }
-        },
-        "com.amazonaws.videoanalytics.videologistics#S3Path": {
-            "type": "string",
-            "traits": {
-                "smithy.api#length": {
-                    "min": 1,
-                    "max": 2048
-                },
-                "smithy.api#pattern": "^s3://[a-z0-9][a-z0-9\\.-]{1,61}[a-z0-9](/.*)?$"
-            }
-        },
         "com.amazonaws.videoanalytics.videologistics#SessionId": {
             "type": "string",
             "traits": {
                 "smithy.api#length": {
                     "min": 1,
                     "max": 128
-                }
+                },
+                "smithy.api#pattern": "^[a-z0-9\\-]+$"
             }
         },
         "com.amazonaws.videoanalytics.videologistics#StartExportVideos": {
@@ -1697,13 +1834,13 @@
             },
             "errors": [
                 {
-                    "target": "com.amazonaws.videoanalytics.videologistics#InternalServerException"
+                    "target": "com.amazonaws.videoanalytics#InternalServerException"
                 },
                 {
-                    "target": "com.amazonaws.videoanalytics.videologistics#ResourceNotFoundException"
+                    "target": "com.amazonaws.videoanalytics#ResourceNotFoundException"
                 },
                 {
-                    "target": "com.amazonaws.videoanalytics.videologistics#ValidationException"
+                    "target": "com.amazonaws.videoanalytics#ValidationException"
                 }
             ],
             "traits": {
@@ -1734,13 +1871,13 @@
                     }
                 },
                 "device": {
-                    "target": "com.amazonaws.videoanalytics.videologistics#DeviceId",
+                    "target": "com.amazonaws.videoanalytics#DeviceId",
                     "traits": {
                         "smithy.api#required": {}
                     }
                 },
                 "exportS3Path": {
-                    "target": "com.amazonaws.videoanalytics.videologistics#S3Path",
+                    "target": "com.amazonaws.videoanalytics#S3Path",
                     "traits": {
                         "smithy.api#required": {}
                     }
@@ -1754,135 +1891,11 @@
             "type": "structure",
             "members": {
                 "jobId": {
-                    "target": "com.amazonaws.videoanalytics.videologistics#JobId"
+                    "target": "com.amazonaws.videoanalytics#JobId"
                 }
             },
             "traits": {
                 "smithy.api#output": {}
-            }
-        },
-        "com.amazonaws.videoanalytics.videologistics#Status": {
-            "type": "enum",
-            "members": {
-                "RUNNING": {
-                    "target": "smithy.api#Unit",
-                    "traits": {
-                        "smithy.api#enumValue": "RUNNING"
-                    }
-                },
-                "COMPLETED": {
-                    "target": "smithy.api#Unit",
-                    "traits": {
-                        "smithy.api#enumValue": "COMPLETED"
-                    }
-                },
-                "FAILED": {
-                    "target": "smithy.api#Unit",
-                    "traits": {
-                        "smithy.api#enumValue": "FAILED"
-                    }
-                },
-                "CANCELLED": {
-                    "target": "smithy.api#Unit",
-                    "traits": {
-                        "smithy.api#enumValue": "CANCELLED"
-                    }
-                }
-            }
-        },
-        "com.amazonaws.videoanalytics.videologistics#StringList": {
-            "type": "list",
-            "member": {
-                "target": "smithy.api#String",
-                "traits": {
-                    "smithy.api#length": {
-                        "min": 1,
-                        "max": 100
-                    }
-                }
-            },
-            "traits": {
-                "smithy.api#length": {
-                    "min": 1,
-                    "max": 100
-                },
-                "smithy.api#uniqueItems": {}
-            }
-        },
-        "com.amazonaws.videoanalytics.videologistics#ValidationException": {
-            "type": "structure",
-            "members": {
-                "message": {
-                    "target": "smithy.api#String",
-                    "traits": {
-                        "smithy.api#required": {}
-                    }
-                },
-                "reason": {
-                    "target": "com.amazonaws.videoanalytics.videologistics#ValidationExceptionReason",
-                    "traits": {
-                        "smithy.api#required": {}
-                    }
-                },
-                "fieldList": {
-                    "target": "com.amazonaws.videoanalytics.videologistics#ValidationExceptionFieldList"
-                }
-            },
-            "traits": {
-                "smithy.api#error": "client",
-                "smithy.api#httpError": 400
-            }
-        },
-        "com.amazonaws.videoanalytics.videologistics#ValidationExceptionField": {
-            "type": "structure",
-            "members": {
-                "name": {
-                    "target": "smithy.api#String",
-                    "traits": {
-                        "smithy.api#required": {}
-                    }
-                },
-                "message": {
-                    "target": "smithy.api#String",
-                    "traits": {
-                        "smithy.api#required": {}
-                    }
-                }
-            }
-        },
-        "com.amazonaws.videoanalytics.videologistics#ValidationExceptionFieldList": {
-            "type": "list",
-            "member": {
-                "target": "com.amazonaws.videoanalytics.videologistics#ValidationExceptionField"
-            }
-        },
-        "com.amazonaws.videoanalytics.videologistics#ValidationExceptionReason": {
-            "type": "enum",
-            "members": {
-                "UNKNOWN_OPERATION": {
-                    "target": "smithy.api#Unit",
-                    "traits": {
-                        "smithy.api#enumValue": "unknownOperation"
-                    }
-                },
-                "CANNOT_PARSE": {
-                    "target": "smithy.api#Unit",
-                    "traits": {
-                        "smithy.api#enumValue": "cannotParse"
-                    }
-                },
-                "FIELD_VALIDATION_FAILED": {
-                    "target": "smithy.api#Unit",
-                    "traits": {
-                        "smithy.api#enumValue": "fieldValidationFailed"
-                    }
-                },
-                "OTHER": {
-                    "target": "smithy.api#Unit",
-                    "traits": {
-                        "smithy.api#enumValue": "other"
-                    }
-                }
             }
         },
         "com.amazonaws.videoanalytics.videologistics#VideoAnalytic": {

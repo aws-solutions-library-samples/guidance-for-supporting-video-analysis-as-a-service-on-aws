@@ -39,12 +39,32 @@
                             }
                         }
                     },
+                    "403": {
+                        "description": "AccessDeniedException 403 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AccessDeniedExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
                     "404": {
                         "description": "ResourceNotFoundException 404 response",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ResourceNotFoundExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "ConflictException 409 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ConflictExceptionResponseContent"
                                 }
                             }
                         }
@@ -122,6 +142,28 @@
     },
     "components": {
         "schemas": {
+            "AccessDeniedExceptionResponseContent": {
+                "type": "object",
+                "properties": {
+                    "message": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "message"
+                ]
+            },
+            "ConflictExceptionResponseContent": {
+                "type": "object",
+                "properties": {
+                    "message": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "message"
+                ]
+            },
             "CreateLivestreamSessionRequestContent": {
                 "type": "object",
                 "properties": {
@@ -134,7 +176,8 @@
                     "clientId": {
                         "type": "string",
                         "maxLength": 256,
-                        "minLength": 1
+                        "minLength": 1,
+                        "pattern": "^(?!((A|a)(W|w)(S|s))_.*)[a-zA-Z0-9_.\\-]"
                     }
                 },
                 "required": [
@@ -147,12 +190,14 @@
                     "sessionId": {
                         "type": "string",
                         "maxLength": 128,
-                        "minLength": 1
+                        "minLength": 1,
+                        "pattern": "^[a-z0-9\\-]+$"
                     },
                     "clientId": {
                         "type": "string",
                         "maxLength": 256,
-                        "minLength": 1
+                        "minLength": 1,
+                        "pattern": "^(?!((A|a)(W|w)(S|s))_.*)[a-zA-Z0-9_.\\-]"
                     },
                     "iceServers": {
                         "type": "array",
@@ -296,8 +341,7 @@
                     }
                 },
                 "required": [
-                    "message",
-                    "reason"
+                    "message"
                 ]
             }
         }

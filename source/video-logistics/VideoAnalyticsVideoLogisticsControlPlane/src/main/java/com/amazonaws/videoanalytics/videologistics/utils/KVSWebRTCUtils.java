@@ -6,6 +6,9 @@ import software.amazon.awssdk.auth.credentials.AwsSessionCredentials;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
@@ -21,14 +24,19 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 
-import static com.amazonaws.videoanalytics.videologistics.exceptions.GuidanceExceptionMessage.INTERNAL_SERVER_EXCEPTION;
+import static com.amazonaws.videoanalytics.videologistics.exceptions.VideoAnalyticsExceptionMessage.INTERNAL_SERVER_EXCEPTION;
 import static com.amazonaws.videoanalytics.videologistics.schema.util.GuidanceVLConstants.NEW_LINE_DELIMITER;
+import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.CREDENTIALS_PROVIDER;
+import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.REGION_NAME;
 import static com.google.common.hash.Hashing.sha256;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.codec.binary.Hex.encodeHexString;
 
 public class KVSWebRTCUtils {
+    private final AwsCredentialsProvider awsCredentialsProvider;
+    private final String region;
+
     private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss'Z'");
     private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
     private static final String AWS4_REQUEST_TYPE = "aws4_request";
@@ -46,16 +54,21 @@ public class KVSWebRTCUtils {
     private static final String ALGORITHM_AWS4_HMAC_SHA_256 = "AWS4-HMAC-SHA256";
     private static final String AWSV4 = "AWS4";
 
-    public KVSWebRTCUtils() {}
+    @Inject
+    public KVSWebRTCUtils(@Named(CREDENTIALS_PROVIDER) AwsCredentialsProvider awsCredentialsProvider,
+                          @Named(REGION_NAME) String region) {
+
+        this.awsCredentialsProvider = awsCredentialsProvider;
+        this.region = region;
+    }
+
     /**
      * This function manually creates v4 signed url without using existing library.
      * Existing library only supports https endpoints whereas webrtc connection requires wss endpoint
      */
     public String sign(final String endpoint,
                        final String channelArn,
-                       final String clientId,
-                       final String region,
-                       final AwsCredentialsProvider credentialsProvider) {
+                       final String clientId) {
 
         String endpointQueryParams = "X-Amz-ChannelARN=" + channelArn;
         if (clientId.length() > 0) {
@@ -66,7 +79,7 @@ public class KVSWebRTCUtils {
         String amzDate = timestamp.format(dateTimeFormatter);
         String datestamp = timestamp.format(dateFormatter);
 
-        AwsCredentials awsCredentials = credentialsProvider.resolveCredentials();
+        AwsCredentials awsCredentials = awsCredentialsProvider.resolveCredentials();
         if (!(awsCredentials instanceof AwsSessionCredentials)) {
             throw new RuntimeException("Assumed role credentials are long-lived credentials");
         }
@@ -125,13 +138,13 @@ public class KVSWebRTCUtils {
                     region,
                     SERVICE);
         } catch (NoSuchAlgorithmException | InvalidKeyException e) {
-            throw new com.amazonaws.videoanalytics.videologistics.exceptions.InternalServerException(INTERNAL_SERVER_EXCEPTION);
+            throw new RuntimeException(INTERNAL_SERVER_EXCEPTION);
         }
         final String signature;
         try {
             signature = encodeHexString(hmacSha256(stringToSign, signatureKey));
         } catch (NoSuchAlgorithmException | InvalidKeyException e) {
-            throw new com.amazonaws.videoanalytics.videologistics.exceptions.InternalServerException(INTERNAL_SERVER_EXCEPTION);
+            throw new RuntimeException(INTERNAL_SERVER_EXCEPTION);
         }
         final String signedCanonicalQueryString = canonicalQuerystring + "&" + X_AMZ_SIGNATURE + "=" + signature;
 

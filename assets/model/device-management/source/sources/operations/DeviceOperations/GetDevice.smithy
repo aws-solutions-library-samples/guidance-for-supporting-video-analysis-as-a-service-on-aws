@@ -2,6 +2,12 @@ $version: "2.0"
 
 namespace com.amazonaws.videoanalytics.devicemanagement
 
+use com.amazonaws.videoanalytics#AccessDeniedException
+use com.amazonaws.videoanalytics#DeviceId
+use com.amazonaws.videoanalytics#InternalServerException
+use com.amazonaws.videoanalytics#KeyValueMap
+use com.amazonaws.videoanalytics#ValidationException
+
 use aws.apigateway#integration
 
 // For Lambda function invocations, the httpMethod must be POST.

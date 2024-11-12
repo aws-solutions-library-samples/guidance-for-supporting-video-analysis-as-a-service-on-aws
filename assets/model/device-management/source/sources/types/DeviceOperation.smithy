@@ -2,6 +2,9 @@ $version: "2.0"
 
 namespace com.amazonaws.videoanalytics.devicemanagement
 
+use com.amazonaws.videoanalytics#DeviceId
+use com.amazonaws.videoanalytics#KeyValueMap
+
 enum DeviceState {
     ENABLED
     DISABLED

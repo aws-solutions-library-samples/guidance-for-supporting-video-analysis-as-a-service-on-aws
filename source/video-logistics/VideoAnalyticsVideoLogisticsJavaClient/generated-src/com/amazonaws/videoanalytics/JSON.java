@@ -89,6 +89,8 @@ public class JSON {
         gsonBuilder.registerTypeAdapter(Date.class, dateTypeAdapter);
         gsonBuilder.registerTypeAdapter(java.sql.Date.class, sqlDateTypeAdapter);
         gsonBuilder.registerTypeAdapter(byte[].class, byteArrayAdapter);
+        gsonBuilder.registerTypeAdapterFactory(new com.amazonaws.videoanalytics.videologistics.AccessDeniedExceptionResponseContent.CustomTypeAdapterFactory());
+        gsonBuilder.registerTypeAdapterFactory(new com.amazonaws.videoanalytics.videologistics.ConflictExceptionResponseContent.CustomTypeAdapterFactory());
         gsonBuilder.registerTypeAdapterFactory(new com.amazonaws.videoanalytics.videologistics.CreateLivestreamSessionRequestContent.CustomTypeAdapterFactory());
         gsonBuilder.registerTypeAdapterFactory(new com.amazonaws.videoanalytics.videologistics.CreateLivestreamSessionResponseContent.CustomTypeAdapterFactory());
         gsonBuilder.registerTypeAdapterFactory(new com.amazonaws.videoanalytics.videologistics.IceServer.CustomTypeAdapterFactory());
