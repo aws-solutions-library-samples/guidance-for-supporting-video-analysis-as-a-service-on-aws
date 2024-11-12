@@ -19,6 +19,7 @@ repositories {
     maven { url "https://aws.oss.sonatype.org/content/repositories/snapshots" }
     // CodeGuru-Profiler java agent repository
     maven { url "https://d1osg35nybn3tt.cloudfront.net" }
+
 }
 
 java {
@@ -86,13 +87,20 @@ dependencies {
     testImplementation 'software.amazon.awssdk:dynamodb-enhanced:2.20.26'
     testImplementation 'org.junit.jupiter:junit-jupiter:5.9.3'
     testImplementation 'com.github.stefanbirkner:system-rules:1.16.0'
-    testImplementation 'org.mockito:mockito-core:5.11.0'
+    testImplementation 'org.mockito:mockito-core:5.3.1'
     testImplementation 'com.fasterxml.jackson.core:jackson-core:2.12.7'
     testImplementation 'com.fasterxml.jackson.core:jackson-databind:2.12.7.1'
     testImplementation 'org.hamcrest:hamcrest:3.0'
 
     // Annotation processing
     annotationProcessor 'com.google.dagger:dagger-compiler:2.48'
+
+    // Add Mockito instead
+    testImplementation 'org.mockito:mockito-core:5.3.1'
+    testImplementation 'org.mockito:mockito-junit-jupiter:5.3.1'
+    testImplementation 'org.mockito:mockito-inline:3.12.4'
+
+    
 }
 
 shadowJar {

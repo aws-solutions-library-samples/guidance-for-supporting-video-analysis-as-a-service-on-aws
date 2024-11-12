@@ -37,6 +37,14 @@ import software.amazon.awssdk.services.iot.model.ThingDocument;
 import software.amazon.awssdk.services.iotdataplane.IotDataPlaneClient;
 import software.amazon.awssdk.services.iotdataplane.model.GetThingShadowRequest;
 import software.amazon.awssdk.services.iotdataplane.model.GetThingShadowResponse;
+import static org.mockito.Mockito.verify;
+import static com.amazonaws.videoanalytics.devicemanagement.utils.TestConstants.CERTIFICATE_ID;
+import com.google.common.collect.ImmutableMap;
+import software.amazon.awssdk.services.iot.model.RegisterThingRequest;
+import com.amazonaws.videoanalytics.devicemanagement.utils.ResourceReader;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.when;
 import software.amazon.awssdk.services.iotdataplane.model.UpdateThingShadowRequest;
 import software.amazon.awssdk.services.iotdataplane.model.UpdateThingShadowResponse;
 
@@ -98,12 +106,29 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import software.amazon.awssdk.core.SdkBytes;
+import software.amazon.awssdk.services.iotdataplane.model.UpdateThingShadowRequest;
+import software.amazon.awssdk.services.iotdataplane.model.UpdateThingShadowResponse;
+
+import com.google.gson.JsonObject;
+
+import software.amazon.awssdk.services.iot.model.DescribeCertificateRequest;
+import software.amazon.awssdk.services.iot.model.DescribeCertificateResponse;
+import software.amazon.awssdk.services.iot.model.CertificateDescription;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 public class IotServiceTest {
+    private static final String ARN_PREFIX = "arn:partition:service:region:account-id:cert/";
+    private static final String CERTIFICATE_ID = "fakeCertificateID";
+    private static final String CERTIFICATE_ID_2 = "fakeCertificateID";
+    private static final String CERTIFICATE_ARN = ARN_PREFIX + CERTIFICATE_ID;
     @Mock
     private IotClient iotClient;
     @Mock
@@ -773,5 +798,95 @@ public class IotServiceTest {
                 .ipAddress(expectedIpAddress)
                 .deviceStatus(expectedDeviceStatus)
                 .build();
+    }
+
+    @Test
+    public void testWorkflowRegisterDevice_success() {
+        iotService.workflowRegisterDevice(CERTIFICATE_ID, DEVICE_ID);
+
+        verify(iotClient).registerThing(RegisterThingRequest.builder()
+                .parameters(ImmutableMap.of("ThingName", DEVICE_ID, "ThingCertificateId", CERTIFICATE_ID))
+                .templateBody(ResourceReader.readResourceToString("iot-provisioning-template.json"))
+                .build());
+    }
+
+    @Test
+    public void publishLogConfigurationToProvisioningShadowTest() {
+        // Create the expected shadow document with exact string matching
+        String expectedJson = "{\"loggerSettings\":{\"isEnabled\":true,\"syncFrequency\":300,\"logLevel\":\"INFO\"}}";
+        SdkBytes expectedPayload = SdkBytes.fromUtf8String(expectedJson);
+
+        UpdateThingShadowRequest expectedUpdateThingShadowRequest =
+                UpdateThingShadowRequest
+                        .builder()
+                        .thingName(DEVICE_ID)
+                        .shadowName(PROVISIONING_SHADOW_NAME)
+                        .payload(expectedPayload)
+                        .build();
+
+        when(iotDataPlaneClient.updateThingShadow(any(UpdateThingShadowRequest.class)))
+                .thenReturn(UpdateThingShadowResponse.builder().build());
+
+        iotService.publishLogConfigurationToProvisioningShadow(DEVICE_ID);
+
+        verify(iotDataPlaneClient).updateThingShadow(eq(expectedUpdateThingShadowRequest));
+    }
+
+    @Test
+    public void isAnExistingDevice_WhenDeviceExists_ReturnsTrue() {
+        when(iotClient.describeThing(any(DescribeThingRequest.class)))
+                .thenReturn(DescribeThingResponse.builder()
+                        .thingName(DEVICE_ID)
+                        .build());
+
+        boolean exists = iotService.isAnExistingDevice(DEVICE_ID);
+
+        assertTrue(exists);
+        verify(iotClient).describeThing(DescribeThingRequest.builder()
+                .thingName(DEVICE_ID)
+                .build());
+    }
+
+    @Test
+    public void isAnExistingDevice_WhenDeviceDoesNotExist_ReturnsFalse() {
+        when(iotClient.describeThing(any(DescribeThingRequest.class)))
+                .thenThrow(ResourceNotFoundException.class);
+
+        boolean exists = iotService.isAnExistingDevice(DEVICE_ID);
+
+        assertFalse(exists);
+        verify(iotClient).describeThing(DescribeThingRequest.builder()
+                .thingName(DEVICE_ID)
+                .build());
+    }
+
+    @Test
+    public void testGetCertificate() {
+        CertificateDescription certificateDescription = CertificateDescription
+                .builder()
+                .certificateId(CERTIFICATE_ID)
+                .certificateArn(CERTIFICATE_ARN)
+                .creationDate(new Date(DATE).toInstant())
+                .build();
+        DescribeCertificateResponse describeCertificateResponse = DescribeCertificateResponse
+                .builder()
+                .certificateDescription(certificateDescription)
+                .build();
+        when(iotClient.describeCertificate(any(DescribeCertificateRequest.class))).thenReturn(describeCertificateResponse);
+
+        CertificateDescription responseFromIotService = iotService.getCertificate(CERTIFICATE_ID);
+        assertEquals(CERTIFICATE_ID, responseFromIotService.certificateId());
+        assertEquals(CERTIFICATE_ARN, responseFromIotService.certificateArn());
+        assertEquals(new Date(DATE).toInstant(), responseFromIotService.creationDate());
+    }
+
+    @Test
+    public void testGetCertificateThrowsException() {
+        when(iotClient.describeCertificate(any(DescribeCertificateRequest.class)))
+                .thenThrow(InvalidRequestException.builder().build());
+
+        assertThrows(InvalidRequestException.class, () -> {
+            iotService.getCertificate(CERTIFICATE_ID);
+        });
     }
 }

@@ -26,7 +26,7 @@ public final class TestConstants {
     public static final long SD_CARD_TOTAL_CAPACITY = 14887;
     public static final long SD_CARD_USED_CAPACITY = 40;
     public static final long TIMESTAMP = 1675268761;
-
+    public static final String CERTIFICATE_ID = "fakeCertificateID";
     public static final String DATE = "Wed Feb 01 16:26:01 UTC 2023";
     public static final Long DATE_LONG = 1675268761000L;
     public static final Long DATE_LONG_IN_MILLIS = 1675268761000L / 1000;

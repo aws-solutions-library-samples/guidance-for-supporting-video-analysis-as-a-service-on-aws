@@ -16,3 +16,10 @@ map KeyValueMap {
     @length(min: 0, max: 256)
     value: String
 }
+
+enum Status {
+    RUNNING,
+    COMPLETED,
+    FAILED,
+    CANCELLED
+}

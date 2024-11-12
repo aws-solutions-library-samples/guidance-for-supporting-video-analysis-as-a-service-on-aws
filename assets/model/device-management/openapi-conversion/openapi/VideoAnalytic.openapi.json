@@ -574,7 +574,64 @@
                 }
             }
         },
-        "/start-create-device": {
+        "/start-create-device-notification": {
+            "post": {
+                "operationId": "StartCreateDeviceNotification",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StartCreateDeviceNotificationRequestContent"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "StartCreateDeviceNotification 200 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StartCreateDeviceNotificationResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "ValidationException 400 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "AccessDeniedException 403 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AccessDeniedExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "InternalServerException 500 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InternalServerExceptionResponseContent"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/start-create-device/{deviceId}": {
             "post": {
                 "operationId": "StartCreateDevice",
                 "requestBody": {
@@ -587,6 +644,19 @@
                     },
                     "required": true
                 },
+                "parameters": [
+                    {
+                        "name": "deviceId",
+                        "in": "path",
+                        "schema": {
+                            "type": "string",
+                            "maxLength": 128,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9:_\\-]+$"
+                        },
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "StartCreateDevice 200 response",
@@ -648,62 +718,15 @@
                             }
                         }
                     }
-                }
-            }
-        },
-        "/start-create-device-notification": {
-            "post": {
-                "operationId": "StartCreateDeviceNotification",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/StartCreateDeviceNotificationRequestContent"
-                            }
-                        }
-                    },
-                    "required": true
                 },
-                "responses": {
-                    "200": {
-                        "description": "StartCreateDeviceNotification 200 response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/StartCreateDeviceNotificationResponseContent"
-                                }
-                            }
-                        }
+                "x-amazon-apigateway-integration": {
+                    "type": "aws_proxy",
+                    "httpMethod": "POST",
+                    "uri": {
+                        "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${StartCreateDeviceActivity}/invocations"
                     },
-                    "400": {
-                        "description": "ValidationException 400 response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ValidationExceptionResponseContent"
-                                }
-                            }
-                        }
-                    },
-                    "403": {
-                        "description": "AccessDeniedException 403 response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/AccessDeniedExceptionResponseContent"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "InternalServerException 500 response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/InternalServerExceptionResponseContent"
-                                }
-                            }
-                        }
+                    "credentials": {
+                        "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/ApiGatewayRole"
                     }
                 }
             }
@@ -1748,12 +1771,6 @@
             "StartCreateDeviceRequestContent": {
                 "type": "object",
                 "properties": {
-                    "deviceId": {
-                        "type": "string",
-                        "maxLength": 128,
-                        "minLength": 1,
-                        "pattern": "^[a-zA-Z0-9:_\\-]+$"
-                    },
                     "certificateId": {
                         "type": "string",
                         "maxLength": 64,
@@ -1762,8 +1779,7 @@
                     }
                 },
                 "required": [
-                    "certificateId",
-                    "deviceId"
+                    "certificateId"
                 ]
             },
             "StartCreateDeviceResponseContent": {

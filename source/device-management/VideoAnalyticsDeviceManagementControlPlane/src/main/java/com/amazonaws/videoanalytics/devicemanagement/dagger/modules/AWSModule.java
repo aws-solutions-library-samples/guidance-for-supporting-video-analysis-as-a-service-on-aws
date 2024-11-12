@@ -16,6 +16,8 @@ import software.amazon.awssdk.http.apache.ApacheHttpClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.iot.IotClient;
 import software.amazon.awssdk.services.iotdataplane.IotDataPlaneClient;
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
 /*
     Module to maintain singletons for AWS service dependencies
@@ -57,6 +59,24 @@ public class AWSModule {
                 .credentialsProvider(credentialsProvider)
                 .httpClient(sdkHttpClient)
                 .region(Region.of(region))
+                .build();
+    }
+
+    @Provides
+    @Singleton
+    public DynamoDbClient provideDynamoDbClient(@Named(HTTP_CLIENT) final SdkHttpClient sdkHttpClient,
+                                                @Named(REGION_NAME) final String region) {
+        return DynamoDbClient.builder()
+                .httpClient(sdkHttpClient)
+                .region(Region.of(region))
+                .build();
+    }
+
+    @Provides
+    @Singleton
+    public DynamoDbEnhancedClient provideDynamoDbEnhancedClient(final DynamoDbClient ddbClient) {
+        return DynamoDbEnhancedClient.builder()
+                .dynamoDbClient(ddbClient)
                 .build();
     }
 }

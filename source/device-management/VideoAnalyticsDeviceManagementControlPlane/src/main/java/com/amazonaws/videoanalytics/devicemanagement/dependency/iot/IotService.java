@@ -37,7 +37,13 @@ import software.amazon.awssdk.services.iotdataplane.model.GetThingShadowRequest;
 import software.amazon.awssdk.services.iotdataplane.model.GetThingShadowResponse;
 import software.amazon.awssdk.services.iotdataplane.model.UpdateThingShadowRequest;
 import software.amazon.awssdk.utils.StringUtils;
-
+import software.amazon.awssdk.services.iot.model.CreateThingRequest;
+import software.amazon.awssdk.services.iot.model.CreateThingResponse;
+import software.amazon.awssdk.services.iot.model.AttachThingPrincipalRequest;
+import software.amazon.awssdk.services.iot.model.IotException;
+import software.amazon.awssdk.services.iot.model.ConflictException;
+import java.util.UUID;
+import com.amazonaws.videoanalytics.devicemanagement.dao.StartCreateDeviceDAO;
 import javax.inject.Inject;
 import java.text.ParseException;
 import java.time.Instant;
@@ -76,6 +82,18 @@ import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyt
 import static com.amazonaws.videoanalytics.devicemanagement.utils.WorkflowConstants.AI_SHADOW_NAME;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.WorkflowConstants.PROVISIONING_SHADOW_NAME;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.WorkflowConstants.VIDEO_ENCODER_SHADOW_NAME;
+import com.amazonaws.videoanalytics.devicemanagement.StartCreateDeviceResponseContent;
+import com.google.common.collect.ImmutableMap;
+import software.amazon.awssdk.services.iot.model.RegisterThingRequest;
+import com.amazonaws.videoanalytics.devicemanagement.utils.ResourceReader;
+import software.amazon.awssdk.services.iot.model.UpdateCertificateRequest;
+import software.amazon.awssdk.services.iot.model.CertificateStatus;
+import com.google.gson.JsonObject;
+import software.amazon.awssdk.core.SdkBytes;
+import software.amazon.awssdk.services.iotdataplane.model.UpdateThingShadowRequest;
+import software.amazon.awssdk.services.iot.model.DescribeCertificateRequest;
+import software.amazon.awssdk.services.iot.model.CertificateDescription;
+import software.amazon.awssdk.services.iot.model.ResourceNotFoundException;
 
 public class IotService {
     private final IotClient iotClient;
@@ -405,4 +423,83 @@ public class IotService {
                 .deviceId(deviceId)
                 .build();
     }
+
+    public void workflowRegisterDevice(String certificateId, String deviceId) {
+        LOG.info(String.format("Registering device: %s", deviceId));
+
+        Map<String, String> parametersForRegisteringThing =
+                ImmutableMap.of("ThingName", deviceId, "ThingCertificateId", certificateId);
+
+        String template = ResourceReader.readResourceToString(
+                "iot-provisioning-template.json"
+        );
+
+        RegisterThingRequest registerThingRequest = RegisterThingRequest
+                .builder()
+                .parameters(parametersForRegisteringThing)
+                .templateBody(template)
+                .build();
+
+        iotClient.registerThing(registerThingRequest);
+    }
+
+    public void updateCertificate(String certificateId, CertificateStatus newStatus) {
+        UpdateCertificateRequest updateCertificateRequest = UpdateCertificateRequest
+                .builder()
+                .certificateId(certificateId)
+                .newStatus(newStatus)
+                .build();
+        LOG.info("updating certificate to " + newStatus.toString());
+        iotClient.updateCertificate(updateCertificateRequest);
+    }
+
+    /**
+     * This function is used to send messages to "provision" named shadow during device creation. 
+     * @param deviceId videoAnalytics Device
+     */
+    public void publishLogConfigurationToProvisioningShadow(String deviceId) {
+        // Message to the device is default log config:
+        // "loggerSettings": {
+        //     "isEnabled": true,
+        //     "syncFrequency": 300,
+        //     "logLevel": INFO
+        // } 
+        JsonObject loggerConfiguration = new JsonObject();
+        loggerConfiguration.addProperty("isEnabled", true);
+        loggerConfiguration.addProperty("syncFrequency", 300);
+        loggerConfiguration.addProperty("logLevel", "INFO");
+
+        JsonObject messagePayload = new JsonObject();
+        messagePayload.add("loggerSettings", loggerConfiguration);
+
+        UpdateThingShadowRequest updateThingShadowRequest = UpdateThingShadowRequest.builder()
+                .thingName(deviceId)
+                .shadowName(PROVISIONING_SHADOW_NAME)
+                .payload(SdkBytes.fromUtf8String(messagePayload.toString()))
+                .build();
+
+        iotDataPlaneClient.updateThingShadow(updateThingShadowRequest);
+    }
+
+    /**
+     * Checks if a device with the given ID already exists in IoT Core
+     *
+     * @param deviceId The device ID to check
+     * @return true if the device exists, false otherwise
+     */
+    public boolean isAnExistingDevice(String deviceId) {
+        try {
+            describeThing(deviceId);
+            return true;
+        } catch (ResourceNotFoundException e) {
+            return false;
+        }
+    }
+
+    public CertificateDescription getCertificate(String certId) {
+        DescribeCertificateRequest describeCertificateRequest = DescribeCertificateRequest.builder().certificateId(certId).build();
+        LOG.info("Describing certificate");
+        return iotClient.describeCertificate(describeCertificateRequest).certificateDescription();
+    }
+
 }
