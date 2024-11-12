@@ -2,6 +2,8 @@
     "metadata": {},
     "operationShapeIds": [
         "com.amazonaws.videoanalytics.videologistics#CreateLivestreamSession",
+        "com.amazonaws.videoanalytics.videologistics#CreatePlaybackSession",
+        "com.amazonaws.videoanalytics.videologistics#GetPlaybackSession",
         "com.amazonaws.videoanalytics.videologistics#StartExportVideos"
     ],
     "projection": {
@@ -20,7 +22,8 @@
     "projectionName": "openapi-conversion",
     "resourceShapeIds": [
         "com.amazonaws.videoanalytics.videologistics#ExportVideo",
-        "com.amazonaws.videoanalytics.videologistics#LivestreamSession"
+        "com.amazonaws.videoanalytics.videologistics#LivestreamSession",
+        "com.amazonaws.videoanalytics.videologistics#PlaybackSession"
     ],
     "serviceShapeIds": [
         "com.amazonaws.videoanalytics.videologistics#VideoAnalytic"
@@ -150,6 +153,7 @@
         "smithy.api#externalDocumentation",
         "smithy.api#http",
         "smithy.api#httpError",
+        "smithy.api#httpLabel",
         "smithy.api#idempotent",
         "smithy.api#idRef",
         "smithy.api#input",
@@ -165,6 +169,7 @@
         "smithy.api#recommended",
         "smithy.api#required",
         "smithy.api#tags",
+        "smithy.api#timestampFormat",
         "smithy.api#title",
         "smithy.api#trait",
         "smithy.api#traitValidators",
