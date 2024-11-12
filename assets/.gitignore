@@ -1,3 +1,4 @@
 model/device-management/classpath.json
 model/video-logistics/classpath.json
+model/common/classpath.json
 lambda-built/**/*.jar
