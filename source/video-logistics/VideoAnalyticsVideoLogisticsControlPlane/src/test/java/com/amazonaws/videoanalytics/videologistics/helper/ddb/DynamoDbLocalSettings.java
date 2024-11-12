@@ -1,4 +1,4 @@
-package com.amazonaws.videoanalytics.helper.ddb;
+package com.amazonaws.videoanalytics.videologistics.helper.ddb;
 
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;

@@ -1,4 +1,4 @@
-package com.amazonaws.videoanalytics.helper.ddb;
+package com.amazonaws.videoanalytics.videologistics.helper.ddb;
 
 import static java.util.stream.Collectors.toList;
 

@@ -4,8 +4,8 @@ import com.amazonaws.videoanalytics.videologistics.config.LambdaConfiguration;
 import com.amazonaws.videoanalytics.videologistics.schema.LivestreamSession.LivestreamSession;
 import com.amazonaws.videoanalytics.videologistics.utils.DateTime;
 import com.amazonaws.videoanalytics.videologistics.utils.GuidanceUUIDGenerator;
-import com.amazonaws.videoanalytics.videologistics.utils.KVSWebRTCUtils;
 import com.amazonaws.videoanalytics.videologistics.utils.SchemaConst;
+
 import dagger.Module;
 import dagger.Provides;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
@@ -17,18 +17,19 @@ import javax.inject.Singleton;
 
 import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.REGION_NAME;
 
+
 @Module
 public class AWSVideoAnalyticsConfigurationModule {
     @Provides
     @Singleton
     @Named(REGION_NAME)
-    String providesRegion() {
+    public String providesRegion() {
         return LambdaConfiguration.getInstance().getRegion();
     }
 
     @Provides
     @Singleton
-    final public GuidanceUUIDGenerator provideGuidanceUUIDGenerator() {
+    final public GuidanceUUIDGenerator providesGuidanceUUIDGenerator() {
         return new GuidanceUUIDGenerator();
     }
 
@@ -40,13 +41,7 @@ public class AWSVideoAnalyticsConfigurationModule {
 
     @Provides
     @Singleton
-    public KVSWebRTCUtils provideKvsWebRtcUtils() {
-        return new KVSWebRTCUtils();
-    }
-
-    @Provides
-    @Singleton
-    final public DynamoDbTable<LivestreamSession> provideLivestreamSessionTable(DynamoDbEnhancedClient ddbClient) {
+    final public DynamoDbTable<LivestreamSession> providesLivestreamSessionTable(DynamoDbEnhancedClient ddbClient) {
         return ddbClient.table(SchemaConst.LIVESTREAM_SESSION_TABLE_NAME, TableSchema.fromBean(LivestreamSession.class));
     }
 }

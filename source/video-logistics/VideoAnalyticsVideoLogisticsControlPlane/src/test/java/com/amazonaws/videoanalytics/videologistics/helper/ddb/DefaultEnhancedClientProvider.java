@@ -1,4 +1,4 @@
-package com.amazonaws.videoanalytics.helper.ddb;
+package com.amazonaws.videoanalytics.videologistics.helper.ddb;
 
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedAsyncClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;

@@ -1,6 +1,6 @@
 package com.amazonaws.videoanalytics.videologistics.exceptions;
 
-public class GuidanceExceptionMessage {
+public class VideoAnalyticsExceptionMessage {
     public static final String INVALID_INPUT_EXCEPTION = "Malformed input, please fix the input.";
     public static final String NUMBER_OF_TOTAL_FILTERS_EXCEEDS_EXCEPTION = "Number of total filters exceeds the limit of %d";
     public static final String SUBEXPRESSIONS_DEPTH_EXCEEDS_EXCEPTION = "Depth of nested subexpressions exceeds the limit of %d";
@@ -12,8 +12,8 @@ public class GuidanceExceptionMessage {
             "The start time cannot be greater than or equal to the end time";
     public static final String END_TIME_WITHIN_A_DAY = "The end time value must be within 24 hours of the specified start time";
     public static final String PEER_TO_PEER_PLAYBACK_NOT_ENABLED = "Peer to peer playback is disabled at this time";
-    public static final String DEVICE_NOT_REGISTERED = "The device: %s was not registered " +
-            "or the KVS stream or signaling channel: %s was deleted out of band after registration";
+    public static final String DEVICE_NOT_REGISTERED = "The device was not registered " +
+            "or the KVS stream/signaling channel was deleted out of band after registration";
     public static final String NO_VIDEO_FRAGMENTS = "The cloud has no video fragments between %s and %s for the device: %s";
     public static final String NOT_AUTHORIZED = "Please ensure these permissions are added to the IAM policy calling this API";
     public static final String NO_DATA_RETENTION = "A streaming session was requested for a stream that does not retain data";

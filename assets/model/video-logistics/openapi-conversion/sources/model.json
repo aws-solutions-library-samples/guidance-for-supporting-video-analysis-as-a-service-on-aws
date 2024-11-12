@@ -50,6 +50,12 @@
             },
             "errors": [
                 {
+                    "target": "com.amazonaws.videoanalytics.videologistics#AccessDeniedException"
+                },
+                {
+                    "target": "com.amazonaws.videoanalytics.videologistics#ConflictException"
+                },
+                {
                     "target": "com.amazonaws.videoanalytics.videologistics#InternalServerException"
                 },
                 {

@@ -7,7 +7,7 @@ namespace com.amazonaws.videoanalytics.videologistics
 operation CreateLivestreamSession {
     input: CreateLivestreamSessionRequest,
     output: CreateLivestreamSessionResponse,
-    errors: [ValidationException, ResourceNotFoundException, InternalServerException]
+    errors: [AccessDeniedException, ConflictException, ValidationException, ResourceNotFoundException, InternalServerException]
 }
 
 @input
