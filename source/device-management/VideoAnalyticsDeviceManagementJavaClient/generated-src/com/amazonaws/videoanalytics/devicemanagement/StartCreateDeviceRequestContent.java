@@ -52,35 +52,12 @@ import com.amazonaws.videoanalytics.JSON;
 @lombok.AllArgsConstructor
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class StartCreateDeviceRequestContent {
-  public static final String SERIALIZED_NAME_DEVICE_ID = "deviceId";
-  @SerializedName(SERIALIZED_NAME_DEVICE_ID)
-  private String deviceId;
-
   public static final String SERIALIZED_NAME_CERTIFICATE_ID = "certificateId";
   @SerializedName(SERIALIZED_NAME_CERTIFICATE_ID)
   private String certificateId;
 
   public StartCreateDeviceRequestContent() {
   }
-
-  public StartCreateDeviceRequestContent deviceId(String deviceId) {
-    this.deviceId = deviceId;
-    return this;
-  }
-
-  /**
-   * Get deviceId
-   * @return deviceId
-   */
-  @javax.annotation.Nonnull
-  public String getDeviceId() {
-    return deviceId;
-  }
-
-  public void setDeviceId(String deviceId) {
-    this.deviceId = deviceId;
-  }
-
 
   public StartCreateDeviceRequestContent certificateId(String certificateId) {
     this.certificateId = certificateId;
@@ -111,20 +88,18 @@ public class StartCreateDeviceRequestContent {
       return false;
     }
     StartCreateDeviceRequestContent startCreateDeviceRequestContent = (StartCreateDeviceRequestContent) o;
-    return Objects.equals(this.deviceId, startCreateDeviceRequestContent.deviceId) &&
-        Objects.equals(this.certificateId, startCreateDeviceRequestContent.certificateId);
+    return Objects.equals(this.certificateId, startCreateDeviceRequestContent.certificateId);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(deviceId, certificateId);
+    return Objects.hash(certificateId);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class StartCreateDeviceRequestContent {\n");
-    sb.append("    deviceId: ").append(toIndentedString(deviceId)).append("\n");
     sb.append("    certificateId: ").append(toIndentedString(certificateId)).append("\n");
     sb.append("}");
     return sb.toString();
@@ -148,12 +123,10 @@ public class StartCreateDeviceRequestContent {
   static {
     // a set of all properties/fields (JSON key names)
     openapiFields = new HashSet<String>();
-    openapiFields.add("deviceId");
     openapiFields.add("certificateId");
 
     // a set of required properties/fields (JSON key names)
     openapiRequiredFields = new HashSet<String>();
-    openapiRequiredFields.add("deviceId");
     openapiRequiredFields.add("certificateId");
   }
 
@@ -185,9 +158,6 @@ public class StartCreateDeviceRequestContent {
         }
       }
         JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if (!jsonObj.get("deviceId").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `deviceId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("deviceId").toString()));
-      }
       if (!jsonObj.get("certificateId").isJsonPrimitive()) {
         throw new IllegalArgumentException(String.format("Expected the field `certificateId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("certificateId").toString()));
       }

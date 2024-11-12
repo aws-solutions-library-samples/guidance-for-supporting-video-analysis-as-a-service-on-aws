@@ -1,0 +1,7 @@
+build/
+.gradle
+# But don't ignore the wrapper files for build reproduction and consistency
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
+!gradlew
+!gradlew.bat

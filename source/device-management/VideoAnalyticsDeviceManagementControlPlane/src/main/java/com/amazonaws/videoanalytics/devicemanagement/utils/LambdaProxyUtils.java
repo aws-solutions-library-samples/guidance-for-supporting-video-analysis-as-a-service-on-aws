@@ -1,6 +1,7 @@
 package com.amazonaws.videoanalytics.devicemanagement.utils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.HashMap;
@@ -11,6 +12,9 @@ import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyt
 import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyticsServiceLambdaConstants.PROXY_LAMBDA_RESPONSE_STATUS_CODE_KEY;
 
 public class LambdaProxyUtils {
+    private static final ObjectMapper MAPPER = new ObjectMapper()
+        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
     private LambdaProxyUtils() {
         // Private default constructor so that JaCoCo marks utility class as covered
     }
@@ -24,6 +28,9 @@ public class LambdaProxyUtils {
     }
 
     public static String parseBody(Map<String, Object> request) {
+        if (request == null || request.get("body") == null) {
+            return null;
+        }
         ObjectMapper mapper = new ObjectMapper();
         return mapper.convertValue(request.get(PROXY_LAMBDA_BODY_KEY), String.class);
     }
@@ -35,5 +42,17 @@ public class LambdaProxyUtils {
         response.put(PROXY_LAMBDA_BODY_KEY, body);
 
         return response;
+    }
+
+    public static <T> T parseRequestBody(Map<String, Object> request, Class<T> valueType) {
+        String body = parseBody(request);
+        if (body == null) {
+            throw new RuntimeException("Failed to parse request body: body is null");
+        }
+        try {
+            return MAPPER.readValue(body, valueType);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to parse request body", e);
+        }
     }
 }
