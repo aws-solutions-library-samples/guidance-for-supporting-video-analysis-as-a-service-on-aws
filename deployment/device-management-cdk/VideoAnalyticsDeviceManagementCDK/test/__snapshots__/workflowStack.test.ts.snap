@@ -254,7 +254,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "0cfdec7b9763711cddc51a961c5bb78537dee1955d907fb185032864788ae88e.zip",
+          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
         },
         "Environment": {
           "Variables": {
@@ -267,7 +267,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
             },
           },
         },
-        "Handler": "com.amazon.awsvideoanalyticsdmcontrolplane.workflow.createdevice.CreateDeviceHandler::handleRequest",
+        "Handler": "com.amazonaws.videoanalytics.devicemanagement.workflowcreatedevice.CreateDeviceHandler::handleRequest",
         "LoggingConfig": {
           "LogGroup": {
             "Ref": "StartCreateDeviceCreateDeviceLambdaLogGroup4D35EBFA",
@@ -301,7 +301,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "0cfdec7b9763711cddc51a961c5bb78537dee1955d907fb185032864788ae88e.zip",
+          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
         },
         "Environment": {
           "Variables": {
@@ -314,7 +314,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
             },
           },
         },
-        "Handler": "com.amazon.awsvideoanalyticsdmcontrolplane.workflow.createdevice.FailCreateDeviceHandler::handleRequest",
+        "Handler": "com.amazonaws.videoanalytics.devicemanagement.workflowcreatedevice.FailCreateDeviceHandler::handleRequest",
         "LoggingConfig": {
           "LogGroup": {
             "Ref": "StartCreateDeviceFailCreateDeviceLambdaLogGroupEA1B6434",
@@ -348,7 +348,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "0cfdec7b9763711cddc51a961c5bb78537dee1955d907fb185032864788ae88e.zip",
+          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
         },
         "Description": "Lambda responsible for adding notification topic to the shadow",
         "Environment": {
@@ -396,7 +396,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "0cfdec7b9763711cddc51a961c5bb78537dee1955d907fb185032864788ae88e.zip",
+          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
         },
         "Description": "Lambda responsible for attaching notification permission to the device cert",
         "Environment": {
@@ -444,7 +444,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "0cfdec7b9763711cddc51a961c5bb78537dee1955d907fb185032864788ae88e.zip",
+          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
         },
         "Description": "Lambda responsible for marking as failed",
         "Environment": {
@@ -768,7 +768,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "0cfdec7b9763711cddc51a961c5bb78537dee1955d907fb185032864788ae88e.zip",
+          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
         },
         "Description": "Lambda responsible for updating the state of the Create Device Notification Job",
         "Environment": {
@@ -896,7 +896,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "0cfdec7b9763711cddc51a961c5bb78537dee1955d907fb185032864788ae88e.zip",
+          "S3Key": "341f6632ee9eb419b58e12dc9159f57f2126fc1f7138a2bc67a407a28ec38fbe.zip",
         },
         "Description": "Lambda responsible for invocation of StepFunction",
         "Environment": {
@@ -1058,7 +1058,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "0cfdec7b9763711cddc51a961c5bb78537dee1955d907fb185032864788ae88e.zip",
+          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
         },
         "Environment": {
           "Variables": {
@@ -1071,7 +1071,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
             },
           },
         },
-        "Handler": "com.amazon.awsvideoanalyticsdmcontrolplane.workflow.createdevice.SetLoggerConfigHandler::handleRequest",
+        "Handler": "com.amazonaws.videoanalytics.devicemanagement.workflowcreatedevice.SetLoggerConfigHandler::handleRequest",
         "LoggingConfig": {
           "LogGroup": {
             "Ref": "StartCreateDeviceSetLoggerConfigLambdaLogGroup5FD04A2D",
@@ -1441,7 +1441,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "0cfdec7b9763711cddc51a961c5bb78537dee1955d907fb185032864788ae88e.zip",
+          "S3Key": "341f6632ee9eb419b58e12dc9159f57f2126fc1f7138a2bc67a407a28ec38fbe.zip",
         },
         "Description": "Lambda responsible for invocation of StepFunction",
         "Environment": {
@@ -1603,7 +1603,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "0cfdec7b9763711cddc51a961c5bb78537dee1955d907fb185032864788ae88e.zip",
+          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
         },
         "Description": "Lambda responsible for creating an IoT Rule",
         "Environment": {
@@ -1617,7 +1617,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
             },
           },
         },
-        "Handler": "com.amazon.awsvideoanalyticsdmcontrolplane.workflow.createnotifrule.CreateIotRuleHandler::handleRequest",
+        "Handler": "com.amazonaws.videoanalytics.devicemanagement.workflowcreatenotifrule.CreateIotRuleHandler::handleRequest",
         "LoggingConfig": {
           "LogGroup": {
             "Ref": "StartCreateNotificationRuleCreateIotRuleLambdaLogGroup32F79E7F",
@@ -1651,7 +1651,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "0cfdec7b9763711cddc51a961c5bb78537dee1955d907fb185032864788ae88e.zip",
+          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
         },
         "Description": "Lambda responsible for marking as failed",
         "Environment": {
@@ -1665,7 +1665,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
             },
           },
         },
-        "Handler": "com.amazon.awsvideoanalyticsdmcontrolplane.workflow.createnotifrule.FailCreateNotificationRuleStatusStateHandler::handleRequest",
+        "Handler": "com.amazonaws.videoanalytics.devicemanagement.workflowcreatenotifrule.FailCreateNotificationRuleStatusStateHandler::handleRequest",
         "LoggingConfig": {
           "LogGroup": {
             "Ref": "StartCreateNotificationRuleFailCreateNotificationRuleStatusLambdaLogGroupC7FC3D2B",
@@ -1938,7 +1938,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "0cfdec7b9763711cddc51a961c5bb78537dee1955d907fb185032864788ae88e.zip",
+          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
         },
         "Description": "Lambda responsible for updating the state of the Create Notification Rule Job",
         "Environment": {
@@ -1952,7 +1952,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
             },
           },
         },
-        "Handler": "com.amazon.awsvideoanalyticsdmcontrolplane.workflow.createnotifrule.UpdateCreateNotificationRuleStatusStateHandler::handleRequest",
+        "Handler": "com.amazonaws.videoanalytics.devicemanagement.workflowcreatenotifrule.UpdateCreateNotificationRuleStatusStateHandler::handleRequest",
         "LoggingConfig": {
           "LogGroup": {
             "Ref": "StartCreateNotificationRuleUpdateCreateNotificationRuleStatusLambdaLogGroup3E0C4DB1",
@@ -2066,7 +2066,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "0cfdec7b9763711cddc51a961c5bb78537dee1955d907fb185032864788ae88e.zip",
+          "S3Key": "341f6632ee9eb419b58e12dc9159f57f2126fc1f7138a2bc67a407a28ec38fbe.zip",
         },
         "Description": "Lambda responsible for invocation of StepFunction",
         "Environment": {
@@ -2228,7 +2228,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "0cfdec7b9763711cddc51a961c5bb78537dee1955d907fb185032864788ae88e.zip",
+          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
         },
         "Description": "Lambda responsible for detaching notification permission from the device cert",
         "Environment": {
@@ -2242,7 +2242,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
             },
           },
         },
-        "Handler": "com.amazon.awsvideoanalyticsdmcontrolplane.workflow.deletedevicenotif.DetachNotificationPermissionFromDeviceCertHandler::handleRequest",
+        "Handler": "com.amazonaws.videoanalytics.devicemanagement.workflowdeletedevicenotif.DetachNotificationPermissionFromDeviceCertHandler::handleRequest",
         "LoggingConfig": {
           "LogGroup": {
             "Ref": "StartDeleteDeviceNotificationDetachNotificationPermissionFromDeviceCertLambdaLogGroup2A296E72",
@@ -2276,7 +2276,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "0cfdec7b9763711cddc51a961c5bb78537dee1955d907fb185032864788ae88e.zip",
+          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
         },
         "Description": "Lambda responsible for marking as failed",
         "Environment": {
@@ -2290,7 +2290,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
             },
           },
         },
-        "Handler": "com.amazon.awsvideoanalyticsdmcontrolplane.workflow.deletedevicenotif.FailDeleteDeviceNotificationStatusStateHandler::handleRequest",
+        "Handler": "com.amazonaws.videoanalytics.devicemanagement.workflowdeletedevicenotif.FailDeleteDeviceNotificationStatusStateHandler::handleRequest",
         "LoggingConfig": {
           "LogGroup": {
             "Ref": "StartDeleteDeviceNotificationFailDeleteDeviceNotificationStatusLambdaLogGroup06D6A580",
@@ -2324,7 +2324,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "0cfdec7b9763711cddc51a961c5bb78537dee1955d907fb185032864788ae88e.zip",
+          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
         },
         "Description": "Lambda responsible for removing notification topic from the shadow",
         "Environment": {
@@ -2338,7 +2338,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
             },
           },
         },
-        "Handler": "com.amazon.awsvideoanalyticsdmcontrolplane.workflow.deletedevicenotif.RemoveNotificationTopicFromShadowHandler::handleRequest",
+        "Handler": "com.amazonaws.videoanalytics.devicemanagement.workflowdeletedevicenotif.RemoveNotificationTopicFromShadowHandler::handleRequest",
         "LoggingConfig": {
           "LogGroup": {
             "Ref": "StartDeleteDeviceNotificationRemoveNotificationTopicFromShadowLambdaLogGroup69F61D3A",
@@ -2648,7 +2648,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "0cfdec7b9763711cddc51a961c5bb78537dee1955d907fb185032864788ae88e.zip",
+          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
         },
         "Description": "Lambda responsible for updating the state of the Delete Device Notification Job",
         "Environment": {
@@ -2662,7 +2662,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
             },
           },
         },
-        "Handler": "com.amazon.awsvideoanalyticsdmcontrolplane.workflow.deletedevicenotif.UpdateDeleteDeviceNotificationStatusStateHandler::handleRequest",
+        "Handler": "com.amazonaws.videoanalytics.devicemanagement.workflowdeletedevicenotif.UpdateDeleteDeviceNotificationStatusStateHandler::handleRequest",
         "LoggingConfig": {
           "LogGroup": {
             "Ref": "StartDeleteDeviceNotificationUpdateDeleteDeviceNotificationStatusLambdaLogGroup4702951F",
@@ -2878,7 +2878,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "0cfdec7b9763711cddc51a961c5bb78537dee1955d907fb185032864788ae88e.zip",
+          "S3Key": "341f6632ee9eb419b58e12dc9159f57f2126fc1f7138a2bc67a407a28ec38fbe.zip",
         },
         "Description": "Lambda responsible for invocation of StepFunction",
         "Environment": {
@@ -2938,7 +2938,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "0cfdec7b9763711cddc51a961c5bb78537dee1955d907fb185032864788ae88e.zip",
+          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
         },
         "Description": "Lambda to handle get device capabilities failure",
         "Environment": {
@@ -2952,7 +2952,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
             },
           },
         },
-        "Handler": "com.amazon.awsvideoanalyticsdmcontrolplane.workflow.workflow.index.handler",
+        "Handler": "com.amazonaws.videoanalytics.devicemanagement.workflowworkflow.index.handler",
         "LoggingConfig": {
           "LogGroup": {
             "Ref": "StartGetDeviceCapabilitiesFailGetCapabilitiesLambdaLogGroup93528228",
@@ -2986,7 +2986,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "0cfdec7b9763711cddc51a961c5bb78537dee1955d907fb185032864788ae88e.zip",
+          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
         },
         "Description": "Lambda to get device capabilities",
         "Environment": {
@@ -3000,7 +3000,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
             },
           },
         },
-        "Handler": "com.amazon.awsvideoanalyticsdmcontrolplane.workflow.workflow.index.handler",
+        "Handler": "com.amazonaws.videoanalytics.devicemanagement.workflowworkflow.index.handler",
         "LoggingConfig": {
           "LogGroup": {
             "Ref": "StartGetDeviceCapabilitiesGetCapabilitiesLambdaLogGroup46239571",
@@ -3273,7 +3273,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "0cfdec7b9763711cddc51a961c5bb78537dee1955d907fb185032864788ae88e.zip",
+          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
         },
         "Description": "Lambda to request device capabilities",
         "Environment": {
@@ -3287,7 +3287,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
             },
           },
         },
-        "Handler": "com.amazon.awsvideoanalyticsdmcontrolplane.workflow.workflow.index.handler",
+        "Handler": "com.amazonaws.videoanalytics.devicemanagement.workflowworkflow.index.handler",
         "LoggingConfig": {
           "LogGroup": {
             "Ref": "StartGetDeviceCapabilitiesRequestCapabilitiesLambdaLogGroup6A400300",
@@ -3503,7 +3503,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "0cfdec7b9763711cddc51a961c5bb78537dee1955d907fb185032864788ae88e.zip",
+          "S3Key": "341f6632ee9eb419b58e12dc9159f57f2126fc1f7138a2bc67a407a28ec38fbe.zip",
         },
         "Description": "Lambda responsible for invocation of StepFunction",
         "Environment": {
@@ -3563,7 +3563,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "0cfdec7b9763711cddc51a961c5bb78537dee1955d907fb185032864788ae88e.zip",
+          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
         },
         "Description": "Lambda responsible for attaching cert to KVS Roles policy.",
         "Environment": {
@@ -3577,7 +3577,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
             },
           },
         },
-        "Handler": "com.amazon.awsvideoanalyticsdmcontrolplane.workflow.update.AttachKvsAccessToCertHandler::handleRequest",
+        "Handler": "com.amazonaws.videoanalytics.devicemanagement.workflowupdate.AttachKvsAccessToCertHandler::handleRequest",
         "LoggingConfig": {
           "LogGroup": {
             "Ref": "StartUpdateDeviceAttachKvsAccessToCertLambdaLogGroup49A296B4",
@@ -3611,7 +3611,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "0cfdec7b9763711cddc51a961c5bb78537dee1955d907fb185032864788ae88e.zip",
+          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
         },
         "Description": "Lambda responsible for checking IoT Job status for the download file job.",
         "Environment": {
@@ -3625,7 +3625,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
             },
           },
         },
-        "Handler": "com.amazon.awsvideoanalyticsdmcontrolplane.workflow.update.CheckIotDownloadJobStatusHandler::handleRequest",
+        "Handler": "com.amazonaws.videoanalytics.devicemanagement.workflowupdate.CheckIotDownloadJobStatusHandler::handleRequest",
         "MemorySize": 2048,
         "Role": {
           "Fn::GetAtt": [
@@ -3668,7 +3668,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "0cfdec7b9763711cddc51a961c5bb78537dee1955d907fb185032864788ae88e.zip",
+          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
         },
         "Description": "Lambda responsible for checking IoT Job status for the install application job.",
         "Environment": {
@@ -3682,7 +3682,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
             },
           },
         },
-        "Handler": "com.amazon.awsvideoanalyticsdmcontrolplane.workflow.update.CheckIotInstallApplicationJobStatusHandler::handleRequest",
+        "Handler": "com.amazonaws.videoanalytics.devicemanagement.workflowupdate.CheckIotInstallApplicationJobStatusHandler::handleRequest",
         "MemorySize": 2048,
         "Role": {
           "Fn::GetAtt": [
@@ -3725,7 +3725,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "0cfdec7b9763711cddc51a961c5bb78537dee1955d907fb185032864788ae88e.zip",
+          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
         },
         "Description": "Lambda responsible for checking IoT Job status.",
         "Environment": {
@@ -3739,7 +3739,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
             },
           },
         },
-        "Handler": "com.amazon.awsvideoanalyticsdmcontrolplane.workflow.update.CheckIotJobStatusHandler::handleRequest",
+        "Handler": "com.amazonaws.videoanalytics.devicemanagement.workflowupdate.CheckIotJobStatusHandler::handleRequest",
         "MemorySize": 2048,
         "Role": {
           "Fn::GetAtt": [
@@ -3782,7 +3782,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "0cfdec7b9763711cddc51a961c5bb78537dee1955d907fb185032864788ae88e.zip",
+          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
         },
         "Description": "Lambda responsible for creating an IoT Job for a given device command.",
         "Environment": {
@@ -3796,7 +3796,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
             },
           },
         },
-        "Handler": "com.amazon.awsvideoanalyticsdmcontrolplane.workflow.update.CreateCommandIotJobHandler::handleRequest",
+        "Handler": "com.amazonaws.videoanalytics.devicemanagement.workflowupdate.CreateCommandIotJobHandler::handleRequest",
         "MemorySize": 2048,
         "Role": {
           "Fn::GetAtt": [
@@ -3839,7 +3839,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "0cfdec7b9763711cddc51a961c5bb78537dee1955d907fb185032864788ae88e.zip",
+          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
         },
         "Description": "Lambda responsible for creating an IoT Job to download a file.",
         "Environment": {
@@ -3853,7 +3853,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
             },
           },
         },
-        "Handler": "com.amazon.awsvideoanalyticsdmcontrolplane.workflow.update.CreateDownloadFileIotJobHandler::handleRequest",
+        "Handler": "com.amazonaws.videoanalytics.devicemanagement.workflowupdate.CreateDownloadFileIotJobHandler::handleRequest",
         "MemorySize": 2048,
         "Role": {
           "Fn::GetAtt": [
@@ -3896,7 +3896,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "0cfdec7b9763711cddc51a961c5bb78537dee1955d907fb185032864788ae88e.zip",
+          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
         },
         "Description": "Lambda responsible for creating an IoT Job to install an application.",
         "Environment": {
@@ -3910,7 +3910,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
             },
           },
         },
-        "Handler": "com.amazon.awsvideoanalyticsdmcontrolplane.workflow.update.CreateInstallApplicationIotJobHandler::handleRequest",
+        "Handler": "com.amazonaws.videoanalytics.devicemanagement.workflowupdate.CreateInstallApplicationIotJobHandler::handleRequest",
         "MemorySize": 2048,
         "Role": {
           "Fn::GetAtt": [
@@ -3953,7 +3953,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "0cfdec7b9763711cddc51a961c5bb78537dee1955d907fb185032864788ae88e.zip",
+          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
         },
         "Description": "Lambda to create KVS Stream using FVL API.",
         "Environment": {
@@ -3967,7 +3967,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
             },
           },
         },
-        "Handler": "com.amazon.awsvideoanalyticsdmcontrolplane.workflow.update.CreateKVSStreamHandler::handleRequest",
+        "Handler": "com.amazonaws.videoanalytics.devicemanagement.workflowupdate.CreateKVSStreamHandler::handleRequest",
         "LoggingConfig": {
           "LogGroup": {
             "Ref": "StartUpdateDeviceCreateKVSStreamLambdaLogGroup782B2664",
@@ -4001,7 +4001,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "0cfdec7b9763711cddc51a961c5bb78537dee1955d907fb185032864788ae88e.zip",
+          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
         },
         "Description": "Lambda responsible for detaching cert to KVS Roles policy.",
         "Environment": {
@@ -4015,7 +4015,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
             },
           },
         },
-        "Handler": "com.amazon.awsvideoanalyticsdmcontrolplane.workflow.update.DetachKvsAccessFromCertHandler::handleRequest",
+        "Handler": "com.amazonaws.videoanalytics.devicemanagement.workflowupdate.DetachKvsAccessFromCertHandler::handleRequest",
         "LoggingConfig": {
           "LogGroup": {
             "Ref": "StartUpdateDeviceDetachKvsAccessToCertLambdaLogGroupDD156502",
@@ -4049,7 +4049,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "0cfdec7b9763711cddc51a961c5bb78537dee1955d907fb185032864788ae88e.zip",
+          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
         },
         "Description": "Lambda responsible for determining what commandType a given commandPayload is. If it is an update operation, proceed to createDownloadFileIotJob",
         "Environment": {
@@ -4063,7 +4063,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
             },
           },
         },
-        "Handler": "com.amazon.awsvideoanalyticsdmcontrolplane.workflow.update.DetermineCommandTypeHandler::handleRequest",
+        "Handler": "com.amazonaws.videoanalytics.devicemanagement.workflowupdate.DetermineCommandTypeHandler::handleRequest",
         "MemorySize": 2048,
         "Role": {
           "Fn::GetAtt": [
@@ -4106,7 +4106,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "0cfdec7b9763711cddc51a961c5bb78537dee1955d907fb185032864788ae88e.zip",
+          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
         },
         "Description": "Lambda responsible for determine new state is registered or not. If its registered, proceed to get device capabilities",
         "Environment": {
@@ -4120,7 +4120,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
             },
           },
         },
-        "Handler": "com.amazon.awsvideoanalyticsdmcontrolplane.workflow.update.DetermineDeviceStateHandler::handleRequest",
+        "Handler": "com.amazonaws.videoanalytics.devicemanagement.workflowupdate.DetermineDeviceStateHandler::handleRequest",
         "LoggingConfig": {
           "LogGroup": {
             "Ref": "StartUpdateDeviceDetermineIsDeviceStateLambdaLogGroupE0366EEA",
@@ -4154,7 +4154,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "0cfdec7b9763711cddc51a961c5bb78537dee1955d907fb185032864788ae88e.zip",
+          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
         },
         "Description": "Lambda responsible for determining if device update is commandPayload type or not. If it is command operation, proceed to sendCommand",
         "Environment": {
@@ -4168,7 +4168,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
             },
           },
         },
-        "Handler": "com.amazon.awsvideoanalyticsdmcontrolplane.workflow.update.DetermineUpdateTypeHandler::handleRequest",
+        "Handler": "com.amazonaws.videoanalytics.devicemanagement.workflowupdate.DetermineUpdateTypeHandler::handleRequest",
         "MemorySize": 2048,
         "Role": {
           "Fn::GetAtt": [
@@ -4211,7 +4211,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "0cfdec7b9763711cddc51a961c5bb78537dee1955d907fb185032864788ae88e.zip",
+          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
         },
         "Description": "Lambda responsible for checking to make sure fvl device registration workflow completes.",
         "Environment": {
@@ -4225,7 +4225,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
             },
           },
         },
-        "Handler": "com.amazon.awsvideoanalyticsdmcontrolplane.workflow.update.FVLWorkflowCheckerHandler::handleRequest",
+        "Handler": "com.amazonaws.videoanalytics.devicemanagement.workflowupdate.FVLWorkflowCheckerHandler::handleRequest",
         "LoggingConfig": {
           "LogGroup": {
             "Ref": "StartUpdateDeviceFVLWorkflowCheckerLambdaLogGroup3CB8F5DE",
@@ -4259,7 +4259,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "0cfdec7b9763711cddc51a961c5bb78537dee1955d907fb185032864788ae88e.zip",
+          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
         },
         "Description": "Lambda responsible for marking as failed",
         "Environment": {
@@ -4273,7 +4273,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
             },
           },
         },
-        "Handler": "com.amazon.awsvideoanalyticsdmcontrolplane.workflow.update.FailUpdateStatusStateHandler::handleRequest",
+        "Handler": "com.amazonaws.videoanalytics.devicemanagement.workflowupdate.FailUpdateStatusStateHandler::handleRequest",
         "LoggingConfig": {
           "LogGroup": {
             "Ref": "StartUpdateDeviceFailUpdateStatusLambdaLogGroup9ECD9FE5",
@@ -4307,7 +4307,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "0cfdec7b9763711cddc51a961c5bb78537dee1955d907fb185032864788ae88e.zip",
+          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
         },
         "Description": "Lambda sends message to device.",
         "Environment": {
@@ -4321,7 +4321,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
             },
           },
         },
-        "Handler": "com.amazon.awsvideoanalyticsdmcontrolplane.workflow.update.MessageDeviceHandler::handleRequest",
+        "Handler": "com.amazonaws.videoanalytics.devicemanagement.workflowupdate.MessageDeviceHandler::handleRequest",
         "LoggingConfig": {
           "LogGroup": {
             "Ref": "StartUpdateDeviceMessageDeviceLambdaLogGroupC3155447",
@@ -4355,7 +4355,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "0cfdec7b9763711cddc51a961c5bb78537dee1955d907fb185032864788ae88e.zip",
+          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
         },
         "Description": "Publish configurations to their respective shadow",
         "Environment": {
@@ -4369,7 +4369,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
             },
           },
         },
-        "Handler": "com.amazon.awsvideoanalyticsdmcontrolplane.workflow.update.PublishConfigurationsToShadowHandler::handleRequest",
+        "Handler": "com.amazonaws.videoanalytics.devicemanagement.workflowupdate.PublishConfigurationsToShadowHandler::handleRequest",
         "LoggingConfig": {
           "LogGroup": {
             "Ref": "StartUpdateDevicePublishConfigurationsToShadowLambdaLogGroup5363F1D1",
@@ -4403,7 +4403,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "0cfdec7b9763711cddc51a961c5bb78537dee1955d907fb185032864788ae88e.zip",
+          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
         },
         "Description": "Lambda responsible for publishing new device state",
         "Environment": {
@@ -4417,7 +4417,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
             },
           },
         },
-        "Handler": "com.amazon.awsvideoanalyticsdmcontrolplane.workflow.update.PublishDeviceStateEventHandler::handleRequest",
+        "Handler": "com.amazonaws.videoanalytics.devicemanagement.workflowupdate.PublishDeviceStateEventHandler::handleRequest",
         "LoggingConfig": {
           "LogGroup": {
             "Ref": "StartUpdateDevicePublishDeviceStateEventHandlerLambdaLogGroupE840ADDD",
@@ -5319,7 +5319,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "0cfdec7b9763711cddc51a961c5bb78537dee1955d907fb185032864788ae88e.zip",
+          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
         },
         "Description": "Lambda responsible for updating device thing group if device group payload present.",
         "Environment": {
@@ -5333,7 +5333,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
             },
           },
         },
-        "Handler": "com.amazon.awsvideoanalyticsdmcontrolplane.workflow.update.DeviceGroupPayloadHandler::handleRequest",
+        "Handler": "com.amazonaws.videoanalytics.devicemanagement.workflowupdate.DeviceGroupPayloadHandler::handleRequest",
         "LoggingConfig": {
           "LogGroup": {
             "Ref": "StartUpdateDeviceUpdateDeviceGroupLambdaLogGroup572829AE",
@@ -5376,7 +5376,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "0cfdec7b9763711cddc51a961c5bb78537dee1955d907fb185032864788ae88e.zip",
+          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
         },
         "Description": "Lambda responsible for updating deviceType for deviceTypePayloads.",
         "Environment": {
@@ -5390,7 +5390,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
             },
           },
         },
-        "Handler": "com.amazon.awsvideoanalyticsdmcontrolplane.workflow.update.DeviceTypePayloadHandler::handleRequest",
+        "Handler": "com.amazonaws.videoanalytics.devicemanagement.workflowupdate.DeviceTypePayloadHandler::handleRequest",
         "LoggingConfig": {
           "LogGroup": {
             "Ref": "StartUpdateDeviceUpdateDeviceTypeFromUpdateDeviceLambdaLogGroup483DDFF4",
@@ -5415,7 +5415,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "0cfdec7b9763711cddc51a961c5bb78537dee1955d907fb185032864788ae88e.zip",
+          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
         },
         "Description": "Lambda responsible for updating the state of the Update Device Job",
         "Environment": {
@@ -5429,7 +5429,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
             },
           },
         },
-        "Handler": "com.amazon.awsvideoanalyticsdmcontrolplane.workflow.update.UpdateUpdateStatusStateHandler::handleRequest",
+        "Handler": "com.amazonaws.videoanalytics.devicemanagement.workflowupdate.UpdateUpdateStatusStateHandler::handleRequest",
         "LoggingConfig": {
           "LogGroup": {
             "Ref": "StartUpdateDeviceUpdateUpdateStatusLambdaLogGroup910C6A02",
@@ -5645,7 +5645,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "0cfdec7b9763711cddc51a961c5bb78537dee1955d907fb185032864788ae88e.zip",
+          "S3Key": "341f6632ee9eb419b58e12dc9159f57f2126fc1f7138a2bc67a407a28ec38fbe.zip",
         },
         "Description": "Lambda responsible for invocation of StepFunction",
         "Environment": {
@@ -5705,7 +5705,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "0cfdec7b9763711cddc51a961c5bb78537dee1955d907fb185032864788ae88e.zip",
+          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
         },
         "Description": "Lambda responsible for marking as failed",
         "Environment": {
@@ -5719,7 +5719,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
             },
           },
         },
-        "Handler": "com.amazon.awsvideoanalyticsdmcontrolplane.workflow.workflow.updatenotifrule.FailUpdateNotificationRuleStatusStateHandler::handleRequest",
+        "Handler": "com.amazonaws.videoanalytics.devicemanagement.workflowworkflow.updatenotifrule.FailUpdateNotificationRuleStatusStateHandler::handleRequest",
         "LoggingConfig": {
           "LogGroup": {
             "Ref": "StartUpdateNotificationRuleFailUpdateNotificationRuleStatusLambdaLogGroup6CB6800A",
@@ -5992,7 +5992,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "0cfdec7b9763711cddc51a961c5bb78537dee1955d907fb185032864788ae88e.zip",
+          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
         },
         "Description": "Lambda responsible for updating an IoT Rule",
         "Environment": {
@@ -6006,7 +6006,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
             },
           },
         },
-        "Handler": "com.amazon.awsvideoanalyticsdmcontrolplane.workflow.workflow.updatenotifrule.UpdateIotRuleHandler::handleRequest",
+        "Handler": "com.amazonaws.videoanalytics.devicemanagement.workflowworkflow.updatenotifrule.UpdateIotRuleHandler::handleRequest",
         "LoggingConfig": {
           "LogGroup": {
             "Ref": "StartUpdateNotificationRuleUpdateIotRuleLambdaLogGroup0D8C9C31",
@@ -6040,7 +6040,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "0cfdec7b9763711cddc51a961c5bb78537dee1955d907fb185032864788ae88e.zip",
+          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
         },
         "Description": "Lambda responsible for updating the state of the Update Notification Rule Job",
         "Environment": {
@@ -6054,7 +6054,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
             },
           },
         },
-        "Handler": "com.amazon.awsvideoanalyticsdmcontrolplane.workflow.workflow.updatenotifrule.UpdateUpdateNotificationRuleStatusStateHandler::handleRequest",
+        "Handler": "com.amazonaws.videoanalytics.devicemanagement.workflowworkflow.updatenotifrule.UpdateUpdateNotificationRuleStatusStateHandler::handleRequest",
         "LoggingConfig": {
           "LogGroup": {
             "Ref": "StartUpdateNotificationRuleUpdateUpdateNotificationRuleStatusLambdaLogGroupE7BE8DF3",
@@ -6270,7 +6270,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "0cfdec7b9763711cddc51a961c5bb78537dee1955d907fb185032864788ae88e.zip",
+          "S3Key": "341f6632ee9eb419b58e12dc9159f57f2126fc1f7138a2bc67a407a28ec38fbe.zip",
         },
         "Description": "Lambda responsible for invocation of StepFunction",
         "Environment": {

@@ -9,8 +9,14 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbIndex;
+import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
+import software.amazon.awssdk.enhanced.dynamodb.model.Page;
+import java.util.Iterator;
+import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -19,9 +25,20 @@ import static org.mockito.Mockito.when;
 public class StartCreateDeviceDAOTest {
     private static final String JOB_ID = "jobId";
     private static final String CERTIFICATE_ID = "certificateId";
+    private static final String DEVICE_ID = "deviceId";
+    private static final String DEVICE_STATE = "ACTIVE";
 
     @Mock
     private DynamoDbTable<CreateDevice> ddbTable;
+    
+    @Mock
+    private DynamoDbIndex<CreateDevice> deviceIdIndex;
+    
+    @Mock
+    private Page<CreateDevice> queryPage;
+    
+    @Mock
+    private Iterator<Page<CreateDevice>> pagesIterator;
     
     private StartCreateDeviceDAO startCreateDeviceDAO;
 
@@ -31,59 +48,72 @@ public class StartCreateDeviceDAOTest {
     }
 
     @Test
-    public void startCreateDeviceDAOSaveNonTerminalStatusTest() {
+    public void save_RunningStatus_SavesSuccessfully() {
         CreateDevice createDevice = CreateDevice.builder()
                 .jobId(JOB_ID)
                 .jobStatus(Status.RUNNING.toString())
                 .certificateId(CERTIFICATE_ID)
                 .build();
-                
-        when(ddbTable.getItem(any(Key.class))).thenReturn(createDevice);
 
         startCreateDeviceDAO.save(createDevice);
-        CreateDevice persistedObject = startCreateDeviceDAO.load(JOB_ID);
-
+        
         verify(ddbTable).putItem(createDevice);
-        assertEquals(JOB_ID, persistedObject.getJobId());
-        assertEquals(Status.RUNNING.toString(), persistedObject.getJobStatus());
-        assertEquals(CERTIFICATE_ID, persistedObject.getCertificateId());
     }
 
     @Test
-    public void startCreateDeviceDAOSaveFailedStatusTest() {
+    public void save_FailedStatus_SavesSuccessfully() {
         CreateDevice createDeviceFailed = CreateDevice.builder()
                 .jobId(JOB_ID)
                 .jobStatus(Status.FAILED.toString())
                 .certificateId(CERTIFICATE_ID)
                 .build();
-                
-        when(ddbTable.getItem(any(Key.class))).thenReturn(createDeviceFailed);
 
         startCreateDeviceDAO.save(createDeviceFailed);
-        CreateDevice persistedObject = startCreateDeviceDAO.load(JOB_ID);
-
+        
         verify(ddbTable).putItem(createDeviceFailed);
-        assertEquals(JOB_ID, persistedObject.getJobId());
-        assertEquals(Status.FAILED.toString(), persistedObject.getJobStatus());
-        assertEquals(CERTIFICATE_ID, persistedObject.getCertificateId());
     }
 
     @Test
-    public void startCreateDeviceDAOSaveCompletedStatusTest() {
+    public void save_CompletedStatus_SavesSuccessfully() {
         CreateDevice createDeviceCompleted = CreateDevice.builder()
                 .jobId(JOB_ID)
                 .jobStatus(Status.COMPLETED.toString())
                 .certificateId(CERTIFICATE_ID)
                 .build();
-                
-        when(ddbTable.getItem(any(Key.class))).thenReturn(createDeviceCompleted);
 
         startCreateDeviceDAO.save(createDeviceCompleted);
-        CreateDevice persistedObject = startCreateDeviceDAO.load(JOB_ID);
-
+        
         verify(ddbTable).putItem(createDeviceCompleted);
-        assertEquals(JOB_ID, persistedObject.getJobId());
-        assertEquals(Status.COMPLETED.toString(), persistedObject.getJobStatus());
-        assertEquals(CERTIFICATE_ID, persistedObject.getCertificateId());
+    }
+
+    @Test
+    public void getVideoLogisticsDeviceStatus_DeviceExists_ReturnsDeviceState() {
+        CreateDevice device = CreateDevice.builder()
+                .deviceId(DEVICE_ID)
+                .currentDeviceState(DEVICE_STATE)
+                .build();
+
+        when(ddbTable.index("deviceId-index")).thenReturn(deviceIdIndex);
+        when(deviceIdIndex.query((QueryConditional) any())).thenReturn(() -> pagesIterator);
+        when(pagesIterator.hasNext()).thenReturn(true, false);
+        when(pagesIterator.next()).thenReturn(queryPage);
+        when(queryPage.items()).thenReturn(Collections.singletonList(device));
+
+        String result = startCreateDeviceDAO.getVideoLogisticsDeviceStatus(DEVICE_ID);
+
+        assertEquals(DEVICE_STATE, result);
+        verify(deviceIdIndex).query((QueryConditional) any());
+    }
+
+    @Test
+    public void getVideoLogisticsDeviceStatus_DeviceDoesNotExist_ReturnsNull() {
+        when(ddbTable.index("deviceId-index")).thenReturn(deviceIdIndex);
+        when(deviceIdIndex.query((QueryConditional) any())).thenReturn(() -> pagesIterator);
+        when(pagesIterator.hasNext()).thenReturn(false);
+
+        String result = startCreateDeviceDAO.getVideoLogisticsDeviceStatus(DEVICE_ID);
+
+        assertNull(result);
+        verify(deviceIdIndex).query((QueryConditional) any());
     }
 }

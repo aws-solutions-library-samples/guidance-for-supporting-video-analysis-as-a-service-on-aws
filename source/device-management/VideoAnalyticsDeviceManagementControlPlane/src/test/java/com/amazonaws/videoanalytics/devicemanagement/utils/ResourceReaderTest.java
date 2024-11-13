@@ -8,13 +8,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class ResourceReaderTest {
 
     @Test
-    void readResourceToStringTest() {
+    void readResourceToString_validResource_returnsContent() {
         String testResourceString = ResourceReader.readResourceToString("test-resource.txt");
         assertEquals("Hello World", testResourceString);
     }
 
     @Test
-    void readingNonExistentTestResourceThrowsException() {
+    void readResourceToString_nonExistentResource_throwsRuntimeException() {
         assertThrows(RuntimeException.class, () -> {
             ResourceReader.readResourceToString("non-existent-resource.json");
         });

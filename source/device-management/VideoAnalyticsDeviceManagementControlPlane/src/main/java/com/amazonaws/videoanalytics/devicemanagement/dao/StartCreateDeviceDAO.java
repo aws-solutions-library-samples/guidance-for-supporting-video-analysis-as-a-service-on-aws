@@ -5,6 +5,7 @@ import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import lombok.extern.log4j.Log4j2;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
+import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
 
 import javax.inject.Inject;
 
@@ -30,5 +31,24 @@ public class StartCreateDeviceDAO {
         return ddbTable.getItem(Key.builder()
                 .partitionValue(jobId)
                 .build());
+    }
+
+    /**
+     * Retrieves the current device state for a given device ID
+     * @param deviceId The ID of the device to query
+     * @return The current device state, or null if the device is not found
+     */
+    public String getVideoLogisticsDeviceStatus(final String deviceId) {
+        logger.log(String.format("Getting device status for device %s", deviceId));
+        // Query the GSI using deviceId
+        return ddbTable.index("deviceId-index")
+                .query(QueryConditional.keyEqualTo(Key.builder()
+                        .partitionValue(deviceId)
+                        .build()))
+                .stream()
+                .flatMap(page -> page.items().stream())
+                .findFirst()
+                .map(CreateDevice::getCurrentDeviceState)
+                .orElse(null);
     }
 }

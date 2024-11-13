@@ -52,7 +52,7 @@ public class StartCreateDeviceActivityTest {
     }
 
     @Test
-    public void startCreateDevice_WhenValidRequest_ReturnsResponse() throws Exception {
+    public void handleRequest_ValidInput_ReturnsSuccessResponse() throws Exception {
         when(workflowManager.startCreateDevice(DEVICE_ID, CERTIFICATE_ID)).thenReturn(JOB_ID);
 
         Map<String, Object> response = startCreateDeviceActivity.handleRequest(lambdaProxyRequest, context);
@@ -63,7 +63,7 @@ public class StartCreateDeviceActivityTest {
     }
 
     @Test
-    public void startCreateDevice_WhenInternalError_ReturnsInternalServerError() throws Exception {
+    public void handleRequest_InternalError_ReturnsInternalServerError() throws Exception {
         when(workflowManager.startCreateDevice(DEVICE_ID, CERTIFICATE_ID))
                 .thenThrow(new RuntimeException("Failed to create device"));
 
@@ -75,7 +75,7 @@ public class StartCreateDeviceActivityTest {
     }
 
     @Test
-    public void startCreateDevice_WhenEmptyDeviceId_ReturnsValidationError() throws Exception {
+    public void handleRequest_EmptyDeviceId_ReturnsValidationError() throws Exception {
         Map<String, Object> requestWithEmptyDeviceId = Map.ofEntries(
             entry("pathParameters", Map.ofEntries(
                 entry("deviceId", "")
@@ -91,7 +91,7 @@ public class StartCreateDeviceActivityTest {
     }
 
     @Test
-    public void startCreateDevice_WhenEmptyCertificateId_ReturnsValidationError() throws Exception {
+    public void handleRequest_EmptyCertificateId_ReturnsValidationError() throws Exception {
         Map<String, Object> requestWithEmptyCertId = Map.ofEntries(
             entry("pathParameters", Map.ofEntries(
                 entry("deviceId", DEVICE_ID)
@@ -107,7 +107,7 @@ public class StartCreateDeviceActivityTest {
     }
 
     @Test
-    public void startCreateDevice_WhenResourceNotFound_ReturnsError() throws Exception {
+    public void handleRequest_ResourceNotFound_ReturnsNotFoundError() throws Exception {
         when(workflowManager.startCreateDevice(DEVICE_ID, CERTIFICATE_ID))
                 .thenThrow(ResourceNotFoundException.builder().build());
 

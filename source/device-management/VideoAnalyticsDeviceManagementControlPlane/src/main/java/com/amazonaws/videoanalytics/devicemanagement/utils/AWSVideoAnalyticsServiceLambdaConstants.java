@@ -53,6 +53,8 @@ public final class AWSVideoAnalyticsServiceLambdaConstants {
     public static final String IOT_FLEET_INDEXING_THING_NAME = "thingName:";
 
     public static final int MAX_THING_GROUP_RESULT_COUNT = 20;
+    public static final String KVS_DEVICE_IOT_POLICY = "kvsDeviceIoTPolicy";
+    public static final String SHADOW_RULE_IDS_KEY = "ruleIds";
 
     private AWSVideoAnalyticsServiceLambdaConstants() {
         // Private default constructor so that JaCoCo marks utility class as covered

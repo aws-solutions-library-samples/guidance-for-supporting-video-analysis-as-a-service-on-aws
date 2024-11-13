@@ -53,7 +53,7 @@ public class WorkflowManagerTest {
     }
 
     @Test
-    public void startCreateDevice_returnResult() throws ConflictException, ResourceNotFoundException {
+    public void startCreateDevice_whenDeviceDoesNotExist_returnsValidJobId() throws ConflictException, ResourceNotFoundException {
         when(iotService.isAnExistingDevice(DEVICE_ID)).thenReturn(false);
 
         String jobId = workflowManager.startCreateDevice(DEVICE_ID, CERTIFICATE_ID);
@@ -69,7 +69,7 @@ public class WorkflowManagerTest {
     }
 
     @Test
-    public void startCreateDevice_deviceAlreadyExists() {
+    public void startCreateDevice_whenDeviceExists_throwsConflictException() {
         when(iotService.isAnExistingDevice(DEVICE_ID)).thenReturn(true);
 
         ConflictException exception = assertThrows(ConflictException.class,
@@ -79,7 +79,7 @@ public class WorkflowManagerTest {
     }
 
     @Test
-    public void startCreateDevice_certificateNotFound() {
+    public void startCreateDevice_whenCertificateDoesNotExist_throwsResourceNotFoundException() {
         when(iotService.isAnExistingDevice(DEVICE_ID)).thenReturn(false);
         when(iotService.getCertificate(CERTIFICATE_ID))
                 .thenThrow(ResourceNotFoundException.builder().build());
@@ -91,7 +91,7 @@ public class WorkflowManagerTest {
     }
 
     @Test
-    public void getCreateDeviceStatus_returnResult() throws ResourceNotFoundException {
+    public void getCreateDeviceStatus_whenJobExists_returnsDeviceData() throws ResourceNotFoundException {
         when(startCreateDeviceDAO.load(JOB_ID)).thenReturn(CREATE_DEVICE);
 
         CreateDeviceData createDeviceData = workflowManager.getCreateDeviceStatus(JOB_ID);
@@ -105,7 +105,7 @@ public class WorkflowManagerTest {
     }
 
     @Test
-    public void getCreateDeviceStatus_jobNotFound_throwResourceNotFoundException() {
+    public void getCreateDeviceStatus_whenJobDoesNotExist_throwsResourceNotFoundException() {
         when(startCreateDeviceDAO.load(JOB_ID)).thenReturn(null);
 
         ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class,

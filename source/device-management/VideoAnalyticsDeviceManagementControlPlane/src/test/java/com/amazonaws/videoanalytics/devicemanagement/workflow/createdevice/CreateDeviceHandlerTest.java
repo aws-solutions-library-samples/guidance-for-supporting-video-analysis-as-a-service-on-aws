@@ -47,7 +47,7 @@ public class CreateDeviceHandlerTest {
     }
 
     @Test
-    public void testRegisterDeviceHandler_success() {
+    public void handleRequest_whenValidInput_shouldRegisterDeviceSuccessfully() {
         createDeviceHandler.handleRequest(ImmutableMap.of("jobId", TEST_JOB_ID), context);
 
         verify(iotService).workflowRegisterDevice(CERTIFICATE_ID, DEVICE_ID);
@@ -55,7 +55,7 @@ public class CreateDeviceHandlerTest {
     }
 
     @Test
-    public void testRegisterDeviceHandler_throwRetryableException() {
+    public void handleRequest_whenIotServiceFails_shouldThrowRuntimeException() {
         doThrow(InternalFailureException.builder().build())
             .when(iotService).workflowRegisterDevice(CERTIFICATE_ID, DEVICE_ID);
 

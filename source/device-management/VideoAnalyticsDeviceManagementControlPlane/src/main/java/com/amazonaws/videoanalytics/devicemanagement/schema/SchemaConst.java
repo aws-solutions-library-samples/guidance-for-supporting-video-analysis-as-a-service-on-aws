@@ -71,6 +71,8 @@ public final class SchemaConst {
     // Saved information from create policy
     public static final String POLICY_NAME = "PolicyName";
     public static final String POLICY_ARN = "PolicyArn";
-    public static final String FVL_JOB_ID = "FvlJobId";
+    public static final String VL_JOB_ID = "VlJobId";
+    public static final String VL_JOB_STATUS = "VlJobStatus";
+
 }
 
