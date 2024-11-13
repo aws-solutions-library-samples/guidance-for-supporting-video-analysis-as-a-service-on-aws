@@ -56,13 +56,20 @@ public class CreateLivestreamSessionActivity implements RequestHandler<Map<Strin
         this.kvsWebRTCUtils = kvsWebRTCUtils;
     }
 
-    @ExcludeFromJacocoGeneratedReport
     public CreateLivestreamSessionActivity() {
         AWSVideoAnalyticsVLControlPlaneComponent component = DaggerAWSVideoAnalyticsVLControlPlaneComponent.create();
         component.inject(this);
         this.kvsService = component.getKvsService();
         this.deviceValidator = component.getDeviceValidator();
         this.kvsWebRTCUtils = component.getKVSWebRTCUtils();
+    }
+
+    // used for unit tests
+    @ExcludeFromJacocoGeneratedReport
+    public void assertPrivateFieldNotNull() {
+        if (kvsService == null || deviceValidator == null || kvsWebRTCUtils == null) {
+            throw new AssertionError("private field is null");
+        }
     }
 
     @Override

@@ -151,7 +151,10 @@
             "type": "structure",
             "members": {
                 "creationDate": {
-                    "target": "smithy.api#Timestamp"
+                    "target": "smithy.api#Timestamp",
+                    "traits": {
+                        "smithy.api#timestampFormat": "date-time"
+                    }
                 },
                 "parentGroupId": {
                     "target": "com.amazonaws.videoanalytics.devicemanagement#DeviceGroupId"
@@ -437,10 +440,16 @@
                     "target": "com.amazonaws.videoanalytics#Status"
                 },
                 "createTime": {
-                    "target": "smithy.api#Timestamp"
+                    "target": "smithy.api#Timestamp",
+                    "traits": {
+                        "smithy.api#timestampFormat": "date-time"
+                    }
                 },
                 "modifiedTime": {
-                    "target": "smithy.api#Timestamp"
+                    "target": "smithy.api#Timestamp",
+                    "traits": {
+                        "smithy.api#timestampFormat": "date-time"
+                    }
                 },
                 "errorMessage": {
                     "target": "smithy.api#String"

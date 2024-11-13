@@ -63,11 +63,11 @@ public class GetPlaybackSessionResponseContent {
 
   public static final String SERIALIZED_NAME_START_TIME = "startTime";
   @SerializedName(SERIALIZED_NAME_START_TIME)
-  private Double startTime;
+  private Date startTime;
 
   public static final String SERIALIZED_NAME_END_TIME = "endTime";
   @SerializedName(SERIALIZED_NAME_END_TIME)
-  private Double endTime;
+  private Date endTime;
 
   public static final String SERIALIZED_NAME_SESSION_ID = "sessionId";
   @SerializedName(SERIALIZED_NAME_SESSION_ID)
@@ -115,7 +115,7 @@ public class GetPlaybackSessionResponseContent {
   }
 
 
-  public GetPlaybackSessionResponseContent startTime(Double startTime) {
+  public GetPlaybackSessionResponseContent startTime(Date startTime) {
     this.startTime = startTime;
     return this;
   }
@@ -125,16 +125,16 @@ public class GetPlaybackSessionResponseContent {
    * @return startTime
    */
   @javax.annotation.Nullable
-  public Double getStartTime() {
+  public Date getStartTime() {
     return startTime;
   }
 
-  public void setStartTime(Double startTime) {
+  public void setStartTime(Date startTime) {
     this.startTime = startTime;
   }
 
 
-  public GetPlaybackSessionResponseContent endTime(Double endTime) {
+  public GetPlaybackSessionResponseContent endTime(Date endTime) {
     this.endTime = endTime;
     return this;
   }
@@ -144,11 +144,11 @@ public class GetPlaybackSessionResponseContent {
    * @return endTime
    */
   @javax.annotation.Nullable
-  public Double getEndTime() {
+  public Date getEndTime() {
     return endTime;
   }
 
-  public void setEndTime(Double endTime) {
+  public void setEndTime(Date endTime) {
     this.endTime = endTime;
   }
 

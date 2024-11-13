@@ -24,7 +24,9 @@ structure GetPlaybackSessionRequest {
 @output
 structure GetPlaybackSessionResponse {
     deviceId: DeviceId,
+    @timestampFormat("date-time")
     startTime: Timestamp,
+    @timestampFormat("date-time")
     endTime: Timestamp,
     sessionId: SessionId,
     status: Status,

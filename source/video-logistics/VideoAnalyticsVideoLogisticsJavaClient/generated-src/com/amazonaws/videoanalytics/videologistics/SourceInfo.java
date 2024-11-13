@@ -22,6 +22,7 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Date;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -59,7 +60,7 @@ public class SourceInfo {
 
   public static final String SERIALIZED_NAME_EXPIRATION_TIME = "expirationTime";
   @SerializedName(SERIALIZED_NAME_EXPIRATION_TIME)
-  private Double expirationTime;
+  private Date expirationTime;
 
   public static final String SERIALIZED_NAME_PEER_CONNECTION_STATE = "peerConnectionState";
   @SerializedName(SERIALIZED_NAME_PEER_CONNECTION_STATE)
@@ -95,7 +96,7 @@ public class SourceInfo {
   }
 
 
-  public SourceInfo expirationTime(Double expirationTime) {
+  public SourceInfo expirationTime(Date expirationTime) {
     this.expirationTime = expirationTime;
     return this;
   }
@@ -105,11 +106,11 @@ public class SourceInfo {
    * @return expirationTime
    */
   @javax.annotation.Nullable
-  public Double getExpirationTime() {
+  public Date getExpirationTime() {
     return expirationTime;
   }
 
-  public void setExpirationTime(Double expirationTime) {
+  public void setExpirationTime(Date expirationTime) {
     this.expirationTime = expirationTime;
   }
 

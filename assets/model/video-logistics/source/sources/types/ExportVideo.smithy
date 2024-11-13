@@ -7,6 +7,7 @@ use com.amazonaws.videoanalytics#Status
 
 
 structure ExportVideoJobElement {
+    @timestampFormat("date-time")
     creationTime: Timestamp,
     exportVideoJobStatus: String,
     exportVideoJobId: JobId,
@@ -28,7 +29,9 @@ structure ExportVideosResult {
     @required
     videoExportedPath: String,
     @required
+    @timestampFormat("date-time")
     startTime: Timestamp,
+    @timestampFormat("date-time")
     endTime: Timestamp
 }
 

@@ -23,6 +23,7 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Date;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -64,7 +65,7 @@ public class StreamSource {
 
   public static final String SERIALIZED_NAME_START_TIME = "startTime";
   @SerializedName(SERIALIZED_NAME_START_TIME)
-  private Double startTime;
+  private Date startTime;
 
   public StreamSource() {
   }
@@ -107,7 +108,7 @@ public class StreamSource {
   }
 
 
-  public StreamSource startTime(Double startTime) {
+  public StreamSource startTime(Date startTime) {
     this.startTime = startTime;
     return this;
   }
@@ -117,11 +118,11 @@ public class StreamSource {
    * @return startTime
    */
   @javax.annotation.Nullable
-  public Double getStartTime() {
+  public Date getStartTime() {
     return startTime;
   }
 
-  public void setStartTime(Double startTime) {
+  public void setStartTime(Date startTime) {
     this.startTime = startTime;
   }
 
