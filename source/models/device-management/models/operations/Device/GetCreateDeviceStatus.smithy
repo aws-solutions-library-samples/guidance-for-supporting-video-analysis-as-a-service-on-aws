@@ -2,6 +2,7 @@ $version: "2.0"
 
 namespace com.amazonaws.videoanalytics.devicemanagement
 
+use aws.apigateway#integration
 use com.amazonaws.videoanalytics#DeviceId
 use com.amazonaws.videoanalytics#InternalServerException
 use com.amazonaws.videoanalytics#JobId

@@ -6,7 +6,7 @@
     },
     "paths": {
         "/get-create-device-status/{jobId}": {
-            "get": {
+            "post": {
                 "operationId": "GetCreateDeviceStatus",
                 "parameters": [
                     {
@@ -51,6 +51,16 @@
                                 }
                             }
                         }
+                    }
+                },
+                "x-amazon-apigateway-integration": {
+                    "type": "aws_proxy",
+                    "httpMethod": "POST",
+                    "uri": {
+                        "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${GetCreateDeviceStatusActivity}/invocations"
+                    },
+                    "credentials": {
+                        "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/ApiGatewayRole"
                     }
                 }
             }

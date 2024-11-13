@@ -404,9 +404,15 @@
                 }
             ],
             "traits": {
+                "aws.apigateway#integration": {
+                    "type": "aws_proxy",
+                    "httpMethod": "POST",
+                    "uri": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${GetCreateDeviceStatusActivity}/invocations",
+                    "credentials": "arn:aws:iam::${AWS::AccountId}:role/ApiGatewayRole"
+                },
                 "smithy.api#http": {
                     "code": 200,
-                    "method": "GET",
+                    "method": "POST",
                     "uri": "/get-create-device-status/{jobId}"
                 },
                 "smithy.api#idempotent": {}
