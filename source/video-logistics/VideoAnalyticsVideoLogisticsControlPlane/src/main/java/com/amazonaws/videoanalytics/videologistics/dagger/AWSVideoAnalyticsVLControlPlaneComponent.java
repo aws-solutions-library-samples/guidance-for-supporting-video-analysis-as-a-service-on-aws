@@ -1,6 +1,7 @@
 package com.amazonaws.videoanalytics.videologistics.dagger;
 
 import com.amazonaws.videoanalytics.videologistics.activity.CreateLivestreamSessionActivity;
+import com.amazonaws.videoanalytics.videologistics.activity.CreatePlaybackSessionActivity;
 import com.amazonaws.videoanalytics.videologistics.dagger.modules.AWSModule;
 import com.amazonaws.videoanalytics.videologistics.dagger.modules.AWSVideoAnalyticsConfigurationModule;
 import com.amazonaws.videoanalytics.videologistics.dependency.kvs.KvsService;
@@ -13,6 +14,8 @@ import dagger.Component;
 
 import javax.inject.Singleton;
 
+import com.amazonaws.videoanalytics.videologistics.dao.PlaybackSessionDAO;
+
 @Component(
         modules = {
                 AWSModule.class,
@@ -22,10 +25,12 @@ import javax.inject.Singleton;
 @Singleton
 public interface AWSVideoAnalyticsVLControlPlaneComponent {
     void inject(CreateLivestreamSessionActivity lambda);
+    void inject(CreatePlaybackSessionActivity lambda);
 
     KvsService getKvsService();
     DeviceValidator getDeviceValidator();
     GuidanceUUIDGenerator getGuidanceUUIDGenerator();
     DateTime getDateTime();
     KVSWebRTCUtils getKVSWebRTCUtils();
+    PlaybackSessionDAO getPlaybackSessionDAO();
 }

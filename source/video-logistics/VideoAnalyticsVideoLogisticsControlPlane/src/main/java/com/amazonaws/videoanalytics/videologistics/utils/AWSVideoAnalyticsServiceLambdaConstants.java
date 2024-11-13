@@ -12,6 +12,8 @@ public final class AWSVideoAnalyticsServiceLambdaConstants {
     public static final String PROXY_LAMBDA_REQUEST_SESSION_ID_PATH_PARAMETER_KEY = "sessionId";
     public static final String PROXY_LAMBDA_RESPONSE_STATUS_CODE_KEY = "statusCode";
 
+    public static final int MILLIS_TO_HOURS = 60 * 60 * 1000;
+
     private AWSVideoAnalyticsServiceLambdaConstants() {
         // Private default constructor so that JaCoCo marks utility class as covered
     }
