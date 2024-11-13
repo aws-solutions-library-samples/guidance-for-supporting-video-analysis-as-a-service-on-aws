@@ -98,7 +98,7 @@ public class CreateLivestreamSessionActivityTest {
     }
 
     @Test
-    public void createLivestreamActivity_InjectsDependencies() {
+    public void createLivestreamSessionActivity_InjectsDependencies() {
         EnvironmentVariables environmentVariables = new EnvironmentVariables();
         environmentVariables.set("AWS_REGION", MOCK_AWS_REGION);
         CreateLivestreamSessionActivity createLivestreamSessionActivityDagger = new CreateLivestreamSessionActivity();
