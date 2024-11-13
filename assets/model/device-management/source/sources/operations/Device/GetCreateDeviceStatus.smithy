@@ -28,7 +28,9 @@ structure GetCreateDeviceStatusResponse {
     jobId: JobId,
     deviceId: DeviceId,
     status: Status,
+    @timestampFormat("date-time")
     createTime: Timestamp,
+    @timestampFormat("date-time")
     modifiedTime: Timestamp,
     errorMessage: String
 }

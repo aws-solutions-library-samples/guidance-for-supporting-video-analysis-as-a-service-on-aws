@@ -167,7 +167,10 @@
             "type": "structure",
             "members": {
                 "creationTime": {
-                    "target": "smithy.api#Timestamp"
+                    "target": "smithy.api#Timestamp",
+                    "traits": {
+                        "smithy.api#timestampFormat": "date-time"
+                    }
                 },
                 "exportVideoJobStatus": {
                     "target": "smithy.api#String"
@@ -207,11 +210,15 @@
                 "startTime": {
                     "target": "smithy.api#Timestamp",
                     "traits": {
-                        "smithy.api#required": {}
+                        "smithy.api#required": {},
+                        "smithy.api#timestampFormat": "date-time"
                     }
                 },
                 "endTime": {
-                    "target": "smithy.api#Timestamp"
+                    "target": "smithy.api#Timestamp",
+                    "traits": {
+                        "smithy.api#timestampFormat": "date-time"
+                    }
                 }
             }
         },
@@ -276,10 +283,16 @@
                     "target": "com.amazonaws.videoanalytics#DeviceId"
                 },
                 "startTime": {
-                    "target": "smithy.api#Timestamp"
+                    "target": "smithy.api#Timestamp",
+                    "traits": {
+                        "smithy.api#timestampFormat": "date-time"
+                    }
                 },
                 "endTime": {
-                    "target": "smithy.api#Timestamp"
+                    "target": "smithy.api#Timestamp",
+                    "traits": {
+                        "smithy.api#timestampFormat": "date-time"
+                    }
                 },
                 "sessionId": {
                     "target": "com.amazonaws.videoanalytics.videologistics#SessionId"
@@ -407,7 +420,10 @@
                     "target": "smithy.api#String"
                 },
                 "expirationTime": {
-                    "target": "smithy.api#Timestamp"
+                    "target": "smithy.api#Timestamp",
+                    "traits": {
+                        "smithy.api#timestampFormat": "date-time"
+                    }
                 },
                 "peerConnectionState": {
                     "target": "com.amazonaws.videoanalytics.videologistics#PeerConnectionState"
@@ -521,7 +537,10 @@
                     "target": "com.amazonaws.videoanalytics.videologistics#SourceInfo"
                 },
                 "startTime": {
-                    "target": "smithy.api#Timestamp"
+                    "target": "smithy.api#Timestamp",
+                    "traits": {
+                        "smithy.api#timestampFormat": "date-time"
+                    }
                 }
             }
         },

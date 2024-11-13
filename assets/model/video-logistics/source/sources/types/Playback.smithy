@@ -9,16 +9,18 @@ list StreamSources {
 structure StreamSource {
     sourceType: SourceType,
     source: SourceInfo,
+    @timestampFormat("date-time")
     startTime: Timestamp
 }
 
-enum SourceType{
+enum SourceType {
     HLS,
     WEBRTC
 }
 
 structure SourceInfo {
     hLSStreamingURL: String,
+    @timestampFormat("date-time")
     expirationTime: Timestamp,
     peerConnectionState: PeerConnectionState,
     SignalingChannelURL: String,

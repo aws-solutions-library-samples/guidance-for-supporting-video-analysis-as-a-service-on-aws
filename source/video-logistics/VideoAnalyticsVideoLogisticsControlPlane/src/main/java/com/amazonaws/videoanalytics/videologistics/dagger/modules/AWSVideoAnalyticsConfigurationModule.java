@@ -1,7 +1,7 @@
 package com.amazonaws.videoanalytics.videologistics.dagger.modules;
 
 import com.amazonaws.videoanalytics.videologistics.config.LambdaConfiguration;
-import com.amazonaws.videoanalytics.videologistics.schema.LivestreamSession.LivestreamSession;
+import com.amazonaws.videoanalytics.videologistics.schema.PlaybackSession.PlaybackSession;
 import com.amazonaws.videoanalytics.videologistics.utils.DateTime;
 import com.amazonaws.videoanalytics.videologistics.utils.GuidanceUUIDGenerator;
 import com.amazonaws.videoanalytics.videologistics.utils.SchemaConst;
@@ -41,7 +41,7 @@ public class AWSVideoAnalyticsConfigurationModule {
 
     @Provides
     @Singleton
-    final public DynamoDbTable<LivestreamSession> providesLivestreamSessionTable(DynamoDbEnhancedClient ddbClient) {
-        return ddbClient.table(SchemaConst.LIVESTREAM_SESSION_TABLE_NAME, TableSchema.fromBean(LivestreamSession.class));
+    final public DynamoDbTable<PlaybackSession> providesPlaybackSessionTable(DynamoDbEnhancedClient ddbClient) {
+        return ddbClient.table(SchemaConst.PLAYBACK_SESSION_TABLE_NAME, TableSchema.fromBean(PlaybackSession.class));
     }
 }

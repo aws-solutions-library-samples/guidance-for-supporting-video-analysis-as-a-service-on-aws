@@ -520,12 +520,12 @@
                         "$ref": "#/components/schemas/Status"
                     },
                     "createTime": {
-                        "type": "number",
-                        "format": "double"
+                        "type": "string",
+                        "format": "date-time"
                     },
                     "modifiedTime": {
-                        "type": "number",
-                        "format": "double"
+                        "type": "string",
+                        "format": "date-time"
                     },
                     "errorMessage": {
                         "type": "string"

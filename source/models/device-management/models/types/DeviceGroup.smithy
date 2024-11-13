@@ -23,6 +23,7 @@ structure DeviceGroupAttributePayload {
 }
 
 structure DeviceGroupMetaData {
+    @timestampFormat("date-time")
     creationDate: Timestamp,
     parentGroupId: DeviceGroupId,
     rootToParentDeviceGroups: DeviceGroupsList

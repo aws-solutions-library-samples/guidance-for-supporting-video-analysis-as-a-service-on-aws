@@ -22,6 +22,7 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Date;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -67,11 +68,11 @@ public class GetCreateDeviceStatusResponseContent {
 
   public static final String SERIALIZED_NAME_CREATE_TIME = "createTime";
   @SerializedName(SERIALIZED_NAME_CREATE_TIME)
-  private Double createTime;
+  private Date createTime;
 
   public static final String SERIALIZED_NAME_MODIFIED_TIME = "modifiedTime";
   @SerializedName(SERIALIZED_NAME_MODIFIED_TIME)
-  private Double modifiedTime;
+  private Date modifiedTime;
 
   public static final String SERIALIZED_NAME_ERROR_MESSAGE = "errorMessage";
   @SerializedName(SERIALIZED_NAME_ERROR_MESSAGE)
@@ -137,7 +138,7 @@ public class GetCreateDeviceStatusResponseContent {
   }
 
 
-  public GetCreateDeviceStatusResponseContent createTime(Double createTime) {
+  public GetCreateDeviceStatusResponseContent createTime(Date createTime) {
     this.createTime = createTime;
     return this;
   }
@@ -147,16 +148,16 @@ public class GetCreateDeviceStatusResponseContent {
    * @return createTime
    */
   @javax.annotation.Nullable
-  public Double getCreateTime() {
+  public Date getCreateTime() {
     return createTime;
   }
 
-  public void setCreateTime(Double createTime) {
+  public void setCreateTime(Date createTime) {
     this.createTime = createTime;
   }
 
 
-  public GetCreateDeviceStatusResponseContent modifiedTime(Double modifiedTime) {
+  public GetCreateDeviceStatusResponseContent modifiedTime(Date modifiedTime) {
     this.modifiedTime = modifiedTime;
     return this;
   }
@@ -166,11 +167,11 @@ public class GetCreateDeviceStatusResponseContent {
    * @return modifiedTime
    */
   @javax.annotation.Nullable
-  public Double getModifiedTime() {
+  public Date getModifiedTime() {
     return modifiedTime;
   }
 
-  public void setModifiedTime(Double modifiedTime) {
+  public void setModifiedTime(Date modifiedTime) {
     this.modifiedTime = modifiedTime;
   }
 

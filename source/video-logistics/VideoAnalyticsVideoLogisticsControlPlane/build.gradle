@@ -96,6 +96,11 @@ dependencies {
 
     // Annotation processing
     annotationProcessor 'com.google.dagger:dagger-compiler:2.48'
+
+    // Add Mockito instead
+    testImplementation 'org.mockito:mockito-core:5.3.1'
+    testImplementation 'org.mockito:mockito-junit-jupiter:5.3.1'
+    testImplementation 'org.mockito:mockito-inline:3.12.4'
 }
 
 test {
@@ -114,7 +119,7 @@ jacocoTestReport {
      afterEvaluate {
         classDirectories.setFrom(files(classDirectories.files.collect {
             fileTree(dir: it, exclude: [
-                "com/amazonaws/videoanalytics/devicemanagement/*.class",
+                "com/amazonaws/videoanalytics/videologistics/*.class",
                 "com/amazonaws/videoanalytics/auth/*.class",
                 "com/amazonaws/videoanalytics/*.class"
             ])

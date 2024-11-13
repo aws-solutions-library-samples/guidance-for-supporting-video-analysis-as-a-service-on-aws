@@ -372,12 +372,12 @@
                         "pattern": "^[a-zA-Z0-9:_\\-]+$"
                     },
                     "startTime": {
-                        "type": "number",
-                        "format": "double"
+                        "type": "string",
+                        "format": "date-time"
                     },
                     "endTime": {
-                        "type": "number",
-                        "format": "double"
+                        "type": "string",
+                        "format": "date-time"
                     },
                     "sessionId": {
                         "type": "string",
@@ -472,8 +472,8 @@
                         "type": "string"
                     },
                     "expirationTime": {
-                        "type": "number",
-                        "format": "double"
+                        "type": "string",
+                        "format": "date-time"
                     },
                     "peerConnectionState": {
                         "$ref": "#/components/schemas/PeerConnectionState"
@@ -554,8 +554,8 @@
                         "$ref": "#/components/schemas/SourceInfo"
                     },
                     "startTime": {
-                        "type": "number",
-                        "format": "double"
+                        "type": "string",
+                        "format": "date-time"
                     }
                 }
             },
