@@ -11,13 +11,6 @@ use std::path::PathBuf;
 use tokio::fs::{File, OpenOptions};
 use tokio::io::{AsyncReadExt, AsyncSeekExt, AsyncWriteExt, SeekFrom};
 use tracing::{debug, instrument, warn};
-// Comment out until merge from live succeeds.
-// use json_value_merge::Merge;
-
-// TODO:
-// 1. Schema validation (Use dynamic json parsing for now.  This is not the final decision)
-// 2. Pass messages to the control logic.
-// Links to AWS IoT Shadow SDK for guidance : https://github.com/aws/aws-iot-device-sdk-python-v2/blob/main/awsiot/iotshadow.py
 
 /// Shadow manager struct this struct implements the IotShadowManager trait
 /// and is responsible for syncing the local shadow on the edge with the shadow
@@ -39,10 +32,6 @@ pub struct IotShadowManager {
     pub(crate) desired_state: Value,
     // Holds message builder for sending messages to publish.
     pub_sub_message_builder: Box<dyn PubSubMessageBuilder + Send + Sync>,
-    //TODO: Client tokens help associate a request with a response in the cloud
-    //pub(crate) client_token
-    //TODO: Versioning
-    //pub(crate) version:u64
     /// Path to configuration directory, state information is saved here.
     dir_path: PathBuf,
     /// Hold async file where shadow's desired state is stored.
@@ -58,13 +47,6 @@ impl ShadowManager for IotShadowManager {
     /// https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-document.html
     #[instrument]
     async fn update_reported_state(&mut self, update_doc: Value) -> anyhow::Result<()> {
-        // TODO: Add json validation from a schema.  https://crates.io/crates/jsonschema
-        // Return an error if an invalid doc is entered
-
-        // TODO: Fix merge trait. Commented due to issues with handling arrays for VEC options
-        // self.reported_state.merge(&update_doc);
-        // debug!("New reported state added to shadow: {}", self.reported_state);
-        //TODO: Generate MQTT message + send to channel
         let pub_sub_message = self.build_message_for_shadow_update(update_doc)?;
 
         self.iot_channel.send_iot_message(pub_sub_message).await?;
@@ -76,15 +58,11 @@ impl ShadowManager for IotShadowManager {
     /// restore settings even when restarted and disconnected from the cloud.
     #[instrument]
     async fn update_desired_state(&mut self, update_doc: Value) -> anyhow::Result<()> {
-        //TODO: Add schema validation
         self.desired_state.merge(&update_doc);
         debug!("New desired state added to shadow: {}", self.desired_state);
 
-        //TODO: Call or send messages to control components.
-
         // Writing to the filesystem is not a critical error.  Log and continue.
         if let Err(e) = self.write_to_local().await {
-            // TODO: Consider other recovery steps here.  (Eg delete + reopen file)
             warn!("Could not write shadow's desired state to file : {:?}", e);
         }
         Ok(())
@@ -176,7 +154,6 @@ impl IotShadowManager {
         let topic =
             format!("{}/{}", self.get_shadow_topic_prefix(), constants::UPDATE_SHADOW_TOPIC_SUFFIX);
 
-        //TODO: Add more flushed out JSON handling methods + checks
         let mut update_shadow_payload = json!({"state":{"reported":{}}});
         update_shadow_payload["state"]["reported"] = update;
         let payload: String = update_shadow_payload.to_string();
@@ -230,7 +207,6 @@ impl IotShadowManager {
             Self::storage_file_invalid(storage_file).await?;
             let mut buffer = String::new();
             storage_file.read_to_string(&mut buffer).await?;
-            //TODO: Add schema validation check here before restoring JSON object to shadow manager
             self.desired_state = serde_json::from_str(&buffer)?;
         }
         Ok(())
@@ -255,7 +231,6 @@ mod tests {
 
     const THING_NAME: &str = "ThingName";
     const SHADOW_NAME: &str = "ShadowName";
-    const BUFFER_LEN: usize = 10;
     const CLASSIC_SHADOW_TOPIC_PREFIX: &str = r"$aws/things/ThingName/shadow";
     const NAMED_SHADOW_TOPIC_PREFIX: &str = r"$aws/things/ThingName/shadow/name/ShadowName";
 

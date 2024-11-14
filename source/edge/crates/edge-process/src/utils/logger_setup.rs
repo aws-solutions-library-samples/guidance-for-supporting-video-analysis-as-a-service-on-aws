@@ -24,7 +24,6 @@ pub const PRINT_LOGS_TO_TERMINAL: &str = "PRINT_LOGS_TO_TERMINAL";
 /// This function sets up the global logger using the tracing crate.  The logger is a fundamental
 /// operation to the device client.  As such if this fails we will call a panic! and exit the application.
 pub async fn init_tracing(settings: &Settings) -> Option<WorkerGuard> {
-    // TODO: Determine whether logger should incorporate tokio-console or OpenTelemetry (Dev Tools)
     let log_path = settings
         .get_dir()
         .await

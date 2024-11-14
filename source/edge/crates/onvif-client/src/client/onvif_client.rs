@@ -9,6 +9,7 @@ use device_traits::{merge::Merge, DeviceStateModel};
 use http_client::client::HttpClient;
 use reqwest::{Request, Response, StatusCode};
 use serde_json::{json, Value};
+use streaming_traits::{StreamUriConfiguration, VideoStreamConsumer};
 use tracing::{debug, error, info, instrument, warn};
 
 use crate::client::digest_auth::{DigestAuth, DigestClientImpl};
@@ -20,6 +21,11 @@ use crate::wsdl_rs::appmgmt::{GetAppsInfo, GetAppsInfoResponse};
 use crate::wsdl_rs::devicemgmt::{
     GetDeviceInformation, GetDeviceInformationResponse, GetServices, GetServicesResponse,
 };
+use crate::wsdl_rs::media::{
+    GetProfiles, GetProfilesResponse, GetStreamUri, GetStreamUriResponse, StreamSetup, StreamType,
+    Transport, TransportProtocol,
+};
+use base64::{engine::general_purpose, Engine as _};
 
 /// struct to hold credential from GetUsers onvif call
 /// suppressing the warning for derive Debug, since credential shouldn't be printed at all
@@ -180,10 +186,6 @@ where
         let onvif_response_str = if resp_status == StatusCode::OK {
             resp_text
         } else {
-            // TODO: Temporary change the behavior to not panic for DI2, so the flow
-            // can proceed even when setUser fails.
-            // Revert back to panic behavior once setUser issue is solved
-            // panic!("unexpected http status : {} from onvif server.", resp_status);
             warn!("unexpected http status : {} returned from onvif server.", resp_status);
             debug!("onvif error message: {}", resp_text);
             return Err(OnvifClientError::UnexpectedHttpStatusError);
@@ -211,9 +213,6 @@ where
         let get_services_onvif_struct: GetServices = GetServices { include_capability: false };
         let get_services_no_digest_body = soap::serialize(&get_services_onvif_struct)?;
 
-        // TODO: remove after IP discovery is implemented
-
-        // TODO: remove after IP discovery is implemented
         let device_service_uri = format!("http://{}/onvif/device_service", ip_address);
         // create and send onvif request
         let get_services_onvif_request_no_digest =
@@ -293,6 +292,29 @@ where
         debug!("Rust struct Response from get_apps_info: {:?}", get_apps_info_resp);
         Ok(get_apps_info_resp)
     }
+
+    /// Send request to Onvif server to get profile token which is passed to Get stream uri
+    #[instrument]
+    async fn get_profiles(&mut self) -> Result<GetProfilesResponse, OnvifClientError> {
+        //Onvif Server has its own Rust struct for requesting profiles
+        let get_profiles_onvif_struct: GetProfiles = GetProfiles {};
+        let get_profiles_no_digest_body = soap::serialize(&get_profiles_onvif_struct)?;
+
+        // create and send onvif request
+        let get_profiles_onvif_request_no_digest = self.create_onvif_request(
+            // This is an ONVIF media service API, but all ONVIF APIs go through device service uri on the camera we tested
+            self.get_service_uri(OnvifServiceName::DeviceService)?,
+            get_profiles_no_digest_body,
+        )?;
+
+        let resp = self
+            .sign_onvif_request_with_digest_and_send(get_profiles_onvif_request_no_digest.borrow())
+            .await?;
+
+        let media_services_profiles: GetProfilesResponse = soap::deserialize(resp.as_str())?;
+        info!("Rust struct Response from get_profiles: {:?}", media_services_profiles);
+        Ok(media_services_profiles)
+    }
 }
 
 // GRCOV_STOP_COVERAGE
@@ -349,6 +371,87 @@ where
     }
 }
 
+#[async_trait]
+impl<T> VideoStreamConsumer for OnvifClient<T>
+where
+    T: HttpClient + std::fmt::Debug + Send + Sync,
+{
+    /// set up services uri by calling ONVIF GetServices
+    async fn set_up_services_uri(&mut self, ip_address: String) -> Result<(), Box<dyn Error>> {
+        // This call gives us the uri that will be needed for get_services_uri method in
+        // all ONVIF call
+        self.get_services(ip_address).await?;
+        Ok(())
+    }
+
+    /// Set up new updated credentials for onvif.
+    async fn bootstrap(
+        &mut self,
+        username: String,
+        password: String,
+    ) -> Result<(), Box<dyn Error>> {
+        info!("Bootstrapping the device for streaming!");
+        // convert the password into MD5 and encoded in base64
+        let pw_md5_hash = md5::compute(password.as_str());
+        let pw_md5_base64 = general_purpose::STANDARD.encode(*pw_md5_hash);
+        // new credential we want to update
+        let new_cred = Credential { username, password: pw_md5_base64 };
+        self.credential = Some(new_cred);
+        Ok(())
+    }
+
+    /// Send request to Onvif server to get stream URI
+    async fn get_stream_uri(&mut self) -> Result<String, Box<dyn Error>> {
+        let get_profiles_response = self.get_profiles().await?;
+        let prof_resp = get_profiles_response
+            .profiles
+            .first()
+            .ok_or(OnvifClientError::OnvifGetProfilesError)?
+            .token
+            .to_string();
+
+        let get_stream_uri_onvif_struct: GetStreamUri = GetStreamUri {
+            profile_token: prof_resp,
+            stream_setup: StreamSetup {
+                stream: StreamType::RtpUnicast,
+                transport: Transport { protocol: TransportProtocol::Tcp, tunnel: vec![] },
+            },
+        };
+
+        let get_stream_uri_body = soap::serialize(&get_stream_uri_onvif_struct)?;
+        let get_stream_uri_no_digest = self.create_onvif_request(
+            // This is an ONVIF media service API, but all ONVIF APIs go through device service uri on the camera we tested
+            self.get_service_uri(OnvifServiceName::DeviceService)?,
+            get_stream_uri_body,
+        )?;
+        let stream_uri_resp_str =
+            self.sign_onvif_request_with_digest_and_send(get_stream_uri_no_digest.borrow()).await?;
+        let get_stream_uri_resp: GetStreamUriResponse =
+            soap::deserialize(stream_uri_resp_str.as_str())?;
+        info!("Successfully Retrieved RTSP Url: {:?}", get_stream_uri_resp);
+        Ok(get_stream_uri_resp.media_uri.uri)
+    }
+
+    /// Passing the RTSP url to gstreamer and start the gstreamer pipeline
+    async fn get_rtsp_url(
+        &mut self,
+        username: String,
+        password: String,
+    ) -> Result<StreamUriConfiguration, Box<dyn Error>> {
+        let get_stream_rtsp_uri = self.get_stream_uri().await?;
+
+        let pw_md5_hash = md5::compute(password.as_str());
+        let pw_md5_base64 = general_purpose::STANDARD.encode(*pw_md5_hash);
+
+        // returns the Updated Url and pass to gstreamer pipeline
+        Ok(StreamUriConfiguration {
+            rtsp_uri: get_stream_rtsp_uri,
+            username,
+            password: pw_md5_base64,
+        })
+    }
+}
+
 // GRCOV_BEGIN_COVERAGE
 #[cfg(test)]
 mod tests {
@@ -362,6 +465,7 @@ mod tests {
     use reqwest::{Client, Response};
 
     use crate::client::constant::VIDEO_ANALYTICS;
+    use crate::client::constant::{DEVICE_SERVICE, MEDIA_SERVICE_VER10};
     use crate::client::digest_auth::MockDigestClientTrait;
     use crate::client::onvif_client::OnvifClient;
     use crate::wsdl_rs::appmgmt::AppInfo;
@@ -430,10 +534,6 @@ mod tests {
         let mut mock_http_client = MockHttpClient::default();
         mock_http_client
             .expect_add_header_to_http_request()
-            // was not able to use .with() to compare the inputs, due to reqwest::Request not implementing the Eq trait,
-            // hence, not comparable.
-            // TODO: Investigate how to handle comparison of object when by default the struct doesn't implement Eq trait
-            // .return_once(|_, _| Ok(expected_request_with_digest_for_closure));
             .return_once(|_, _| Ok(get_device_info_request_with_valid_digest_header()));
         let mut onvif_client = OnvifClient::new(mock_http_client);
         onvif_client
@@ -893,11 +993,49 @@ mod tests {
         assert_eq!(apps_info_struct, get_apps_info_response());
     }
 
+    #[tokio::test]
+    async fn verify_get_profiles() {
+        // Arrange
+        let mut mock_http_client = MockHttpClient::default();
+
+        mock_http_client
+            .expect_create_http_request_with_body()
+            .times(1)
+            .return_once(|_uri, _body| Ok(get_profiles_request_no_digest()));
+
+        let mut http_get_profiles_response: http_Response<String> = http_Response::default();
+        http_get_profiles_response.body_mut().push_str(GET_PROFILE_RESPONSE_BODY);
+        let get_profiles_response = Response::from(http_get_profiles_response);
+
+        mock_http_client
+            .expect_send_http_request()
+            .times(1)
+            .return_once(|_| Ok(get_profiles_response));
+
+        let mut onvif_client = OnvifClient::new(mock_http_client);
+
+        onvif_client.service_paths.insert(
+            OnvifServiceName::from_str(DEVICE_SERVICE).unwrap(),
+            "http://172.18.14.11:80/onvif/device_service".to_string(),
+        );
+        onvif_client.service_paths.insert(
+            OnvifServiceName::from_str(MEDIA_SERVICE_VER10).unwrap(),
+            "http://172.18.14.11:80/onvif/device_service".to_string(),
+        );
+
+        // Act
+        let profiles_resp = onvif_client.get_profiles().await.unwrap();
+        let profiles = profiles_resp.profiles;
+
+        assert_eq!(profiles.len(), 2);
+        assert_eq!(profiles.first().unwrap().token, "pf1");
+        assert_eq!(profiles.get(1).unwrap().token, "pf2");
+    }
+
     const DIGEST_USERNAME: &str = VIDEO_ANALYTICS;
 
     const DIGEST_PASSWORD: &str = "videoanalytics12345";
 
-    // TODO: add the ability to generate random cnonce if it makes the test more robust
     const CNONCE: &str = r#"62d82aa9ca59e3a04cd1"#;
 
     // EXPIRED_CNONCE and CNONCE are just random strings in the test. We do not check the expiration of these values in anyway.
@@ -1143,37 +1281,6 @@ mod tests {
             </s:Body>
         </s:Envelope>"#;
 
-    const GET_USERS_RESPONSE_BODY: &str = r#"<?xml version="1.0" encoding="UTF-8"?>
-        <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://www.w3.org/2003/05/soap-envelope" xmlns:SOAP-ENC="http://www.w3.org/2003/05/soap-encoding" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:chan="http://schemas.microsoft.com/ws/2005/02/duplex" xmlns:wsa5="http://www.w3.org/2005/08/addressing" xmlns:c14n="http://www.w3.org/2001/10/xml-exc-c14n#" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:saml1="urn:oasis:names:tc:SAML:1.0:assertion" xmlns:saml2="urn:oasis:names:tc:SAML:2.0:assertion" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:xenc="http://www.w3.org/2001/04/xmlenc#" xmlns:wsc="http://docs.oasis-open.org/ws-sx/ws-secureconversation/200512" xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" xmlns:xmime="http://tempuri.org/xmime.xsd" xmlns:xop="http://www.w3.org/2004/08/xop/include" xmlns:ns2="http://www.onvif.org/ver20/analytics/humanface" xmlns:ns3="http://www.onvif.org/ver20/analytics/humanbody" xmlns:wsrfbf="http://docs.oasis-open.org/wsrf/bf-2" xmlns:wstop="http://docs.oasis-open.org/wsn/t-1" xmlns:tt="http://www.onvif.org/ver10/schema" xmlns:wsrfr="http://docs.oasis-open.org/wsrf/r-2" xmlns:ns1="http://www.onvif.org/ver20/media/wsdl" xmlns:tan="http://www.onvif.org/ver20/analytics/wsdl" xmlns:tds="http://www.onvif.org/ver10/device/wsdl" xmlns:tev="http://www.onvif.org/ver10/events/wsdl" xmlns:wsnt="http://docs.oasis-open.org/wsn/b-2" xmlns:timg="http://www.onvif.org/ver20/imaging/wsdl" xmlns:tmd="http://www.onvif.org/ver10/deviceIO/wsdl" xmlns:tptz="http://www.onvif.org/ver20/ptz/wsdl" xmlns:trt="http://www.onvif.org/ver10/media/wsdl" xmlns:ter="http://www.onvif.org/ver10/error" xmlns:tns1="http://www.onvif.org/ver10/topics">
-            <SOAP-ENV:Header/>
-            <SOAP-ENV:Body>
-            <tds:GetUsersResponse>
-                <tds:User>
-                <tt:Username>VideoAnalytics</tt:Username>
-                <tt:Password>12345</tt:Password>
-                <tt:UserLevel>Administrator</tt:UserLevel>
-                </tds:User>
-            </tds:GetUsersResponse>
-            </SOAP-ENV:Body>
-        </SOAP-ENV:Envelope>"#;
-
-    const GET_USERS_REQUEST_BODY: &str = r#"
-        <s:Envelope xmlns:s="http://www.w3.org/2003/05/soap-envelope">
-            <s:Header>
-            </s:Header>
-            <s:Body xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-                <GetUsers xmlns="http://www.onvif.org/ver10/device/wsdl"/>
-            </s:Body>
-        </s:Envelope>"#;
-
-    fn get_users_request_no_digest() -> Request {
-        build_request_no_digest(DEVICE_SERVICE_URI, GET_USERS_REQUEST_BODY)
-    }
-
-    fn get_users_request_with_valid_digest_header() -> Request {
-        build_request_with_valid_digest_header(DEVICE_SERVICE_URI, GET_USERS_REQUEST_BODY)
-    }
-
     const GET_APPS_INFO_REQUEST_BODY: &str = r#"
     <s:Envelope xmlns:s="http://www.w3.org/2003/05/soap-envelope" xmlns:ns4="http://www.onvif.org/ver10/appmgmt/wsdl">
         <s:Header>
@@ -1305,4 +1412,187 @@ mod tests {
 
         GetAppsInfoResponse { info: vec![process1_info, ai_lib, ai_model, process2_info] }
     }
+
+    fn get_profiles_request_no_digest() -> Request {
+        build_request_no_digest(DEVICE_SERVICE_URI, GET_PROFILE_REQUEST_BODY)
+    }
+
+    const GET_PROFILE_REQUEST_BODY: &str = r#"
+    <s:Envelope xmlns:s="http://www.w3.org/2003/05/soap-envelope">
+        <s:Header>
+        </s:Header>
+            <s:Body xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+                <GetProfiles xmlns="http://www.onvif.org/ver20/media/wsdl">
+                </GetProfiles>
+            </s:Body>
+    </s:Envelope>"#;
+
+    const GET_PROFILE_RESPONSE_BODY: &str = r#"<?xml version="1.0" encoding="UTF-8"?>
+        <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://www.w3.org/2003/05/soap-envelope" xmlns:SOAP-ENC="http://www.w3.org/2003/05/soap-encoding" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:chan="http://schemas.microsoft.com/ws/2005/02/duplex" xmlns:wsa5="http://www.w3.org/2005/08/addressing" xmlns:c14n="http://www.w3.org/2001/10/xml-exc-c14n#" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:saml1="urn:oasis:names:tc:SAML:1.0:assertion" xmlns:saml2="urn:oasis:names:tc:SAML:2.0:assertion" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:xenc="http://www.w3.org/2001/04/xmlenc#" xmlns:wsc="http://docs.oasis-open.org/ws-sx/ws-secureconversation/200512" xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" xmlns:xmime="http://tempuri.org/xmime.xsd" xmlns:xop="http://www.w3.org/2004/08/xop/include" xmlns:ns2="http://www.onvif.org/ver20/analytics/humanface" xmlns:ns3="http://www.onvif.org/ver20/analytics/humanbody" xmlns:wsrfbf="http://docs.oasis-open.org/wsrf/bf-2" xmlns:wstop="http://docs.oasis-open.org/wsn/t-1" xmlns:tt="http://www.onvif.org/ver10/schema" xmlns:wsrfr="http://docs.oasis-open.org/wsrf/r-2" xmlns:ns1="http://www.onvif.org/ver20/media/wsdl" xmlns:tan="http://www.onvif.org/ver20/analytics/wsdl" xmlns:tds="http://www.onvif.org/ver10/device/wsdl" xmlns:tev="http://www.onvif.org/ver10/events/wsdl" xmlns:wsnt="http://docs.oasis-open.org/wsn/b-2" xmlns:timg="http://www.onvif.org/ver20/imaging/wsdl" xmlns:tmd="http://www.onvif.org/ver10/deviceIO/wsdl" xmlns:tptz="http://www.onvif.org/ver20/ptz/wsdl" xmlns:trt="http://www.onvif.org/ver10/media/wsdl" xmlns:ter="http://www.onvif.org/ver10/error" xmlns:tns1="http://www.onvif.org/ver10/topics">
+          <SOAP-ENV:Header/>
+          <SOAP-ENV:Body>
+		<trt:GetProfilesResponse>
+			<trt:Profiles token="pf1" fixed="true">
+				<tt:Name>pf_stream1</tt:Name>
+				<tt:VideoSourceConfiguration token="vsc">
+					<tt:Name>VideoSourceConfig</tt:Name>
+					<tt:UseCount>2</tt:UseCount>
+					<tt:SourceToken>vs</tt:SourceToken>
+					<tt:Bounds x="0" y="0" width="1920" height="1080"></tt:Bounds>
+				</tt:VideoSourceConfiguration>
+				<tt:VideoEncoderConfiguration token="vec1">
+					<tt:Name>VideoEncoderConfig1</tt:Name>
+					<tt:UseCount>1</tt:UseCount>
+					<tt:Encoding>H264</tt:Encoding>
+					<tt:Resolution>
+						<tt:Width>1920</tt:Width>
+						<tt:Height>1080</tt:Height>
+					</tt:Resolution>
+					<tt:Quality>0</tt:Quality>
+					<tt:RateControl>
+						<tt:FrameRateLimit>15</tt:FrameRateLimit>
+						<tt:EncodingInterval>1</tt:EncodingInterval>
+						<tt:BitrateLimit>1024</tt:BitrateLimit>
+					</tt:RateControl>
+					<tt:H264>
+						<tt:GovLength>60</tt:GovLength>
+						<tt:H264Profile>Main</tt:H264Profile>
+					</tt:H264>
+					<tt:Multicast>
+						<tt:Address>
+							<tt:Type>IPv4</tt:Type>
+							<tt:IPv4Address>239.248.143.3</tt:IPv4Address>
+						</tt:Address>
+						<tt:Port>26384</tt:Port>
+						<tt:TTL>64</tt:TTL>
+						<tt:AutoStart>false</tt:AutoStart>
+					</tt:Multicast>
+					<tt:SessionTimeout>PT30S</tt:SessionTimeout>
+				</tt:VideoEncoderConfiguration>
+				<tt:VideoAnalyticsConfiguration token="vac">
+					<tt:Name>VideoAnalyticsConfig</tt:Name>
+					<tt:UseCount>3</tt:UseCount>
+					<tt:AnalyticsEngineConfiguration>
+						<tt:AnalyticsModule Name="CellMotionModule" Type="tt:CellMotionEngine">
+							<tt:Parameters>
+								<tt:SimpleItem Name="Sensitivity" Value="50"></tt:SimpleItem>
+								<tt:ElementItem Name="Layout">
+									<tt:CellLayout Columns="12" Rows="12">
+										<tt:Transformation>
+											<tt:Translate x="-1.000000" y="-1.000000"/>
+											<tt:Scale x="0.000000" y="0.000000"/>
+										</tt:Transformation>
+									</tt:CellLayout>
+								</tt:ElementItem>
+							</tt:Parameters>
+						</tt:AnalyticsModule>
+					</tt:AnalyticsEngineConfiguration>
+					<tt:RuleEngineConfiguration>
+						<tt:Rule Name="MotionDetectorRule" Type="tt:CellMotionDetector">
+							<tt:Parameters>
+								<tt:SimpleItem Name="ActiveCells" Value="7/8="></tt:SimpleItem>
+							</tt:Parameters>
+						</tt:Rule>
+					</tt:RuleEngineConfiguration>
+				</tt:VideoAnalyticsConfiguration>
+				<tt:MetadataConfiguration token="mdc">
+					<tt:Name>MetaDataConfig</tt:Name>
+					<tt:UseCount>3</tt:UseCount>
+					<tt:Analytics>true</tt:Analytics>
+					<tt:Multicast>
+						<tt:Address>
+							<tt:Type>IPv4</tt:Type>
+							<tt:IPv4Address>239.248.143.3</tt:IPv4Address>
+						</tt:Address>
+						<tt:Port>26388</tt:Port>
+						<tt:TTL>64</tt:TTL>
+						<tt:AutoStart>false</tt:AutoStart>
+					</tt:Multicast>
+					<tt:SessionTimeout>PT30S</tt:SessionTimeout>
+				</tt:MetadataConfiguration>
+				<tt:Extension></tt:Extension>
+			</trt:Profiles>
+			<trt:Profiles token="pf2" fixed="true">
+				<tt:Name>pf_stream2</tt:Name>
+				<tt:VideoSourceConfiguration token="vsc">
+					<tt:Name>VideoSourceConfig</tt:Name>
+					<tt:UseCount>2</tt:UseCount>
+					<tt:SourceToken>vs</tt:SourceToken>
+					<tt:Bounds x="0" y="0" width="1920" height="1080"></tt:Bounds>
+				</tt:VideoSourceConfiguration>
+				<tt:VideoEncoderConfiguration token="vec2">
+					<tt:Name>VideoEncoderConfig2</tt:Name>
+					<tt:UseCount>1</tt:UseCount>
+					<tt:Encoding>H264</tt:Encoding>
+					<tt:Resolution>
+						<tt:Width>320</tt:Width>
+						<tt:Height>240</tt:Height>
+					</tt:Resolution>
+					<tt:Quality>0</tt:Quality>
+					<tt:RateControl>
+						<tt:FrameRateLimit>15</tt:FrameRateLimit>
+						<tt:EncodingInterval>1</tt:EncodingInterval>
+						<tt:BitrateLimit>128</tt:BitrateLimit>
+					</tt:RateControl>
+					<tt:H264>
+						<tt:GovLength>30</tt:GovLength>
+						<tt:H264Profile>Main</tt:H264Profile>
+					</tt:H264>
+					<tt:Multicast>
+						<tt:Address>
+							<tt:Type>IPv4</tt:Type>
+							<tt:IPv4Address>239.248.143.3</tt:IPv4Address>
+						</tt:Address>
+						<tt:Port>26386</tt:Port>
+						<tt:TTL>64</tt:TTL>
+						<tt:AutoStart>false</tt:AutoStart>
+					</tt:Multicast>
+					<tt:SessionTimeout>PT30S</tt:SessionTimeout>
+				</tt:VideoEncoderConfiguration>
+				<tt:VideoAnalyticsConfiguration token="vac">
+					<tt:Name>VideoAnalyticsConfig</tt:Name>
+					<tt:UseCount>3</tt:UseCount>
+					<tt:AnalyticsEngineConfiguration>
+						<tt:AnalyticsModule Name="CellMotionModule" Type="tt:CellMotionEngine">
+							<tt:Parameters>
+								<tt:SimpleItem Name="Sensitivity" Value="50"></tt:SimpleItem>
+								<tt:ElementItem Name="Layout">
+									<tt:CellLayout Columns="12" Rows="12">
+										<tt:Transformation>
+											<tt:Translate x="-1.000000" y="-1.000000"/>
+											<tt:Scale x="0.000000" y="0.000000"/>
+										</tt:Transformation>
+									</tt:CellLayout>
+								</tt:ElementItem>
+							</tt:Parameters>
+						</tt:AnalyticsModule>
+					</tt:AnalyticsEngineConfiguration>
+					<tt:RuleEngineConfiguration>
+						<tt:Rule Name="MotionDetectorRule" Type="tt:CellMotionDetector">
+							<tt:Parameters>
+								<tt:SimpleItem Name="ActiveCells" Value="7/8="></tt:SimpleItem>
+							</tt:Parameters>
+						</tt:Rule>
+					</tt:RuleEngineConfiguration>
+				</tt:VideoAnalyticsConfiguration>
+				<tt:MetadataConfiguration token="mdc">
+					<tt:Name>MetaDataConfig</tt:Name>
+					<tt:UseCount>3</tt:UseCount>
+					<tt:Analytics>true</tt:Analytics>
+					<tt:Multicast>
+						<tt:Address>
+							<tt:Type>IPv4</tt:Type>
+							<tt:IPv4Address>239.248.143.3</tt:IPv4Address>
+						</tt:Address>
+						<tt:Port>26388</tt:Port>
+						<tt:TTL>64</tt:TTL>
+						<tt:AutoStart>false</tt:AutoStart>
+					</tt:Multicast>
+					<tt:SessionTimeout>PT30S</tt:SessionTimeout>
+				</tt:MetadataConfiguration>
+				<tt:Extension></tt:Extension>
+			</trt:Profiles>
+		</trt:GetProfilesResponse>
+	</SOAP-ENV:Body>
+        </SOAP-ENV:Envelope>"#;
 }

@@ -7,6 +7,19 @@ The source code is written in Rust and uses Rust toolset for build and compilati
 
 [Cargo Workspace Explained](https://doc.rust-lang.org/cargo/reference/workspaces.html). Crates should inherit external rust dependencies from the top Cargo.toml file.
 
+### Testing locally
+
+#### Prerequisites
+This assumes the cameras are connected to a SSM host (AWS Systems Manager). If you have direct access to the camera via its IP Address, you can skip this section and jump directly to the "Steps" section below to setup port forwarding to enable communication with the camera from local machine.
+
+1. Install the SSM plugin https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html
+2. Configure SSH to use session manager https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-getting-started-enable-ssh-connections.html#ssh-connections-enable
+3. Assume credentials for specific role that gives access to the SSM host
+
+#### Steps
+1. Forward port 80 on camera to port 8023 on local machine.
+2. Set environment variable `LOCALHOST_ENDPOINT` to `127.0.0.1:8023` by running `export LOCALHOST_ENDPOINT=127.0.0.1:8023`
+
 ### Running from Cargo
 
 The executable allows for CLI parameters to be entered. The required parameter is a path to config file. The supported file format for the config file is `Yaml`. A sample `Yaml` file has been included with the source code.
