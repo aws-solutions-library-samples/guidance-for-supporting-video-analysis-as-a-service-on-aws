@@ -5,6 +5,7 @@ import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import lombok.extern.log4j.Log4j2;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
+import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
 
 import javax.inject.Inject;
 
@@ -31,4 +32,6 @@ public class StartCreateDeviceDAO {
                 .partitionValue(jobId)
                 .build());
     }
+
+    
 }

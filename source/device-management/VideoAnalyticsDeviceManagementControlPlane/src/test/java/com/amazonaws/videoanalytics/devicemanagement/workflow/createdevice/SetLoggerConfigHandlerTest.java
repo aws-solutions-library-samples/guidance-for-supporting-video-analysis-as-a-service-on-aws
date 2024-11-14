@@ -47,7 +47,7 @@ public class SetLoggerConfigHandlerTest {
     }
 
     @Test
-    public void testPublishDefaultLogConfigToProvisionShadowHandler_success() {
+    public void handleRequest_validInput_publishesConfigAndSavesCompletedStatus() {
         setLoggerConfigHandler.handleRequest(ImmutableMap.of("jobId", TEST_JOB_ID), context);
 
         verify(iotService).publishLogConfigurationToProvisioningShadow(DEVICE_ID);
@@ -61,7 +61,7 @@ public class SetLoggerConfigHandlerTest {
     }
 
     @Test
-    public void testPublishDefaultLogConfigToProvisionShadowHandler_throwRetryableException() {
+    public void handleRequest_iotServiceFailure_throwsRuntimeException() {
         doThrow(InternalFailureException.builder().build())
             .when(iotService).publishLogConfigurationToProvisioningShadow(DEVICE_ID);
 

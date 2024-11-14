@@ -94,6 +94,10 @@ import software.amazon.awssdk.services.iotdataplane.model.UpdateThingShadowReque
 import software.amazon.awssdk.services.iot.model.DescribeCertificateRequest;
 import software.amazon.awssdk.services.iot.model.CertificateDescription;
 import software.amazon.awssdk.services.iot.model.ResourceNotFoundException;
+import software.amazon.awssdk.services.iot.model.ListThingPrincipalsRequest;
+import software.amazon.awssdk.services.iot.model.ListThingPrincipalsResponse;
+import software.amazon.awssdk.services.iot.model.AttachPolicyRequest;
+import com.google.gson.JsonNull;
 
 public class IotService {
     private final IotClient iotClient;
@@ -502,4 +506,72 @@ public class IotService {
         return iotClient.describeCertificate(describeCertificateRequest).certificateDescription();
     }
 
+    public ListThingPrincipalsResponse listThingPrincipals(String thingIdentifier) {
+        ListThingPrincipalsRequest listThingPrincipalsRequest = ListThingPrincipalsRequest.builder()
+                .thingName(thingIdentifier)
+                .build();
+        LOG.info("Listing principals");
+        return iotClient.listThingPrincipals(listThingPrincipalsRequest);
+    }
+
+    /**
+     * This function is used to send messages to "provision" named shadow for the following use cases:
+     * - Enabled
+     * - Notification condition
+     * Field names existence in the shadow is the message.
+     * @param deviceId VideoAnalytics Device
+     * @param fieldName fieldname to set in the shadow
+     */
+    public void messageDeviceProvisioningShadow(String deviceId, String fieldName) {
+        // Message to the device is simply to add the {"<fieldName>":true} to the body of the shadow doc.
+        JsonObject messagePayload = new JsonObject();
+        messagePayload.addProperty(fieldName, true);
+
+        UpdateThingShadowRequest updateThingShadowRequest = UpdateThingShadowRequest.builder()
+                .thingName(deviceId)
+                .shadowName(PROVISIONING_SHADOW_NAME)
+                .payload(SdkBytes.fromUtf8String(messagePayload.toString()))
+                .build();
+
+        LOG.info(String.format("Sending message to provisioning shadow for device %s with field %s", deviceId, fieldName));
+        iotDataPlaneClient.updateThingShadow(updateThingShadowRequest);
+    }
+
+    public void attachPolicy(String policyName, String certificateArn) {
+        AttachPolicyRequest attachPolicyRequest = AttachPolicyRequest
+                .builder()
+                .target(certificateArn)
+                .policyName(policyName)
+                .build();
+        LOG.info("Attaching policy to certificate");
+        iotClient.attachPolicy(attachPolicyRequest);
+    }
+
+    /**
+     * This function is used to clear field in "provision" named shadow for use cases:
+     * - Enable
+     * - Disable
+     * @param deviceId Iot Device
+     * @param fieldName fieldname to clear in the shadow
+     */
+    public void clearDeviceProvisioningShadowField(String deviceId, String fieldName) {
+        JsonObject messagePayload = new JsonObject();
+        messagePayload.add(fieldName, JsonNull.INSTANCE);
+
+        SdkBytes shadowDoc = ShadowMapUtils.createAnUpdateDesiredStateMessage(messagePayload);
+
+        this.updateThingShadow(deviceId, PROVISIONING_SHADOW_NAME, shadowDoc);
+    }
+
+    public void clearDeviceProvisioningShadowFields(String deviceId, JsonObject payload) {
+        SdkBytes shadowDoc = ShadowMapUtils.createAnUpdateDesiredStateMessage(payload);
+
+        this.updateThingShadow(deviceId, PROVISIONING_SHADOW_NAME, shadowDoc);
+    }
+
+    public void clearDeviceProvisioningShadowReported(String deviceId) {
+        SdkBytes shadowDoc = ShadowMapUtils.createAnUpdateReportedStateMessage(JsonNull.INSTANCE);
+
+        this.updateThingShadow(deviceId, PROVISIONING_SHADOW_NAME, shadowDoc);
+    }
 }

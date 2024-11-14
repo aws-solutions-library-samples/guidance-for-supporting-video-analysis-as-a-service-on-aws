@@ -29,25 +29,25 @@ public class LambdaProxyUtilsTest {
     private final int statusCode = 200;
 
     @Test
-    public void parsePathParameter_WhenValidKey_ReturnsValue() {
+    public void parsePathParameter_withValidKey_returnsExpectedValue() {
         String deviceId = LambdaProxyUtils.parsePathParameter(lambdaProxyRequest, PROXY_LAMBDA_REQUEST_DEVICE_ID_PATH_PARAMETER_KEY);
         assertEquals(deviceId, DEVICE_ID);
     }
 
     @Test
-    public void parsePathParameter_WhenInvalidKey_ReturnsNull() {
+    public void parsePathParameter_withInvalidKey_returnsNull() {
         String random = LambdaProxyUtils.parsePathParameter(lambdaProxyRequest, "random");
         assertEquals(random, null);
     }
 
     @Test
-    public void parseBody_WhenValidRequest_ReturnsBody() {
+    public void parseBody_withValidRequest_returnsExpectedBody() {
         String parsedBody = LambdaProxyUtils.parseBody(lambdaProxyRequest);
         assertEquals(parsedBody, body);
     }
 
     @Test
-    public void serializeResponse_WhenValidRequest_ReturnsResponse() {
+    public void serializeResponse_withValidInput_returnsExpectedResponse() {
         Map<String, Object> serializedResponse = LambdaProxyUtils.serializeResponse(statusCode, body);
         assertEquals(serializedResponse.get(PROXY_LAMBDA_RESPONSE_STATUS_CODE_KEY), statusCode);
         String parsedBody = LambdaProxyUtils.parseBody(lambdaProxyRequest);
@@ -63,13 +63,13 @@ public class LambdaProxyUtilsTest {
     }
 
     @Test
-    public void parseRequestBody_WhenValidJson_ReturnsObject() {
+    public void parseRequestBody_withValidJson_returnsPopulatedObject() {
         TestRequestBody result = LambdaProxyUtils.parseRequestBody(lambdaProxyRequest, TestRequestBody.class);
         assertEquals(SHADOW_NAME, result.getShadowName());
     }
 
     @Test
-    public void parseRequestBody_WhenInvalidJson_ThrowsException() {
+    public void parseRequestBody_withInvalidJson_throwsRuntimeException() {
         Map<String, Object> invalidRequest = Map.ofEntries(
             entry("pathParameters", Map.ofEntries(
                 entry("deviceId", DEVICE_ID)
@@ -84,7 +84,7 @@ public class LambdaProxyUtilsTest {
     }
 
     @Test
-    public void parseRequestBody_WhenNullBody_ThrowsException() {
+    public void parseRequestBody_withNullBody_throwsRuntimeException() {
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
             LambdaProxyUtils.parseRequestBody(null, TestRequestBody.class);
         });
@@ -92,7 +92,7 @@ public class LambdaProxyUtilsTest {
     }
 
     @Test
-    public void parseRequestBody_WhenMismatchedSchema_ReturnsObjectWithNullFields() {
+    public void parseRequestBody_withMismatchedSchema_returnsObjectWithNullFields() {
         Map<String, Object> mismatchedRequest = Map.of(
             "body", "{\"wrongField\": \"value\"}"
         );

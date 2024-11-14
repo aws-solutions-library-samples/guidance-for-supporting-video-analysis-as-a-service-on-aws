@@ -117,6 +117,7 @@ import software.amazon.awssdk.services.iotdataplane.model.UpdateThingShadowReque
 import software.amazon.awssdk.services.iotdataplane.model.UpdateThingShadowResponse;
 
 import com.google.gson.JsonObject;
+import com.google.gson.JsonNull;
 
 import software.amazon.awssdk.services.iot.model.DescribeCertificateRequest;
 import software.amazon.awssdk.services.iot.model.DescribeCertificateResponse;
@@ -124,11 +125,19 @@ import software.amazon.awssdk.services.iot.model.CertificateDescription;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import software.amazon.awssdk.services.iot.model.ListThingPrincipalsRequest;
+import software.amazon.awssdk.services.iot.model.ListThingPrincipalsResponse;
+import software.amazon.awssdk.services.iot.model.AttachPolicyRequest;
+import software.amazon.awssdk.services.iot.model.AttachPolicyResponse;
+
 public class IotServiceTest {
     private static final String ARN_PREFIX = "arn:partition:service:region:account-id:cert/";
     private static final String CERTIFICATE_ID = "fakeCertificateID";
     private static final String CERTIFICATE_ID_2 = "fakeCertificateID";
     private static final String CERTIFICATE_ARN = ARN_PREFIX + CERTIFICATE_ID;
+    private static final String CERTIFICATE_ARN_2 = ARN_PREFIX + CERTIFICATE_ID_2;
+    private static final String TEST_POLICY_NAME = "testPolicyName";
+    private static final String THING_NAME = "testThingName";
     @Mock
     private IotClient iotClient;
     @Mock
@@ -145,7 +154,7 @@ public class IotServiceTest {
     }
 
     @Test
-    public void listThingGroupsForThing_WhenValidRequest_ReturnsResponse() {
+    public void listThingGroupsForThing_validRequest_returnsResponse() {
         List<GroupNameAndArn> testThingGroups = ImmutableList.of(GroupNameAndArn.builder()
                 .groupName(UpdateDeviceUtils.VideoAnalyticsManagedDeviceGroupId.SpecialGroup_EnabledState.name())
                 .build());
@@ -164,7 +173,7 @@ public class IotServiceTest {
     }
 
     @Test
-    public void describeThing_WhenValidRequest_ReturnsResponse() {
+    public void describeThing_validRequest_returnsResponse() {
         Map<String, String> iotAttribute = new HashMap<>();
         iotAttribute.put(TEST_ATTRIBUTE_KEY, TEST_ATTRIBUTE_VALUE);
         DescribeThingResponse describeThingResponse = DescribeThingResponse
@@ -187,7 +196,7 @@ public class IotServiceTest {
     }
 
     @Test
-    public void getDevice_WhenValidRequest_ReturnsResponse() throws ParseException, JsonProcessingException {
+    public void getDevice_validRequest_returnsResponse() throws ParseException, JsonProcessingException {
         setupDeviceHappyCase(StorageState.NORMAL.toString());
         when(iotClient.listThingGroupsForThing(any(ListThingGroupsForThingRequest.class)))
                 .thenReturn(ListThingGroupsForThingResponse.builder()
@@ -209,7 +218,7 @@ public class IotServiceTest {
     }
 
     @Test
-    public void getDevice_WhenNoSDCard_ReturnsResponse() throws ParseException, JsonProcessingException {
+    public void getDevice_noSdCard_returnsResponse() throws ParseException, JsonProcessingException {
         setupDeviceHappyCase(StorageState.NO_CARD.toString());
         when(iotClient.listThingGroupsForThing(any(ListThingGroupsForThingRequest.class)))
                 .thenReturn(ListThingGroupsForThingResponse.builder()
@@ -287,7 +296,7 @@ public class IotServiceTest {
     }
 
     @Test
-    public void getDevice_WhenStatusNoTimestamp_ReturnsResponse() throws ParseException, JsonProcessingException {
+    public void getDevice_statusNoTimestamp_returnsResponse() throws ParseException, JsonProcessingException {
         when(iotClient.listThingGroupsForThing(any(ListThingGroupsForThingRequest.class)))
                 .thenReturn(ListThingGroupsForThingResponse.builder()
                         .thingGroups(ImmutableList.of(GroupNameAndArn.builder()
@@ -413,7 +422,7 @@ public class IotServiceTest {
     }
 
     @Test
-    public void getDevice_WhenInvalidRequest_ThrowsException() {
+    public void getDevice_invalidRequest_throwsException() {
         when(iotClient.describeThing(any(DescribeThingRequest.class))).thenThrow(InvalidRequestException.builder().build());
 
         assertThrows(InvalidRequestException.class, () -> {
@@ -422,7 +431,7 @@ public class IotServiceTest {
     }
 
     @Test
-    public void describeThing_WhenResourceNotFound_ThrowsResourceNotFoundException() {
+    public void describeThing_resourceNotFound_throwsResourceNotFoundException() {
         when(iotClient.describeThing(any(DescribeThingRequest.class))).thenThrow(ResourceNotFoundException.class);
         assertThrows(ResourceNotFoundException.class, () -> {
            iotService.describeThing(DEVICE_ID);
@@ -430,7 +439,7 @@ public class IotServiceTest {
     }
 
     @Test
-    public void describeThing_WhenInvalidRequest_ThrowsInvalidRequestException() {
+    public void describeThing_invalidRequest_throwsInvalidRequestException() {
         when(iotClient.describeThing(
                 any(DescribeThingRequest.class)
         )).thenThrow(InvalidRequestException.builder().build());
@@ -441,7 +450,7 @@ public class IotServiceTest {
     }
 
     @Test
-    public void searchIndex_WhenValidRequest_ReturnsResponse() {
+    public void searchIndex_validRequest_returnsResponse() {
         SearchIndexRequest searchIndexRequest = SearchIndexRequest
                 .builder()
                 .indexName(IOT_FLEET_INDEXING_INDEX_AWS_THINGS)
@@ -457,7 +466,7 @@ public class IotServiceTest {
     }
 
     @Test
-    public void getDeviceShadow_WhenShadowNameExists_ReturnsResponse() {
+    public void getDeviceShadow_shadowNameExists_returnsResponse() {
         GetThingShadowResponse getThingShadowResponse = GetThingShadowResponse
                 .builder()
                 .payload(SdkBytes.fromUtf8String(buildEmptyDesiredStateShadow()))
@@ -472,7 +481,7 @@ public class IotServiceTest {
     }
 
     @Test
-    public void getDeviceShadow_WhenNullShadowName_ReturnsResponse() {
+    public void getDeviceShadow_nullShadowName_returnsResponse() {
         GetThingShadowResponse getThingShadowResponse = GetThingShadowResponse
                 .builder()
                 .payload(SdkBytes.fromUtf8String(buildEmptyDesiredStateShadow()))
@@ -487,7 +496,7 @@ public class IotServiceTest {
     }
 
     @Test
-    public void getDeviceShadow_WhenResourceNotFound_ThrowsResourceNotFoundException() {
+    public void getDeviceShadow_resourceNotFound_throwsResourceNotFoundException() {
         when(iotDataPlaneClient.getThingShadow(any(GetThingShadowRequest.class))).thenThrow(
                 software.amazon.awssdk.services.iotdataplane.model.ResourceNotFoundException.class
         );
@@ -498,7 +507,7 @@ public class IotServiceTest {
     }
 
     @Test
-    public void updateDeviceShadow_WhenShadowPayload_ReturnsResponse() throws JsonProcessingException {
+    public void updateDeviceShadow_validShadowPayload_returnsResponse() throws JsonProcessingException {
         when(iotDataPlaneClient.updateThingShadow(any(UpdateThingShadowRequest.class))).thenReturn(UpdateThingShadowResponse.builder().build());
 
         Map<String, Object> shadowPayloadMap = new HashMap<>();
@@ -512,7 +521,7 @@ public class IotServiceTest {
     }
 
     @Test
-    public void updateDeviceShadow_WhenInvalidRequest_ThrowsInvalidRequestException() {
+    public void updateDeviceShadow_invalidRequest_throwsInvalidRequestException() {
         when(iotDataPlaneClient.updateThingShadow(any(UpdateThingShadowRequest.class))).thenThrow(software.amazon.awssdk.services.iotdataplane.model.ResourceNotFoundException.builder().build());
 
         Map<String, Object> shadowPayloadMap = new HashMap<>();
@@ -801,7 +810,7 @@ public class IotServiceTest {
     }
 
     @Test
-    public void testWorkflowRegisterDevice_success() {
+    public void workflowRegisterDevice_validInput_succeeds() {
         iotService.workflowRegisterDevice(CERTIFICATE_ID, DEVICE_ID);
 
         verify(iotClient).registerThing(RegisterThingRequest.builder()
@@ -811,7 +820,7 @@ public class IotServiceTest {
     }
 
     @Test
-    public void publishLogConfigurationToProvisioningShadowTest() {
+    public void publishLogConfigurationToProvisioningShadow_validInput_succeeds() {
         // Create the expected shadow document with exact string matching
         String expectedJson = "{\"loggerSettings\":{\"isEnabled\":true,\"syncFrequency\":300,\"logLevel\":\"INFO\"}}";
         SdkBytes expectedPayload = SdkBytes.fromUtf8String(expectedJson);
@@ -833,7 +842,7 @@ public class IotServiceTest {
     }
 
     @Test
-    public void isAnExistingDevice_WhenDeviceExists_ReturnsTrue() {
+    public void isAnExistingDevice_deviceExists_returnsTrue() {
         when(iotClient.describeThing(any(DescribeThingRequest.class)))
                 .thenReturn(DescribeThingResponse.builder()
                         .thingName(DEVICE_ID)
@@ -848,7 +857,7 @@ public class IotServiceTest {
     }
 
     @Test
-    public void isAnExistingDevice_WhenDeviceDoesNotExist_ReturnsFalse() {
+    public void isAnExistingDevice_deviceDoesNotExist_returnsFalse() {
         when(iotClient.describeThing(any(DescribeThingRequest.class)))
                 .thenThrow(ResourceNotFoundException.class);
 
@@ -861,7 +870,7 @@ public class IotServiceTest {
     }
 
     @Test
-    public void testGetCertificate() {
+    public void getCertificate_validInput_returnsDescription() {
         CertificateDescription certificateDescription = CertificateDescription
                 .builder()
                 .certificateId(CERTIFICATE_ID)
@@ -881,12 +890,125 @@ public class IotServiceTest {
     }
 
     @Test
-    public void testGetCertificateThrowsException() {
+    public void getCertificate_invalidRequest_throwsException() {
         when(iotClient.describeCertificate(any(DescribeCertificateRequest.class)))
                 .thenThrow(InvalidRequestException.builder().build());
 
         assertThrows(InvalidRequestException.class, () -> {
             iotService.getCertificate(CERTIFICATE_ID);
         });
+    }
+
+    @Test
+    public void listThingPrincipals_validInput_returnsPrincipals() {
+        ListThingPrincipalsResponse listThingPrincipalsResponse = ListThingPrincipalsResponse
+                .builder()
+                .principals(CERTIFICATE_ARN, CERTIFICATE_ARN_2)
+                .build();
+        when(iotClient.listThingPrincipals(any(ListThingPrincipalsRequest.class))).thenReturn(listThingPrincipalsResponse);
+
+        ListThingPrincipalsResponse responseFromIotService = iotService.listThingPrincipals(THING_ID);
+        assertEquals(responseFromIotService.principals().size(), 2);
+        assertTrue(responseFromIotService.principals().containsAll(List.of(CERTIFICATE_ARN, CERTIFICATE_ARN_2)));
+    }
+
+    @Test
+    public void listThingPrincipals_invalidRequest_throwsException() {
+        when(iotClient.listThingPrincipals(any(ListThingPrincipalsRequest.class)))
+                .thenThrow(InvalidRequestException.builder().build());
+
+        assertThrows(InvalidRequestException.class, () -> {
+            iotService.listThingPrincipals(THING_ID);
+        });
+    }
+
+    @Test
+    public void attachPolicy_validRequest_succeeds() {
+        when(iotClient.attachPolicy(any(AttachPolicyRequest.class)))
+            .thenReturn(AttachPolicyResponse.builder().build());
+            
+        iotService.attachPolicy(THING_NAME, CERTIFICATE_ARN);
+        
+        verify(iotClient).attachPolicy(
+                AttachPolicyRequest.builder()
+                    .policyName(THING_NAME)
+                    .target(CERTIFICATE_ARN)
+                    .build());
+    }
+
+    @Test
+    public void attachPolicy_invalidRequest_throwsInvalidRequestException() {
+        when(iotClient.attachPolicy(any(AttachPolicyRequest.class)))
+            .thenThrow(InvalidRequestException.builder().build());
+            
+        assertThrows(InvalidRequestException.class, () -> {
+            iotService.attachPolicy(TEST_POLICY_NAME, CERTIFICATE_ARN);
+        });
+    }
+
+    @Test
+    public void clearDeviceProvisioningShadowField_validField_updatesThingShadow() {
+        String fieldName = "fieldName";
+
+        SdkBytes expectedPayload = SdkBytes.fromUtf8String("{\"state\":{\"desired\":{\"" + fieldName + "\":null}}}");
+
+        UpdateThingShadowRequest expectedUpdateThingShadowRequest =
+                UpdateThingShadowRequest
+                        .builder()
+                        .thingName(DEVICE_ID)
+                        .shadowName(PROVISIONING_SHADOW_NAME)
+                        .payload(expectedPayload)
+                        .build();
+
+        when(iotDataPlaneClient.updateThingShadow(any(UpdateThingShadowRequest.class)))
+                .thenReturn(UpdateThingShadowResponse.builder().build());
+
+        iotService.clearDeviceProvisioningShadowField(DEVICE_ID, fieldName);
+
+        verify(iotDataPlaneClient).updateThingShadow(eq(expectedUpdateThingShadowRequest));
+    }
+
+    @Test
+    public void clearDeviceProvisioningShadowFields_validPayload_updatesThingShadow() {
+        JsonObject payload = new JsonObject();
+        payload.add("field1", JsonNull.INSTANCE);
+        payload.add("field2", JsonNull.INSTANCE);
+
+        SdkBytes expectedPayload = SdkBytes.fromUtf8String("{\"state\":{\"desired\":{\"field1\":null,\"field2\":null}}}");
+
+        UpdateThingShadowRequest expectedUpdateThingShadowRequest =
+                UpdateThingShadowRequest
+                        .builder()
+                        .thingName(DEVICE_ID)
+                        .shadowName(PROVISIONING_SHADOW_NAME)
+                        .payload(expectedPayload)
+                        .build();
+
+        when(iotDataPlaneClient.updateThingShadow(any(UpdateThingShadowRequest.class)))
+                .thenReturn(UpdateThingShadowResponse.builder().build());
+
+        iotService.clearDeviceProvisioningShadowFields(DEVICE_ID, payload);
+
+        verify(iotDataPlaneClient).updateThingShadow(eq(expectedUpdateThingShadowRequest));
+    }
+
+    @Test
+    public void clearDeviceProvisioningShadowReported_validRequest_updatesThingShadow() {
+        SdkBytes expectedPayload = SdkBytes.fromUtf8String("{\"state\":{\"reported\":null}}");
+
+        UpdateThingShadowRequest expectedUpdateThingShadowRequest =
+                UpdateThingShadowRequest
+                        .builder()
+                        .thingName(DEVICE_ID)
+                        .shadowName(PROVISIONING_SHADOW_NAME)
+                        .payload(expectedPayload)
+                        .build();
+
+        when(iotDataPlaneClient.updateThingShadow(any(UpdateThingShadowRequest.class)))
+                .thenReturn(UpdateThingShadowResponse.builder().build());
+
+        iotService.clearDeviceProvisioningShadowReported(DEVICE_ID);
+
+        verify(iotDataPlaneClient).updateThingShadow(eq(expectedUpdateThingShadowRequest));
     }
 }

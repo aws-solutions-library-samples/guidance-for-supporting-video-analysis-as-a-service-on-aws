@@ -62,7 +62,7 @@ public class FailCreateDeviceHandlerTest {
     }
 
     @Test
-    public void testFailCreateDeviceHandler_success() throws JsonProcessingException {
+    public void handleRequest_withValidErrorMessage_updatesDeviceAndCertificate() throws JsonProcessingException {
         when(objectMapper.readValue(ERROR_MESSAGE_MAP.toString(), Map.class)).thenReturn(ERROR_MESSAGE_MAP);
 
         failCreateDeviceHandler.handleRequest(ImmutableMap.of("jobId", TEST_JOB_ID,
@@ -78,7 +78,7 @@ public class FailCreateDeviceHandlerTest {
     }
 
     @Test
-    public void testFailCreateDeviceHandler_ignoreJSONException() throws JsonProcessingException {
+    public void handleRequest_withInvalidJson_savesEmptyErrorMessage() throws JsonProcessingException {
         when(objectMapper.readValue(any(String.class), eq(Map.class))).thenThrow(JsonProcessingException.class);
 
         failCreateDeviceHandler.handleRequest(ImmutableMap.of("jobId", TEST_JOB_ID,
@@ -96,7 +96,7 @@ public class FailCreateDeviceHandlerTest {
     }
 
     @Test
-    public void testFailCreateDeviceHandler_noFailureMessage() {
+    public void handleRequest_withoutFailureMessage_savesEmptyErrorMessage() {
         failCreateDeviceHandler.handleRequest(ImmutableMap.of("jobId", TEST_JOB_ID), context);
 
         CreateDevice expectCreateDevice = CreateDevice.builder()
@@ -111,7 +111,7 @@ public class FailCreateDeviceHandlerTest {
     }
 
     @Test
-    public void testFailCreateDeviceHandler_throwRetryableException() {
+    public void handleRequest_whenIotServiceFails_throwsRuntimeException() {
         doThrow(InternalFailureException.builder().build())
             .when(iotService).updateCertificate(CERTIFICATE_ID, CertificateStatus.INACTIVE);
 
