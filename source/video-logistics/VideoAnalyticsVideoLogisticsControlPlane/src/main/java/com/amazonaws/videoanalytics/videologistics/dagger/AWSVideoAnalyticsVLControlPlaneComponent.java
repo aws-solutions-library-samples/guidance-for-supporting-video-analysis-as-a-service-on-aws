@@ -2,6 +2,7 @@ package com.amazonaws.videoanalytics.videologistics.dagger;
 
 import com.amazonaws.videoanalytics.videologistics.activity.CreateLivestreamSessionActivity;
 import com.amazonaws.videoanalytics.videologistics.activity.CreatePlaybackSessionActivity;
+import com.amazonaws.videoanalytics.videologistics.activity.GetPlaybackSessionActivity;
 import com.amazonaws.videoanalytics.videologistics.dagger.modules.AWSModule;
 import com.amazonaws.videoanalytics.videologistics.dagger.modules.AWSVideoAnalyticsConfigurationModule;
 import com.amazonaws.videoanalytics.videologistics.dependency.kvs.KvsService;
@@ -26,6 +27,7 @@ import com.amazonaws.videoanalytics.videologistics.dao.PlaybackSessionDAO;
 public interface AWSVideoAnalyticsVLControlPlaneComponent {
     void inject(CreateLivestreamSessionActivity lambda);
     void inject(CreatePlaybackSessionActivity lambda);
+    void inject(GetPlaybackSessionActivity lambda);
 
     KvsService getKvsService();
     DeviceValidator getDeviceValidator();

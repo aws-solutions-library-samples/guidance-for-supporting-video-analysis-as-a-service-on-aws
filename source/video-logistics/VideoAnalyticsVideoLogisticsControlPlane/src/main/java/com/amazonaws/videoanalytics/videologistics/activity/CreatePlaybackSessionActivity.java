@@ -5,10 +5,10 @@ import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.videoanalytics.videologistics.CreatePlaybackSessionRequestContent;
 import com.amazonaws.videoanalytics.videologistics.CreatePlaybackSessionResponseContent;
+import com.amazonaws.videoanalytics.videologistics.Status;
 import com.amazonaws.videoanalytics.videologistics.ValidationExceptionResponseContent;
 import com.amazonaws.videoanalytics.videologistics.dagger.AWSVideoAnalyticsVLControlPlaneComponent;
 import com.amazonaws.videoanalytics.videologistics.schema.PlaybackSession.PlaybackSession;
-import com.amazonaws.videoanalytics.videologistics.schema.status.InternalStreamingSessionStatus;
 import com.amazonaws.videoanalytics.videologistics.utils.annotations.ExcludeFromJacocoGeneratedReport;
 import com.amazonaws.videoanalytics.videologistics.utils.GuidanceUUIDGenerator;
 import com.amazonaws.videoanalytics.videologistics.validator.DeviceValidator;
@@ -108,7 +108,7 @@ public class CreatePlaybackSessionActivity implements RequestHandler<Map<String,
         PlaybackSession playbackSession = PlaybackSession.builder()
                 .deviceId(deviceId)
                 .endTime(endTime)
-                .sessionStatus(InternalStreamingSessionStatus.RUNNING.toString())
+                .sessionStatus(Status.RUNNING.toString())
                 .startTime(startTime)
                 .sessionId(guidanceUUIDGenerator.generateUUIDRandom())
                 .workflowName(guidanceUUIDGenerator.generateUUIDRandom())
