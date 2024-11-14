@@ -3,11 +3,9 @@ package com.amazonaws.videoanalytics.videologistics.activity;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.videoanalytics.videologistics.CreatePlaybackSessionResponseContent;
-import com.amazonaws.videoanalytics.videologistics.IceServer;
-import com.amazonaws.videoanalytics.videologistics.ResourceNotFoundExceptionResponseContent;
+import com.amazonaws.videoanalytics.videologistics.Status;
 import com.amazonaws.videoanalytics.videologistics.ValidationExceptionResponseContent;
 import com.amazonaws.videoanalytics.videologistics.schema.PlaybackSession.PlaybackSession;
-import com.amazonaws.videoanalytics.videologistics.schema.status.InternalStreamingSessionStatus;
 import com.amazonaws.videoanalytics.videologistics.validator.DeviceValidator;
 
 import org.junit.contrib.java.lang.system.EnvironmentVariables;
@@ -21,7 +19,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.Map;
 
 import static com.amazonaws.videoanalytics.videologistics.exceptions.VideoAnalyticsExceptionMessage.END_TIME_WITHIN_A_DAY;
@@ -90,7 +87,7 @@ public class CreatePlaybackSessionActivityTest {
         assertEquals(START_TIMESTAMP_DATE, actualPlaybackSession.getStartTime());
         assertEquals(END_TIMESTAMP_DATE, actualPlaybackSession.getEndTime());
         assertEquals(DEVICE_ID, actualPlaybackSession.getDeviceId());
-        assertEquals(InternalStreamingSessionStatus.RUNNING.toString(), actualPlaybackSession.getSessionStatus());
+        assertEquals(Status.RUNNING.toString(), actualPlaybackSession.getSessionStatus());
         assertEquals(WORKFLOW_NAME, actualPlaybackSession.getWorkflowName());
 
         CreatePlaybackSessionResponseContent createPlaybackSessionResponse = 
