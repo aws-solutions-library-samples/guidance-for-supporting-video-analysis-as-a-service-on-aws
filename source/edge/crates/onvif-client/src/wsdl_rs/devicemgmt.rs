@@ -79,7 +79,7 @@ pub struct Service {
     pub version: tt::OnvifVersion,
 }
 
-/// This module holds the dummy Capabilities. With VHT, we currently doesn't use this field,
+/// This module holds the dummy Capabilities. We may not use this field.
 pub mod service {
     use super::*;
 

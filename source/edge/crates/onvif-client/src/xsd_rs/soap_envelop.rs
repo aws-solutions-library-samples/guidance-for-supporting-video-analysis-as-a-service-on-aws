@@ -77,14 +77,6 @@ pub struct Subcode {
     /// string that holds subcod value
     #[yaserde(prefix = "tns", rename = "Value")]
     pub value: String,
-    // TODO: if we decide to use this field, investigate why this field causes serialization issue.
-    // this field is causing problem in test, since in onvif documentation it look like it'll be
-    // empty field, comment out for now.
-    /*
-    #[yaserde(prefix = "tns", rename = "Subcode")]
-    pub subcode: Vec<Subcode>,
-
-     */
 }
 
 /// dummy struct

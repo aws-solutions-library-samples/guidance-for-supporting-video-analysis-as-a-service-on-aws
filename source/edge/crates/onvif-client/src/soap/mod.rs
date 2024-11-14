@@ -72,7 +72,6 @@ fn unsoap(soap: &str) -> Result<String, SerializationError> {
     if let Some(fault) = xml_soap_body.get_mut_child("Fault") {
         let _fault = deserialize_fault(fault)?;
 
-        // TODO: surface more granular error message if there's use case for it.
         // for now return this error to encapsulate all soap fault.
         return Err(SerializationError::SoapFault);
     }
@@ -138,8 +137,8 @@ mod test {
     fn verify_deserialize() {
         // Arrange
         let expected_get_device_info_resp_struct = GetDeviceInformationResponse {
-            manufacturer: "vht".to_string(),
-            model: "vht_skt".to_string(),
+            manufacturer: "foobar".to_string(),
+            model: "foo_bar".to_string(),
             firmware_version: "0.0.1".to_string(),
             serial_number: "987654".to_string(),
             hardware_id: "1".to_string(),
@@ -194,7 +193,7 @@ mod test {
         str_string_type
     }
 
-    // soap message copied from VHT onvif response of GetDeviceInformation
+    // soap message copied from onvif response of GetDeviceInformation
     const GET_DEVICE_INFO_RESPONSE_SOAP_STRING: &str = r#"<?xml version="1.0" encoding="utf-8"?>
     <SOAP-ENV:Envelope
         xmlns:SOAP-ENV="http://www.w3.org/2003/05/soap-envelope"
@@ -227,8 +226,8 @@ mod test {
         xmlns:tns1="http://www.onvif.org/ver10/topics">
         <SOAP-ENV:Body>
         <tds:GetDeviceInformationResponse>
-            <tds:Manufacturer>vht</tds:Manufacturer>
-            <tds:Model>vht_skt</tds:Model>
+            <tds:Manufacturer>foobar</tds:Manufacturer>
+            <tds:Model>foo_bar</tds:Model>
             <tds:FirmwareVersion>0.0.1</tds:FirmwareVersion>
             <tds:SerialNumber>987654</tds:SerialNumber>
             <tds:HardwareId>1</tds:HardwareId>

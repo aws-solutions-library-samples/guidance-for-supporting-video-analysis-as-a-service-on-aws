@@ -3,7 +3,7 @@
 #[cfg(test)]
 mod tests {
     use device_traits::channel_utils::traits::MockIoTServiceSender;
-    use device_traits::connections::{PubSubMessage, ShadowManager};
+    use device_traits::connections::ShadowManager;
     use iot_connections::shadow_manager::IotShadowManager;
     use mqtt_client::builder::MQTTMessageBuilder;
     use serde_json::{json, Value};
@@ -13,7 +13,6 @@ mod tests {
     const THING_NAME: &str = "ThingName";
     const SHADOW_NAME: &str = "ShadowName";
     const DIR: &str = "tests/files-for-integration-tests";
-    const BUFFER_LEN: usize = 10;
 
     /// Test that shadow updates to the desired state update correctly and write to the FS
     #[tokio::test]

@@ -52,6 +52,6 @@ pub const VIDEO_ANALYTICS: &str = "VideoAnalytics";
 /// onvif config path
 pub const CONFIG_PATH: &str = "tests/";
 
-/// VHT digest uri.
-/// Note, VHT devices read uri in this format. This may not be true for all ONVIF devices.
-pub const VHT_DIGEST_URI: &str = "/onvif/device_service";
+/// digest uri.
+/// Note, certain devices read uri in this format. This may not be true for all ONVIF devices.
+pub const DIGEST_URI: &str = "/onvif/device_service";

@@ -26,6 +26,8 @@ iot-client = { path = "./crates/iot-client"}
 kvs-client = { path = "./crates/kvs-client"}
 http-client = { path = "./crates/http-client"}
 onvif-client = { path = "./crates/onvif-client"}
+streaming-traits = { path = "./crates/streaming-traits" }
+gstreamer-pipeline = { path = "./crates/gstreamer-pipeline" }
 
 # non-local crates
 tokio = { version = "1", features = ["full", "tracing"] }
@@ -61,3 +63,15 @@ reqwest = { version = "0.11.14", default-features = false, features = ["rustls-t
 sha256 = "1.4.0"
 base64 = "0.22.1"
 http-auth = "0.1.8"
+gstreamer = "0.20.0"
+gstreamer-app = "0.20.0"
+gstreamer-rtsp = "0.20.0"
+gstreamer-rtp = "0.20.0"
+gstreamer-video = "0.20.0"
+gstreamer-base = "0.20.0"
+glib = "0.17.2"
+queues = "1.1.0"
+serde_bytes = "0.11"
+time = "0.3.1"
+xmlparser = "0.13.5"
+crossbeam-channel = "0.5.9"
