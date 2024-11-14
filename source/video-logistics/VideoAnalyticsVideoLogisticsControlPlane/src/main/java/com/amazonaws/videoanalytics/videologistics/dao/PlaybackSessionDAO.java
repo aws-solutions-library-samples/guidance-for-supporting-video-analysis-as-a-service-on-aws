@@ -1,10 +1,10 @@
 package com.amazonaws.videoanalytics.videologistics.dao;
 
 import com.amazonaws.videoanalytics.videologistics.SourceType;
+import com.amazonaws.videoanalytics.videologistics.Status;
 import com.amazonaws.videoanalytics.videologistics.schema.PlaybackSession.PlaybackSession;
 import com.amazonaws.videoanalytics.videologistics.schema.Source;
 import com.amazonaws.videoanalytics.videologistics.schema.PlaybackSession.StreamSource;
-import com.amazonaws.videoanalytics.videologistics.schema.status.InternalStreamingSessionStatus;
 import com.amazonaws.videoanalytics.videologistics.schema.status.WebRTCConnectionStatus;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import lombok.extern.log4j.Log4j2;
@@ -31,11 +31,10 @@ public class PlaybackSessionDAO {
      */
     public void save(final PlaybackSession playbackSession) {
         logger.log("Starting save for playbackSession");
-        // Session status should always map to InternalSession status for DAO
+        // Session status should always map to status for DAO
         // this call throws an error if it does not
         try {
-            final InternalStreamingSessionStatus status =
-                    InternalStreamingSessionStatus.valueOf(playbackSession.getSessionStatus());
+            final Status status = Status.valueOf(playbackSession.getSessionStatus());
             this.playbackSessionTable.putItem(playbackSession);
         } catch (IllegalArgumentException e) {
             throw new RuntimeException(String.format("Invalid session status. Please make sure it is one of the defined" +

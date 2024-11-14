@@ -1,10 +1,10 @@
 package com.amazonaws.videoanalytics.videologistics.dao;
 
 import com.amazonaws.videoanalytics.videologistics.SourceType;
+import com.amazonaws.videoanalytics.videologistics.Status;
 import com.amazonaws.videoanalytics.videologistics.schema.PlaybackSession.PlaybackSession;
 import com.amazonaws.videoanalytics.videologistics.schema.Source;
 import com.amazonaws.videoanalytics.videologistics.schema.PlaybackSession.StreamSource;
-import com.amazonaws.videoanalytics.videologistics.schema.status.InternalStreamingSessionStatus;
 import com.amazonaws.videoanalytics.videologistics.schema.status.WebRTCConnectionStatus;
 import com.google.common.collect.ImmutableList;
 
@@ -43,7 +43,7 @@ public class PlaybackSessionDAOTest {
     public void save_WhenGetItem_ReturnsSavedRecord() throws Exception {
         PlaybackSession playbackSession = PlaybackSession.builder()
                 .sessionId(SESSION_ID)
-                .sessionStatus(InternalStreamingSessionStatus.COMPLETED.toString())
+                .sessionStatus(Status.COMPLETED.toString())
                 .build();
 
         when(playbackSessionTable.getItem(any(Key.class))).thenReturn(playbackSession);
@@ -51,7 +51,7 @@ public class PlaybackSessionDAOTest {
         playbackSessionDAO.save(playbackSession);
         PlaybackSession persistedPlaybackSession = playbackSessionDAO.load(SESSION_ID);
         Assertions.assertEquals(SESSION_ID, persistedPlaybackSession.getSessionId());
-        Assertions.assertEquals(InternalStreamingSessionStatus.COMPLETED.toString(), persistedPlaybackSession.getSessionStatus());
+        Assertions.assertEquals(Status.COMPLETED.toString(), persistedPlaybackSession.getSessionStatus());
     }
 
     @Test
@@ -71,7 +71,7 @@ public class PlaybackSessionDAOTest {
         PlaybackSession playbackSession = PlaybackSession.builder()
                 .sessionId(SESSION_ID)
                 .streamSource(sampleStreamSource("CONNECTING"))
-                .sessionStatus(InternalStreamingSessionStatus.RUNNING.toString())
+                .sessionStatus(Status.RUNNING.toString())
                 .build();
 
         playbackSessionDAO.save(playbackSession);
@@ -79,7 +79,7 @@ public class PlaybackSessionDAOTest {
         PlaybackSession finalPlaybackSession = PlaybackSession.builder()
                 .sessionId(SESSION_ID)
                 .streamSource(sampleStreamSource("CONNECTED"))
-                .sessionStatus(InternalStreamingSessionStatus.RUNNING.toString())
+                .sessionStatus(Status.RUNNING.toString())
                 .build();
 
         when(playbackSessionTable.getItem(any(Key.class))).thenReturn(playbackSession).thenReturn(finalPlaybackSession);
@@ -97,7 +97,7 @@ public class PlaybackSessionDAOTest {
         PlaybackSession playbackSession = PlaybackSession.builder()
                 .sessionId(SESSION_ID)
                 .streamSource(sampleStreamSource("CONNECTED"))
-                .sessionStatus(InternalStreamingSessionStatus.RUNNING.toString())
+                .sessionStatus(Status.RUNNING.toString())
                 .build();
 
         playbackSessionDAO.save(playbackSession);
@@ -127,7 +127,7 @@ public class PlaybackSessionDAOTest {
         // No stream source at all
         PlaybackSession playbackSession = PlaybackSession.builder()
                 .sessionId(SESSION_ID)
-                .sessionStatus(InternalStreamingSessionStatus.RUNNING.toString())
+                .sessionStatus(Status.RUNNING.toString())
                 .build();
         playbackSessionDAO.save(playbackSession);
 
@@ -142,7 +142,7 @@ public class PlaybackSessionDAOTest {
                 .streamSource(ImmutableList.of(StreamSource.builder()
                         .streamSessionType(SourceType.HLS)
                         .build()))
-                .sessionStatus(InternalStreamingSessionStatus.RUNNING.toString())
+                .sessionStatus(Status.RUNNING.toString())
                 .build();
         playbackSessionDAO.save(playbackSession);
 
