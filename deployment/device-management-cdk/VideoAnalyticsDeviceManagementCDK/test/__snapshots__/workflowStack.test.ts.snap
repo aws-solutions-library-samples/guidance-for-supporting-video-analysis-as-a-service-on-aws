@@ -254,7 +254,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
+          "S3Key": "0497082ceb485bbbe7c5ae769115eefa554886b01d34d2bd661e6dd2c938f780.jar",
         },
         "Environment": {
           "Variables": {
@@ -301,7 +301,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
+          "S3Key": "0497082ceb485bbbe7c5ae769115eefa554886b01d34d2bd661e6dd2c938f780.jar",
         },
         "Environment": {
           "Variables": {
@@ -348,7 +348,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
+          "S3Key": "0497082ceb485bbbe7c5ae769115eefa554886b01d34d2bd661e6dd2c938f780.jar",
         },
         "Description": "Lambda responsible for adding notification topic to the shadow",
         "Environment": {
@@ -396,7 +396,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
+          "S3Key": "0497082ceb485bbbe7c5ae769115eefa554886b01d34d2bd661e6dd2c938f780.jar",
         },
         "Description": "Lambda responsible for attaching notification permission to the device cert",
         "Environment": {
@@ -444,7 +444,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
+          "S3Key": "0497082ceb485bbbe7c5ae769115eefa554886b01d34d2bd661e6dd2c938f780.jar",
         },
         "Description": "Lambda responsible for marking as failed",
         "Environment": {
@@ -768,7 +768,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
+          "S3Key": "0497082ceb485bbbe7c5ae769115eefa554886b01d34d2bd661e6dd2c938f780.jar",
         },
         "Description": "Lambda responsible for updating the state of the Create Device Notification Job",
         "Environment": {
@@ -1058,7 +1058,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
+          "S3Key": "0497082ceb485bbbe7c5ae769115eefa554886b01d34d2bd661e6dd2c938f780.jar",
         },
         "Environment": {
           "Variables": {
@@ -1603,7 +1603,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
+          "S3Key": "0497082ceb485bbbe7c5ae769115eefa554886b01d34d2bd661e6dd2c938f780.jar",
         },
         "Description": "Lambda responsible for creating an IoT Rule",
         "Environment": {
@@ -1651,7 +1651,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
+          "S3Key": "0497082ceb485bbbe7c5ae769115eefa554886b01d34d2bd661e6dd2c938f780.jar",
         },
         "Description": "Lambda responsible for marking as failed",
         "Environment": {
@@ -1938,7 +1938,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
+          "S3Key": "0497082ceb485bbbe7c5ae769115eefa554886b01d34d2bd661e6dd2c938f780.jar",
         },
         "Description": "Lambda responsible for updating the state of the Create Notification Rule Job",
         "Environment": {
@@ -2228,7 +2228,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
+          "S3Key": "0497082ceb485bbbe7c5ae769115eefa554886b01d34d2bd661e6dd2c938f780.jar",
         },
         "Description": "Lambda responsible for detaching notification permission from the device cert",
         "Environment": {
@@ -2276,7 +2276,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
+          "S3Key": "0497082ceb485bbbe7c5ae769115eefa554886b01d34d2bd661e6dd2c938f780.jar",
         },
         "Description": "Lambda responsible for marking as failed",
         "Environment": {
@@ -2324,7 +2324,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
+          "S3Key": "0497082ceb485bbbe7c5ae769115eefa554886b01d34d2bd661e6dd2c938f780.jar",
         },
         "Description": "Lambda responsible for removing notification topic from the shadow",
         "Environment": {
@@ -2648,7 +2648,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
+          "S3Key": "0497082ceb485bbbe7c5ae769115eefa554886b01d34d2bd661e6dd2c938f780.jar",
         },
         "Description": "Lambda responsible for updating the state of the Delete Device Notification Job",
         "Environment": {
@@ -2938,7 +2938,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
+          "S3Key": "0497082ceb485bbbe7c5ae769115eefa554886b01d34d2bd661e6dd2c938f780.jar",
         },
         "Description": "Lambda to handle get device capabilities failure",
         "Environment": {
@@ -2986,7 +2986,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
+          "S3Key": "0497082ceb485bbbe7c5ae769115eefa554886b01d34d2bd661e6dd2c938f780.jar",
         },
         "Description": "Lambda to get device capabilities",
         "Environment": {
@@ -3273,7 +3273,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
+          "S3Key": "0497082ceb485bbbe7c5ae769115eefa554886b01d34d2bd661e6dd2c938f780.jar",
         },
         "Description": "Lambda to request device capabilities",
         "Environment": {
@@ -3563,7 +3563,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
+          "S3Key": "0497082ceb485bbbe7c5ae769115eefa554886b01d34d2bd661e6dd2c938f780.jar",
         },
         "Description": "Lambda responsible for attaching cert to KVS Roles policy.",
         "Environment": {
@@ -3611,7 +3611,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
+          "S3Key": "0497082ceb485bbbe7c5ae769115eefa554886b01d34d2bd661e6dd2c938f780.jar",
         },
         "Description": "Lambda responsible for checking IoT Job status for the download file job.",
         "Environment": {
@@ -3668,7 +3668,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
+          "S3Key": "0497082ceb485bbbe7c5ae769115eefa554886b01d34d2bd661e6dd2c938f780.jar",
         },
         "Description": "Lambda responsible for checking IoT Job status for the install application job.",
         "Environment": {
@@ -3725,7 +3725,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
+          "S3Key": "0497082ceb485bbbe7c5ae769115eefa554886b01d34d2bd661e6dd2c938f780.jar",
         },
         "Description": "Lambda responsible for checking IoT Job status.",
         "Environment": {
@@ -3782,7 +3782,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
+          "S3Key": "0497082ceb485bbbe7c5ae769115eefa554886b01d34d2bd661e6dd2c938f780.jar",
         },
         "Description": "Lambda responsible for creating an IoT Job for a given device command.",
         "Environment": {
@@ -3839,7 +3839,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
+          "S3Key": "0497082ceb485bbbe7c5ae769115eefa554886b01d34d2bd661e6dd2c938f780.jar",
         },
         "Description": "Lambda responsible for creating an IoT Job to download a file.",
         "Environment": {
@@ -3896,7 +3896,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
+          "S3Key": "0497082ceb485bbbe7c5ae769115eefa554886b01d34d2bd661e6dd2c938f780.jar",
         },
         "Description": "Lambda responsible for creating an IoT Job to install an application.",
         "Environment": {
@@ -3953,7 +3953,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
+          "S3Key": "0497082ceb485bbbe7c5ae769115eefa554886b01d34d2bd661e6dd2c938f780.jar",
         },
         "Description": "Lambda to create KVS Stream using FVL API.",
         "Environment": {
@@ -4001,7 +4001,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
+          "S3Key": "0497082ceb485bbbe7c5ae769115eefa554886b01d34d2bd661e6dd2c938f780.jar",
         },
         "Description": "Lambda responsible for detaching cert to KVS Roles policy.",
         "Environment": {
@@ -4049,7 +4049,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
+          "S3Key": "0497082ceb485bbbe7c5ae769115eefa554886b01d34d2bd661e6dd2c938f780.jar",
         },
         "Description": "Lambda responsible for determining what commandType a given commandPayload is. If it is an update operation, proceed to createDownloadFileIotJob",
         "Environment": {
@@ -4106,7 +4106,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
+          "S3Key": "0497082ceb485bbbe7c5ae769115eefa554886b01d34d2bd661e6dd2c938f780.jar",
         },
         "Description": "Lambda responsible for determine new state is registered or not. If its registered, proceed to get device capabilities",
         "Environment": {
@@ -4154,7 +4154,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
+          "S3Key": "0497082ceb485bbbe7c5ae769115eefa554886b01d34d2bd661e6dd2c938f780.jar",
         },
         "Description": "Lambda responsible for determining if device update is commandPayload type or not. If it is command operation, proceed to sendCommand",
         "Environment": {
@@ -4211,7 +4211,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
+          "S3Key": "0497082ceb485bbbe7c5ae769115eefa554886b01d34d2bd661e6dd2c938f780.jar",
         },
         "Description": "Lambda responsible for checking to make sure fvl device registration workflow completes.",
         "Environment": {
@@ -4259,7 +4259,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
+          "S3Key": "0497082ceb485bbbe7c5ae769115eefa554886b01d34d2bd661e6dd2c938f780.jar",
         },
         "Description": "Lambda responsible for marking as failed",
         "Environment": {
@@ -4307,7 +4307,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
+          "S3Key": "0497082ceb485bbbe7c5ae769115eefa554886b01d34d2bd661e6dd2c938f780.jar",
         },
         "Description": "Lambda sends message to device.",
         "Environment": {
@@ -4355,7 +4355,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
+          "S3Key": "0497082ceb485bbbe7c5ae769115eefa554886b01d34d2bd661e6dd2c938f780.jar",
         },
         "Description": "Publish configurations to their respective shadow",
         "Environment": {
@@ -4403,7 +4403,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
+          "S3Key": "0497082ceb485bbbe7c5ae769115eefa554886b01d34d2bd661e6dd2c938f780.jar",
         },
         "Description": "Lambda responsible for publishing new device state",
         "Environment": {
@@ -5319,7 +5319,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
+          "S3Key": "0497082ceb485bbbe7c5ae769115eefa554886b01d34d2bd661e6dd2c938f780.jar",
         },
         "Description": "Lambda responsible for updating device thing group if device group payload present.",
         "Environment": {
@@ -5376,7 +5376,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
+          "S3Key": "0497082ceb485bbbe7c5ae769115eefa554886b01d34d2bd661e6dd2c938f780.jar",
         },
         "Description": "Lambda responsible for updating deviceType for deviceTypePayloads.",
         "Environment": {
@@ -5415,7 +5415,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
+          "S3Key": "0497082ceb485bbbe7c5ae769115eefa554886b01d34d2bd661e6dd2c938f780.jar",
         },
         "Description": "Lambda responsible for updating the state of the Update Device Job",
         "Environment": {
@@ -5705,7 +5705,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
+          "S3Key": "0497082ceb485bbbe7c5ae769115eefa554886b01d34d2bd661e6dd2c938f780.jar",
         },
         "Description": "Lambda responsible for marking as failed",
         "Environment": {
@@ -5992,7 +5992,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
+          "S3Key": "0497082ceb485bbbe7c5ae769115eefa554886b01d34d2bd661e6dd2c938f780.jar",
         },
         "Description": "Lambda responsible for updating an IoT Rule",
         "Environment": {
@@ -6040,7 +6040,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "1d4c1ea1d60d1ef8ec2a78534c2d14a71c5775b8b57ddc7d6cce558ec1e82e9b.jar",
+          "S3Key": "0497082ceb485bbbe7c5ae769115eefa554886b01d34d2bd661e6dd2c938f780.jar",
         },
         "Description": "Lambda responsible for updating the state of the Update Notification Rule Job",
         "Environment": {

@@ -18,6 +18,7 @@ import com.amazonaws.videoanalytics.devicemanagement.Status;
 
 import java.util.Map;
 import java.time.Instant;
+import java.util.Date;
 
 import static com.amazonaws.videoanalytics.devicemanagement.exceptions.VideoAnalyticsExceptionMessage.*;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.LambdaProxyUtils.parsePathParameter;
@@ -73,8 +74,8 @@ public class GetCreateDeviceStatusActivity implements RequestHandler<Map<String,
 
             GetCreateDeviceStatusResponseContent response = GetCreateDeviceStatusResponseContent.builder()
                     .jobId(jobId)
-                    .createTime(createTimeSeconds)
-                    .modifiedTime(modifiedTimeSeconds)
+                    .createTime(new Date((long)(createTimeSeconds * 1000)))
+                    .modifiedTime(new Date((long)(modifiedTimeSeconds * 1000)))
                     .deviceId(createDeviceData.getDeviceId())
                     .status(Status.valueOf(createDeviceData.getStatus()))
                     .errorMessage(createDeviceData.getErrorMessage())

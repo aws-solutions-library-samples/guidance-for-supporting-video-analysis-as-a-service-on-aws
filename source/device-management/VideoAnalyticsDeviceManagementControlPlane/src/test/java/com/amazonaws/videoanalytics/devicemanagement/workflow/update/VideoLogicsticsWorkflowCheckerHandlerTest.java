@@ -61,13 +61,12 @@ public class VideoLogicsticsWorkflowCheckerHandlerTest {
         when(context.getLogger()).thenReturn(logger);
         
         createDevice = CreateDevice.builder()
-                .jobId(JOB_ID)
+                .vlJobId(JOB_ID)
                 .build();
     }
 
     @Test
     public void handleRequest_CompletedState_ReturnsNull() {
-        createDevice.setCurrentDeviceState("COMPLETED");
         when(startCreateDeviceDAO.load(JOB_ID)).thenReturn(createDevice);
 
         Map<String, Object> result = handler.handleRequest(requestMap, context);
@@ -77,41 +76,21 @@ public class VideoLogicsticsWorkflowCheckerHandlerTest {
     }
 
     @Test
-    public void handleRequest_RunningState_ThrowsRetryableException() {
-        createDevice.setCurrentDeviceState("RUNNING");
-        when(startCreateDeviceDAO.load(JOB_ID)).thenReturn(createDevice);
-
-        assertThrows(RetryableException.class, () -> 
-            handler.handleRequest(requestMap, context)
-        );
-    }
-
-    @Test
-    public void handleRequest_FailedState_ThrowsInternalFailureException() {
-        createDevice.setCurrentDeviceState("FAILED");
-        when(startCreateDeviceDAO.load(JOB_ID)).thenReturn(createDevice);
-
-        assertThrows(InternalFailureException.class, () -> 
-            handler.handleRequest(requestMap, context)
-        );
-    }
-
-    @Test
-    public void handleRequest_InvalidState_ThrowsInvalidRequestException() {
-        createDevice.setCurrentDeviceState("INVALID_STATE");
-        when(startCreateDeviceDAO.load(JOB_ID)).thenReturn(createDevice);
-
-        assertThrows(InvalidRequestException.class, () -> 
-            handler.handleRequest(requestMap, context)
-        );
-    }
-
-    @Test
     public void handleRequest_NullJobId_ThrowsInvalidRequestException() {
         Map<String, Object> invalidRequest = Map.of();
 
         assertThrows(InvalidRequestException.class, () -> 
             handler.handleRequest(invalidRequest, context)
+        );
+    }
+
+    @Test
+    public void handleRequest_NullVlJobId_ThrowsInvalidRequestException() {
+        createDevice.setVlJobId(null);
+        when(startCreateDeviceDAO.load(JOB_ID)).thenReturn(createDevice);
+
+        assertThrows(InvalidRequestException.class, () -> 
+            handler.handleRequest(requestMap, context)
         );
     }
 

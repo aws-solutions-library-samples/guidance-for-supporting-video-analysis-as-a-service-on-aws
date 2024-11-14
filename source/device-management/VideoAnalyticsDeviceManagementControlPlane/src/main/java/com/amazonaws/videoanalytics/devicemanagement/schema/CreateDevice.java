@@ -55,10 +55,4 @@ public class CreateDevice {
     @Getter(onMethod_ = { @DynamoDbAttribute(SchemaConst.VL_JOB_ID) })
     private String vlJobId;
 
-    // Job Status for the Video Logicstics workflow
-    @Getter(onMethod_ = { @DynamoDbAttribute(SchemaConst.VL_JOB_STATUS) })
-    private String vlJobStatus;
-
-    @Getter(onMethod_ = { @DynamoDbAttribute(SchemaConst.CURRENT_DEVICE_STATE)})
-    private String currentDeviceState;
 }

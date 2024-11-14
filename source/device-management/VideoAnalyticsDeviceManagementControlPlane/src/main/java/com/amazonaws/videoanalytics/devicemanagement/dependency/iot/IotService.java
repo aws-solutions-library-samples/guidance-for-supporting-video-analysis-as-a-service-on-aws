@@ -551,7 +551,7 @@ public class IotService {
      * This function is used to clear field in "provision" named shadow for use cases:
      * - Enable
      * - Disable
-     * @param deviceId Fathom Device
+     * @param deviceId Iot Device
      * @param fieldName fieldname to clear in the shadow
      */
     public void clearDeviceProvisioningShadowField(String deviceId, String fieldName) {

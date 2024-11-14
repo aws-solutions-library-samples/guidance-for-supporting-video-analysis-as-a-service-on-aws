@@ -33,22 +33,5 @@ public class StartCreateDeviceDAO {
                 .build());
     }
 
-    /**
-     * Retrieves the current device state for a given device ID
-     * @param deviceId The ID of the device to query
-     * @return The current device state, or null if the device is not found
-     */
-    public String getVideoLogisticsDeviceStatus(final String deviceId) {
-        logger.log(String.format("Getting device status for device %s", deviceId));
-        // Query the GSI using deviceId
-        return ddbTable.index("deviceId-index")
-                .query(QueryConditional.keyEqualTo(Key.builder()
-                        .partitionValue(deviceId)
-                        .build()))
-                .stream()
-                .flatMap(page -> page.items().stream())
-                .findFirst()
-                .map(CreateDevice::getCurrentDeviceState)
-                .orElse(null);
-    }
+    
 }

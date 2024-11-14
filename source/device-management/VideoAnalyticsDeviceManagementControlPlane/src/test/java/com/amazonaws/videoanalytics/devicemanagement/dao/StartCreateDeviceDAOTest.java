@@ -86,34 +86,4 @@ public class StartCreateDeviceDAOTest {
         verify(ddbTable).putItem(createDeviceCompleted);
     }
 
-    @Test
-    public void getVideoLogisticsDeviceStatus_DeviceExists_ReturnsDeviceState() {
-        CreateDevice device = CreateDevice.builder()
-                .deviceId(DEVICE_ID)
-                .currentDeviceState(DEVICE_STATE)
-                .build();
-
-        when(ddbTable.index("deviceId-index")).thenReturn(deviceIdIndex);
-        when(deviceIdIndex.query((QueryConditional) any())).thenReturn(() -> pagesIterator);
-        when(pagesIterator.hasNext()).thenReturn(true, false);
-        when(pagesIterator.next()).thenReturn(queryPage);
-        when(queryPage.items()).thenReturn(Collections.singletonList(device));
-
-        String result = startCreateDeviceDAO.getVideoLogisticsDeviceStatus(DEVICE_ID);
-
-        assertEquals(DEVICE_STATE, result);
-        verify(deviceIdIndex).query((QueryConditional) any());
-    }
-
-    @Test
-    public void getVideoLogisticsDeviceStatus_DeviceDoesNotExist_ReturnsNull() {
-        when(ddbTable.index("deviceId-index")).thenReturn(deviceIdIndex);
-        when(deviceIdIndex.query((QueryConditional) any())).thenReturn(() -> pagesIterator);
-        when(pagesIterator.hasNext()).thenReturn(false);
-
-        String result = startCreateDeviceDAO.getVideoLogisticsDeviceStatus(DEVICE_ID);
-
-        assertNull(result);
-        verify(deviceIdIndex).query((QueryConditional) any());
-    }
 }

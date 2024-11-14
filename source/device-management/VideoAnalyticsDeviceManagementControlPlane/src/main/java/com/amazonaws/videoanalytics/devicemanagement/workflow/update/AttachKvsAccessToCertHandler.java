@@ -53,9 +53,7 @@ public class AttachKvsAccessToCertHandler implements RequestHandler<Map<String, 
 
             // notify the device
             String deviceId = createdDevice.getDeviceId();
-            String currentDeviceState = createdDevice.getCurrentDeviceState();
             iotService.messageDeviceProvisioningShadow(deviceId, DEVICE_ENABLED_MESSAGE);
-            iotService.clearDeviceProvisioningShadowField(deviceId, currentDeviceState.toLowerCase());
         }
 
         ddbService.saveCreateDevice(createdDevice);

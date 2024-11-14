@@ -56,7 +56,6 @@ public class AttachKvsAccessToCertHandlerTest {
 
         CreateDevice device = new CreateDevice();
         device.setDeviceId(DEVICE_ID);
-        device.setCurrentDeviceState(DEVICE_STATE);
 
         when(ddbService.getCreateDevice(any())).thenReturn(device);
         when(iotService.listThingPrincipals(DEVICE_ID))
@@ -70,7 +69,6 @@ public class AttachKvsAccessToCertHandlerTest {
         verify(iotService).listThingPrincipals(DEVICE_ID);
         verify(iotService).attachPolicy(KVS_DEVICE_IOT_POLICY, PRINCIPAL);
         verify(iotService).messageDeviceProvisioningShadow(eq(DEVICE_ID), eq(DEVICE_ENABLED_MESSAGE));
-        verify(iotService).clearDeviceProvisioningShadowField(eq(DEVICE_ID), eq(DEVICE_STATE.toLowerCase()));
         verify(ddbService).saveCreateDevice(device);
     }
 }

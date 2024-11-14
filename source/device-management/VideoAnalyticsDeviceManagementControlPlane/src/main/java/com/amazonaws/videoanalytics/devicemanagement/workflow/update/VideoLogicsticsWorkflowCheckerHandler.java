@@ -59,8 +59,17 @@ public class VideoLogicsticsWorkflowCheckerHandler implements RequestHandler<Map
             String jobId = (String) requestParams.get(JOB_ID);
             CreateDevice createDevice = startCreateDeviceDAO.load(jobId);
 
-            // Get the current device state
-            String currentState = createDevice.getCurrentDeviceState();
+            // Get VL Job ID from the device record
+            String vlJobId = createDevice.getVlJobId();
+            if (vlJobId == null) {
+                throw InvalidRequestException.builder()
+                    .message("VL Job ID not found in device record")
+                    .build();
+            }
+
+            // TODO: Call VL client to get actual job status
+            // For now, hardcoding to COMPLETED for pass-through logic
+            String currentState = "COMPLETED";
             
             // Check the workflow status based on device state
             switch (currentState) {
