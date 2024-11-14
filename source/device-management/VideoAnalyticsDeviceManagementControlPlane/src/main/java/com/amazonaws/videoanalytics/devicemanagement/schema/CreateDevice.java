@@ -25,8 +25,7 @@ public class CreateDevice {
     @Getter(onMethod_ = { @DynamoDbPartitionKey, @DynamoDbAttribute(SchemaConst.JOB_ID) })
     private String jobId;
 
-    @Getter(onMethod_ = { @DynamoDbAttribute(SchemaConst.DEVICE_ID),
-            @DynamoDbSecondaryPartitionKey(indexNames = {"deviceId-index"}) })
+    @Getter(onMethod_ = { @DynamoDbAttribute(SchemaConst.DEVICE_ID) })
     private String deviceId;
 
     @Getter(onMethod_ = { @DynamoDbAttribute(SchemaConst.CERTIFICATE_ID) })
