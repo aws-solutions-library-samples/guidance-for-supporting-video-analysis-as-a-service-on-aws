@@ -12,6 +12,7 @@ service VideoAnalytic {
     resources: [
         LivestreamSession,
         ExportVideo,
-        PlaybackSession
+        PlaybackSession,
+        Snapshot
     ]
 }

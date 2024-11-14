@@ -178,7 +178,7 @@
             "severity": "WARNING",
             "shapeId": "com.amazonaws.videoanalytics.devicemanagement#GetDevice",
             "message": "This operation uses the `POST` method in the `http` trait, but is marked with the readonly trait",
-            "filename": "/Volumes/workplace/local/guidance-for-video-analytics-infrastructure-on-aws/source/models/device-management/models/operations/DeviceOperations/GetDevice.smithy",
+            "filename": "/Volumes/workplace/guidance-for-video-analytics-infrastructure-on-aws/source/models/device-management/models/operations/DeviceOperations/GetDevice.smithy",
             "line": 18,
             "column": 1
         }

@@ -3,6 +3,7 @@
     "operationShapeIds": [
         "com.amazonaws.videoanalytics.videologistics#CreateLivestreamSession",
         "com.amazonaws.videoanalytics.videologistics#CreatePlaybackSession",
+        "com.amazonaws.videoanalytics.videologistics#CreateSnapshotUploadPath",
         "com.amazonaws.videoanalytics.videologistics#GetPlaybackSession",
         "com.amazonaws.videoanalytics.videologistics#StartExportVideos"
     ],
@@ -23,7 +24,8 @@
     "resourceShapeIds": [
         "com.amazonaws.videoanalytics.videologistics#ExportVideo",
         "com.amazonaws.videoanalytics.videologistics#LivestreamSession",
-        "com.amazonaws.videoanalytics.videologistics#PlaybackSession"
+        "com.amazonaws.videoanalytics.videologistics#PlaybackSession",
+        "com.amazonaws.videoanalytics.videologistics#Snapshot"
     ],
     "serviceShapeIds": [
         "com.amazonaws.videoanalytics.videologistics#VideoAnalytic"

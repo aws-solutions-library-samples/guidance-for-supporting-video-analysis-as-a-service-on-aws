@@ -1772,6 +1772,57 @@
                 "smithy.api#output": {}
             }
         },
+        "com.amazonaws.videoanalytics.videologistics#CreateSnapshotUploadPath": {
+            "type": "operation",
+            "input": {
+                "target": "com.amazonaws.videoanalytics.videologistics#CreateSnapshotUploadPathRequest"
+            },
+            "output": {
+                "target": "smithy.api#Unit"
+            },
+            "errors": [
+                {
+                    "target": "com.amazonaws.videoanalytics#InternalServerException"
+                },
+                {
+                    "target": "com.amazonaws.videoanalytics#ValidationException"
+                }
+            ],
+            "traits": {
+                "smithy.api#http": {
+                    "code": 200,
+                    "method": "POST",
+                    "uri": "/create-snapshot-upload-path"
+                },
+                "smithy.api#idempotent": {}
+            }
+        },
+        "com.amazonaws.videoanalytics.videologistics#CreateSnapshotUploadPathRequest": {
+            "type": "structure",
+            "members": {
+                "deviceId": {
+                    "target": "com.amazonaws.videoanalytics#DeviceId",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                },
+                "checksum": {
+                    "target": "smithy.api#String",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                },
+                "contentLength": {
+                    "target": "smithy.api#Long",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                }
+            },
+            "traits": {
+                "smithy.api#input": {}
+            }
+        },
         "com.amazonaws.videoanalytics.videologistics#DetailedFailureReason": {
             "type": "document"
         },
@@ -2033,6 +2084,14 @@
                 "smithy.api#pattern": "^[a-z0-9\\-]+$"
             }
         },
+        "com.amazonaws.videoanalytics.videologistics#Snapshot": {
+            "type": "resource",
+            "operations": [
+                {
+                    "target": "com.amazonaws.videoanalytics.videologistics#CreateSnapshotUploadPath"
+                }
+            ]
+        },
         "com.amazonaws.videoanalytics.videologistics#SourceInfo": {
             "type": "structure",
             "members": {
@@ -2182,6 +2241,9 @@
                 },
                 {
                     "target": "com.amazonaws.videoanalytics.videologistics#PlaybackSession"
+                },
+                {
+                    "target": "com.amazonaws.videoanalytics.videologistics#Snapshot"
                 }
             ],
             "traits": {
