@@ -27,6 +27,7 @@ serde.workspace = true
 once_cell.workspace = true
 thiserror.workspace = true
 rusqlite.workspace = true
+reqwest.workspace = true
 # Do not inherit from cargo workspace, should only be called executable crate.
 tracing-core = "0.1.30"
 
@@ -34,3 +35,7 @@ tracing-core = "0.1.30"
 device-traits.workspace = true
 mqtt-client.workspace = true
 iot-connections.workspace = true
+onvif-client.workspace = true
+http-client.workspace = true
+streaming-traits.workspace = true
+gstreamer-pipeline.workspace = true

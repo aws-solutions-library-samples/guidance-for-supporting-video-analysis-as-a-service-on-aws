@@ -114,8 +114,6 @@ impl std::fmt::Debug for dyn PubSubMessage + Send + Sync {
     }
 }
 
-//TODO: Convert Payload from String to flat buffer
-//TODO: Do we want to follow a builder pattern for PubSubMessages?
 /// This trait is implemented to use PubSubClient
 #[automock]
 pub trait PubSubMessage {

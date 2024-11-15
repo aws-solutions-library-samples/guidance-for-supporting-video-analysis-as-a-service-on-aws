@@ -51,22 +51,15 @@ pub struct AppInfo {
     #[yaserde(prefix = "ans", rename = "Version")]
     pub version: String,
 
-    // VHT doesn't return this value. Commenting out so we don't need to introduce the struct LicenseInfo
-    // Licenses associated with the application.
-    // #[yaserde(prefix = "ans", rename = "Licenses")]
-    // pub licenses: Vec<LicenseInfo>,
-
     // List of privileges granted to the application.
     #[yaserde(prefix = "ans", rename = "Privileges")]
     pub privileges: Vec<String>,
 
-    // TODO: revisit DateTime implementation if installation_date is needed.
     // Currently process 1 returns 1970-01-01T00:00:00Z for the field.
     // Date and time when the application has been installed.
     // #[yaserde(prefix = "ans", rename = "InstallationDate")]
     // pub installation_date: xs::DateTime,
 
-    // TODO: revisit DateTime implementation if installation_date is needed.
     // Currently process 1 returns 1970-01-01T00:00:00Z for the field.
     // Time of last update to this app, i.e. the time when this particular
     // version was installed.

@@ -1,4 +1,4 @@
-use crate::client::constant::VHT_DIGEST_URI;
+use crate::client::constant::DIGEST_URI;
 use crate::client::error::OnvifClientError;
 use crate::client::onvif_client::Credential;
 use http_auth::{ChallengeParser, DigestClient, PasswordParams};
@@ -82,7 +82,7 @@ impl DigestAuth {
             .respond(http_auth::PasswordParams {
                 username: self.credential.username.as_str(),
                 password: self.credential.password.as_str(),
-                uri: VHT_DIGEST_URI,
+                uri: DIGEST_URI,
                 method: reqwest::Method::POST.as_str(),
                 body: None,
             })
@@ -242,8 +242,6 @@ mod tests {
     }
 
     const DIGEST_CHALLENGE: &str = r#"Digest algorithm=MD5, realm="Silvan_http_digest", qop="auth", nonce="62d82aa9ca59e3a04cd1", opaque="5b6ea228""#;
-
-    // TODO: add the ability to generate random cnonce if it makes the test more robust
     const TEST_CNONCE: &str = r#"62d82aa9ca59e3a04cd1"#;
 
     const NO_NONCE_DIGEST_CHALLENGE: &str =

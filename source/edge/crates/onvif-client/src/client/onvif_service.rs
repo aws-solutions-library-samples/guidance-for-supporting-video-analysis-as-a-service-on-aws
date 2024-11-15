@@ -8,8 +8,6 @@ use crate::client::constant::{
 use crate::client::error::OnvifClientError;
 use std::str::FromStr;
 
-// TODO: add more services to the OnvifServiceName enum and
-// update the OnvifServiceName from_str and the OnvifServiceCapability below accordingly
 /// This enum is a centralized place to access all onvif service name
 #[derive(Debug, PartialEq, Eq, Hash)]
 pub enum OnvifServiceName {
@@ -46,9 +44,6 @@ pub enum OnvifServiceName {
     AppMgmtService,
 }
 
-// TODO: investigate if there's any benefit of using Rust crate "strum" instead of the FromStr implemented here.
-// Strum is a set of macros and traits for working with enums and strings easier in Rust.
-// https://docs.rs/strum/latest/strum/
 impl FromStr for OnvifServiceName {
     type Err = OnvifClientError;
 

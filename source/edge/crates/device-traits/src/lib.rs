@@ -5,6 +5,9 @@ pub mod channel_utils;
 pub mod connections;
 pub mod merge;
 
+/// Util to track state information globally.
+pub mod state;
+
 use async_trait::async_trait;
 use mockall::automock;
 use serde_json::Value;

@@ -1,0 +1,10 @@
+# Test + example config file for streaming + Values do not matter for tests.
+ca_cert_path: "./certificates/AmazonRootCA1.crt"
+dir_path: "./certificates"
+config_path: "crates/edge-process-streaming/tests/test_config/test_streaming_config.yaml"
+onvif_account_name: "Foo"
+onvif_password: "Bar"
+aws_iot_credential_endpoint: "abc.foobar.us-west-2.amazonaws.com"
+aws_region: "us-west-2"
+kvs_role_alias: "FooBarRoleAlias"
+client_id: "TestClientId"

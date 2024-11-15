@@ -5,17 +5,24 @@ use edge_process::utils::{
 };
 
 use device_traits::connections::PubSubClient;
+use device_traits::state::{State, StateManager};
+use edge_process::config::get_media_config;
 use edge_process::connections::aws_iot::{new_iot_shadow_manager, setup_and_start_iot_event_loop};
 use edge_process::constants::{
     BUFFER_SIZE, IS_ENABLED, IS_STATUS_CHANGED, LOG_LEVEL, LOG_SYNC, PROVISION_SHADOW_NAME,
     SYNC_FREQUENCY,
 };
+use edge_process::device_streaming_config;
 use edge_process::log_sync::log_sync::setup_and_start_log_sync_loop;
+use gstreamer_pipeline::event_ingestion::create_streaming_service;
 use iot_connections::client::IotMqttClientManager;
 use once_cell::sync::Lazy;
+use reqwest::{Client, Proxy};
 use serde_json::{json, Value};
+use std::env;
 use std::error::Error;
 use std::process::ExitCode;
+use std::sync::mpsc::sync_channel;
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 use tokio::sync::mpsc::channel;
@@ -42,7 +49,18 @@ async fn main() -> Result<ExitCode, Box<dyn Error>> {
     //File Writer collects tracing logs, Returns a guard which must exist for the lifetime of the program.
     let _log_file_guard = init_tracing(&settings).await;
 
-    let log_sync = std::env::var(LOG_SYNC).unwrap_or("FALSE".to_string()).eq("TRUE");
+    let mut http_client = Client::new();
+
+    // If we are tunneling IP, the remote endpoint is getting reached
+    // We need to set up a correct proxy for reqwest to use
+    // this is used for local development and testing purposes
+    if let Ok(localhost_endpoint) = env::var("LOCALHOST_ENDPOINT") {
+        http_client = Client::builder().proxy(Proxy::http(localhost_endpoint)?).build()?;
+    }
+
+    let ip_address = env::var("LOCALHOST_ENDPOINT").unwrap_or("127.0.0.1".to_string());
+
+    let log_sync = env::var(LOG_SYNC).unwrap_or("FALSE".to_string()).eq("TRUE");
 
     let pub_sub_client_manager =
         IotMqttClientManager::new_iot_connection_manager(configurations.get_config());
@@ -55,6 +73,25 @@ async fn main() -> Result<ExitCode, Box<dyn Error>> {
         dir.to_owned(),
     )
     .await;
+
+    let config_media_path = get_media_config(&config_path.clone()).await?;
+
+    let mut streaming_model =
+        device_streaming_config::get_device_streaming_config_instance(http_client);
+    streaming_model.set_up_services_uri(ip_address).await?;
+    streaming_model
+        .bootstrap(
+            config_media_path.onvif_account_name.clone(),
+            config_media_path.onvif_password.clone(),
+        )
+        .await?;
+    let _get_stream_response = streaming_model.get_stream_uri().await?;
+    let stream_uri_config = streaming_model
+        .get_rtsp_url(
+            config_media_path.onvif_account_name.clone(),
+            config_media_path.onvif_password.clone(),
+        )
+        .await?;
 
     let (logger_config_tx, mut logger_config_rx) = channel::<String>(BUFFER_SIZE);
     let (log_tx, log_rx) = channel::<Value>(BUFFER_SIZE);
@@ -138,6 +175,41 @@ async fn main() -> Result<ExitCode, Box<dyn Error>> {
 
     let _log_loop_handle =
         setup_and_start_log_sync_loop(dir_path, local_log_file_path, log_rx).await?;
+
+    loop {
+        match StateManager::get_state() {
+            State::CreateOrEnableSteamingResources => {
+                info!("Device is enabled creating streaming resources.");
+                break;
+            }
+            _ => {
+                debug!("Device not enabled. Blocking creation streaming resources.");
+            }
+        }
+        sleep(Duration::from_millis(250)).await;
+    }
+
+    let (_motion_based_streaming_tx, motion_based_streaming_rx) = sync_channel(5);
+
+    let uri_config = stream_uri_config.clone();
+    let mut streaming_service = create_streaming_service(uri_config, motion_based_streaming_rx);
+
+    let _gstreamer_pipeline_handle = tokio::spawn(async move {
+        //Start pipeline when device is in the correct state.
+        loop {
+            match StateManager::get_state() {
+                //Device has been set to ENABLED
+                State::CreateOrEnableSteamingResources => {
+                    streaming_service.ensure_start().await;
+                }
+                //Device has been set to DISABLED
+                State::DisableStreamingResources => {
+                    streaming_service.ensure_stop().await;
+                }
+            }
+            sleep(Duration::from_millis(250)).await;
+        }
+    });
 
     //This will keep process 2 alive until connections task stops.
     try_join!(_iot_loop_handle)?;
