@@ -67,7 +67,7 @@ fn fragment_ack_callback(
     match unsafe { (*fragment_ack).ackType } {
         FRAGMENT_ACK_TYPE_FRAGMENT_ACK_TYPE_BUFFERING
         | FRAGMENT_ACK_TYPE_FRAGMENT_ACK_TYPE_RECEIVED => {
-            // Do nothing, refer to: https://tiny.amazon.com/4pyvezkb/githawslamazblobmastdocsstru
+            // Do nothing, refer to: https://github.com/awslabs/amazon-kinesis-video-streams-producer-sdk-cpp/blob/master/docs/structures.md
         }
         FRAGMENT_ACK_TYPE_FRAGMENT_ACK_TYPE_UNDEFINED
         | FRAGMENT_ACK_TYPE_FRAGMENT_ACK_TYPE_ERROR
