@@ -149,6 +149,46 @@
                 }
             }
         },
+        "/create-snapshot-upload-path": {
+            "post": {
+                "operationId": "CreateSnapshotUploadPath",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateSnapshotUploadPathRequestContent"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "CreateSnapshotUploadPath 200 response"
+                    },
+                    "400": {
+                        "description": "ValidationException 400 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "InternalServerException 500 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InternalServerExceptionResponseContent"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/get-playback-session/{sessionId}": {
             "post": {
                 "operationId": "GetPlaybackSession",
@@ -361,6 +401,28 @@
                         "pattern": "^[a-z0-9\\-]+$"
                     }
                 }
+            },
+            "CreateSnapshotUploadPathRequestContent": {
+                "type": "object",
+                "properties": {
+                    "deviceId": {
+                        "type": "string",
+                        "maxLength": 128,
+                        "minLength": 1,
+                        "pattern": "^[a-zA-Z0-9:_\\-]+$"
+                    },
+                    "checksum": {
+                        "type": "string"
+                    },
+                    "contentLength": {
+                        "type": "number"
+                    }
+                },
+                "required": [
+                    "checksum",
+                    "contentLength",
+                    "deviceId"
+                ]
             },
             "GetPlaybackSessionResponseContent": {
                 "type": "object",
