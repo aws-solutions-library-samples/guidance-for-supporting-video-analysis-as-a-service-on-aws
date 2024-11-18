@@ -25,7 +25,7 @@ import {
   RESULT_PATH_ERROR,
   ERROR_MESSAGE_PATH,
   DM_WORKFLOW_JAVA_PATH_PREFIX,
-  LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT,
+  LAMBDA_ASSET_PATH,
 } from "../const";
 
 export class StartCreateDevice extends VideoAnalyticsAsyncWorkflowResource {
@@ -103,7 +103,7 @@ export class StartCreateDevice extends VideoAnalyticsAsyncWorkflowResource {
       runtime: Runtime.JAVA_17,
       //TODO: Update this if any changes are made to the lambda handler path or asset built jar location
       handler: `${DM_WORKFLOW_JAVA_PATH_PREFIX}createdevice.CreateDeviceHandler::handleRequest`,
-      code: Code.fromAsset(`${LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT}`),
+      code: Code.fromAsset(`${LAMBDA_ASSET_PATH}`),
       memorySize: 512,
       timeout: Duration.minutes(5),
       environment: {
@@ -122,7 +122,7 @@ export class StartCreateDevice extends VideoAnalyticsAsyncWorkflowResource {
       runtime: Runtime.JAVA_17,
       //TODO: Update this if any changes are made to the lambda handler path or asset built jar location
       handler: `${DM_WORKFLOW_JAVA_PATH_PREFIX}createdevice.SetLoggerConfigHandler::handleRequest`,
-      code: Code.fromAsset(`${LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT}`),
+      code: Code.fromAsset(`${LAMBDA_ASSET_PATH}`),
       memorySize: 512,
       timeout: Duration.minutes(5),
       environment: {
@@ -143,7 +143,7 @@ export class StartCreateDevice extends VideoAnalyticsAsyncWorkflowResource {
         runtime: Runtime.JAVA_17,
         //TODO: Update this if any changes are made to the lambda handler path or asset built jar location
         handler: `${DM_WORKFLOW_JAVA_PATH_PREFIX}createdevice.FailCreateDeviceHandler::handleRequest`,
-        code: Code.fromAsset(`${LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT}`),
+        code: Code.fromAsset(`${LAMBDA_ASSET_PATH}`),
         memorySize: 512,
         timeout: Duration.minutes(5),
         environment: {

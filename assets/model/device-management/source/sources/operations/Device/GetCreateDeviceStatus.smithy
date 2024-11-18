@@ -13,7 +13,7 @@ use com.amazonaws.videoanalytics#ValidationException
     type: "aws_proxy",
     httpMethod: "POST",
     uri: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${GetCreateDeviceStatusActivity}/invocations",
-    credentials: "arn:aws:iam::${AWS::AccountId}:role/ApiGatewayRole"
+    credentials: "arn:aws:iam::${AWS::AccountId}:role/DeviceManagementApiGatewayRole"
 )
 @http(code: 200, method: "POST", uri: "/get-create-device-status/{jobId}")
 @idempotent

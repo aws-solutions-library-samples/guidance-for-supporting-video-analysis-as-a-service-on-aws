@@ -11,7 +11,7 @@ use aws.apigateway#integration
 
 @integration(httpMethod: "POST", type: "aws_proxy"
     uri: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${GetDeviceShadowActivity}/invocations",
-    credentials: "arn:aws:iam::${AWS::AccountId}:role/ApiGatewayRole")
+    credentials: "arn:aws:iam::${AWS::AccountId}:role/DeviceManagementApiGatewayRole")
 @http(code: 200, method: "POST", uri: "/get-device-shadow/{deviceId}")
 operation GetDeviceShadow {
     input: GetDeviceShadowRequest,

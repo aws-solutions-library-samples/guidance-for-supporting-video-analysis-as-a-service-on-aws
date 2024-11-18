@@ -60,7 +60,7 @@
                         "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${GetCreateDeviceStatusActivity}/invocations"
                     },
                     "credentials": {
-                        "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/ApiGatewayRole"
+                        "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/DeviceManagementApiGatewayRole"
                     }
                 }
             }
@@ -139,7 +139,7 @@
                         "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${GetDeviceShadowActivity}/invocations"
                     },
                     "credentials": {
-                        "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/ApiGatewayRole"
+                        "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/DeviceManagementApiGatewayRole"
                     }
                 }
             }
@@ -209,7 +209,7 @@
                         "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${GetDeviceActivity}/invocations"
                     },
                     "credentials": {
-                        "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/ApiGatewayRole"
+                        "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/DeviceManagementApiGatewayRole"
                     }
                 }
             }
@@ -309,7 +309,7 @@
                         "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${StartCreateDeviceActivity}/invocations"
                     },
                     "credentials": {
-                        "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/ApiGatewayRole"
+                        "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/DeviceManagementApiGatewayRole"
                     }
                 }
             }
@@ -388,7 +388,7 @@
                         "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${UpdateDeviceShadowActivity}/invocations"
                     },
                     "credentials": {
-                        "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/ApiGatewayRole"
+                        "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/DeviceManagementApiGatewayRole"
                     }
                 }
             }

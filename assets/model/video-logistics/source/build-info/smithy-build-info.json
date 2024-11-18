@@ -136,6 +136,7 @@
     ],
     "traitNames": [
         "aws.api#arnReference",
+        "aws.apigateway#integration",
         "aws.protocols#restJson1",
         "smithy.api#authDefinition",
         "smithy.api#box",
