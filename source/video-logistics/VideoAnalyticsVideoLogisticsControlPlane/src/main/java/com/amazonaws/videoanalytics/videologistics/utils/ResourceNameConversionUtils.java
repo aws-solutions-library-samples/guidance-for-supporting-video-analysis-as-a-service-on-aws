@@ -1,6 +1,7 @@
-package com.amazonaws.videoanalytics.videologistics.schema.util;
+package com.amazonaws.videoanalytics.videologistics.utils;
 
-import static com.amazonaws.videoanalytics.videologistics.schema.util.GuidanceVLConstants.LIVE_STREAM_SIGNALING_CHANNEL;
+import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.LIVE_STREAM_SIGNALING_CHANNEL;
+import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.PLAYBACK_SIGNALING_CHANNEL;
 
 public class ResourceNameConversionUtils {
     private ResourceNameConversionUtils() {}
@@ -13,14 +14,11 @@ public class ResourceNameConversionUtils {
     }
 
     public static String getPlaybackSignalingChannelNameFromDeviceId(final String deviceId) {
-        return deviceId;
+        return String.format(PLAYBACK_SIGNALING_CHANNEL, deviceId);
     }
 
     public static String getLivestreamSignalingChannelNameFromDeviceId(final String deviceId) {
         return String.format(LIVE_STREAM_SIGNALING_CHANNEL, deviceId);
     }
-
-    public static String getDeviceIdFromPlaybackSignalingChannelName(final String signalingChannelName) {
-        return signalingChannelName;
-    }
 }
+

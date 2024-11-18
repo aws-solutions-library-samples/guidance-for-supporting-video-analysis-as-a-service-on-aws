@@ -96,7 +96,6 @@ public class JSON {
         gsonBuilder.registerTypeAdapterFactory(new com.amazonaws.videoanalytics.videologistics.CreatePlaybackSessionRequestContent.CustomTypeAdapterFactory());
         gsonBuilder.registerTypeAdapterFactory(new com.amazonaws.videoanalytics.videologistics.CreatePlaybackSessionResponseContent.CustomTypeAdapterFactory());
         gsonBuilder.registerTypeAdapterFactory(new com.amazonaws.videoanalytics.videologistics.CreateSnapshotUploadPathRequestContent.CustomTypeAdapterFactory());
-        gsonBuilder.registerTypeAdapterFactory(new com.amazonaws.videoanalytics.videologistics.GetPlaybackSessionResponseContent.CustomTypeAdapterFactory());
         gsonBuilder.registerTypeAdapterFactory(new com.amazonaws.videoanalytics.videologistics.IceServer.CustomTypeAdapterFactory());
         gsonBuilder.registerTypeAdapterFactory(new com.amazonaws.videoanalytics.videologistics.InternalServerExceptionResponseContent.CustomTypeAdapterFactory());
         gsonBuilder.registerTypeAdapterFactory(new com.amazonaws.videoanalytics.videologistics.ResourceNotFoundExceptionResponseContent.CustomTypeAdapterFactory());

@@ -30,5 +30,5 @@ structure CreatePlaybackSessionRequest {
 
 @output
 structure CreatePlaybackSessionResponse {
-    sessionId: SessionId
+    streamSources: StreamSources
 }

@@ -14,13 +14,16 @@
 package com.amazonaws.videoanalytics.videologistics;
 
 import java.util.Objects;
+import com.amazonaws.videoanalytics.videologistics.StreamSource;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -52,29 +55,37 @@ import com.amazonaws.videoanalytics.JSON;
 @lombok.AllArgsConstructor
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class CreatePlaybackSessionResponseContent {
-  public static final String SERIALIZED_NAME_SESSION_ID = "sessionId";
-  @SerializedName(SERIALIZED_NAME_SESSION_ID)
-  private String sessionId;
+  public static final String SERIALIZED_NAME_STREAM_SOURCES = "streamSources";
+  @SerializedName(SERIALIZED_NAME_STREAM_SOURCES)
+  private List<StreamSource> streamSources = new ArrayList<>();
 
   public CreatePlaybackSessionResponseContent() {
   }
 
-  public CreatePlaybackSessionResponseContent sessionId(String sessionId) {
-    this.sessionId = sessionId;
+  public CreatePlaybackSessionResponseContent streamSources(List<StreamSource> streamSources) {
+    this.streamSources = streamSources;
+    return this;
+  }
+
+  public CreatePlaybackSessionResponseContent addStreamSourcesItem(StreamSource streamSourcesItem) {
+    if (this.streamSources == null) {
+      this.streamSources = new ArrayList<>();
+    }
+    this.streamSources.add(streamSourcesItem);
     return this;
   }
 
   /**
-   * Get sessionId
-   * @return sessionId
+   * Get streamSources
+   * @return streamSources
    */
   @javax.annotation.Nullable
-  public String getSessionId() {
-    return sessionId;
+  public List<StreamSource> getStreamSources() {
+    return streamSources;
   }
 
-  public void setSessionId(String sessionId) {
-    this.sessionId = sessionId;
+  public void setStreamSources(List<StreamSource> streamSources) {
+    this.streamSources = streamSources;
   }
 
 
@@ -88,19 +99,19 @@ public class CreatePlaybackSessionResponseContent {
       return false;
     }
     CreatePlaybackSessionResponseContent createPlaybackSessionResponseContent = (CreatePlaybackSessionResponseContent) o;
-    return Objects.equals(this.sessionId, createPlaybackSessionResponseContent.sessionId);
+    return Objects.equals(this.streamSources, createPlaybackSessionResponseContent.streamSources);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(sessionId);
+    return Objects.hash(streamSources);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class CreatePlaybackSessionResponseContent {\n");
-    sb.append("    sessionId: ").append(toIndentedString(sessionId)).append("\n");
+    sb.append("    streamSources: ").append(toIndentedString(streamSources)).append("\n");
     sb.append("}");
     return sb.toString();
   }
@@ -123,7 +134,7 @@ public class CreatePlaybackSessionResponseContent {
   static {
     // a set of all properties/fields (JSON key names)
     openapiFields = new HashSet<String>();
-    openapiFields.add("sessionId");
+    openapiFields.add("streamSources");
 
     // a set of required properties/fields (JSON key names)
     openapiRequiredFields = new HashSet<String>();
@@ -150,8 +161,19 @@ public class CreatePlaybackSessionResponseContent {
         }
       }
         JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if ((jsonObj.get("sessionId") != null && !jsonObj.get("sessionId").isJsonNull()) && !jsonObj.get("sessionId").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `sessionId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("sessionId").toString()));
+      if (jsonObj.get("streamSources") != null && !jsonObj.get("streamSources").isJsonNull()) {
+        JsonArray jsonArraystreamSources = jsonObj.getAsJsonArray("streamSources");
+        if (jsonArraystreamSources != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("streamSources").isJsonArray()) {
+            throw new IllegalArgumentException(String.format("Expected the field `streamSources` to be an array in the JSON string but got `%s`", jsonObj.get("streamSources").toString()));
+          }
+
+          // validate the optional field `streamSources` (array)
+          for (int i = 0; i < jsonArraystreamSources.size(); i++) {
+            StreamSource.validateJsonElement(jsonArraystreamSources.get(i));
+          };
+        }
       }
   }
 

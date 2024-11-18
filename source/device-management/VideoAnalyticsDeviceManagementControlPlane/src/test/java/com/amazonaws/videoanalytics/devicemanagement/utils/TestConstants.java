@@ -11,7 +11,7 @@ public final class TestConstants {
     public static final String DEVICE_GROUP_ID = "4321dcba-8765-dcba-4321dcba8765";
     public static final String FIRMWARE_VERSION_VALUE = "20230331 1.0.1";
     public static final String MAC_VALUE = "11::22::33::44::55::66";
-    public static final String MANUFACTURER_VALUE = "VHT";
+    public static final String MANUFACTURER_VALUE = "TestManufacturer";
     public static final String MODEL_VALUE = "IPC-DM2A1-W";
     public static final String PRIVATE_IP_VALUE = "192.168.6.10";
     public static final String PUBLIC_IP_VALUE  = "10.15.1.100";

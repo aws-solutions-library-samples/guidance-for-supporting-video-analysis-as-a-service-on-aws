@@ -1764,8 +1764,8 @@
         "com.amazonaws.videoanalytics.videologistics#CreatePlaybackSessionResponse": {
             "type": "structure",
             "members": {
-                "sessionId": {
-                    "target": "com.amazonaws.videoanalytics.videologistics#SessionId"
+                "streamSources": {
+                    "target": "com.amazonaws.videoanalytics.videologistics#StreamSources"
                 }
             },
             "traits": {
@@ -1908,92 +1908,6 @@
                 }
             }
         },
-        "com.amazonaws.videoanalytics.videologistics#GetPlaybackSession": {
-            "type": "operation",
-            "input": {
-                "target": "com.amazonaws.videoanalytics.videologistics#GetPlaybackSessionRequest"
-            },
-            "output": {
-                "target": "com.amazonaws.videoanalytics.videologistics#GetPlaybackSessionResponse"
-            },
-            "errors": [
-                {
-                    "target": "com.amazonaws.videoanalytics#InternalServerException"
-                },
-                {
-                    "target": "com.amazonaws.videoanalytics#ResourceNotFoundException"
-                }
-            ],
-            "traits": {
-                "smithy.api#http": {
-                    "code": 200,
-                    "method": "POST",
-                    "uri": "/get-playback-session/{sessionId}"
-                }
-            }
-        },
-        "com.amazonaws.videoanalytics.videologistics#GetPlaybackSessionRequest": {
-            "type": "structure",
-            "members": {
-                "sessionId": {
-                    "target": "com.amazonaws.videoanalytics.videologistics#SessionId",
-                    "traits": {
-                        "smithy.api#httpLabel": {},
-                        "smithy.api#required": {}
-                    }
-                }
-            },
-            "traits": {
-                "smithy.api#input": {}
-            }
-        },
-        "com.amazonaws.videoanalytics.videologistics#GetPlaybackSessionResponse": {
-            "type": "structure",
-            "members": {
-                "deviceId": {
-                    "target": "com.amazonaws.videoanalytics#DeviceId"
-                },
-                "startTime": {
-                    "target": "smithy.api#Timestamp",
-                    "traits": {
-                        "smithy.api#timestampFormat": "date-time"
-                    }
-                },
-                "endTime": {
-                    "target": "smithy.api#Timestamp",
-                    "traits": {
-                        "smithy.api#timestampFormat": "date-time"
-                    }
-                },
-                "sessionId": {
-                    "target": "com.amazonaws.videoanalytics.videologistics#SessionId"
-                },
-                "status": {
-                    "target": "com.amazonaws.videoanalytics#Status"
-                },
-                "createdAt": {
-                    "target": "smithy.api#Timestamp",
-                    "traits": {
-                        "smithy.api#timestampFormat": "date-time"
-                    }
-                },
-                "lastUpdatedAt": {
-                    "target": "smithy.api#Timestamp",
-                    "traits": {
-                        "smithy.api#timestampFormat": "date-time"
-                    }
-                },
-                "errorMessage": {
-                    "target": "smithy.api#String"
-                },
-                "streamSources": {
-                    "target": "com.amazonaws.videoanalytics.videologistics#StreamSources"
-                }
-            },
-            "traits": {
-                "smithy.api#output": {}
-            }
-        },
         "com.amazonaws.videoanalytics.videologistics#IceServer": {
             "type": "structure",
             "members": {
@@ -2068,9 +1982,6 @@
             "operations": [
                 {
                     "target": "com.amazonaws.videoanalytics.videologistics#CreatePlaybackSession"
-                },
-                {
-                    "target": "com.amazonaws.videoanalytics.videologistics#GetPlaybackSession"
                 }
             ]
         },
