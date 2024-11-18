@@ -20,7 +20,7 @@ import {
   PARTITION_KEY_PATH,
   RESULT_PATH,
   RESULT_PATH_ERROR,
-  LAMBDA_ASSET_PATH,
+  LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT,
   DM_WORKFLOW_JAVA_PATH_PREFIX,
 } from "../const";
 import {
@@ -86,7 +86,7 @@ export class StartCreateNotificationRule extends VideoAnalyticsAsyncWorkflowReso
      */
 
     const createIotRuleLambda = new Function(this, "CreateIotRuleLambda", {
-      code: Code.fromAsset(`${LAMBDA_ASSET_PATH}`),
+      code: Code.fromAsset(`${LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT}`),
       description: "Lambda responsible for creating an IoT Rule",
       runtime: LAMBDA_RUNTIME,
       handler: `${DM_WORKFLOW_JAVA_PATH_PREFIX}createnotifrule.CreateIotRuleHandler::handleRequest`,
@@ -108,7 +108,7 @@ export class StartCreateNotificationRule extends VideoAnalyticsAsyncWorkflowReso
       "UpdateCreateNotificationRuleStatusLambda",
       {
         //TODO: Update this if any changes are made to the lambda handler path or asset built jar location
-        code: Code.fromAsset(`${LAMBDA_ASSET_PATH}`),
+        code: Code.fromAsset(`${LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT}`),
         description:
           "Lambda responsible for updating the state of the Create Notification Rule Job",
         runtime: LAMBDA_RUNTIME,
@@ -137,7 +137,7 @@ export class StartCreateNotificationRule extends VideoAnalyticsAsyncWorkflowReso
       "FailCreateNotificationRuleStatusLambda",
       {
         //TODO: Update this if any changes are made to the lambda handler path or asset built jar location
-        code: Code.fromAsset(`${LAMBDA_ASSET_PATH}`),
+        code: Code.fromAsset(`${LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT}`),
         description: "Lambda responsible for marking as failed",
         runtime: LAMBDA_RUNTIME,
         handler: `${DM_WORKFLOW_JAVA_PATH_PREFIX}createnotifrule.FailCreateNotificationRuleStatusStateHandler::handleRequest`,

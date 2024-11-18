@@ -1,5 +1,4 @@
 export * from "./startGetDeviceCapabilities";
-export * from "./startUpdateDevice";
 export * from "./startCreateNotificationRule";
 export * from "./startCreateDeviceNotification";
 export * from "./startDeleteDeviceNotification";
