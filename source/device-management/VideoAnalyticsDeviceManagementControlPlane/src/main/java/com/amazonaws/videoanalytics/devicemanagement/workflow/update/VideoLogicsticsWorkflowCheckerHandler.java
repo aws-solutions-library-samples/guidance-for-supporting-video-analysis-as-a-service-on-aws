@@ -62,9 +62,13 @@ public class VideoLogicsticsWorkflowCheckerHandler implements RequestHandler<Map
             // Get VL Job ID from the device record
             String vlJobId = createDevice.getVlJobId();
             if (vlJobId == null) {
-                throw InvalidRequestException.builder()
-                    .message("VL Job ID not found in device record")
-                    .build();
+                // TODO: Remove this once we have a way to get the VL job ID from the device record
+                // For now, hardcoding to COMPLETED for pass-through logic and have a pass-through vlJobId
+                vlJobId = "mock-vl-job-id";
+                // TODO: Remove this once we have a way to get the VL job ID from the device record
+                // throw InvalidRequestException.builder()
+                //     .message("VL Job ID not found in device record")
+                //     .build();
             }
 
             // TODO: Call VL client to get actual job status

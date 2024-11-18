@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import javax.inject.Inject;
 import java.util.Map;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.WorkflowConstants.*;
+import com.amazonaws.videoanalytics.devicemanagement.utils.annotations.ExcludeFromJacocoGeneratedReport;
 
 public class FailCreateDeviceHandler implements RequestHandler<Map<String, String>, Void> {
     private final String ENTERING_MESSAGE = "Entering " + this.getClass().getName() + " method.";
@@ -33,6 +34,15 @@ public class FailCreateDeviceHandler implements RequestHandler<Map<String, Strin
         this.iotService = iotService;
         this.startCreateDeviceDAO = startCreateDeviceDAO;
         this.objectMapper = objectMapper;
+    }
+
+    @ExcludeFromJacocoGeneratedReport
+    public FailCreateDeviceHandler() {
+        AWSVideoAnalyticsDMControlPlaneComponent component = DaggerAWSVideoAnalyticsDMControlPlaneComponent.create();
+        component.inject(this);
+        this.iotService = component.iotService();
+        this.startCreateDeviceDAO = component.startCreateDeviceDAO();
+        this.objectMapper = component.objectMapper();
     }
 
     @Override

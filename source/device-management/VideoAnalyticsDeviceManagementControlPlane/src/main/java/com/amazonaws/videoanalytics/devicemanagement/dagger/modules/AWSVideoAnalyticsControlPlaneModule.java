@@ -5,6 +5,7 @@ import com.amazonaws.videoanalytics.devicemanagement.dependency.iot.IotService;
 import com.amazonaws.videoanalytics.devicemanagement.schema.CreateDevice;
 import com.amazonaws.videoanalytics.devicemanagement.schema.SchemaConst;
 import com.amazonaws.videoanalytics.devicemanagement.workflow.WorkflowManager;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import dagger.Module;
 import dagger.Provides;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
@@ -40,5 +41,11 @@ public class AWSVideoAnalyticsControlPlaneModule {
     @Singleton
     public WorkflowManager provideWorkflowManager(StartCreateDeviceDAO startCreateDeviceDAO, IotService iotService) {
         return new WorkflowManager(startCreateDeviceDAO, iotService);
+    }
+
+    @Provides
+    @Singleton
+    public ObjectMapper provideObjectMapper() {
+        return new ObjectMapper();
     }
 }

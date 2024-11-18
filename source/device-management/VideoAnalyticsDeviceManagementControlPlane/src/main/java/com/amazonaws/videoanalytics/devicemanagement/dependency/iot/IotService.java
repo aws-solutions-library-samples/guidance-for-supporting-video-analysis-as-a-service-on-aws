@@ -460,19 +460,37 @@ g
      * @param deviceId videoAnalytics Device
      */
     public void publishLogConfigurationToProvisioningShadow(String deviceId) {
-        // Message to the device is default log config:
-        // "loggerSettings": {
-        //     "isEnabled": true,
-        //     "syncFrequency": 300,
-        //     "logLevel": INFO
-        // } 
+        /**
+         * The logger configuration template will be:
+         * {
+         *   "state": {
+         *     "desired": {
+         *       "loggerSettings": {
+         *         "isEnabled": true,
+         *         "syncFrequency": 300,
+         *         "logLevel": "INFO"
+         *       }
+         *     }
+         *   }
+         * }
+         */
+        // Create logger config
         JsonObject loggerConfiguration = new JsonObject();
         loggerConfiguration.addProperty("isEnabled", true);
         loggerConfiguration.addProperty("syncFrequency", 300);
         loggerConfiguration.addProperty("logLevel", "INFO");
 
+        // Create loggerSettings wrapper
+        JsonObject loggerSettings = new JsonObject();
+        loggerSettings.add("loggerSettings", loggerConfiguration);
+
+        // Create desired state
+        JsonObject desired = new JsonObject();
+        desired.add("desired", loggerSettings);
+
+        // Create state wrapper (this was missing before)
         JsonObject messagePayload = new JsonObject();
-        messagePayload.add("loggerSettings", loggerConfiguration);
+        messagePayload.add("state", desired);
 
         UpdateThingShadowRequest updateThingShadowRequest = UpdateThingShadowRequest.builder()
                 .thingName(deviceId)
@@ -480,6 +498,7 @@ g
                 .payload(SdkBytes.fromUtf8String(messagePayload.toString()))
                 .build();
 
+        LOG.info("Publishing logger configuration to provisioning shadow: " + messagePayload.toString());
         iotDataPlaneClient.updateThingShadow(updateThingShadowRequest);
     }
 
@@ -521,9 +540,17 @@ g
      * @param fieldName fieldname to set in the shadow
      */
     public void messageDeviceProvisioningShadow(String deviceId, String fieldName) {
-        // Message to the device is simply to add the {"<fieldName>":true} to the body of the shadow doc.
+        // Create the field value
+        JsonObject fieldValue = new JsonObject();
+        fieldValue.addProperty(fieldName, true);
+
+        // Create desired state
+        JsonObject desired = new JsonObject();
+        desired.add("desired", fieldValue);
+
+        // Create state wrapper
         JsonObject messagePayload = new JsonObject();
-        messagePayload.addProperty(fieldName, true);
+        messagePayload.add("state", desired);
 
         UpdateThingShadowRequest updateThingShadowRequest = UpdateThingShadowRequest.builder()
                 .thingName(deviceId)

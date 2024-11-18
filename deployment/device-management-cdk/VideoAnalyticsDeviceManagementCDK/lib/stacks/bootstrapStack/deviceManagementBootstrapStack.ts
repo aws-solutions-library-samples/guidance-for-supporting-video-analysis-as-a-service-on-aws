@@ -38,6 +38,39 @@ export class DeviceManagementBootstrapStack extends Stack {
     console.log("DeviceManagementBootstrapStack constructor called");
     console.log("Props:", JSON.stringify(props));
 
+    const iotCustomResourceRole = new Role(this, "IotCustomResourceRole", {
+      roleName: "iot-custom-resource-role",
+      assumedBy: new ServicePrincipal("lambda.amazonaws.com"),
+    });
+
+    const iotCustomResourceIamPolicy = new ManagedPolicy(
+      this,
+      "IotCustomResourceIamPolicy",
+      {
+        managedPolicyName: "iot-custom-resource-policy",
+        roles: [iotCustomResourceRole],
+        statements: [
+          new PolicyStatement({
+            effect: Effect.ALLOW,
+            actions: [
+              "iot:AttachPolicy",
+              "iot:DetachPolicy",
+              "iot:AttachThingPrincipal",
+              "iot:DetachThingPrincipal",
+              "iot:AttachPrincipalPolicy",
+              "iot:DetachPrincipalPolicy",
+            ],
+            resources: ["*"],
+          }),
+          new PolicyStatement({
+            effect: Effect.ALLOW,
+            actions: ["lambda:InvokeFunction"],
+            resources: ["*"],
+          }),
+        ],
+      }
+    );
+
     const role = new Role(this, "iot-detach-policy-custom-resource-role", {
       roleName: "iot-detach-policy-custom-resource-role",
       assumedBy: new ServicePrincipal("lambda.amazonaws.com"),
@@ -96,6 +129,17 @@ export class DeviceManagementBootstrapStack extends Stack {
                 Effect: "Allow",
                 Action: ["s3:PutObject", "s3:GetObject", "s3:ListBucket"],
                 Resource: [`arn:aws:s3:::${this.account}*`],
+              },
+              {
+                Effect: "Allow",
+                Action: [
+                  "iot:GetThingShadow",
+                  "iot:UpdateThingShadow",
+                  "iot:DeleteThingShadow"
+                ],
+                Resource: [
+                  `arn:aws:iot:${this.region}:${this.account}:thing/${IOT_CREDENTIAL_THING_NAME}`,
+                ],
               },
             ],
           },
@@ -338,180 +382,6 @@ export class DeviceManagementBootstrapStack extends Stack {
       policyName: `IotJobPolicy_${this.region}`,
     });
 
-    const createdStateIotPolicy = new iot.CfnPolicy(
-      this,
-      "CreatedStatePolicy",
-      {
-        policyDocument: {
-          Version: "2012-10-17",
-          Statement: [
-            {
-              Effect: "Allow",
-              Action: ["iot:Connect"],
-              Resource: [
-                `arn:aws:iot:${this.region}:${this.account}:client/${IOT_CONNECTED_THING_NAME}`,
-              ],
-            },
-            {
-              Effect: "Allow",
-              Action: ["iot:Publish", "iot:Receive"],
-              Resource: [
-                `arn:aws:iot:${this.region}:${this.account}:topic/videoanalytics/initial-pub-sub/${IOT_CONNECTED_THING_NAME}`,
-                `arn:aws:iot:${this.region}:${this.account}:topic/management/${IOT_CONNECTED_THING_NAME}/connection`,
-                `arn:aws:iot:${this.region}:${this.account}:topic/$aws/things/${IOT_CONNECTED_THING_NAME}/shadow/name/*/get*`,
-                `arn:aws:iot:${this.region}:${this.account}:topic/$aws/things/${IOT_CONNECTED_THING_NAME}/shadow/name/*/update*`,
-                `arn:aws:iot:${this.region}:${this.account}:topic/$aws/things/${IOT_CONNECTED_THING_NAME}/shadow/get*`,
-                `arn:aws:iot:${this.region}:${this.account}:topic/$aws/things/${IOT_CONNECTED_THING_NAME}/shadow/update*`,
-              ],
-            },
-            {
-              Effect: "Allow",
-              Action: ["iot:Subscribe"],
-              Resource: [
-                `arn:aws:iot:${this.region}:${this.account}:topicfilter/videoanalytics/initial-pub-sub/${IOT_CONNECTED_THING_NAME}`,
-                `arn:aws:iot:${this.region}:${this.account}:topicfilter/management/${IOT_CONNECTED_THING_NAME}/connection`,
-                `arn:aws:iot:${this.region}:${this.account}:topicfilter/$aws/things/${IOT_CONNECTED_THING_NAME}/shadow/name/*/get/*`,
-                `arn:aws:iot:${this.region}:${this.account}:topicfilter/$aws/things/${IOT_CONNECTED_THING_NAME}/shadow/name/*/update/*`,
-                `arn:aws:iot:${this.region}:${this.account}:topicfilter/$aws/things/${IOT_CONNECTED_THING_NAME}/shadow/get/*`,
-                `arn:aws:iot:${this.region}:${this.account}:topicfilter/$aws/things/${IOT_CONNECTED_THING_NAME}/shadow/update/*`,
-              ],
-            },
-          ],
-        },
-        policyName: `CreatedPolicy_${this.region}`,
-      }
-    );
-
-    const createdStateThingGroup = new iot.CfnThingGroup(
-      this,
-      "CreatedStateThingGroup",
-      {
-        thingGroupName: "SpecialGroup_CreatedState",
-      }
-    );
-
-    // There is an issue with CDK where role for AwsCustomResource is created during stack instantiation.
-    // Any other role created for AwsCustomResource after the first one will be ignored
-    // and CDK re-uses the already existing role.
-    // See issue: https://github.com/aws/aws-cdk/issues/13601?ref=blog.purple-technology.com
-
-    // If you need to add permissions for a AwsCustomResource, add to iotCustomResourceIamPolicy.
-    // Do NOT create a separate role. Creating a separate role will not deploy successfully.
-    const iotCustomResourceRole = new Role(this, "iot-custom-resource-role", {
-      roleName: "iot-custom-resource-role",
-      assumedBy: new ServicePrincipal("lambda.amazonaws.com"),
-    });
-
-    const iotCustomResourceIamPolicy = new ManagedPolicy(
-      this,
-      "iot-custom-resource",
-      {
-        roles: [iotCustomResourceRole],
-        managedPolicyName: "iot-custom-resource",
-        statements: [
-          new PolicyStatement({
-            actions: [
-              // For attaching IoT policy to special state thing group during resource creation
-              "iot:AttachPolicy",
-              // For detaching IoT policy to special state thing group during resource deletion
-              "iot:DetachPolicy",
-              // turn on IoT fleet indexing during resource creation
-              "iot:UpdateIndexingConfiguration",
-            ],
-            resources: ["*"],
-          }),
-        ],
-      }
-    );
-
-    const attachCreatedPolicy = new AwsCustomResource(
-      this,
-      "AttachCreatedPolicy",
-      {
-        onCreate: {
-          service: "@aws-sdk/client-iot",
-          action: "attachPolicy",
-          parameters: {
-            target: `arn:aws:iot:${this.region}:${this.account}:thinggroup/SpecialGroup_CreatedState`,
-            policyName: `CreatedPolicy_${this.region}`,
-          },
-          physicalResourceId: PhysicalResourceId.of("attachCreated"),
-        },
-        onUpdate: {
-          service: "@aws-sdk/client-iot",
-          action: "attachPolicy",
-          parameters: {
-            target: `arn:aws:iot:${this.region}:${this.account}:thinggroup/SpecialGroup_CreatedState`,
-            policyName: `CreatedPolicy_${this.region}`,
-          },
-          physicalResourceId: PhysicalResourceId.of("attachCreated"),
-        },
-        onDelete: {
-          service: "@aws-sdk/client-iot",
-          action: "detachPolicy",
-          parameters: {
-            target: `arn:aws:iot:${this.region}:${this.account}:thinggroup/SpecialGroup_CreatedState`,
-            policyName: `CreatedPolicy_${this.region}`,
-          },
-          physicalResourceId: PhysicalResourceId.of("detachCreated"),
-        },
-        role: iotCustomResourceRole,
-        removalPolicy: RemovalPolicy.DESTROY,
-        installLatestAwsSdk: true,
-      }
-    );
-    attachCreatedPolicy.node.addDependency(createdStateIotPolicy);
-    attachCreatedPolicy.node.addDependency(createdStateThingGroup);
-    attachCreatedPolicy.node.addDependency(iotCustomResourceIamPolicy);
-
-    const attachIotJobPolicyToCreatedState = new AwsCustomResource(
-      this,
-      "AttachIotJobPolicyToCreatedState",
-      {
-        onCreate: {
-          service: "@aws-sdk/client-iot",
-          action: "attachPolicy",
-          parameters: {
-            target: `arn:aws:iot:${this.region}:${this.account}:thinggroup/SpecialGroup_CreatedState`,
-            policyName: `IotJobPolicy_${this.region}`,
-          },
-          physicalResourceId: PhysicalResourceId.of(
-            "attachIotJobPolicyCreated"
-          ),
-        },
-        onUpdate: {
-          service: "@aws-sdk/client-iot",
-          action: "attachPolicy",
-          parameters: {
-            target: `arn:aws:iot:${this.region}:${this.account}:thinggroup/SpecialGroup_CreatedState`,
-            policyName: `IotJobPolicy_${this.region}`,
-          },
-          physicalResourceId: PhysicalResourceId.of(
-            "attachIotJobPolicyCreated"
-          ),
-        },
-        onDelete: {
-          service: "@aws-sdk/client-iot",
-          action: "detachPolicy",
-          parameters: {
-            target: `arn:aws:iot:${this.region}:${this.account}:thinggroup/SpecialGroup_CreatedState`,
-            policyName: `IotJobPolicy_${this.region}`,
-          },
-          physicalResourceId: PhysicalResourceId.of(
-            "detachIotJobPolicyCreated"
-          ),
-        },
-        role: iotCustomResourceRole,
-        removalPolicy: RemovalPolicy.DESTROY,
-        installLatestAwsSdk: true,
-      }
-    );
-    attachIotJobPolicyToCreatedState.node.addDependency(iotJobsPolicy);
-    attachIotJobPolicyToCreatedState.node.addDependency(createdStateThingGroup);
-    attachIotJobPolicyToCreatedState.node.addDependency(
-      iotCustomResourceIamPolicy
-    );
-
     const disabledStateIotPolicy = new iot.CfnPolicy(
       this,
       "DisabledStatePolicy",
@@ -677,34 +547,36 @@ export class DeviceManagementBootstrapStack extends Stack {
               Effect: "Allow",
               Action: ["iot:Publish", "iot:Receive"],
               Resource: [
-                `arn:aws:iot:${this.region}:${this.account}:topic/$aws/things/${IOT_CONNECTED_THING_NAME}/connection`,
-                `arn:aws:iot:${this.region}:${this.account}:topic/$aws/things/${IOT_CONNECTED_THING_NAME}/shadow/name/*/get*`,
-                `arn:aws:iot:${this.region}:${this.account}:topic/$aws/things/${IOT_CONNECTED_THING_NAME}/shadow/name/*/update*`,
-                `arn:aws:iot:${this.region}:${this.account}:topic/$aws/things/${IOT_CONNECTED_THING_NAME}/shadow/get*`,
-                `arn:aws:iot:${this.region}:${this.account}:topic/$aws/things/${IOT_CONNECTED_THING_NAME}/shadow/update*`,
+                // Combine shadow operations using wildcards
+                `arn:aws:iot:${this.region}:${this.account}:topic/$aws/things/${IOT_CONNECTED_THING_NAME}/shadow/*`,
+                // Other specific topics
+                `arn:aws:iot:${this.region}:${this.account}:topic/videoanalytics/${IOT_CONNECTED_THING_NAME}/*`,
+                `arn:aws:iot:${this.region}:${this.account}:topic/management/${IOT_CONNECTED_THING_NAME}/*`,
+                `arn:aws:iot:${this.region}:${this.account}:topic/$aws/rules/DeviceTelemetryCloudWatchLogsRule/things/${IOT_CONNECTED_THING_NAME}/*`,
               ],
             },
             {
               Effect: "Allow",
               Action: ["iot:Subscribe"],
               Resource: [
-                `arn:aws:iot:${this.region}:${this.account}:topicfilter/$aws/things/${IOT_CONNECTED_THING_NAME}/shadow/connection`,
-                `arn:aws:iot:${this.region}:${this.account}:topicfilter/$aws/things/${IOT_CONNECTED_THING_NAME}/shadow/name/*/get/*`,
-                `arn:aws:iot:${this.region}:${this.account}:topicfilter/$aws/things/${IOT_CONNECTED_THING_NAME}/shadow/name/*/update/*`,
-                `arn:aws:iot:${this.region}:${this.account}:topicfilter/$aws/things/${IOT_CONNECTED_THING_NAME}/shadow/get/*`,
-                `arn:aws:iot:${this.region}:${this.account}:topicfilter/$aws/things/${IOT_CONNECTED_THING_NAME}/shadow/update/*`,
+                // Combine shadow subscriptions using wildcards
+                `arn:aws:iot:${this.region}:${this.account}:topicfilter/$aws/things/${IOT_CONNECTED_THING_NAME}/shadow/*`,
+                // Other topic filters
+                `arn:aws:iot:${this.region}:${this.account}:topicfilter/videoanalytics/${IOT_CONNECTED_THING_NAME}/*`,
+                `arn:aws:iot:${this.region}:${this.account}:topicfilter/management/${IOT_CONNECTED_THING_NAME}/*`,
               ],
             },
             {
               Effect: "Allow",
-              Action: ["iot:Publish"],
-              Resource: [
-                `arn:aws:iot:${this.region}:${this.account}:topic/videoanalytics/${IOT_CONNECTED_THING_NAME}/timeline`,
-                `arn:aws:iot:${this.region}:${this.account}:topic/videoanalytics/${IOT_CONNECTED_THING_NAME}/ai-metadata`,
-                `arn:aws:iot:${this.region}:${this.account}:topic/videoanalytics/${IOT_CONNECTED_THING_NAME}/snapshot`,
-                `arn:aws:iot:${this.region}:${this.account}:topic/$aws/rules/DeviceTelemetryCloudWatchLogsRule/things/${IOT_CONNECTED_THING_NAME}/logs`,
+              Action: [
+                "iot:GetThingShadow",
+                "iot:UpdateThingShadow",
+                "iot:DeleteThingShadow"
               ],
-            },
+              Resource: [
+                `arn:aws:iot:${this.region}:${this.account}:thing/${IOT_CONNECTED_THING_NAME}`,
+              ],
+            }
           ],
         },
         policyName: `EnabledPolicy_${this.region}`,
@@ -758,6 +630,7 @@ export class DeviceManagementBootstrapStack extends Stack {
     attachEnabledPolicy.node.addDependency(enabledStateIotPolicy);
     attachEnabledPolicy.node.addDependency(enabledStateThingGroup);
     attachEnabledPolicy.node.addDependency(iotCustomResourceIamPolicy);
+    attachEnabledPolicy.node.addDependency(iotCustomResourceRole);
 
     const attachIotJobPolicyToEnabledState = new AwsCustomResource(
       this,
@@ -803,9 +676,8 @@ export class DeviceManagementBootstrapStack extends Stack {
     );
     attachIotJobPolicyToEnabledState.node.addDependency(iotJobsPolicy);
     attachIotJobPolicyToEnabledState.node.addDependency(enabledStateThingGroup);
-    attachIotJobPolicyToEnabledState.node.addDependency(
-      iotCustomResourceIamPolicy
-    );
+    attachIotJobPolicyToEnabledState.node.addDependency(iotCustomResourceIamPolicy);
+    attachIotJobPolicyToEnabledState.node.addDependency(iotCustomResourceRole);
 
     // Log Group for deviceTelemetryCloudWatchLogsPolicy and Rule
     const deviceTelemetryCloudWatchLogGroup = new LogGroup(

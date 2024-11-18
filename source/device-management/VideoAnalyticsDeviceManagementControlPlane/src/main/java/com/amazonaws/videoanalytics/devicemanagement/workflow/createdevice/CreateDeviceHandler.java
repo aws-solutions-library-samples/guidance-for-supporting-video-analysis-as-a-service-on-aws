@@ -13,6 +13,7 @@ import software.amazon.awssdk.services.iot.model.IotException;
 import javax.inject.Inject;
 import java.util.Map;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.WorkflowConstants.*;
+import com.amazonaws.videoanalytics.devicemanagement.utils.annotations.ExcludeFromJacocoGeneratedReport;
 
 
 public class CreateDeviceHandler implements RequestHandler<Map<String, String>, Void> {
@@ -26,6 +27,15 @@ public class CreateDeviceHandler implements RequestHandler<Map<String, String>, 
         this.iotService = iotService;
         this.startCreateDeviceDAO = startCreateDeviceDAO;
     }
+
+    @ExcludeFromJacocoGeneratedReport
+    public CreateDeviceHandler() {
+        AWSVideoAnalyticsDMControlPlaneComponent component = DaggerAWSVideoAnalyticsDMControlPlaneComponent.create();
+        component.inject(this);
+        this.iotService = component.iotService();
+        this.startCreateDeviceDAO = component.startCreateDeviceDAO();
+    }
+
     @Override
     public Void handleRequest(Map<String, String> requestParams, Context context) {
         LambdaLogger logger = context.getLogger();

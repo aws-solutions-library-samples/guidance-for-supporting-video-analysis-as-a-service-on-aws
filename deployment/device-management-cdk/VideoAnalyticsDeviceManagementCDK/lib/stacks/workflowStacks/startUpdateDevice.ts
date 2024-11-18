@@ -429,8 +429,8 @@ export class StartUpdateDevice extends VideoAnalyticsAsyncWorkflowResource {
     // handler to create KVS Stream, FVL API used to create stream.
     const createKVSStreamLambda = new Function(this, "CreateKVSStreamLambda", {
       //TODO: Update this if any changes are made to the lambda handler path or asset built jar location
-      code: Code.fromAsset(`${LAMBDA_ASSET_PATH}`),
-      description: "Lambda to create KVS Stream using FVL API.",
+      code: Code.fromAsset(`${LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT}`),
+      description: "Lambda to create KVS Stream using Video Logicstics API.",
       runtime: LAMBDA_RUNTIME,
       handler: `${DM_WORKFLOW_JAVA_PATH_PREFIX}update.CreateKVSStreamHandler::handleRequest`,
       //TODO: Update this if any changes are made to the lambda handler path
