@@ -4,7 +4,6 @@
         "com.amazonaws.videoanalytics.videologistics#CreateLivestreamSession",
         "com.amazonaws.videoanalytics.videologistics#CreatePlaybackSession",
         "com.amazonaws.videoanalytics.videologistics#CreateSnapshotUploadPath",
-        "com.amazonaws.videoanalytics.videologistics#GetPlaybackSession",
         "com.amazonaws.videoanalytics.videologistics#StartExportVideos"
     ],
     "projection": {
@@ -148,7 +147,6 @@
         "smithy.api#externalDocumentation",
         "smithy.api#http",
         "smithy.api#httpError",
-        "smithy.api#httpLabel",
         "smithy.api#idempotent",
         "smithy.api#idRef",
         "smithy.api#input",

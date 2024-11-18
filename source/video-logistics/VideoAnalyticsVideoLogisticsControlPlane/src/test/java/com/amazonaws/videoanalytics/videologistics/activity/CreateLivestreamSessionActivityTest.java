@@ -27,12 +27,12 @@ import java.util.Map;
 
 import static com.amazonaws.videoanalytics.videologistics.exceptions.VideoAnalyticsExceptionMessage.DEVICE_NOT_REGISTERED;
 import static com.amazonaws.videoanalytics.videologistics.exceptions.VideoAnalyticsExceptionMessage.INVALID_INPUT_EXCEPTION;
-import static com.amazonaws.videoanalytics.videologistics.schema.util.GuidanceVLConstants.CLIENT_ID;
-import static com.amazonaws.videoanalytics.videologistics.schema.util.GuidanceVLConstants.DEVICE_ID;
 import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.PROXY_LAMBDA_BODY_KEY;
 import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.PROXY_LAMBDA_RESPONSE_STATUS_CODE_KEY;
 import static com.amazonaws.videoanalytics.videologistics.utils.LambdaProxyUtils.parseBody;
 import static com.amazonaws.videoanalytics.videologistics.utils.TestConstants.MOCK_AWS_REGION;
+import static com.amazonaws.videoanalytics.videologistics.utils.TestConstants.DEVICE_ID;
+import static com.amazonaws.videoanalytics.videologistics.utils.TestConstants.CLIENT_ID;
 import static java.util.Map.entry;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -85,6 +85,15 @@ public class CreateLivestreamSessionActivityTest {
         Map<String, Object> response = createLivestreamSessionActivity.handleRequest(null, context);
         assertEquals(response.get(PROXY_LAMBDA_RESPONSE_STATUS_CODE_KEY), 400);
         ValidationExceptionResponseContent exception = ValidationExceptionResponseContent.fromJson(parseBody(response));
+        assertEquals(exception.getMessage(), INVALID_INPUT_EXCEPTION);
+    }
+
+    @Test
+    public void handleRequest_WhenEmptyRequest_ThrowsValidationException() throws IOException {
+        Map<String, Object> lambdaProxyRequestEmpty = Map.ofEntries();
+        Map<String, Object> responseMap = createLivestreamSessionActivity.handleRequest(lambdaProxyRequestEmpty, context);
+        assertEquals(responseMap.get(PROXY_LAMBDA_RESPONSE_STATUS_CODE_KEY), 400);
+        ValidationExceptionResponseContent exception = ValidationExceptionResponseContent.fromJson(parseBody(responseMap));
         assertEquals(exception.getMessage(), INVALID_INPUT_EXCEPTION);
     }
 

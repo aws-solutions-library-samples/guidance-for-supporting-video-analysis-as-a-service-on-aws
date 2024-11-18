@@ -12,7 +12,14 @@ public final class AWSVideoAnalyticsServiceLambdaConstants {
     public static final String PROXY_LAMBDA_REQUEST_SESSION_ID_PATH_PARAMETER_KEY = "sessionId";
     public static final String PROXY_LAMBDA_RESPONSE_STATUS_CODE_KEY = "statusCode";
 
+    public static final String LIVE_STREAM_SIGNALING_CHANNEL = "%s-LiveStreamSignalingChannel";
+    public static final String PLAYBACK_SIGNALING_CHANNEL = "%s-PlaybackSignalingChannel";
+
     public static final int MILLIS_TO_HOURS = 60 * 60 * 1000;
+    public static final int TWELVE_HOURS = 12 * 60 * 60;
+    public static final long MAX_MEDIA_PLAYLIST_FRAGMENTS = 5000;
+
+    public static final String NEW_LINE_DELIMITER = "\n";
 
     private AWSVideoAnalyticsServiceLambdaConstants() {
         // Private default constructor so that JaCoCo marks utility class as covered

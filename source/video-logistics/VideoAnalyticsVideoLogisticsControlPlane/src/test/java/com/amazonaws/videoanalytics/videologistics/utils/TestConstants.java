@@ -7,6 +7,7 @@ public final class TestConstants {
     public static final String EXPECTED_UUID = "12345678-abcd-2468-dcba-87654321abcd";
 
     public static final String DEVICE_ID = "testDeviceId";
+    public static final String CLIENT_ID = "testClientId";
     public static final String SHADOW_NAME = "testShadowName";
     public static final String SESSION_ID = "testSessionId";
     public static final String WORKFLOW_NAME = "87654321-dcba-1357-abcd-12345678dcba";
@@ -14,6 +15,6 @@ public final class TestConstants {
     public final static Date START_TIMESTAMP_DATE = new Date("Fri Feb 17 16:20:01 UTC 2023");
     public final static String END_TIMESTAMP = "2023-02-17T16:26:01Z";
     public final static Date END_TIMESTAMP_DATE = new Date("Fri Feb 17 16:26:01 UTC 2023");
-    public static final String PLAYBACK_SIGNALING_CHANNEL_ARN = "arn:aws:kinesisvideo:us-west-2:123456789012:ChannlStream/device-123/0123456789012";
+    public static final String PLAYBACK_STREAM_NAME = "testPlaybackStreamName";
     public static final String HLS = "arn:aws:kinesisvideo:us-west-2:123456789012:hls/device-123/0123456789012";
 }

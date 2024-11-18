@@ -1,20 +1,22 @@
 package com.amazonaws.videoanalytics.videologistics.activity;
 
+import java.util.Arrays;
+
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.videoanalytics.videologistics.CreatePlaybackSessionRequestContent;
 import com.amazonaws.videoanalytics.videologistics.CreatePlaybackSessionResponseContent;
-import com.amazonaws.videoanalytics.videologistics.Status;
+import com.amazonaws.videoanalytics.videologistics.StreamSource;
 import com.amazonaws.videoanalytics.videologistics.ValidationExceptionResponseContent;
 import com.amazonaws.videoanalytics.videologistics.dagger.AWSVideoAnalyticsVLControlPlaneComponent;
-import com.amazonaws.videoanalytics.videologistics.schema.PlaybackSession.PlaybackSession;
+import com.amazonaws.videoanalytics.videologistics.dependency.kvs.KvsService;
+import com.amazonaws.videoanalytics.videologistics.exceptions.ExceptionTranslator;
 import com.amazonaws.videoanalytics.videologistics.utils.annotations.ExcludeFromJacocoGeneratedReport;
-import com.amazonaws.videoanalytics.videologistics.utils.GuidanceUUIDGenerator;
 import com.amazonaws.videoanalytics.videologistics.validator.DeviceValidator;
+import software.amazon.awssdk.services.kinesisvideoarchivedmedia.model.KinesisVideoArchivedMediaException;
 
 import com.amazonaws.videoanalytics.videologistics.dagger.DaggerAWSVideoAnalyticsVLControlPlaneComponent;
-import com.amazonaws.videoanalytics.videologistics.dao.PlaybackSessionDAO;
 
 import javax.inject.Inject;
 
@@ -25,7 +27,7 @@ import java.util.Objects;
 import static com.amazonaws.videoanalytics.videologistics.exceptions.VideoAnalyticsExceptionMessage.END_TIME_WITHIN_A_DAY;
 import static com.amazonaws.videoanalytics.videologistics.exceptions.VideoAnalyticsExceptionMessage.INVALID_INPUT_EXCEPTION;
 import static com.amazonaws.videoanalytics.videologistics.exceptions.VideoAnalyticsExceptionMessage.START_TIME_GREATER_THAN_OR_EQUAL_TO_END_TIME;
-
+import static com.amazonaws.videoanalytics.videologistics.utils.ResourceNameConversionUtils.getPlaybackStreamNameFromDeviceId;
 import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.MILLIS_TO_HOURS;
 import static com.amazonaws.videoanalytics.videologistics.utils.LambdaProxyUtils.parseBody;
 import static com.amazonaws.videoanalytics.videologistics.utils.LambdaProxyUtils.serializeResponse;
@@ -35,30 +37,26 @@ import static com.amazonaws.videoanalytics.videologistics.utils.LambdaProxyUtils
  */
 public class CreatePlaybackSessionActivity implements RequestHandler<Map<String, Object>, Map<String, Object>> {
     private final DeviceValidator deviceValidator;
-    private final PlaybackSessionDAO playbackSessionDAO;
-    private final GuidanceUUIDGenerator guidanceUUIDGenerator;
+    private final KvsService kvsService;
 
     @Inject
     public CreatePlaybackSessionActivity(final DeviceValidator deviceValidator,
-                                         final PlaybackSessionDAO playbackSessionDAO,
-                                         final GuidanceUUIDGenerator guidanceUUIDGenerator) {
+                                         final KvsService kvsService) {
         this.deviceValidator = deviceValidator;
-        this.playbackSessionDAO = playbackSessionDAO;
-        this.guidanceUUIDGenerator = guidanceUUIDGenerator;
+        this.kvsService = kvsService;
     }
 
     public CreatePlaybackSessionActivity() {
         AWSVideoAnalyticsVLControlPlaneComponent component = DaggerAWSVideoAnalyticsVLControlPlaneComponent.create();
         component.inject(this);
         this.deviceValidator = component.getDeviceValidator();
-        this.playbackSessionDAO = component.getPlaybackSessionDAO();
-        this.guidanceUUIDGenerator = component.getGuidanceUUIDGenerator();
+        this.kvsService = component.getKvsService();
     }
 
     // used for unit tests
     @ExcludeFromJacocoGeneratedReport
     public void assertPrivateFieldNotNull() {
-        if (deviceValidator == null || playbackSessionDAO == null || guidanceUUIDGenerator == null) {
+        if (deviceValidator == null || kvsService == null) {
             throw new AssertionError("private field is null");
         }
     }
@@ -105,20 +103,18 @@ public class CreatePlaybackSessionActivity implements RequestHandler<Map<String,
             return serializeResponse(400, exception.toJson());
         }
 
-        PlaybackSession playbackSession = PlaybackSession.builder()
-                .deviceId(deviceId)
-                .endTime(endTime)
-                .sessionStatus(Status.RUNNING.toString())
-                .startTime(startTime)
-                .sessionId(guidanceUUIDGenerator.generateUUIDRandom())
-                .workflowName(guidanceUUIDGenerator.generateUUIDRandom())
-                .build();
-    
-        playbackSessionDAO.save(playbackSession);
+        String streamName = getPlaybackStreamNameFromDeviceId(deviceId);
+
+        StreamSource streamSource;
+        try {
+            streamSource = kvsService.getStreamingSessionURL(streamName, startTime, endTime);
+        } catch (KinesisVideoArchivedMediaException e) {
+            return ExceptionTranslator.translateKvsExceptionToLambdaResponse(e);
+        }
 
         CreatePlaybackSessionResponseContent response = CreatePlaybackSessionResponseContent
                 .builder()
-                .sessionId(playbackSession.getSessionId())
+                .streamSources(Arrays.asList(streamSource))
                 .build();
 
         return serializeResponse(200, response.toJson());

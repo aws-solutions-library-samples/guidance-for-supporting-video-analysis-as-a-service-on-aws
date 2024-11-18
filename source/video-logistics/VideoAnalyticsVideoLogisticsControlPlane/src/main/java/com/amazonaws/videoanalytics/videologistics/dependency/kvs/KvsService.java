@@ -1,7 +1,13 @@
 package com.amazonaws.videoanalytics.videologistics.dependency.kvs;
 
 import com.amazonaws.videoanalytics.videologistics.IceServer;
-import com.amazonaws.videoanalytics.videologistics.schema.Source;
+import com.amazonaws.videoanalytics.videologistics.SourceInfo;
+import com.amazonaws.videoanalytics.videologistics.SourceType;
+import com.amazonaws.videoanalytics.videologistics.StreamSource;
+import com.amazonaws.videoanalytics.videologistics.client.kvsarchivedmedia.KvsArchivedMediaClientFactory;
+import com.amazonaws.videoanalytics.videologistics.client.kvsarchivedmedia.KvsArchivedMediaClientWrapper;
+import com.amazonaws.videoanalytics.videologistics.client.kvssignaling.KvsSignalingClientFactory;
+import com.amazonaws.videoanalytics.videologistics.client.kvssignaling.KvsSignalingClientWrapper;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -14,15 +20,26 @@ import software.amazon.awssdk.services.kinesisvideo.model.GetDataEndpointRequest
 import software.amazon.awssdk.services.kinesisvideo.model.GetSignalingChannelEndpointRequest;
 import software.amazon.awssdk.services.kinesisvideo.model.GetSignalingChannelEndpointResponse;
 import software.amazon.awssdk.services.kinesisvideo.model.SingleMasterChannelEndpointConfiguration;
+import software.amazon.awssdk.services.kinesisvideoarchivedmedia.KinesisVideoArchivedMediaClient;
+import software.amazon.awssdk.services.kinesisvideoarchivedmedia.model.GetHlsStreamingSessionUrlRequest;
+import software.amazon.awssdk.services.kinesisvideoarchivedmedia.model.GetHlsStreamingSessionUrlResponse;
+import software.amazon.awssdk.services.kinesisvideoarchivedmedia.model.HLSDiscontinuityMode;
+import software.amazon.awssdk.services.kinesisvideoarchivedmedia.model.HLSDisplayFragmentTimestamp;
+import software.amazon.awssdk.services.kinesisvideoarchivedmedia.model.HLSFragmentSelector;
+import software.amazon.awssdk.services.kinesisvideoarchivedmedia.model.HLSFragmentSelectorType;
+import software.amazon.awssdk.services.kinesisvideoarchivedmedia.model.HLSPlaybackMode;
+import software.amazon.awssdk.services.kinesisvideoarchivedmedia.model.HLSTimestampRange;
 import software.amazon.awssdk.services.kinesisvideosignaling.KinesisVideoSignalingClient;
-import software.amazon.awssdk.services.kinesisvideosignaling.KinesisVideoSignalingClientBuilder;
 import software.amazon.awssdk.services.kinesisvideosignaling.model.GetIceServerConfigRequest;
 import software.amazon.awssdk.services.kinesisvideosignaling.model.GetIceServerConfigResponse;
 
 import javax.inject.Inject;
 
-import java.net.URI;
+import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.MAX_MEDIA_PLAYLIST_FRAGMENTS;
+import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.TWELVE_HOURS;
+
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -30,14 +47,18 @@ import java.util.Map;
 
 public class KvsService {
     private final KinesisVideoClient kvsClient;
-    private final KinesisVideoSignalingClientBuilder kvsSignalingClientBuilder;
+    private final KvsSignalingClientFactory kvsSignalingClientFactory;
+    private final KvsArchivedMediaClientFactory kvsArchivedMediaClientFactory;
+
     private static final Logger LOG = LogManager.getLogger(KvsService.class);
 
     @Inject
     public KvsService(KinesisVideoClient kinesisVideoClient,
-                      KinesisVideoSignalingClientBuilder kinesisVideoSignalingClientBuilder) {
+                      KvsSignalingClientFactory kvsSignalingClientFactory,
+                      KvsArchivedMediaClientFactory kvsArchivedMediaClientFactory) {
         this.kvsClient = kinesisVideoClient;
-        this.kvsSignalingClientBuilder = kinesisVideoSignalingClientBuilder;
+        this.kvsSignalingClientFactory = kvsSignalingClientFactory;
+        this.kvsArchivedMediaClientFactory = kvsArchivedMediaClientFactory;
     }
 
     public Map<String, String> getSignalingChannelEndpoint(final String channelArn,
@@ -92,7 +113,7 @@ public class KvsService {
     public List<IceServer> getSyncIceServerConfigs(final String endpoint,
                                                    final String channelArn,
                                                    final String deviceId) {
-        KinesisVideoSignalingClient kvsSignalingClient = kvsSignalingClientBuilder.endpointOverride(URI.create(endpoint)).build();
+        KinesisVideoSignalingClient kvsSignalingClient = kvsSignalingClientFactory.create(endpoint).getKvsSignalingClient();
 
         final GetIceServerConfigResponse getIceServerConfigResponse = kvsSignalingClient.getIceServerConfig(
                 GetIceServerConfigRequest.builder().channelARN(channelArn).build()
@@ -109,22 +130,42 @@ public class KvsService {
         
     }
 
-    public List<Source.GuidanceIceServer> getIceServerConfigs(final String endpoint,
-                                                              final String channelArn,
-                                                              final String deviceId) {
-        KinesisVideoSignalingClient kvsSignalingClient = kvsSignalingClientBuilder.endpointOverride(URI.create(endpoint)).build();
+    public StreamSource getStreamingSessionURL(final String streamName,
+                                               final Date startTime,
+                                               final Date endTime) {
+        HLSTimestampRange timestampRange = HLSTimestampRange.builder()
+                .startTimestamp(startTime.toInstant())
+                .endTimestamp(endTime.toInstant())
+                .build();
 
-        final GetIceServerConfigResponse getIceServerConfigResponse = kvsSignalingClient.getIceServerConfig(
-                GetIceServerConfigRequest.builder().channelARN(channelArn).build()
-        );
-        List<Source.GuidanceIceServer> iceServerList = new ArrayList<>();
-        getIceServerConfigResponse.iceServerList().forEach(
-                iceServer -> iceServerList.add(Source.GuidanceIceServer.builder()
-                        .uris(iceServer.uris())
-                        .password(iceServer.password())
-                        .username(iceServer.username())
-                        .build())
-        );
-        return iceServerList;
+        HLSFragmentSelector hlsFragmentSelector = HLSFragmentSelector.builder()
+                .fragmentSelectorType(HLSFragmentSelectorType.PRODUCER_TIMESTAMP)
+                .timestampRange(timestampRange)
+                .build();
+
+        GetHlsStreamingSessionUrlRequest getHLSStreamingSessionURLRequest = GetHlsStreamingSessionUrlRequest.builder()
+                .hlsFragmentSelector(hlsFragmentSelector)
+                .playbackMode(HLSPlaybackMode.ON_DEMAND)
+                .discontinuityMode(HLSDiscontinuityMode.ON_DISCONTINUITY)
+                .maxMediaPlaylistFragmentResults(MAX_MEDIA_PLAYLIST_FRAGMENTS)
+                .displayFragmentTimestamp(HLSDisplayFragmentTimestamp.ALWAYS)
+                .streamName(streamName)
+                .expires(TWELVE_HOURS)
+                .build();
+
+        String dataEndpoint = getDataEndpoint(streamName);
+
+        KinesisVideoArchivedMediaClient kvsArchivedMediaClientWrapper = kvsArchivedMediaClientFactory.create(dataEndpoint).getKvsArchivedMediaClient();
+
+        GetHlsStreamingSessionUrlResponse getHLSStreamingSessionURLResponse = kvsArchivedMediaClientWrapper.getHLSStreamingSessionURL(getHLSStreamingSessionURLRequest);
+
+        String hlsStreamingSessionURL = getHLSStreamingSessionURLResponse.hlsStreamingSessionURL();
+        SourceInfo source = SourceInfo.builder()
+                .hLSStreamingURL(hlsStreamingSessionURL)
+                .build();
+        return StreamSource.builder()
+                .sourceType(SourceType.HLS)
+                .source(source)
+                .build();
     }
 }

@@ -14,7 +14,7 @@ public class VideoAnalyticsExceptionMessage {
     public static final String PEER_TO_PEER_PLAYBACK_NOT_ENABLED = "Peer to peer playback is disabled at this time";
     public static final String DEVICE_NOT_REGISTERED = "The device was not registered " +
             "or the KVS stream/signaling channel was deleted out of band after registration";
-    public static final String NO_VIDEO_FRAGMENTS = "The cloud has no video fragments between %s and %s for the device: %s";
+    public static final String NO_VIDEO_FRAGMENTS = "The cloud has no video fragments for the inputted device and time range";
     public static final String NOT_AUTHORIZED = "Please ensure these permissions are added to the IAM policy calling this API";
     public static final String NO_DATA_RETENTION = "A streaming session was requested for a stream that does not retain data";
     public static final String MAXIMUM_NUMBER_OF_SESSIONS = "The device %s has already reached the " +
