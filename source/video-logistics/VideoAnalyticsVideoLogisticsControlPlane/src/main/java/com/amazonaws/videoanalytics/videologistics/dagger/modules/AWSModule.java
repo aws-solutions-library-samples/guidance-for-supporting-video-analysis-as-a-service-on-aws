@@ -11,8 +11,6 @@ import software.amazon.awssdk.http.SdkHttpClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.kinesisvideo.KinesisVideoClient;
-import software.amazon.awssdk.services.kinesisvideosignaling.KinesisVideoSignalingClient;
-import software.amazon.awssdk.services.kinesisvideosignaling.KinesisVideoSignalingClientBuilder;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -79,19 +77,5 @@ public class AWSModule {
                         .retryPolicy(RetryMode.ADAPTIVE)
                         .build())
                 .build();
-    }
-
-    @Provides
-    @Singleton
-    public KinesisVideoSignalingClientBuilder providesKvsSignalingClientBuilder(@Named(CREDENTIALS_PROVIDER) final AwsCredentialsProvider credentialsProvider,
-                                                                                 @Named(HTTP_CLIENT) final SdkHttpClient sdkHttpClient,
-                                                                                 final Region region) {
-        return KinesisVideoSignalingClient.builder()
-                .region(region)
-                .credentialsProvider(credentialsProvider)
-                .httpClient(sdkHttpClient)
-                .overrideConfiguration(ClientOverrideConfiguration.builder()
-                        .retryPolicy(RetryMode.ADAPTIVE)
-                        .build());
     }
 }

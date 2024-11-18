@@ -8,6 +8,5 @@ resources/LivestreamSession.smithy
 operations/ExportVideo/StartExportVideos.smithy
 operations/LivestreamSession/CreateLivestreamSession.smithy
 operations/Snapshot/CreateSnapshotUploadPath.smithy
-operations/PlaybackSession/GetPlaybackSession.smithy
 operations/PlaybackSession/CreatePlaybackSession.smithy
 video-analytic.smithy

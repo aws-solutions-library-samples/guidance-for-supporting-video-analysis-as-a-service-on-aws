@@ -169,9 +169,7 @@ public class IotService {
                 getThingShadowResponseProvision,
                 thingGroups
         );
-
-        // TODO: Currently there is no capabilities from onvif device service SKT cares.
-        // In the future, read in capabilities from shadow and fill the data into deviceCapabilities
+g
         Map<String, String> deviceCapabilities = new HashMap<>();   
         Map<String, String> deviceSettings = new HashMap<>();
 

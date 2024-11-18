@@ -1,16 +1,14 @@
 package com.amazonaws.videoanalytics.videologistics.dagger.modules;
 
 import com.amazonaws.videoanalytics.videologistics.config.LambdaConfiguration;
-import com.amazonaws.videoanalytics.videologistics.schema.PlaybackSession.PlaybackSession;
 import com.amazonaws.videoanalytics.videologistics.utils.DateTime;
 import com.amazonaws.videoanalytics.videologistics.utils.GuidanceUUIDGenerator;
-import com.amazonaws.videoanalytics.videologistics.utils.SchemaConst;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import dagger.Module;
 import dagger.Provides;
-import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
-import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
-import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -41,7 +39,17 @@ public class AWSVideoAnalyticsConfigurationModule {
 
     @Provides
     @Singleton
-    final public DynamoDbTable<PlaybackSession> providesPlaybackSessionTable(DynamoDbEnhancedClient ddbClient) {
-        return ddbClient.table(SchemaConst.PLAYBACK_SESSION_TABLE_NAME, TableSchema.fromBean(PlaybackSession.class));
+    public ObjectMapper provideObjectMapper() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
+
+        // Disable auto-detection. Explicitly allowlist fields for ser/de using @JsonProperty to avoid
+        // inadvertently serializing fields not meant for storage.
+        objectMapper.setVisibility(objectMapper.getSerializationConfig().getDefaultVisibilityChecker()
+                .withFieldVisibility(JsonAutoDetect.Visibility.NONE)
+                .withGetterVisibility(JsonAutoDetect.Visibility.NONE)
+                .withSetterVisibility(JsonAutoDetect.Visibility.NONE)
+                .withCreatorVisibility(JsonAutoDetect.Visibility.NONE));
+        return objectMapper;
     }
 }

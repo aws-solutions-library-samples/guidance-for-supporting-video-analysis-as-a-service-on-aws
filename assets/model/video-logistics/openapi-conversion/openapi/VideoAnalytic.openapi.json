@@ -189,56 +189,6 @@
                 }
             }
         },
-        "/get-playback-session/{sessionId}": {
-            "post": {
-                "operationId": "GetPlaybackSession",
-                "parameters": [
-                    {
-                        "name": "sessionId",
-                        "in": "path",
-                        "schema": {
-                            "type": "string",
-                            "maxLength": 128,
-                            "minLength": 1,
-                            "pattern": "^[a-z0-9\\-]+$"
-                        },
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "GetPlaybackSession 200 response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/GetPlaybackSessionResponseContent"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "ResourceNotFoundException 404 response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ResourceNotFoundExceptionResponseContent"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "InternalServerException 500 response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/InternalServerExceptionResponseContent"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/start-export-videos": {
             "put": {
                 "operationId": "StartExportVideos",
@@ -394,11 +344,11 @@
             "CreatePlaybackSessionResponseContent": {
                 "type": "object",
                 "properties": {
-                    "sessionId": {
-                        "type": "string",
-                        "maxLength": 128,
-                        "minLength": 1,
-                        "pattern": "^[a-z0-9\\-]+$"
+                    "streamSources": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/StreamSource"
+                        }
                     }
                 }
             },
@@ -423,51 +373,6 @@
                     "contentLength",
                     "deviceId"
                 ]
-            },
-            "GetPlaybackSessionResponseContent": {
-                "type": "object",
-                "properties": {
-                    "deviceId": {
-                        "type": "string",
-                        "maxLength": 128,
-                        "minLength": 1,
-                        "pattern": "^[a-zA-Z0-9:_\\-]+$"
-                    },
-                    "startTime": {
-                        "type": "string",
-                        "format": "date-time"
-                    },
-                    "endTime": {
-                        "type": "string",
-                        "format": "date-time"
-                    },
-                    "sessionId": {
-                        "type": "string",
-                        "maxLength": 128,
-                        "minLength": 1,
-                        "pattern": "^[a-z0-9\\-]+$"
-                    },
-                    "status": {
-                        "$ref": "#/components/schemas/Status"
-                    },
-                    "createdAt": {
-                        "type": "string",
-                        "format": "date-time"
-                    },
-                    "lastUpdatedAt": {
-                        "type": "string",
-                        "format": "date-time"
-                    },
-                    "errorMessage": {
-                        "type": "string"
-                    },
-                    "streamSources": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/StreamSource"
-                        }
-                    }
-                }
             },
             "IceServer": {
                 "type": "object",
@@ -596,15 +501,6 @@
                         "pattern": "^[a-z0-9\\-]+$"
                     }
                 }
-            },
-            "Status": {
-                "type": "string",
-                "enum": [
-                    "RUNNING",
-                    "COMPLETED",
-                    "FAILED",
-                    "CANCELLED"
-                ]
             },
             "StreamSource": {
                 "type": "object",

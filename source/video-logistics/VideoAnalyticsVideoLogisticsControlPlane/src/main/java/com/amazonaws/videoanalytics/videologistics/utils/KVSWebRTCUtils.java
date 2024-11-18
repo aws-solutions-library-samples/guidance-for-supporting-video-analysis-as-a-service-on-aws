@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 
 
 import static com.amazonaws.videoanalytics.videologistics.exceptions.VideoAnalyticsExceptionMessage.INTERNAL_SERVER_EXCEPTION;
-import static com.amazonaws.videoanalytics.videologistics.schema.util.GuidanceVLConstants.NEW_LINE_DELIMITER;
+import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.NEW_LINE_DELIMITER;
 import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.CREDENTIALS_PROVIDER;
 import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.REGION_NAME;
 import static com.google.common.hash.Hashing.sha256;

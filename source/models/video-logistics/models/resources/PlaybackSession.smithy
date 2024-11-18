@@ -4,7 +4,6 @@ namespace com.amazonaws.videoanalytics.videologistics
 
 resource PlaybackSession {
     operations: [
-        CreatePlaybackSession,
-        GetPlaybackSession
+        CreatePlaybackSession
     ]
 }

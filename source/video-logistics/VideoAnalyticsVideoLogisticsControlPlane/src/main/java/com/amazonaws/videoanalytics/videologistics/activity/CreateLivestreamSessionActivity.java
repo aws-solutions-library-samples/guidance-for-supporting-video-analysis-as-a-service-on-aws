@@ -32,7 +32,7 @@ import java.util.Objects;
 
 import static com.amazonaws.videoanalytics.videologistics.exceptions.VideoAnalyticsExceptionMessage.INTERNAL_SERVER_EXCEPTION;
 import static com.amazonaws.videoanalytics.videologistics.exceptions.VideoAnalyticsExceptionMessage.INVALID_INPUT_EXCEPTION;
-import static com.amazonaws.videoanalytics.videologistics.schema.util.ResourceNameConversionUtils.getLivestreamSignalingChannelNameFromDeviceId;
+import static com.amazonaws.videoanalytics.videologistics.utils.ResourceNameConversionUtils.getLivestreamSignalingChannelNameFromDeviceId;
 import static com.amazonaws.videoanalytics.videologistics.utils.LambdaProxyUtils.parseBody;
 import static com.amazonaws.videoanalytics.videologistics.utils.LambdaProxyUtils.serializeResponse;
 
