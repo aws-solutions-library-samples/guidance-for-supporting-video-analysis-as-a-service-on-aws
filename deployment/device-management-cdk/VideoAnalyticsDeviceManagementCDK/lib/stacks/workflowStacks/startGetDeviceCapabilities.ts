@@ -27,7 +27,7 @@ import {
   PARTITION_KEY_PATH,
   RESULT_PATH,
   RESULT_PATH_ERROR,
-  LAMBDA_ASSET_PATH,
+  LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT,
   DM_WORKFLOW_JAVA_PATH_PREFIX,
 } from "../const";
 
@@ -82,7 +82,7 @@ export class StartGetDeviceCapabilities extends VideoAnalyticsAsyncWorkflowResou
       "RequestCapabilitiesLambda",
       {
         //TODO: Update this if any changes are made to the lambda handler path or asset built jar location
-        code: Code.fromAsset(`${LAMBDA_ASSET_PATH}`),
+        code: Code.fromAsset(`${LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT}`),
         description: "Lambda to request device capabilities",
         runtime: LAMBDA_RUNTIME,
         handler: `${DM_WORKFLOW_JAVA_PATH_PREFIX}workflow.index.handler`,
@@ -102,7 +102,7 @@ export class StartGetDeviceCapabilities extends VideoAnalyticsAsyncWorkflowResou
 
     const getCapabilitiesLambda = new Function(this, "GetCapabilitiesLambda", {
       //TODO: Update this if any changes are made to the lambda handler path or asset built jar location
-      code: Code.fromAsset(`${LAMBDA_ASSET_PATH}`),
+      code: Code.fromAsset(`${LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT}`),
       description: "Lambda to get device capabilities",
       runtime: LAMBDA_RUNTIME,
       handler: `${DM_WORKFLOW_JAVA_PATH_PREFIX}workflow.index.handler`,
@@ -124,7 +124,7 @@ export class StartGetDeviceCapabilities extends VideoAnalyticsAsyncWorkflowResou
       "FailGetCapabilitiesLambda",
       {
         //TODO: Update this if any changes are made to the lambda handler path or asset built jar location
-        code: Code.fromAsset(`${LAMBDA_ASSET_PATH}`),
+        code: Code.fromAsset(`${LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT}`),
         description: "Lambda to handle get device capabilities failure",
         runtime: LAMBDA_RUNTIME,
         handler: `${DM_WORKFLOW_JAVA_PATH_PREFIX}workflow.index.handler`,

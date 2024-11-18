@@ -7,7 +7,6 @@ import {
   VideoAnalyticsAsyncWorkflowResource,
   AWSRegion,
 } from "video_analytics_common_construct";
-// import { StartUpdateDevice } from "./startUpdateDevice";
 import { StartCreateNotificationRule } from "./startCreateNotificationRule";
 import { StartCreateDeviceNotification } from "./startCreateDeviceNotification";
 import { StartDeleteDeviceNotification } from "./startDeleteDeviceNotification";
@@ -76,11 +75,6 @@ export function getWorkflowResources(
     // new StartDeleteDeviceNotification(
     //   scope,
     //   "StartDeleteDeviceNotification",
-    //   props
-    // ),
-    // new StartUpdateNotificationRule(
-    //   scope,
-    //   "StartUpdateNotificationRule",
     //   props
     // ),
     new StartCreateDevice(scope, "StartCreateDevice", props),

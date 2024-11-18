@@ -32,7 +32,7 @@ import {
   RESULT_PATH_ERROR,
   ERROR_MESSAGE_PATH,
   DM_WORKFLOW_JAVA_PATH_PREFIX,
-  LAMBDA_ASSET_PATH,
+  LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT,
 } from "../const";
 import * as fs from 'fs';
 import * as path from 'path';

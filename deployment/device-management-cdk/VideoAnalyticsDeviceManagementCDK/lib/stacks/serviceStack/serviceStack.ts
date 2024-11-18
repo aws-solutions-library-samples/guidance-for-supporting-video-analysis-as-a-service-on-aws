@@ -10,7 +10,7 @@ import { AWSRegion, createApiGateway, createLambdaRole } from "video_analytics_c
 
 import {
     DM_ACTIVITY_JAVA_PATH_PREFIX,
-    LAMBDA_ASSET_PATH,
+    LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT,
     OPEN_API_SPEC_PATH,
   } from "../const";
 
@@ -65,7 +65,7 @@ export class ServiceStack extends Stack {
       runtime: Runtime.JAVA_17,
       //TODO: Update this if any changes are made to the lambda handler path or asset built jar location
       handler: `${DM_ACTIVITY_JAVA_PATH_PREFIX}.GetDeviceActivity::handleRequest`,
-      code: Code.fromAsset(LAMBDA_ASSET_PATH),
+      code: Code.fromAsset(LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT),
       memorySize: 512,
       timeout: Duration.minutes(5),
       environment: {
@@ -95,7 +95,7 @@ export class ServiceStack extends Stack {
       runtime: Runtime.JAVA_17,
       //TODO: Update this if any changes are made to the lambda handler path or asset built jar location
       handler: `${DM_ACTIVITY_JAVA_PATH_PREFIX}.GetDeviceShadowActivity::handleRequest`,
-      code: Code.fromAsset(LAMBDA_ASSET_PATH),
+      code: Code.fromAsset(LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT),
       memorySize: 512,
       timeout: Duration.minutes(5),
       environment: {
@@ -125,7 +125,7 @@ export class ServiceStack extends Stack {
       runtime: Runtime.JAVA_17,
       //TODO: Update this if any changes are made to the lambda handler path or asset built jar location
       handler: `${DM_ACTIVITY_JAVA_PATH_PREFIX}.UpdateDeviceShadowActivity::handleRequest`,
-      code: Code.fromAsset(LAMBDA_ASSET_PATH),
+      code: Code.fromAsset(LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT),
       memorySize: 512,
       timeout: Duration.minutes(5),
       environment: {
