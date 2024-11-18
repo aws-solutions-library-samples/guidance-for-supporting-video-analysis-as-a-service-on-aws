@@ -1,7 +1,7 @@
 import { Duration, Fn, Stack, StackProps } from "aws-cdk-lib";
-import { SpecRestApi } from 'aws-cdk-lib/aws-apigateway';
+import { SpecRestApi, MethodLoggingLevel } from 'aws-cdk-lib/aws-apigateway';
 import { CfnFunction } from "aws-cdk-lib/aws-cloudfront";
-import { Effect, PolicyStatement, Role, ServicePrincipal } from "aws-cdk-lib/aws-iam";
+import { Effect, PolicyStatement, Role, ServicePrincipal, ManagedPolicy } from "aws-cdk-lib/aws-iam";
 import { Function, Runtime, Code } from "aws-cdk-lib/aws-lambda";
 import { LogGroup, RetentionDays } from "aws-cdk-lib/aws-logs";
 import { Asset } from 'aws-cdk-lib/aws-s3-assets'
@@ -11,6 +11,7 @@ import { AWSRegion, createApiGateway, createLambdaRole } from "video_analytics_c
 import {
     DM_ACTIVITY_JAVA_PATH_PREFIX,
     LAMBDA_ASSET_PATH,
+    OPEN_API_SPEC_PATH,
   } from "../const";
 
 export interface ServiceStackProps extends StackProps {
@@ -34,6 +35,9 @@ export class ServiceStack extends Stack {
     const apiGatewayRole = new Role(this, 'apiGatewayRole', {
       roleName: 'DeviceManagementApiGatewayRole',
       assumedBy: new ServicePrincipal('apigateway.amazonaws.com'),
+      managedPolicies: [
+        ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonAPIGatewayPushToCloudWatchLogs')
+      ]
     });
 
     const getDeviceRole = createLambdaRole(this, "GetDeviceRole", [
@@ -135,6 +139,116 @@ export class ServiceStack extends Stack {
       }),
     });
 
+    // Create base role for the create device activity related lambdas
+    const createDeviceActivityLambdaRole = createLambdaRole(this, "CreateDeviceActivityLambdaRole", [
+      // DynamoDB permissions
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        actions: [
+          "dynamodb:GetRecords",
+          "dynamodb:GetItem",
+          "dynamodb:Query",
+          "dynamodb:PutItem",
+          "dynamodb:UpdateItem",
+          "dynamodb:Scan",
+        ],
+        resources: [`arn:aws:dynamodb:${props.region}:${props.account}:table/*`],
+      }),
+      // KMS permissions
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        actions: ["kms:Decrypt", "kms:Encrypt", "kms:ReEncrypt*"],
+        resources: [`arn:aws:kms:${props.region}:${props.account}:key/*`],
+      }),
+      // IoT permissions
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        actions: [
+          "iot:CreateThing",
+          "iot:CreateKeysAndCertificate",
+          "iot:AttachThingPrincipal",
+          "iot:AttachPolicy",
+          "iot:CreatePolicy",
+          "iot:DescribeThing",
+          "iot:UpdateThing",
+          "iot:ListThingGroupsForThing",
+          "iot:DescribeThingGroup",
+          "iot:AddThingToThingGroup",
+          "iot:DescribeCertificate"
+        ],
+        resources: [
+          `arn:aws:iot:${props.region}:${props.account}:thing/*`,
+          `arn:aws:iot:${props.region}:${props.account}:cert/*`,
+          `arn:aws:iot:${props.region}:${props.account}:policy/*`
+        ]
+      }),
+      // KVS permissions
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        actions: [
+          "kinesisvideo:CreateStream",
+          "kinesisvideo:DescribeStream",
+          "kinesisvideo:TagStream"
+        ],
+        resources: [`arn:aws:kinesisvideo:${props.region}:${props.account}:stream/*`],
+      }),
+      // API Gateway permissions
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        actions: [
+          'execute-api:Invoke',
+          'execute-api:ManageConnections'
+        ],
+        resources: [`arn:aws:execute-api:${props.region}:${props.account}:*`]
+      }),
+      // Add Step Function execution permissions
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        actions: [
+          'states:StartExecution',
+          'states:DescribeExecution',
+          'states:StopExecution'
+        ],
+        resources: [`arn:aws:states:${props.region}:${props.account}:stateMachine:*`]
+      })
+    ]);
+
+    const getCreateDeviceStatusLambda = new Function(this, "GetCreateDeviceStatusActivity", {
+      runtime: Runtime.JAVA_17,
+      handler: `${DM_ACTIVITY_JAVA_PATH_PREFIX}.GetCreateDeviceStatusActivity::handleRequest`,
+      code: Code.fromAsset(`${LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT}`),
+      memorySize: 512,
+      timeout: Duration.minutes(5),
+      environment: {
+        ACCOUNT_ID: this.account,
+        LAMBDA_ROLE_ARN: createDeviceActivityLambdaRole.roleArn,
+        AWS_LAMBDA_LOG_LEVEL: "DEBUG"
+      },
+      role: createDeviceActivityLambdaRole,
+      logGroup: new LogGroup(this, "GetCreateDeviceStatusActivityLogGroup", {
+        retention: RetentionDays.TEN_YEARS,
+        logGroupName: "/aws/lambda/GetCreateDeviceStatusActivity",
+      }),
+    });
+
+    const startCreateDeviceSyncPathLambda = new Function(this, "StartCreateDeviceActivity", {
+      runtime: Runtime.JAVA_17,
+      handler: `${DM_ACTIVITY_JAVA_PATH_PREFIX}.StartCreateDeviceActivity::handleRequest`,
+      code: Code.fromAsset(`${LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT}`),
+      memorySize: 512,
+      timeout: Duration.minutes(5),
+      environment: {
+        ACCOUNT_ID: this.account,
+        LAMBDA_ROLE_ARN: createDeviceActivityLambdaRole.roleArn,
+      },
+      role: createDeviceActivityLambdaRole,
+      logGroup: new LogGroup(this, "StartCreateDeviceActivityLogGroup", {
+        retention: RetentionDays.TEN_YEARS,
+        logGroupName: "/aws/lambda/StartCreateDeviceActivity",
+      }),
+    });
+
+    // Add Lambda invoke permissions
     apiGatewayRole.addToPolicy(new PolicyStatement({
       resources: ['*'],
       actions: ['lambda:InvokeFunction']
@@ -149,10 +263,16 @@ export class ServiceStack extends Stack {
     const updateDeviceShadowCfnLambda = updateDeviceShadowLambda.node.defaultChild as CfnFunction;
     updateDeviceShadowCfnLambda.overrideLogicalId("UpdateDeviceShadowActivity");
 
+    const getCreateDeviceStatusCfnLambda = getCreateDeviceStatusLambda.node.defaultChild as CfnFunction;
+    getCreateDeviceStatusCfnLambda.overrideLogicalId("GetCreateDeviceStatusActivity");
+
+    const startCreateDeviceCfnLambda = startCreateDeviceSyncPathLambda.node.defaultChild as CfnFunction;
+    startCreateDeviceCfnLambda.overrideLogicalId("StartCreateDeviceActivity");
+
     // Upload spec to S3
     const originalSpec = new Asset(this, "openApiFile", {
       // manually added file at this location
-      path: "./lib/openapi/VideoAnalytic.openapi.json"
+      path: OPEN_API_SPEC_PATH
     });
 
     // Pulls the content back into the template. Being inline, this will now respect CF references within the file.
@@ -162,11 +282,18 @@ export class ServiceStack extends Stack {
 
     const transformedOpenApiSpec = Fn.transform("AWS::Include", transformMap);
 
+    // Create API Gateway with stage settings
     this.restApi = createApiGateway(this, 
       "VideoAnalyticsDeviceManagementAPIGateway",
       transformedOpenApiSpec,
       this.account,
-      this.region
+      this.region,
+      {
+        loggingLevel: MethodLoggingLevel.OFF, 
+        dataTraceEnabled: false,
+        tracingEnabled: true
+      }
     );
+
   }
 }

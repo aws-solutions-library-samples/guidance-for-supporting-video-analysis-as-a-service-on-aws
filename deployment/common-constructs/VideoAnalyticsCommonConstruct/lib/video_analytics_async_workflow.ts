@@ -190,14 +190,14 @@ export class Workflow extends Construct {
     if (fs.existsSync(lambdaAssetPath)) {
       code = Code.fromAsset(lambdaAssetPath);
     } else {
-      code = Code.fromAsset(path.join(__dirname, '../../../../assets/lambda-built/common-construct-assets/'));
+      code = Code.fromAsset('../../../../guidance-for-video-analytics-infrastructure-on-aws/assets/lambda-built/common-construct-assets/VideoAnalyticsWorkflowHandler-1.0-beta.jar');
     }
 
     this.lambda = new Function(this, `${props.tableName}-StreamProcessor`, {
       code: code,
       description: 'Lambda responsible for invocation of StepFunction',
       runtime: Runtime.JAVA_17,
-      handler: 'com.amazon.aws.videoanalytics.common.workflow.StreamProcessor::handleRequest', // TODO: Update this to the correct handler
+      handler: 'com.amazonaws.videoanalytics.workflow.lambda.TriggerStepFunctionLambda::handleRequest', // TODO: Update this to the correct handler
       role: this.ddbStreamProcessorLambdaRole,
       memorySize: 1028,
       environment: environment

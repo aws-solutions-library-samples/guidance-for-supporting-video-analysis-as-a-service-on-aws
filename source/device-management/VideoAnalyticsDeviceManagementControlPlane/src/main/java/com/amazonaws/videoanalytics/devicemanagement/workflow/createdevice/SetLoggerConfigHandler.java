@@ -17,10 +17,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import javax.inject.Inject;
 import java.util.Map;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.WorkflowConstants.*;
+import com.amazonaws.videoanalytics.devicemanagement.utils.annotations.ExcludeFromJacocoGeneratedReport;
 
 public class SetLoggerConfigHandler implements RequestHandler<Map<String, String>, Void> {
 
     private final String ENTERING_MESSAGE = "Entering " + this.getClass().getName() + " method.";
+    private static final String JOB_ID = "jobId";
 
     private final IotService iotService;
     private final StartCreateDeviceDAO startCreateDeviceDAO;
@@ -29,6 +31,14 @@ public class SetLoggerConfigHandler implements RequestHandler<Map<String, String
     public SetLoggerConfigHandler(IotService iotService, StartCreateDeviceDAO startCreateDeviceDAO) {
         this.iotService = iotService;
         this.startCreateDeviceDAO = startCreateDeviceDAO;
+    }
+
+    @ExcludeFromJacocoGeneratedReport
+    public SetLoggerConfigHandler() {
+        AWSVideoAnalyticsDMControlPlaneComponent component = DaggerAWSVideoAnalyticsDMControlPlaneComponent.create();
+        component.inject(this);
+        this.iotService = component.iotService();
+        this.startCreateDeviceDAO = component.startCreateDeviceDAO();
     }
 
     @Override

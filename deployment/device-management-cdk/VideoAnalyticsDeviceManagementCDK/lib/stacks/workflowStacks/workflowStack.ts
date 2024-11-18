@@ -7,7 +7,7 @@ import {
   VideoAnalyticsAsyncWorkflowResource,
   AWSRegion,
 } from "video_analytics_common_construct";
-import { StartUpdateDevice } from "./startUpdateDevice";
+// import { StartUpdateDevice } from "./startUpdateDevice";
 import { StartCreateNotificationRule } from "./startCreateNotificationRule";
 import { StartCreateDeviceNotification } from "./startCreateDeviceNotification";
 import { StartDeleteDeviceNotification } from "./startDeleteDeviceNotification";
@@ -63,28 +63,27 @@ export function getWorkflowResources(
 ): VideoAnalyticsAsyncWorkflowResource[] {
   console.log("getWorkflowResources called");
   return [
-    new StartUpdateDevice(scope, "StartUpdateDevice", props),
-    new StartCreateNotificationRule(
-      scope,
-      "StartCreateNotificationRule",
-      props
-    ),
-    new StartCreateDeviceNotification(
-      scope,
-      "StartCreateDeviceNotification",
-      props
-    ),
-    new StartDeleteDeviceNotification(
-      scope,
-      "StartDeleteDeviceNotification",
-      props
-    ),
-    new StartUpdateNotificationRule(
-      scope,
-      "StartUpdateNotificationRule",
-      props
-    ),
+    // new StartCreateNotificationRule(
+    //   scope,
+    //   "StartCreateNotificationRule",
+    //   props
+    // ),
+    // new StartCreateDeviceNotification(
+    //   scope,
+    //   "StartCreateDeviceNotification",
+    //   props
+    // ),
+    // new StartDeleteDeviceNotification(
+    //   scope,
+    //   "StartDeleteDeviceNotification",
+    //   props
+    // ),
+    // new StartUpdateNotificationRule(
+    //   scope,
+    //   "StartUpdateNotificationRule",
+    //   props
+    // ),
     new StartCreateDevice(scope, "StartCreateDevice", props),
-    new StartGetDeviceCapabilities(scope, "StartGetDeviceCapabilities", props),
+    // new StartGetDeviceCapabilities(scope, "StartGetDeviceCapabilities", props),
   ];
 }

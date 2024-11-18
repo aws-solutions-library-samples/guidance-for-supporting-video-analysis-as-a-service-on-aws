@@ -19,10 +19,10 @@ export const DM_WORKFLOW_JAVA_PATH_PREFIX =
 export const IS_REGISTERED_PATH = "$.isRegistered";
 export const IS_COMMAND_PATH = "$.isCommand";
 export const IS_SOFTWARE_UPDATE_PATH = "$.isSoftwareUpdate";
-
-export const LAMBDA_ASSET_PATH =
+export const LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT =
   "../../../assets/lambda-built/device-management-assets/VideoAnalyticsDeviceManagementControlPlane-1.0-beta.jar";
 
 export const IOT_CONNECTED_THING_NAME = `\${iot:Connection.Thing.ThingName}`;
 
 export const IOT_CREDENTIAL_THING_NAME = `\${credentials-iot:ThingName}`;
+export const OPEN_API_SPEC_PATH = "../../../assets/model/device-management/openapi-conversion/openapi/VideoAnalytic.openapi.json";

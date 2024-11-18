@@ -12,6 +12,7 @@ import static com.amazonaws.services.lambda.runtime.LambdaRuntime.getLogger;
 import static com.amazonaws.videoanalytics.devicemanagement.exceptions.VideoAnalyticsExceptionMessage.RESOURCE_NOT_FOUND_EXCEPTION;
 import javax.inject.Inject;
 import java.util.UUID;
+import java.time.Instant;
 
 /**
  * This is the domain logic layer for workflow related APIs
@@ -57,12 +58,15 @@ public class WorkflowManager {
 
         String jobId = UUID.randomUUID().toString();
         String workflowName = UUID.randomUUID().toString();
+        Instant now = Instant.now();
         logger.log(String.format("Starting create device job with job id %s and workflow name %s", jobId, workflowName));
         startCreateDeviceDAO.save(CreateDevice.builder()
                 .deviceId(deviceId)
                 .certificateId(certificateId)
                 .jobStatus(RUNNING.toString())
                 .workflowName(workflowName)
+                .lastUpdated(now)
+                .createdAt(now)
                 .jobId(jobId)
                 .build());
         return jobId;
