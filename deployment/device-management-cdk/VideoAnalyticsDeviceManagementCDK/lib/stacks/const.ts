@@ -20,8 +20,7 @@ export const IS_REGISTERED_PATH = "$.isRegistered";
 export const IS_COMMAND_PATH = "$.isCommand";
 export const IS_SOFTWARE_UPDATE_PATH = "$.isSoftwareUpdate";
 
-// TODO: REFACTOR once DM workflow's lambda paths are updated
-export const LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT =
+export const LAMBDA_ASSET_PATH =
   "../../../assets/lambda-built/device-management-assets/VideoAnalyticsDeviceManagementControlPlane-1.0-beta.jar";
 
 export const IOT_CONNECTED_THING_NAME = `\${iot:Connection.Thing.ThingName}`;

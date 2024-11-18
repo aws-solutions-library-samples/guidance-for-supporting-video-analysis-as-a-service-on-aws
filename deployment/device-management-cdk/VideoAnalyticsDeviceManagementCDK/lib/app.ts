@@ -15,7 +15,7 @@ const region = (process.env.CDK_DEPLOY_REGION ||
   process.env.CDK_DEFAULT_REGION ||
   "us-east-1") as AWSRegion;
 
-// new WorkflowStack(app, "WorkflowStack", {
+// new WorkflowStack(app, "DeviceManagementWorkflowStack", {
 //   env: {
 //     account: account,
 //     region: region,
@@ -25,7 +25,7 @@ const region = (process.env.CDK_DEPLOY_REGION ||
 //   account: account,
 // });
 
-new ServiceStack(app, "ServiceStack", {
+new ServiceStack(app, "DeviceManagementServiceStack", {
   env: {
     account: account,
     region: region,

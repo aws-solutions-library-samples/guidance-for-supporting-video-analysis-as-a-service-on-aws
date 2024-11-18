@@ -16,7 +16,7 @@ use aws.apigateway#integration
     type: "aws_proxy",
     httpMethod: "POST",
     uri: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${StartCreateDeviceActivity}/invocations",
-    credentials: "arn:aws:iam::${AWS::AccountId}:role/ApiGatewayRole"
+    credentials: "arn:aws:iam::${AWS::AccountId}:role/DeviceManagementApiGatewayRole"
 )
 @http(code: 200, method: "POST", uri: "/start-create-device/{deviceId}")
 @idempotent

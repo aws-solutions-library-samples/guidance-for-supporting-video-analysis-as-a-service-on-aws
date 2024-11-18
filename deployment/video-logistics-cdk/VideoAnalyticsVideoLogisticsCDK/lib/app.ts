@@ -2,6 +2,7 @@ import { App } from "aws-cdk-lib";
 import { 
     ForwardingRulesStack,
     SchedulerStack,
+    ServiceStack,
     TimelineStack,
     VideoExportStack,
     WorkflowStack
@@ -31,10 +32,11 @@ const envConfig = {
 };
 
 // Create all stacks
-new ForwardingRulesStack(app, 'ForwardingRulesStack', envConfig);
-new SchedulerStack(app, 'SchedulerStack', envConfig);
-new TimelineStack(app, 'TimelineStack', envConfig);
-new VideoExportStack(app, 'VideoExportStack', envConfig);
-new WorkflowStack(app, 'WorkflowStack', envConfig);
+new ForwardingRulesStack(app, 'VideoLogisticsForwardingRulesStack', envConfig);
+new SchedulerStack(app, 'VideoLogisticsSchedulerStack', envConfig);
+new TimelineStack(app, 'VideoLogisticsTimelineStack', envConfig);
+new VideoExportStack(app, 'VideoLogisticsVideoExportStack', envConfig);
+new WorkflowStack(app, 'VideoLogisticsWorkflowStack', envConfig);
+new ServiceStack(app, 'VideoLogisticsServiceStack', envConfig);
 
 app.synth();

@@ -28,7 +28,7 @@ import {
   RESULT_PATH,
   RESULT_PATH_ERROR,
   IS_COMMAND_PATH,
-  LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT,
+  LAMBDA_ASSET_PATH,
   IS_SOFTWARE_UPDATE_PATH,
   IS_REGISTERED_PATH,
   DM_WORKFLOW_JAVA_PATH_PREFIX,
@@ -96,7 +96,7 @@ export class StartUpdateDevice extends VideoAnalyticsAsyncWorkflowResource {
       "DetermineUpdateTypeLambda",
       {
         //TODO: Update this if any changes are made to the lambda handler path or asset built jar location
-        code: Code.fromAsset(`${LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT}`),
+        code: Code.fromAsset(`${LAMBDA_ASSET_PATH}`),
         description:
           "Lambda responsible for determining if device update is commandPayload type or not. " +
           "If it is command operation, proceed to sendCommand",
@@ -119,7 +119,7 @@ export class StartUpdateDevice extends VideoAnalyticsAsyncWorkflowResource {
       "DetermineCommandTypeLambda",
       {
         //TODO: Update this if any changes are made to the lambda handler path or asset built jar location
-        code: Code.fromAsset(`${LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT}`),
+        code: Code.fromAsset(`${LAMBDA_ASSET_PATH}`),
         description:
           "Lambda responsible for determining what commandType a given commandPayload is. " +
           "If it is an update operation, proceed to createDownloadFileIotJob",
@@ -142,7 +142,7 @@ export class StartUpdateDevice extends VideoAnalyticsAsyncWorkflowResource {
       "CreateDownloadFileIotJobLambda",
       {
         //TODO: Update this if any changes are made to the lambda handler path or asset built jar location
-        code: Code.fromAsset(`${LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT}`),
+        code: Code.fromAsset(`${LAMBDA_ASSET_PATH}`),
         description:
           "Lambda responsible for creating an IoT Job to download a file.",
         runtime: LAMBDA_RUNTIME,
@@ -164,7 +164,7 @@ export class StartUpdateDevice extends VideoAnalyticsAsyncWorkflowResource {
       "CheckIotDownloadJobStatusLambda",
       {
         //TODO: Update this if any changes are made to the lambda handler path or asset built jar location
-        code: Code.fromAsset(`${LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT}`),
+        code: Code.fromAsset(`${LAMBDA_ASSET_PATH}`),
         description:
           "Lambda responsible for checking IoT Job status for the download file job.",
         runtime: LAMBDA_RUNTIME,
@@ -186,7 +186,7 @@ export class StartUpdateDevice extends VideoAnalyticsAsyncWorkflowResource {
       "CreateInstallApplicationIotJobLambda",
       {
         //TODO: Update this if any changes are made to the lambda handler path or asset built jar location
-        code: Code.fromAsset(`${LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT}`),
+        code: Code.fromAsset(`${LAMBDA_ASSET_PATH}`),
         description:
           "Lambda responsible for creating an IoT Job to install an application.",
         runtime: LAMBDA_RUNTIME,
@@ -208,7 +208,7 @@ export class StartUpdateDevice extends VideoAnalyticsAsyncWorkflowResource {
       "CheckIotInstallApplicationJobStatusLambda",
       {
         //TODO: Update this if any changes are made to the lambda handler path or asset built jar location
-        code: Code.fromAsset(`${LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT}`),
+        code: Code.fromAsset(`${LAMBDA_ASSET_PATH}`),
         description:
           "Lambda responsible for checking IoT Job status for the install application job.",
         runtime: LAMBDA_RUNTIME,
@@ -232,7 +232,7 @@ export class StartUpdateDevice extends VideoAnalyticsAsyncWorkflowResource {
       "CreateCommandIotJobLambda",
       {
         //TODO: Update this if any changes are made to the lambda handler path or asset built jar location
-        code: Code.fromAsset(`${LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT}`),
+        code: Code.fromAsset(`${LAMBDA_ASSET_PATH}`),
         description:
           "Lambda responsible for creating an IoT Job for a given device command.",
         runtime: LAMBDA_RUNTIME,
@@ -254,7 +254,7 @@ export class StartUpdateDevice extends VideoAnalyticsAsyncWorkflowResource {
       "CheckIotJobStatusLambda",
       {
         //TODO: Update this if any changes are made to the lambda handler path or asset built jar location
-        code: Code.fromAsset(`${LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT}`),
+        code: Code.fromAsset(`${LAMBDA_ASSET_PATH}`),
         description: "Lambda responsible for checking IoT Job status.",
         runtime: LAMBDA_RUNTIME,
         handler: `${DM_WORKFLOW_JAVA_PATH_PREFIX}update.CheckIotJobStatusHandler::handleRequest`,
@@ -275,7 +275,7 @@ export class StartUpdateDevice extends VideoAnalyticsAsyncWorkflowResource {
       "PublishConfigurationsToShadowLambda",
       {
         //TODO: Update this if any changes are made to the lambda handler path or asset built jar location
-        code: Code.fromAsset(`${LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT}`),
+        code: Code.fromAsset(`${LAMBDA_ASSET_PATH}`),
         description: "Publish configurations to their respective shadow",
         runtime: LAMBDA_RUNTIME,
         handler: `${DM_WORKFLOW_JAVA_PATH_PREFIX}update.PublishConfigurationsToShadowHandler::handleRequest`,
@@ -300,7 +300,7 @@ export class StartUpdateDevice extends VideoAnalyticsAsyncWorkflowResource {
 
     const messageDeviceLambda = new Function(this, "MessageDeviceLambda", {
       //TODO: Update this if any changes are made to the lambda handler path or asset built jar location
-      code: Code.fromAsset(`${LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT}`),
+      code: Code.fromAsset(`${LAMBDA_ASSET_PATH}`),
       description: "Lambda sends message to device.",
       runtime: LAMBDA_RUNTIME,
       handler: `${DM_WORKFLOW_JAVA_PATH_PREFIX}update.MessageDeviceHandler::handleRequest`,
@@ -323,7 +323,7 @@ export class StartUpdateDevice extends VideoAnalyticsAsyncWorkflowResource {
       "DetermineIsDeviceStateLambda",
       {
         //TODO: Update this if any changes are made to the lambda handler path or asset built jar location
-        code: Code.fromAsset(`${LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT}`),
+        code: Code.fromAsset(`${LAMBDA_ASSET_PATH}`),
         description:
           "Lambda responsible for determine new state is registered or not. " +
           "If its registered, proceed to get device capabilities",
@@ -349,7 +349,7 @@ export class StartUpdateDevice extends VideoAnalyticsAsyncWorkflowResource {
       "UpdateUpdateStatusLambda",
       {
         //TODO: Update this if any changes are made to the lambda handler path or asset built jar location
-        code: Code.fromAsset(`${LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT}`),
+        code: Code.fromAsset(`${LAMBDA_ASSET_PATH}`),
         description:
           "Lambda responsible for updating the state of the Update Device Job",
         runtime: LAMBDA_RUNTIME,
@@ -374,7 +374,7 @@ export class StartUpdateDevice extends VideoAnalyticsAsyncWorkflowResource {
       "UpdateDeviceTypeLambda",
       {
         //TODO: Update this if any changes are made to the lambda handler path or asset built jar location
-        code: Code.fromAsset(`${LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT}`),
+        code: Code.fromAsset(`${LAMBDA_ASSET_PATH}`),
         description:
           "Lambda responsible for updating deviceType for deviceTypePayloads.",
         runtime: LAMBDA_RUNTIME,
@@ -403,7 +403,7 @@ export class StartUpdateDevice extends VideoAnalyticsAsyncWorkflowResource {
       "PublishDeviceStateEventHandlerLambda",
       {
         //TODO: Update this if any changes are made to the lambda handler path or asset built jar location
-        code: Code.fromAsset(`${LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT}`),
+        code: Code.fromAsset(`${LAMBDA_ASSET_PATH}`),
         description: "Lambda responsible for publishing new device state",
         runtime: LAMBDA_RUNTIME,
         handler: `${DM_WORKFLOW_JAVA_PATH_PREFIX}update.PublishDeviceStateEventHandler::handleRequest`,
@@ -429,7 +429,7 @@ export class StartUpdateDevice extends VideoAnalyticsAsyncWorkflowResource {
     // handler to create KVS Stream, FVL API used to create stream.
     const createKVSStreamLambda = new Function(this, "CreateKVSStreamLambda", {
       //TODO: Update this if any changes are made to the lambda handler path or asset built jar location
-      code: Code.fromAsset(`${LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT}`),
+      code: Code.fromAsset(`${LAMBDA_ASSET_PATH}`),
       description: "Lambda to create KVS Stream using FVL API.",
       runtime: LAMBDA_RUNTIME,
       handler: `${DM_WORKFLOW_JAVA_PATH_PREFIX}update.CreateKVSStreamHandler::handleRequest`,
@@ -453,7 +453,7 @@ export class StartUpdateDevice extends VideoAnalyticsAsyncWorkflowResource {
       "AttachKvsAccessToCertLambda",
       {
         //TODO: Update this if any changes are made to the lambda handler path or asset built jar location
-        code: Code.fromAsset(`${LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT}`),
+        code: Code.fromAsset(`${LAMBDA_ASSET_PATH}`),
         description:
           "Lambda responsible for attaching cert to KVS Roles policy.",
         runtime: LAMBDA_RUNTIME,
@@ -479,7 +479,7 @@ export class StartUpdateDevice extends VideoAnalyticsAsyncWorkflowResource {
       "DetachKvsAccessToCertLambda",
       {
         //TODO: Update this if any changes are made to the lambda handler path or asset built jar location
-        code: Code.fromAsset(`${LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT}`),
+        code: Code.fromAsset(`${LAMBDA_ASSET_PATH}`),
         description:
           "Lambda responsible for detaching cert to KVS Roles policy.",
         runtime: LAMBDA_RUNTIME,
@@ -505,7 +505,7 @@ export class StartUpdateDevice extends VideoAnalyticsAsyncWorkflowResource {
       "FVLWorkflowCheckerLambda",
       {
         //TODO: Update this if any changes are made to the lambda handler path or asset built jar location
-        code: Code.fromAsset(`${LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT}`),
+        code: Code.fromAsset(`${LAMBDA_ASSET_PATH}`),
         description:
           "Lambda responsible for checking to make sure fvl device registration workflow completes.",
         runtime: LAMBDA_RUNTIME,
@@ -530,7 +530,7 @@ export class StartUpdateDevice extends VideoAnalyticsAsyncWorkflowResource {
       "UpdateDeviceGroupLambda",
       {
         //TODO: Update this if any changes are made to the lambda handler path or asset built jar location
-        code: Code.fromAsset(`${LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT}`),
+        code: Code.fromAsset(`${LAMBDA_ASSET_PATH}`),
         description:
           "Lambda responsible for updating device thing group if device group payload present.",
         runtime: LAMBDA_RUNTIME,
@@ -555,7 +555,7 @@ export class StartUpdateDevice extends VideoAnalyticsAsyncWorkflowResource {
       "FailUpdateStatusLambda",
       {
         //TODO: Update this if any changes are made to the lambda handler path or asset built jar location
-        code: Code.fromAsset(`${LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT}`),
+        code: Code.fromAsset(`${LAMBDA_ASSET_PATH}`),
         description: "Lambda responsible for marking as failed",
         runtime: LAMBDA_RUNTIME,
         handler: `${DM_WORKFLOW_JAVA_PATH_PREFIX}update.FailUpdateStatusStateHandler::handleRequest`,

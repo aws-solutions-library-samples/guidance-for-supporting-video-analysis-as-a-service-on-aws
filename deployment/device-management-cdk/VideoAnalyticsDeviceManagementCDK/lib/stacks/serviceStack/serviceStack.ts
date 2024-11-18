@@ -10,7 +10,7 @@ import { AWSRegion, createApiGateway, createLambdaRole } from "video_analytics_c
 
 import {
     DM_ACTIVITY_JAVA_PATH_PREFIX,
-    LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT,
+    LAMBDA_ASSET_PATH,
   } from "../const";
 
 export interface ServiceStackProps extends StackProps {
@@ -32,7 +32,7 @@ export class ServiceStack extends Stack {
 
     // roleName must match the roleName defined in Smithy model
     const apiGatewayRole = new Role(this, 'apiGatewayRole', {
-      roleName: 'ApiGatewayRole',
+      roleName: 'DeviceManagementApiGatewayRole',
       assumedBy: new ServicePrincipal('apigateway.amazonaws.com'),
     });
 
@@ -61,7 +61,7 @@ export class ServiceStack extends Stack {
       runtime: Runtime.JAVA_17,
       //TODO: Update this if any changes are made to the lambda handler path or asset built jar location
       handler: `${DM_ACTIVITY_JAVA_PATH_PREFIX}.GetDeviceActivity::handleRequest`,
-      code: Code.fromAsset(`${LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT}`),
+      code: Code.fromAsset(LAMBDA_ASSET_PATH),
       memorySize: 512,
       timeout: Duration.minutes(5),
       environment: {
@@ -91,7 +91,7 @@ export class ServiceStack extends Stack {
       runtime: Runtime.JAVA_17,
       //TODO: Update this if any changes are made to the lambda handler path or asset built jar location
       handler: `${DM_ACTIVITY_JAVA_PATH_PREFIX}.GetDeviceShadowActivity::handleRequest`,
-      code: Code.fromAsset(`${LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT}`),
+      code: Code.fromAsset(LAMBDA_ASSET_PATH),
       memorySize: 512,
       timeout: Duration.minutes(5),
       environment: {
@@ -121,7 +121,7 @@ export class ServiceStack extends Stack {
       runtime: Runtime.JAVA_17,
       //TODO: Update this if any changes are made to the lambda handler path or asset built jar location
       handler: `${DM_ACTIVITY_JAVA_PATH_PREFIX}.UpdateDeviceShadowActivity::handleRequest`,
-      code: Code.fromAsset(`${LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT}`),
+      code: Code.fromAsset(LAMBDA_ASSET_PATH),
       memorySize: 512,
       timeout: Duration.minutes(5),
       environment: {

@@ -27,7 +27,7 @@ import {
   PARTITION_KEY_PATH,
   RESULT_PATH,
   RESULT_PATH_ERROR,
-  LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT,
+  LAMBDA_ASSET_PATH,
   DM_WORKFLOW_JAVA_PATH_PREFIX,
 } from "../const";
 
@@ -91,7 +91,7 @@ export class StartDeleteDeviceNotification extends VideoAnalyticsAsyncWorkflowRe
       "DetachNotificationPermissionFromDeviceCertLambda",
       {
         //TODO: Update this if any changes are made to the lambda handler path or asset built jar location
-        code: Code.fromAsset(`${LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT}`),
+        code: Code.fromAsset(`${LAMBDA_ASSET_PATH}`),
         description:
           "Lambda responsible for detaching notification permission from the device cert",
         runtime: LAMBDA_RUNTIME,
@@ -120,7 +120,7 @@ export class StartDeleteDeviceNotification extends VideoAnalyticsAsyncWorkflowRe
       "RemoveNotificationTopicFromShadowLambda",
       {
         //TODO: Update this if any changes are made to the lambda handler path or asset built jar location
-        code: Code.fromAsset(`${LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT}`),
+        code: Code.fromAsset(`${LAMBDA_ASSET_PATH}`),
         description:
           "Lambda responsible for removing notification topic from the shadow",
         runtime: LAMBDA_RUNTIME,
@@ -148,7 +148,7 @@ export class StartDeleteDeviceNotification extends VideoAnalyticsAsyncWorkflowRe
       "UpdateDeleteDeviceNotificationStatusLambda",
       {
         //TODO: Update this if any changes are made to the lambda handler path or asset built jar location
-        code: Code.fromAsset(`${LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT}`),
+        code: Code.fromAsset(`${LAMBDA_ASSET_PATH}`),
         description:
           "Lambda responsible for updating the state of the Delete Device Notification Job",
         runtime: LAMBDA_RUNTIME,
@@ -176,7 +176,7 @@ export class StartDeleteDeviceNotification extends VideoAnalyticsAsyncWorkflowRe
       "FailDeleteDeviceNotificationStatusLambda",
       {
         //TODO: Update this if any changes are made to the lambda handler path or asset built jar location
-        code: Code.fromAsset(`${LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT}`),
+        code: Code.fromAsset(`${LAMBDA_ASSET_PATH}`),
         description: "Lambda responsible for marking as failed",
         runtime: LAMBDA_RUNTIME,
         handler: `${DM_WORKFLOW_JAVA_PATH_PREFIX}deletedevicenotif.FailDeleteDeviceNotificationStatusStateHandler::handleRequest`,

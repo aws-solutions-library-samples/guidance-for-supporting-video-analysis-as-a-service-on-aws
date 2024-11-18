@@ -24,7 +24,7 @@ import {
   PARTITION_KEY_PATH,
   RESULT_PATH,
   RESULT_PATH_ERROR,
-  LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT,
+  LAMBDA_ASSET_PATH,
 } from "../const";
 
 /**
@@ -89,7 +89,7 @@ export class StartCreateDeviceNotification extends VideoAnalyticsAsyncWorkflowRe
       "AttachNotificationPermissionToDeviceCertLambda",
       {
         //TODO: Update this if any changes are made to the lambda handler path or asset built jar location
-        code: Code.fromAsset(LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT),
+        code: Code.fromAsset(LAMBDA_ASSET_PATH),
         description:
           "Lambda responsible for attaching notification permission to the device cert",
         runtime: Runtime.JAVA_17,
@@ -120,7 +120,7 @@ export class StartCreateDeviceNotification extends VideoAnalyticsAsyncWorkflowRe
       "AddNotificationTopicToShadowLambda",
       {
         //TODO: Update this if any changes are made to the lambda handler path or asset built jar location
-        code: Code.fromAsset(LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT),
+        code: Code.fromAsset(LAMBDA_ASSET_PATH),
         description:
           "Lambda responsible for adding notification topic to the shadow",
         runtime: Runtime.JAVA_17,
@@ -150,7 +150,7 @@ export class StartCreateDeviceNotification extends VideoAnalyticsAsyncWorkflowRe
       "UpdateCreateDeviceNotificationStatusLambda",
       {
         //TODO: Update this if any changes are made to the lambda handler path or asset built jar location
-        code: Code.fromAsset(LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT),
+        code: Code.fromAsset(LAMBDA_ASSET_PATH),
         description:
           "Lambda responsible for updating the state of the Create Device Notification Job",
         runtime: Runtime.JAVA_17,
@@ -181,7 +181,7 @@ export class StartCreateDeviceNotification extends VideoAnalyticsAsyncWorkflowRe
       "FailCreateDeviceNotificationStatusLambda",
       {
         //TODO: Update this if any changes are made to the lambda handler path or asset built jar location
-        code: Code.fromAsset(LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT),
+        code: Code.fromAsset(LAMBDA_ASSET_PATH),
         description: "Lambda responsible for marking as failed",
         runtime: Runtime.JAVA_17,
         //TODO: Update this lambda to use the correct code path relative to the package path
