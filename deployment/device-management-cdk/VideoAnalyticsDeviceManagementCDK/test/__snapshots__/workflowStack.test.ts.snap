@@ -387,10 +387,32 @@ exports[`WorkflowStack Snapshot test 1`] = `
           "Version": "2012-10-17",
         },
         "Description": "Role for SetLoggerConfig Lambda function",
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
         "Policies": [
           {
             "PolicyDocument": {
               "Statement": [
+                {
+                  "Action": [
+                    "iot:UpdateThingShadow",
+                    "iot:GetThingShadow",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": "arn:aws:iot:us-east-1:123456789012:thing/*",
+                },
                 {
                   "Action": [
                     "iotdata:GetThingShadow",
@@ -402,33 +424,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
                   "Resource": [
                     "arn:aws:iot:us-east-1:123456789012:thing/*",
                     "arn:aws:iot:us-east-1:123456789012:topic/*",
-                  ],
-                },
-                {
-                  "Action": [
-                    "iot:GetThingShadow",
-                    "iot:UpdateThingShadow",
-                    "iot:DeleteThingShadow",
-                    "iot:DescribeThing",
-                    "iot:DescribeThingGroup",
-                    "iot:ListThingGroupsForThing",
-                  ],
-                  "Effect": "Allow",
-                  "Resource": [
-                    "arn:aws:iot:us-east-1:123456789012:thing/*",
-                    "arn:aws:iot:us-east-1:123456789012:thinggroup/*",
-                  ],
-                },
-                {
-                  "Action": [
-                    "logs:CreateLogGroup",
-                    "logs:CreateLogStream",
-                    "logs:PutLogEvents",
-                  ],
-                  "Effect": "Allow",
-                  "Resource": [
-                    "arn:aws:logs:us-east-1:123456789012:log-group:/aws/lambda/SetLoggerConfigLambda:*",
-                    "arn:aws:logs:us-east-1:123456789012:log-group:/aws/lambda/SetLoggerConfigLambda:log-stream:*",
+                    "arn:aws:iot:us-east-1:123456789012:endpoint/*",
                   ],
                 },
                 {
@@ -438,23 +434,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
                     "dynamodb:UpdateItem",
                   ],
                   "Effect": "Allow",
-                  "Resource": [
-                    "arn:aws:dynamodb:us-east-1:123456789012:table/*",
-                    {
-                      "Fn::GetAtt": [
-                        "CreateDeviceTableC4C8D097",
-                        "Arn",
-                      ],
-                    },
-                  ],
-                },
-                {
-                  "Action": [
-                    "kms:Decrypt",
-                    "kms:GenerateDataKey",
-                  ],
-                  "Effect": "Allow",
-                  "Resource": "arn:aws:kms:us-east-1:123456789012:key/*",
+                  "Resource": "arn:aws:dynamodb:us-east-1:123456789012:table/CreateDeviceTable",
                 },
               ],
               "Version": "2012-10-17",
@@ -503,6 +483,9 @@ exports[`WorkflowStack Snapshot test 1`] = `
                     "iot:DetachPolicy",
                     "iot:ListAttachedPolicies",
                     "iot:ListTargetsForPolicy",
+                    "iot:DescribeCertificate",
+                    "iot:AttachThingPrincipal",
+                    "iot:UpdateCertificate",
                   ],
                   "Effect": "Allow",
                   "Resource": [
@@ -529,32 +512,6 @@ exports[`WorkflowStack Snapshot test 1`] = `
                   "Action": "iot:RegisterThing",
                   "Effect": "Allow",
                   "Resource": "*",
-                },
-                {
-                  "Action": [
-                    "iot:DescribeCertificate",
-                    "iot:AttachThingPrincipal",
-                    "iot:UpdateCertificate",
-                  ],
-                  "Effect": "Allow",
-                  "Resource": "arn:aws:iot:us-east-1:123456789012:cert/*",
-                },
-                {
-                  "Action": [
-                    "kinesisvideo:CreateStream",
-                    "kinesisvideo:DescribeStream",
-                    "kinesisvideo:TagStream",
-                  ],
-                  "Effect": "Allow",
-                  "Resource": "arn:aws:kinesisvideo:us-east-1:123456789012:stream/*",
-                },
-                {
-                  "Action": [
-                    "states:DescribeExecution",
-                    "states:GetExecutionHistory",
-                  ],
-                  "Effect": "Allow",
-                  "Resource": "arn:aws:states:us-east-1:123456789012:execution:*:*",
                 },
                 {
                   "Action": [
@@ -589,11 +546,6 @@ exports[`WorkflowStack Snapshot test 1`] = `
                   "Action": [
                     "iot:GetThingShadow",
                     "iot:UpdateThingShadow",
-                    "iot:DeleteThingShadow",
-                    "iotdata:GetThingShadow",
-                    "iotdata:UpdateThingShadow",
-                    "iotdata:DeleteThingShadow",
-                    "iotdata:Publish",
                   ],
                   "Effect": "Allow",
                   "Resource": [

@@ -139,112 +139,68 @@ export class ServiceStack extends Stack {
       }),
     });
 
-    // Create base role for the create device activity related lambdas
-    const createDeviceActivityLambdaRole = createLambdaRole(this, "CreateDeviceActivityLambdaRole", [
-      // DynamoDB permissions
+    // Create StartCreateDeviceActivity role with minimal permissions
+    const StartCreateDeviceSyncPathRole = createLambdaRole(this, "StartCreateDeviceSyncPathRole", [
       new PolicyStatement({
         effect: Effect.ALLOW,
         actions: [
-          "dynamodb:GetRecords",
-          "dynamodb:GetItem",
-          "dynamodb:Query",
-          "dynamodb:PutItem",
-          "dynamodb:UpdateItem",
-          "dynamodb:Scan",
-        ],
-        resources: [`arn:aws:dynamodb:${props.region}:${props.account}:table/*`],
-      }),
-      // KMS permissions
-      new PolicyStatement({
-        effect: Effect.ALLOW,
-        actions: ["kms:Decrypt", "kms:Encrypt", "kms:ReEncrypt*"],
-        resources: [`arn:aws:kms:${props.region}:${props.account}:key/*`],
-      }),
-      // IoT permissions
-      new PolicyStatement({
-        effect: Effect.ALLOW,
-        actions: [
-          "iot:CreateThing",
-          "iot:CreateKeysAndCertificate",
-          "iot:AttachThingPrincipal",
-          "iot:AttachPolicy",
-          "iot:CreatePolicy",
           "iot:DescribeThing",
-          "iot:UpdateThing",
-          "iot:ListThingGroupsForThing",
-          "iot:DescribeThingGroup",
-          "iot:AddThingToThingGroup",
-          "iot:DescribeCertificate"
+          "iot:DescribeCertificate",
         ],
         resources: [
           `arn:aws:iot:${props.region}:${props.account}:thing/*`,
           `arn:aws:iot:${props.region}:${props.account}:cert/*`,
-          `arn:aws:iot:${props.region}:${props.account}:policy/*`
-        ]
+        ],
       }),
-      // KVS permissions
       new PolicyStatement({
         effect: Effect.ALLOW,
-        actions: [
-          "kinesisvideo:CreateStream",
-          "kinesisvideo:DescribeStream",
-          "kinesisvideo:TagStream"
-        ],
-        resources: [`arn:aws:kinesisvideo:${props.region}:${props.account}:stream/*`],
+        actions: ["dynamodb:PutItem"],
+        resources: [`arn:aws:dynamodb:${props.region}:${props.account}:table/CreateDeviceTable`],
       }),
-      // API Gateway permissions
-      new PolicyStatement({
-        effect: Effect.ALLOW,
-        actions: [
-          'execute-api:Invoke',
-          'execute-api:ManageConnections'
-        ],
-        resources: [`arn:aws:execute-api:${props.region}:${props.account}:*`]
-      }),
-      // Add Step Function execution permissions
-      new PolicyStatement({
-        effect: Effect.ALLOW,
-        actions: [
-          'states:StartExecution',
-          'states:DescribeExecution',
-          'states:StopExecution'
-        ],
-        resources: [`arn:aws:states:${props.region}:${props.account}:stateMachine:*`]
-      })
     ]);
 
-    const getCreateDeviceStatusLambda = new Function(this, "GetCreateDeviceStatusActivity", {
-      runtime: Runtime.JAVA_17,
-      handler: `${DM_ACTIVITY_JAVA_PATH_PREFIX}.GetCreateDeviceStatusActivity::handleRequest`,
-      code: Code.fromAsset(`${LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT}`),
-      memorySize: 512,
-      timeout: Duration.minutes(5),
-      environment: {
-        ACCOUNT_ID: this.account,
-        LAMBDA_ROLE_ARN: createDeviceActivityLambdaRole.roleArn,
-        AWS_LAMBDA_LOG_LEVEL: "DEBUG"
-      },
-      role: createDeviceActivityLambdaRole,
-      logGroup: new LogGroup(this, "GetCreateDeviceStatusActivityLogGroup", {
-        retention: RetentionDays.TEN_YEARS,
-        logGroupName: "/aws/lambda/GetCreateDeviceStatusActivity",
+    // Create GetCreateDeviceStatusActivity role with minimal permissions
+    const getCreateDeviceStatusRole = createLambdaRole(this, "GetCreateDeviceStatusRole", [
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        actions: ["dynamodb:GetItem"],
+        resources: [`arn:aws:dynamodb:${props.region}:${props.account}:table/CreateDeviceTable`],
       }),
-    });
+    ]);
 
-    const startCreateDeviceSyncPathLambda = new Function(this, "StartCreateDeviceActivity", {
+    // StartCreateDeviceActivity Lambda
+    const startCreateDeviceLambda = new Function(this, "StartCreateDeviceActivity", {
       runtime: Runtime.JAVA_17,
       handler: `${DM_ACTIVITY_JAVA_PATH_PREFIX}.StartCreateDeviceActivity::handleRequest`,
-      code: Code.fromAsset(`${LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT}`),
+      code: Code.fromAsset(LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT),
       memorySize: 512,
       timeout: Duration.minutes(5),
       environment: {
         ACCOUNT_ID: this.account,
-        LAMBDA_ROLE_ARN: createDeviceActivityLambdaRole.roleArn,
+        LAMBDA_ROLE_ARN: StartCreateDeviceSyncPathRole.roleArn,
       },
-      role: createDeviceActivityLambdaRole,
+      role: StartCreateDeviceSyncPathRole,
       logGroup: new LogGroup(this, "StartCreateDeviceActivityLogGroup", {
         retention: RetentionDays.TEN_YEARS,
         logGroupName: "/aws/lambda/StartCreateDeviceActivity",
+      }),
+    });
+
+    // GetCreateDeviceStatusActivity Lambda
+    const getCreateDeviceStatusLambda = new Function(this, "GetCreateDeviceStatusActivity", {
+      runtime: Runtime.JAVA_17,
+      handler: `${DM_ACTIVITY_JAVA_PATH_PREFIX}.GetCreateDeviceStatusActivity::handleRequest`,
+      code: Code.fromAsset(LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT),
+      memorySize: 512,
+      timeout: Duration.minutes(5),
+      environment: {
+        ACCOUNT_ID: this.account,
+        LAMBDA_ROLE_ARN: getCreateDeviceStatusRole.roleArn,
+      },
+      role: getCreateDeviceStatusRole,
+      logGroup: new LogGroup(this, "GetCreateDeviceStatusActivityLogGroup", {
+        retention: RetentionDays.TEN_YEARS,
+        logGroupName: "/aws/lambda/GetCreateDeviceStatusActivity",
       }),
     });
 
@@ -266,7 +222,7 @@ export class ServiceStack extends Stack {
     const getCreateDeviceStatusCfnLambda = getCreateDeviceStatusLambda.node.defaultChild as CfnFunction;
     getCreateDeviceStatusCfnLambda.overrideLogicalId("GetCreateDeviceStatusActivity");
 
-    const startCreateDeviceCfnLambda = startCreateDeviceSyncPathLambda.node.defaultChild as CfnFunction;
+    const startCreateDeviceCfnLambda = startCreateDeviceLambda.node.defaultChild as CfnFunction;
     startCreateDeviceCfnLambda.overrideLogicalId("StartCreateDeviceActivity");
 
     // Upload spec to S3
