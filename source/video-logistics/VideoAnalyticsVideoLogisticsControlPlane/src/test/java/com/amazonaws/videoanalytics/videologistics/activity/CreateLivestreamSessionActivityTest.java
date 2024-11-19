@@ -71,7 +71,7 @@ public class CreateLivestreamSessionActivityTest {
     @Test
     public void handleRequest_WhenValidRequest_ReturnsResponse() throws IOException {
         when(kvsWebRTCUtils.sign(any(), any(), any())).thenReturn("presignedUrl");
-        when(kvsService.getSyncIceServerConfigs(any(), any(), any())).thenReturn(iceServerList);
+        when(kvsService.getSyncIceServerConfigs(any(), any())).thenReturn(iceServerList);
         Map<String, Object> response = createLivestreamSessionActivity.handleRequest(lambdaProxyRequest, context);
         CreateLivestreamSessionResponseContent createLivestreamSessionResponse = 
             CreateLivestreamSessionResponseContent.fromJson(parseBody(response));

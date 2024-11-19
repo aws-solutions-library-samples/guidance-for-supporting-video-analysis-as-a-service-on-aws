@@ -6,7 +6,6 @@ import com.amazonaws.videoanalytics.videologistics.activity.CreateSnapshotUpload
 import com.amazonaws.videoanalytics.videologistics.dagger.modules.AWSModule;
 import com.amazonaws.videoanalytics.videologistics.dagger.modules.AWSVideoAnalyticsConfigurationModule;
 import com.amazonaws.videoanalytics.videologistics.dependency.kvs.KvsService;
-import com.amazonaws.videoanalytics.videologistics.utils.DateTime;
 import com.amazonaws.videoanalytics.videologistics.utils.GuidanceUUIDGenerator;
 import com.amazonaws.videoanalytics.videologistics.utils.KVSWebRTCUtils;
 import com.amazonaws.videoanalytics.videologistics.validator.DeviceValidator;
@@ -16,8 +15,6 @@ import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.regions.Region;
 
 import javax.inject.Singleton;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component(
         modules = {
@@ -34,7 +31,6 @@ public interface AWSVideoAnalyticsVLControlPlaneComponent {
     KvsService getKvsService();
     DeviceValidator getDeviceValidator();
     GuidanceUUIDGenerator getGuidanceUUIDGenerator();
-    DateTime getDateTime();
     KVSWebRTCUtils getKVSWebRTCUtils();
     ObjectMapper getObjectMapper();
     S3Presigner getS3Presigner();

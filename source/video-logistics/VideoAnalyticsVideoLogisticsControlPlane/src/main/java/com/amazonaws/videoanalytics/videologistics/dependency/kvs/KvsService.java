@@ -5,9 +5,7 @@ import com.amazonaws.videoanalytics.videologistics.SourceInfo;
 import com.amazonaws.videoanalytics.videologistics.SourceType;
 import com.amazonaws.videoanalytics.videologistics.StreamSource;
 import com.amazonaws.videoanalytics.videologistics.client.kvsarchivedmedia.KvsArchivedMediaClientFactory;
-import com.amazonaws.videoanalytics.videologistics.client.kvsarchivedmedia.KvsArchivedMediaClientWrapper;
 import com.amazonaws.videoanalytics.videologistics.client.kvssignaling.KvsSignalingClientFactory;
-import com.amazonaws.videoanalytics.videologistics.client.kvssignaling.KvsSignalingClientWrapper;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -50,8 +48,6 @@ public class KvsService {
     private final KvsSignalingClientFactory kvsSignalingClientFactory;
     private final KvsArchivedMediaClientFactory kvsArchivedMediaClientFactory;
 
-    private static final Logger LOG = LogManager.getLogger(KvsService.class);
-
     @Inject
     public KvsService(KinesisVideoClient kinesisVideoClient,
                       KvsSignalingClientFactory kvsSignalingClientFactory,
@@ -62,8 +58,7 @@ public class KvsService {
     }
 
     public Map<String, String> getSignalingChannelEndpoint(final String channelArn,
-                                                           final SingleMasterChannelEndpointConfiguration configuration,
-                                                           final String deviceId) {
+                                                           final SingleMasterChannelEndpointConfiguration configuration) {
         final GetSignalingChannelEndpointResponse getSignalingChannelEndpointRequest =
                 this.kvsClient.getSignalingChannelEndpoint(
                         GetSignalingChannelEndpointRequest
@@ -91,17 +86,6 @@ public class KvsService {
         return kvsClient.getDataEndpoint(getDataEndpointRequest).dataEndpoint();
     }
 
-    public String getDataEndpointWithApiName(final String streamName, final APIName apiName) {
-        LOG.info(String.format("Fetching data endpoint for stream: %s with API name: %s", streamName, apiName));
-        GetDataEndpointRequest getDataEndpointRequest = GetDataEndpointRequest.builder()
-                .streamName(streamName)
-                .apiName(apiName)
-                .build();
-        String dataEndpoint = kvsClient.getDataEndpoint(getDataEndpointRequest).dataEndpoint();
-        LOG.info(String.format("Returning data endpoint: %s", dataEndpoint));
-        return dataEndpoint;
-    }
-
     public String getSignalingChannelArnFromName(final String signalingChannelName) {
         final DescribeSignalingChannelRequest describeSignalingChannelRequest =  DescribeSignalingChannelRequest.builder()
                 .channelName(signalingChannelName).build();
@@ -111,8 +95,7 @@ public class KvsService {
     }
 
     public List<IceServer> getSyncIceServerConfigs(final String endpoint,
-                                                   final String channelArn,
-                                                   final String deviceId) {
+                                                   final String channelArn) {
         KinesisVideoSignalingClient kvsSignalingClient = kvsSignalingClientFactory.create(endpoint).getKvsSignalingClient();
 
         final GetIceServerConfigResponse getIceServerConfigResponse = kvsSignalingClient.getIceServerConfig(

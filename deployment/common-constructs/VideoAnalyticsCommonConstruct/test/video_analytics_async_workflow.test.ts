@@ -41,7 +41,7 @@ describe('Workflow Test', () => {
     const template = Template.fromStack(testStack);
 
     template.hasResourceProperties('AWS::Lambda::Function', {
-      Handler: 'com.amazon.aws.videoanalytics.common.workflow.StreamProcessor::handleRequest',
+      Handler: 'com.amazonaws.videoanalytics.workflow.lambda.TriggerStepFunctionLambda::handleRequest',
       Environment: {
         Variables: {
           STATE_MACHINE_ARN: 'arn:test',
@@ -64,7 +64,7 @@ describe('Workflow Test', () => {
     const template = Template.fromStack(testStack);
 
     template.hasResourceProperties('AWS::Lambda::Function', {
-      Handler: 'com.amazon.aws.videoanalytics.common.workflow.StreamProcessor::handleRequest',
+      Handler: 'com.amazonaws.videoanalytics.workflow.lambda.TriggerStepFunctionLambda::handleRequest',
       Environment: {
         Variables: {
           STATE_MACHINE_ARN: 'arn:test3',
