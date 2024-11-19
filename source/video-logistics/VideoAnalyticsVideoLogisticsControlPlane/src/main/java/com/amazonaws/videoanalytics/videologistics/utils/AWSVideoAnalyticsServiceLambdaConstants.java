@@ -19,6 +19,8 @@ public final class AWSVideoAnalyticsServiceLambdaConstants {
     public static final int TWELVE_HOURS = 12 * 60 * 60;
     public static final long MAX_MEDIA_PLAYLIST_FRAGMENTS = 5000;
 
+    public static final String UPLOAD_BUCKET_FORMAT = "guidance-for-video-analytics-infrastructure-on-aws-%s";
+
     public static final String NEW_LINE_DELIMITER = "\n";
 
     private AWSVideoAnalyticsServiceLambdaConstants() {
