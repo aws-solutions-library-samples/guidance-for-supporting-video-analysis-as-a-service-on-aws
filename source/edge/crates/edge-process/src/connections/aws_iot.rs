@@ -20,6 +20,7 @@ use tokio::select;
 use tokio::sync::mpsc::Sender;
 use tokio::task::JoinHandle;
 use tracing::{debug, error, info, instrument, warn};
+use device_traits::state::{State, StateManager};
 
 /// This creates a shadow which automatically sends messages to connections layer to update
 /// the cloud based shadow.  The iot communication service is injected into the shadow manager.
@@ -88,6 +89,20 @@ pub async fn setup_and_start_iot_event_loop(
                     },
                     // Messages from IoT
                     Ok(msg_in) = iot_client.recv() => {
+                        // System state change message received.
+                        if let Some(new_state) = pub_sub_client_manager.received_state_message(msg_in.as_ref()) {
+                            match new_state {
+                                //Device has been set to ENABLED
+                                State::CreateOrEnableSteamingResources => {
+                                    StateManager::set_state(State::CreateOrEnableSteamingResources);
+                                },
+                                //Device has been set to DISABLED
+                                State::DisableStreamingResources => {
+                                    StateManager::set_state(State::DisableStreamingResources);
+                                },
+                            }
+                        }
+
                         if let Some(message) = pub_sub_client_manager.received_logger_settings_message(msg_in.as_ref()) {
                             if log_sync {
                                 info!("Logger settings message received {:?}", message);
