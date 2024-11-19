@@ -4,6 +4,8 @@ use serde_derive::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use std::fmt::Debug;
 use std::sync::Arc;
+use crate::state::State;
+
 type BoxedMessage = Box<dyn PubSubMessage + Send + Sync>;
 /// Type to manage client that can be shared across awaits
 pub type AsyncPubSubClient = Box<dyn PubSubClient + Send + Sync>;
@@ -47,6 +49,11 @@ pub trait IotClientManager {
         &self,
         msg: &(dyn PubSubMessage + Send + Sync),
     ) -> Option<Value>;
+    /// Received message to change the state of the device.
+    fn received_state_message(
+        &self,
+        msg: &(dyn PubSubMessage + Send + Sync),
+    ) -> Option<State>;
 }
 
 #[async_trait]

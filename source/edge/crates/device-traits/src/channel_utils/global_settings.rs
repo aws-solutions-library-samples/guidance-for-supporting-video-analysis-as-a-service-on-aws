@@ -18,7 +18,7 @@ pub struct Configurations {
     #[serde(alias = "key_path")]
     pub key_path: String,
     /// Role alias used for communicating with cloud
-    #[serde(alias = "role_alias")]
+    #[serde(alias = "kvs_role_alias")]
     pub role_aliases: String,
     /// Region
     pub aws_region: String,
