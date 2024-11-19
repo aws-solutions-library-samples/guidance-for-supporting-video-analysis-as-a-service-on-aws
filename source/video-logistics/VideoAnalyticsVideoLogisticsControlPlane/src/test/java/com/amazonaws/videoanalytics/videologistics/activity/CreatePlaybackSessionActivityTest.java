@@ -31,7 +31,7 @@ import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalytic
 import static com.amazonaws.videoanalytics.videologistics.utils.LambdaProxyUtils.parseBody;
 import static com.amazonaws.videoanalytics.videologistics.utils.TestConstants.DEVICE_ID;
 import static com.amazonaws.videoanalytics.videologistics.utils.TestConstants.END_TIMESTAMP;
-import static com.amazonaws.videoanalytics.videologistics.utils.TestConstants.HLS;
+import static com.amazonaws.videoanalytics.videologistics.utils.TestConstants.HLS_STREAMING_URL;
 import static com.amazonaws.videoanalytics.videologistics.utils.TestConstants.MOCK_AWS_REGION;
 import static com.amazonaws.videoanalytics.videologistics.utils.TestConstants.START_TIMESTAMP;
 
@@ -69,7 +69,7 @@ public class CreatePlaybackSessionActivityTest {
     @Test
     public void handleRequest_WhenValidRequest_ReturnsResponse() throws IOException {
         SourceInfo source = SourceInfo.builder()
-                .hLSStreamingURL(HLS)
+                .hLSStreamingURL(HLS_STREAMING_URL)
                 .build();
         StreamSource streamSource = StreamSource.builder()
                 .sourceType(SourceType.HLS)
@@ -82,7 +82,7 @@ public class CreatePlaybackSessionActivityTest {
             CreatePlaybackSessionResponseContent.fromJson(parseBody(response));
         StreamSource responseStreamSource = createPlaybackSessionResponse.getStreamSources().get(0);
         assertEquals(SourceType.HLS, responseStreamSource.getSourceType());
-        assertEquals(HLS, responseStreamSource.getSource().gethLSStreamingURL());
+        assertEquals(HLS_STREAMING_URL, responseStreamSource.getSource().gethLSStreamingURL());
     }
 
     @Test

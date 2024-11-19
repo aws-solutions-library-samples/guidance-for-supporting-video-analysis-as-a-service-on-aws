@@ -117,7 +117,7 @@ public class CreateLivestreamSessionActivity implements RequestHandler<Map<Strin
             channelArn = kvsService.getSignalingChannelArnFromName(signalingChannelName);
 
             signalingChannelMapForViewer = kvsService
-                    .getSignalingChannelEndpoint(channelArn, singleMasterChannelEndpointConfigurationAsViewer, deviceId);
+                    .getSignalingChannelEndpoint(channelArn, singleMasterChannelEndpointConfigurationAsViewer);
         } catch (KinesisVideoException e) {
             logger.log(e.toString());
             return ExceptionTranslator.translateKvsExceptionToLambdaResponse(e);
@@ -141,8 +141,7 @@ public class CreateLivestreamSessionActivity implements RequestHandler<Map<Strin
             // TURN server logic
             iceServerList = kvsService.getSyncIceServerConfigs(
                 signalingChannelMapForViewer.get(HTTPS.toString()),
-                channelArn,
-                deviceId
+                channelArn
             );
         } catch (KinesisVideoSignalingException e) {
             logger.log(e.toString());
