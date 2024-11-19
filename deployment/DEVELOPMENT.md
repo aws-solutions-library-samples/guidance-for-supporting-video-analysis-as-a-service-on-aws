@@ -191,11 +191,39 @@ When adding a new CDK package:
 
 ## Building the Project
 
-To build the entire project:
+### Build Order Requirements
 
-1. Navigate to the `deployment` directory.
+Before building the CDK stacks, you must build the components in this specific order:
+
+1. **Smithy Model**
+   ```bash
+   cd source/device-management/VideoAnalyticsDeviceManagementModel
+   smithy build
+   ```
+   This generates the OpenAPI specification from the Smithy model.
+
+2. **Java Client**
+   ```bash
+   cd source/device-management/VideoAnalyticsDeviceManagementJavaClient
+   ./gradlew openApiGenerate
+   ```
+   This generates the Java client code from the OpenAPI spec.
+
+3. **Control Plane Application**
+   ```bash
+   cd source/device-management/VideoAnalyticsDeviceManagementControlPlane
+   ./gradlew clean build
+   ```
+   This builds the main application JAR and copies it to `assets/lambda-built/device-management-assets/` for CDK deployment.
+
+> **Important**: The Control Plane build task includes a `transformJarToDeploymentAsset` step that copies the built JAR to the assets directory used by the CDK deployment. This directory path is referenced in `deployment/device-management-cdk/VideoAnalyticsDeviceManagementCDK/lib/stacks/const.ts`.
+
+### Building the Entire Project
+
+To build all components:
+
+1. Navigate to the `deployment` directory
 2. Run:
-
    ```bash
    npm run build --workspaces
    ```
@@ -269,3 +297,47 @@ If you encounter issues with snapshot tests:
 3. Verify that your CDK stack is correctly implemented and creating resources as expected.
 4. If snapshots are consistently empty, review your stack implementation and consider adding specific resource assertions to your tests.
 5. Always review the changes in the updated snapshot files (located in the `__snapshots__` directory) to ensure they match your expectations, and update the snapshot with command: `npm run test:update` if you have made intentional changes to the snapshot.
+
+## Helpful Build Commands
+
+### Common Commands
+
+1. **Update Tests, Build, and Synthesize CDK**
+   ```bash
+   npm run test -- -u && npm run build && cdk synth
+   ```
+   This command chain will:
+   - Update Jest snapshots (`-u` flag)
+   - Build all workspace packages
+   - Synthesize the CDK stack to CloudFormation
+
+2. **Clean and Build Java Components**
+
+   # Clean and build Control Plane
+   cd ../VideoAnalyticsDeviceManagementControlPlane
+   ./gradlew clean build
+   ```
+
+3. **Run Tests Only**
+   ```bash
+   # Run all workspace tests
+   npm test --workspaces
+
+   # Run tests for a specific package
+   cd deployment/device-management-cdk/VideoAnalyticsDeviceManagementCDK
+   npm test
+   ```
+
+4. **Update Snapshots Only**
+   ```bash
+   npm run test -- -u
+   ```
+
+5. **Build and Deploy**
+   ```bash
+   # Build and deploy to default environment
+   npm run build && cdk deploy
+
+   # Build and deploy specific stack
+   npm run build && cdk deploy StackName
+   ```

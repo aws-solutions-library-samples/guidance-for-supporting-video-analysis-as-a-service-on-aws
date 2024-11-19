@@ -15,17 +15,8 @@ const region = (process.env.CDK_DEPLOY_REGION ||
   process.env.CDK_DEFAULT_REGION ||
   "us-east-1") as AWSRegion;
 
-// new WorkflowStack(app, "DeviceManagementWorkflowStack", {
-//   env: {
-//     account: account,
-//     region: region,
-//   },
-//   resources: [], // this will be populated by the workflowStack.ts since resources are created in the workflowStack.ts
-//   region: region,
-//   account: account,
-// });
 
-new ServiceStack(app, "DeviceManagementServiceStack", {
+const bootstrapStack = new DeviceManagementBootstrapStack(app, "DeviceManagementBootstrapStack", {
   env: {
     account: account,
     region: region,
@@ -34,7 +25,20 @@ new ServiceStack(app, "DeviceManagementServiceStack", {
   account: account,
 });
 
-new DeviceManagementBootstrapStack(app, "DeviceManagementBootstrapStack", {
+// Create workflow stack with dependency on bootstrap stack
+const workflowStack = new WorkflowStack(app, "WorkflowStack", {
+  env: {
+    account: account,
+    region: region,
+  },
+  resources: [], // Resources will be populated by the workflowStack.ts
+  region: region,
+  account: account,
+});
+workflowStack.addDependency(bootstrapStack);
+
+// Create service stack with dependency on bootstrap stack
+const serviceStack = new ServiceStack(app, "ServiceStack", {
   env: {
     account: account,
     region: region,
@@ -42,5 +46,6 @@ new DeviceManagementBootstrapStack(app, "DeviceManagementBootstrapStack", {
   region: region,
   account: account,
 });
+serviceStack.addDependency(bootstrapStack);
 
 app.synth();

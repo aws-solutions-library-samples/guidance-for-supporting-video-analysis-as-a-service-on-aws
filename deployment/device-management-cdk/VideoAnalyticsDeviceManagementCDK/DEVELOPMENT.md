@@ -30,12 +30,15 @@ Note: The OpenAPI spec passed into `createApiGateway` must have lambda integrati
    export CDK_DEPLOY_REGION=your_aws_region
    ```
 
-4. **Synthesize the CloudFormation template**
+4. **Assume AWS credentials**
+   Assume AWS credentials using ADA or AWS CLI or from exported variables in Isengard bash.
+
+5. **Synthesize the CloudFormation template**
    ```
    cdk synth
    ```
 
-5. **Deploy the stack**
+6. **Deploy the stack**
    ```
    cdk deploy WorkflowStack
    ```
@@ -44,11 +47,11 @@ Note: The OpenAPI spec passed into `createApiGateway` must have lambda integrati
    cdk deploy --all
    ```
 
-6. **Review and confirm the changes** when prompted
+7. **Review and confirm the changes** when prompted
 
-7. **Monitor the deployment** in the terminal or AWS CloudFormation console
+8. **Monitor the deployment** in the terminal or AWS CloudFormation console
 
-8. **Verify the resources** in the AWS Console after deployment
+9. **Verify the resources** in the AWS Console after deployment
 
 ## Cleanup
 

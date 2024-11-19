@@ -11,11 +11,17 @@ export function createApiGateway(
   apiGatewayName: string,
   openApiSpec: IResolvable,
   account: string,
-  region: string
+  region: string,
+  deployOptions?: {
+    loggingLevel: MethodLoggingLevel;
+    dataTraceEnabled: boolean;
+    tracingEnabled?: boolean;
+    cloudWatchRole?: boolean;
+  }
 ) {
   return new SpecRestApi(scope, apiGatewayName, {
     apiDefinition: ApiDefinition.fromInline(openApiSpec),
-    deployOptions: {
+    deployOptions: deployOptions || {
       loggingLevel: MethodLoggingLevel.INFO,
       dataTraceEnabled: true
     },

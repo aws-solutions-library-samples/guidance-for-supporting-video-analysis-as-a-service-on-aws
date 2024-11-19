@@ -822,7 +822,7 @@ public class IotServiceTest {
     @Test
     public void publishLogConfigurationToProvisioningShadow_validInput_succeeds() {
         // Create the expected shadow document with exact string matching
-        String expectedJson = "{\"loggerSettings\":{\"isEnabled\":true,\"syncFrequency\":300,\"logLevel\":\"INFO\"}}";
+        String expectedJson = "{\"state\":{\"desired\":{\"loggerSettings\":{\"isEnabled\":true,\"syncFrequency\":300,\"logLevel\":\"INFO\"}}}}";
         SdkBytes expectedPayload = SdkBytes.fromUtf8String(expectedJson);
 
         UpdateThingShadowRequest expectedUpdateThingShadowRequest =

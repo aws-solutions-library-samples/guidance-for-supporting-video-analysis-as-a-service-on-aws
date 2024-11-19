@@ -1,4 +1,4 @@
-package com.amazonaws.videoanalytics.devicemanagement.workflow.update;
+package com.amazonaws.videoanalytics.devicemanagement.workflow.createdevice;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
@@ -15,6 +15,7 @@ import java.util.Map;
 
 import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyticsServiceLambdaConstants.KVS_DEVICE_IOT_POLICY;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.WorkflowConstants.DEVICE_ENABLED_MESSAGE;
+import com.amazonaws.videoanalytics.devicemanagement.utils.annotations.ExcludeFromJacocoGeneratedReport;
 
 public class AttachKvsAccessToCertHandler implements RequestHandler<Map<String, String>, Void> {
     private static final String ENTERING_MESSAGE = "Entering " + AttachKvsAccessToCertHandler.class.getName() + " method.";
@@ -27,6 +28,14 @@ public class AttachKvsAccessToCertHandler implements RequestHandler<Map<String, 
     public AttachKvsAccessToCertHandler(IotService iotService, DDBService ddbService) {
         this.iotService = iotService;
         this.ddbService = ddbService;
+    }
+
+    @ExcludeFromJacocoGeneratedReport
+    public AttachKvsAccessToCertHandler() {
+        AWSVideoAnalyticsDMControlPlaneComponent component = DaggerAWSVideoAnalyticsDMControlPlaneComponent.create();
+        component.inject(this);
+        this.iotService = component.iotService();
+        this.ddbService = component.ddbService();
     }
 
     @Override

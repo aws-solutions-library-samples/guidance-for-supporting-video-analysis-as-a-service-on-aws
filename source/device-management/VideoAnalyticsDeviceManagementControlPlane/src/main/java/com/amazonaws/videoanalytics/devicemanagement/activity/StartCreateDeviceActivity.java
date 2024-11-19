@@ -17,6 +17,8 @@ import com.amazonaws.videoanalytics.devicemanagement.utils.annotations.ExcludeFr
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import java.util.Map;
+import java.util.Arrays;
+import java.io.IOException;
 
 import software.amazon.awssdk.awscore.exception.AwsServiceException;
 import com.amazonaws.videoanalytics.devicemanagement.workflow.WorkflowManager;
@@ -28,7 +30,11 @@ import static software.amazon.awssdk.utils.StringUtils.isBlank;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.LambdaProxyUtils.parsePathParameter;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.LambdaProxyUtils.parseBody;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class StartCreateDeviceActivity implements RequestHandler<Map<String, Object>, Map<String, Object>> {
+    private static final Logger logger = LoggerFactory.getLogger(StartCreateDeviceActivity.class);
     private final WorkflowManager workflowManager;
 
     @Inject
@@ -46,24 +52,40 @@ public class StartCreateDeviceActivity implements RequestHandler<Map<String, Obj
     @Override
     public Map<String, Object> handleRequest(Map<String, Object> input, Context context) {
         LambdaLogger logger = context.getLogger();
-        logger.log("Entered startCreateDevice method");
+        logger.log("Entered StartCreateDevice method with input: " + input);
 
         String deviceId;
-        StartCreateDeviceRequestContent requestContent;
+        String certificateId;
         try {
             deviceId = parsePathParameter(input, "deviceId");
-            String requestBody = parseBody(input);
-            requestContent = StartCreateDeviceRequestContent.fromJson(requestBody);
-        } catch (Exception e) {
-            logger.log(e.toString());
+            
+            Map<String, String> queryParams = (Map<String, String>) input.get("queryStringParameters");
+            if (queryParams != null && queryParams.containsKey("certificateId")) {
+                certificateId = queryParams.get("certificateId");
+            } else {
+                String requestBody = parseBody(input);
+                StartCreateDeviceRequestContent requestContent = StartCreateDeviceRequestContent.fromJson(requestBody);
+                certificateId = requestContent.getCertificateId();
+            }
+        } catch (IOException e) {
+            logger.log("Error parsing request: " + e.getMessage());
+            logger.log("Stack trace: " + Arrays.toString(e.getStackTrace()));
             ValidationExceptionResponseContent exception = ValidationExceptionResponseContent.builder()
                     .message(INVALID_INPUT_EXCEPTION)
                     .build();
             return serializeResponse(400, exception.toJson());
+        } catch (Exception e) {
+            logger.log("Unexpected error: " + e.getMessage());
+            logger.log("Stack trace: " + Arrays.toString(e.getStackTrace()));
+            InternalServerExceptionResponseContent exception = InternalServerExceptionResponseContent.builder()
+                    .message(INTERNAL_SERVER_EXCEPTION)
+                    .build();
+            return serializeResponse(500, exception.toJson());
         }
 
-        if (isBlank(deviceId) || requestContent == null || isBlank(requestContent.getCertificateId())) {
-            logger.log("deviceId or certificateId is null or empty");
+        if (isBlank(deviceId) || isBlank(certificateId)) {
+            logger.log(String.format("deviceId or certificateId is null or empty. deviceId: %s, certificateId: %s", 
+                deviceId, certificateId));
             ValidationExceptionResponseContent exception = ValidationExceptionResponseContent.builder()
                     .message(INVALID_INPUT_EXCEPTION)
                     .build();
@@ -71,16 +93,16 @@ public class StartCreateDeviceActivity implements RequestHandler<Map<String, Obj
         }
 
         try {
-            String jobId = workflowManager.startCreateDevice(deviceId, requestContent.getCertificateId());
+            String jobId = workflowManager.startCreateDevice(deviceId, certificateId);
             StartCreateDeviceResponseContent response = StartCreateDeviceResponseContent.builder()
                     .jobId(jobId)
                     .build();
             return serializeResponse(200, response.toJson());
         } catch (AwsServiceException e) {
-            logger.log(e.toString());
+            logger.log("AWS service error: " + e.getMessage());
             return ExceptionTranslator.translateIotExceptionToLambdaResponse(e);
         } catch (Exception e) {
-            logger.log(e.toString());
+            logger.log("Internal server error: " + e.getMessage());
             InternalServerExceptionResponseContent exception = InternalServerExceptionResponseContent.builder()
                     .message(INTERNAL_SERVER_EXCEPTION)
                     .build();
