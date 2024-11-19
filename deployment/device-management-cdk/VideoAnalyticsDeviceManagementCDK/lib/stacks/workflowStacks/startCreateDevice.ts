@@ -111,7 +111,10 @@ export class StartCreateDevice extends VideoAnalyticsAsyncWorkflowResource {
           "iot:AttachPolicy",
           "iot:DetachPolicy",
           "iot:ListAttachedPolicies",
-          "iot:ListTargetsForPolicy"
+          "iot:ListTargetsForPolicy",
+          "iot:DescribeCertificate",
+          "iot:AttachThingPrincipal",
+          "iot:UpdateCertificate"
         ],
         resources: [
           `arn:aws:iot:${props.region}:${props.account}:policy/*`,
@@ -140,44 +143,13 @@ export class StartCreateDevice extends VideoAnalyticsAsyncWorkflowResource {
         ],
         resources: ["*"],
       }),
-      new PolicyStatement({
-        effect: Effect.ALLOW,
-        actions: [
-          "iot:DescribeCertificate",
-          "iot:AttachThingPrincipal",
-          "iot:UpdateCertificate",
-        ],
-        resources: [`arn:aws:iot:${props.region}:${props.account}:cert/*`],
-      }),
-      new PolicyStatement({
-        effect: Effect.ALLOW,
-        actions: [
-          "kinesisvideo:CreateStream",
-          "kinesisvideo:DescribeStream",
-          "kinesisvideo:TagStream"
-        ],
-        resources: [`arn:aws:kinesisvideo:${props.region}:${props.account}:stream/*`],
-      }),
-      new PolicyStatement({
-        effect: Effect.ALLOW,
-        actions: [
-          "states:DescribeExecution",
-          "states:GetExecutionHistory"
-        ],
-        resources: [`arn:aws:states:${props.region}:${props.account}:execution:*:*`],
-      }),
       this.dynamoDbStatement,
       this.kmsStatement,
       new PolicyStatement({
         effect: Effect.ALLOW,
         actions: [
           "iot:GetThingShadow",
-          "iot:UpdateThingShadow",
-          "iot:DeleteThingShadow",
-          "iotdata:GetThingShadow",
-          "iotdata:UpdateThingShadow",
-          "iotdata:DeleteThingShadow",
-          "iotdata:Publish"
+          "iot:UpdateThingShadow"
         ],
         resources: [
           `arn:aws:iot:${props.region}:${props.account}:thing/*`,
@@ -250,10 +222,25 @@ export class StartCreateDevice extends VideoAnalyticsAsyncWorkflowResource {
     this.setLoggerConfigRole = new Role(this, 'SetLoggerConfigRole', {
       assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
       description: 'Role for SetLoggerConfig Lambda function',
+      managedPolicies: [
+        ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole')
+      ],
       inlinePolicies: {
         'SetLoggerConfigPolicy': new PolicyDocument({
           statements: [
-            // IoT Data Plane permissions
+            // IoT Control Plane permissions
+            new PolicyStatement({
+              effect: Effect.ALLOW,
+              actions: [
+                "iot:UpdateThingShadow",
+                "iot:GetThingShadow"
+              ],
+              resources: [
+                `arn:aws:iot:${props.region}:${props.account}:thing/*`
+              ]
+            }),
+
+            // IoT Data Plane permissions - expanded
             new PolicyStatement({
               effect: Effect.ALLOW,
               actions: [
@@ -263,44 +250,25 @@ export class StartCreateDevice extends VideoAnalyticsAsyncWorkflowResource {
                 "iotdata:Publish"
               ],
               resources: [
+                // Need both thing and endpoint ARNs for data plane operations
                 `arn:aws:iot:${props.region}:${props.account}:thing/*`,
-                `arn:aws:iot:${props.region}:${props.account}:topic/*`
+                `arn:aws:iot:${props.region}:${props.account}:topic/*`,
+                `arn:aws:iot:${props.region}:${props.account}:endpoint/*`
               ]
             }),
 
-            // IoT Control Plane permissions
+            // DynamoDB permissions
             new PolicyStatement({
               effect: Effect.ALLOW,
               actions: [
-                "iot:GetThingShadow",
-                "iot:UpdateThingShadow",
-                "iot:DeleteThingShadow",
-                "iot:DescribeThing",
-                "iot:DescribeThingGroup",
-                "iot:ListThingGroupsForThing"
+                "dynamodb:GetItem",
+                "dynamodb:PutItem",
+                "dynamodb:UpdateItem"
               ],
               resources: [
-                `arn:aws:iot:${props.region}:${props.account}:thing/*`,
-                `arn:aws:iot:${props.region}:${props.account}:thinggroup/*`
+                `arn:aws:dynamodb:${props.region}:${props.account}:table/CreateDeviceTable`
               ]
-            }),
-
-            // CloudWatch Logs permissions
-            new PolicyStatement({
-              effect: Effect.ALLOW,
-              actions: [
-                "logs:CreateLogGroup",
-                "logs:CreateLogStream",
-                "logs:PutLogEvents"
-              ],
-              resources: [
-                `arn:aws:logs:${props.region}:${props.account}:log-group:/aws/lambda/SetLoggerConfigLambda:*`,
-                `arn:aws:logs:${props.region}:${props.account}:log-group:/aws/lambda/SetLoggerConfigLambda:log-stream:*`
-              ]
-            }),
-
-            this.setLoggerConfigDynamoStatement,
-            this.setLoggerConfigKmsStatement
+            })
           ]
         })
       }
