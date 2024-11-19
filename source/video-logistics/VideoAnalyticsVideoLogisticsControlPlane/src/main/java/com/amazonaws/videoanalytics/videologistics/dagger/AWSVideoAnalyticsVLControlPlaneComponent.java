@@ -32,7 +32,6 @@ public interface AWSVideoAnalyticsVLControlPlaneComponent {
     DeviceValidator getDeviceValidator();
     GuidanceUUIDGenerator getGuidanceUUIDGenerator();
     KVSWebRTCUtils getKVSWebRTCUtils();
-    ObjectMapper getObjectMapper();
     S3Presigner getS3Presigner();
     Region getRegion();
 }
