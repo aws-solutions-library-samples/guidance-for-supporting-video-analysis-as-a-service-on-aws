@@ -49,7 +49,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "af966e93dcb7a86181709d7c78b6d4a82b4eff98962a179367d2280b434b77f7.jar",
+          "S3Key": "38d0bee30f3b52e6e99f1be886a6d8e0cb5ec07412820dd2c1bb9839b3023d9d.jar",
         },
         "Description": "Lambda responsible for attaching cert to KVS Roles policy.",
         "Environment": {
@@ -97,7 +97,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "af966e93dcb7a86181709d7c78b6d4a82b4eff98962a179367d2280b434b77f7.jar",
+          "S3Key": "38d0bee30f3b52e6e99f1be886a6d8e0cb5ec07412820dd2c1bb9839b3023d9d.jar",
         },
         "Environment": {
           "Variables": {
@@ -144,7 +144,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "af966e93dcb7a86181709d7c78b6d4a82b4eff98962a179367d2280b434b77f7.jar",
+          "S3Key": "38d0bee30f3b52e6e99f1be886a6d8e0cb5ec07412820dd2c1bb9839b3023d9d.jar",
         },
         "Description": "Lambda to create KVS Stream using FVL API.",
         "Environment": {
@@ -207,7 +207,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "af966e93dcb7a86181709d7c78b6d4a82b4eff98962a179367d2280b434b77f7.jar",
+          "S3Key": "38d0bee30f3b52e6e99f1be886a6d8e0cb5ec07412820dd2c1bb9839b3023d9d.jar",
         },
         "Description": "Lambda responsible for checking to make sure fvl device registration workflow completes.",
         "Environment": {
@@ -221,7 +221,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
             },
           },
         },
-        "Handler": "com.amazonaws.videoanalytics.devicemanagement.workflow.update.VideoLogicsticsWorkflowCheckerHandler::handleRequest",
+        "Handler": "com.amazonaws.videoanalytics.devicemanagement.workflow.update.VideoLogisticsWorkflowCheckerHandler::handleRequest",
         "LoggingConfig": {
           "LogGroup": {
             "Ref": "StartCreateDeviceVLWorkflowCheckerLambdaLogGroup6C79C1F7",
@@ -246,7 +246,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "af966e93dcb7a86181709d7c78b6d4a82b4eff98962a179367d2280b434b77f7.jar",
+          "S3Key": "38d0bee30f3b52e6e99f1be886a6d8e0cb5ec07412820dd2c1bb9839b3023d9d.jar",
         },
         "Environment": {
           "Variables": {
@@ -332,7 +332,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "af966e93dcb7a86181709d7c78b6d4a82b4eff98962a179367d2280b434b77f7.jar",
+          "S3Key": "38d0bee30f3b52e6e99f1be886a6d8e0cb5ec07412820dd2c1bb9839b3023d9d.jar",
         },
         "Environment": {
           "Variables": {

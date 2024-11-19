@@ -1,4 +1,4 @@
-package com.amazonaws.videoanalytics.devicemanagement.workflow.update;
+package com.amazonaws.videoanalytics.devicemanagement.workflow.createdevice;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
@@ -23,8 +23,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class VideoLogicsticsWorkflowCheckerHandlerTest {
-    private VideoLogicsticsWorkflowCheckerHandler handler;
+public class VideoLogisticsWorkflowCheckerHandlerTest {
+    private VideoLogisticsWorkflowCheckerHandler handler;
     
     @Mock
     private DDBService ddbService;
@@ -57,7 +57,7 @@ public class VideoLogicsticsWorkflowCheckerHandlerTest {
         environmentVariables.set("Stage", MOCK_AWS_STAGE);
         MockitoAnnotations.initMocks(this);
         
-        handler = new VideoLogicsticsWorkflowCheckerHandler(ddbService, startCreateDeviceDAO);
+        handler = new VideoLogisticsWorkflowCheckerHandler(ddbService, startCreateDeviceDAO);
         when(context.getLogger()).thenReturn(logger);
         
         createDevice = CreateDevice.builder()

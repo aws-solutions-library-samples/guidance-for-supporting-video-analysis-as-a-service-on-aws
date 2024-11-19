@@ -169,7 +169,7 @@ public class IotService {
                 getThingShadowResponseProvision,
                 thingGroups
         );
-g
+
         Map<String, String> deviceCapabilities = new HashMap<>();   
         Map<String, String> deviceSettings = new HashMap<>();
 
