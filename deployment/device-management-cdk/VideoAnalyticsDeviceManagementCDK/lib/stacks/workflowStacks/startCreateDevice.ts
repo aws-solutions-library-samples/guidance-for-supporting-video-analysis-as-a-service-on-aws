@@ -363,7 +363,7 @@ export class StartCreateDevice extends VideoAnalyticsAsyncWorkflowResource {
         description:
           "Lambda responsible for checking to make sure fvl device registration workflow completes.",
         runtime: Runtime.JAVA_17,
-        handler: `${DM_WORKFLOW_JAVA_PATH_PREFIX}.update.VideoLogicsticsWorkflowCheckerHandler::handleRequest`,
+        handler: `${DM_WORKFLOW_JAVA_PATH_PREFIX}.update.VideoLogisticsWorkflowCheckerHandler::handleRequest`,
         memorySize: 512,
         role: this.role,
         environment: {

@@ -1,4 +1,4 @@
-package com.amazonaws.videoanalytics.devicemanagement.workflow.update;
+package com.amazonaws.videoanalytics.devicemanagement.workflow.createdevice;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;

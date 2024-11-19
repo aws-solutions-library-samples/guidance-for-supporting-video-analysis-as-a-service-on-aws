@@ -1,4 +1,4 @@
-package com.amazonaws.videoanalytics.devicemanagement.workflow.update;
+package com.amazonaws.videoanalytics.devicemanagement.workflow.createdevice;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
@@ -18,7 +18,7 @@ import software.amazon.awssdk.services.iot.model.InvalidRequestException;
 import javax.inject.Inject;
 import java.util.Map;
 
-public class VideoLogicsticsWorkflowCheckerHandler implements RequestHandler<Map<String, Object>, Map<String, Object>> {
+public class VideoLogisticsWorkflowCheckerHandler implements RequestHandler<Map<String, Object>, Map<String, Object>> {
     private static final String JOB_ID = "jobId";
     private final String ENTERING_MESSAGE = "Entering " + this.getClass().getName() + " method.";
     private static final String WORKFLOW_IN_PROGRESS = "Video Analytics workflow is still in progress. Will retry.";
@@ -29,13 +29,13 @@ public class VideoLogicsticsWorkflowCheckerHandler implements RequestHandler<Map
     private final StartCreateDeviceDAO startCreateDeviceDAO;
 
     @Inject
-    public VideoLogicsticsWorkflowCheckerHandler(DDBService ddbService, StartCreateDeviceDAO startCreateDeviceDAO) {
+    public VideoLogisticsWorkflowCheckerHandler(DDBService ddbService, StartCreateDeviceDAO startCreateDeviceDAO) {
         this.ddbService = ddbService;
         this.startCreateDeviceDAO = startCreateDeviceDAO;
     }
 
     @ExcludeFromJacocoGeneratedReport
-    public VideoLogicsticsWorkflowCheckerHandler() {
+    public VideoLogisticsWorkflowCheckerHandler() {
         AWSVideoAnalyticsDMControlPlaneComponent component = DaggerAWSVideoAnalyticsDMControlPlaneComponent.create();
         component.inject(this);
         this.ddbService = component.ddbService();
