@@ -16,6 +16,8 @@ import software.amazon.awssdk.regions.Region;
 
 import javax.inject.Singleton;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 @Component(
         modules = {
                 AWSModule.class,
