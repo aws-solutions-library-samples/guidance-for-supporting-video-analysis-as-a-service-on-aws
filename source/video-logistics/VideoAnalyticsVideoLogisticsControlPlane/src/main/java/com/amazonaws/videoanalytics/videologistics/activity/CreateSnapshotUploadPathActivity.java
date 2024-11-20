@@ -21,6 +21,7 @@ import com.amazonaws.videoanalytics.videologistics.dagger.DaggerAWSVideoAnalytic
 
 import java.net.URL;
 import javax.inject.Inject;
+import javax.inject.Named;
 import software.amazon.awssdk.regions.Region;
 
 
@@ -29,6 +30,7 @@ import com.amazonaws.videoanalytics.videologistics.ValidationExceptionResponseCo
 import static com.amazonaws.videoanalytics.videologistics.exceptions.VideoAnalyticsExceptionMessage.INTERNAL_SERVER_EXCEPTION;
 import static com.amazonaws.videoanalytics.videologistics.exceptions.VideoAnalyticsExceptionMessage.INVALID_INPUT_EXCEPTION;
 import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.UPLOAD_BUCKET_FORMAT;
+import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.ACCOUNT_ID;
 import static com.amazonaws.videoanalytics.videologistics.utils.LambdaProxyUtils.parseBody;
 import static com.amazonaws.videoanalytics.videologistics.utils.LambdaProxyUtils.serializeResponse;
 
@@ -47,12 +49,15 @@ public class CreateSnapshotUploadPathActivity implements RequestHandler<Map<Stri
     private SnapshotS3Presigner snapshotS3Presigner;
     private final String SNAPSHOT = "snapshot";
     private String region;
+    private String accountId;
 
     @Inject
     public CreateSnapshotUploadPathActivity(final S3Presigner s3Presigner,
-                                            final Region region) {
+                                            final Region region,
+                                            @Named(ACCOUNT_ID) final String accountId) {
         this.s3Presigner = s3Presigner;
         this.region = region.toString();
+        this.accountId = accountId;
     }
 
     public CreateSnapshotUploadPathActivity() {
@@ -60,6 +65,7 @@ public class CreateSnapshotUploadPathActivity implements RequestHandler<Map<Stri
         component.inject(this);
         this.s3Presigner = component.getS3Presigner();
         this.region = component.getRegion().toString();
+        this.accountId = component.getAccountId();
     }
 
     @Override
@@ -91,7 +97,7 @@ public class CreateSnapshotUploadPathActivity implements RequestHandler<Map<Stri
         }
 
         // used for bucketName
-        String snapshotUploadBucketName = String.format(UPLOAD_BUCKET_FORMAT, region);
+        String snapshotUploadBucketName = String.format(UPLOAD_BUCKET_FORMAT, accountId, region);
         AwsCredentialsProvider credentialsProvider = DefaultCredentialsProvider.builder().build();
 
         // Generate presigned url for snapshot

@@ -2,6 +2,7 @@ package com.amazonaws.videoanalytics.videologistics.utils;
 
 public final class AWSVideoAnalyticsServiceLambdaConstants {
     public static final String REGION_NAME = "REGION";
+    public static final String ACCOUNT_ID = "AccountId";
     public static final String CREDENTIALS_PROVIDER = "CREDENTIALS_PROVIDER";
     public static final String SERVICE_ENDPOINT ="SERVICE_ENDPOINT";
     public static final String HTTP_CLIENT = "HTTP_CLIENT";
@@ -19,7 +20,8 @@ public final class AWSVideoAnalyticsServiceLambdaConstants {
     public static final int TWELVE_HOURS = 12 * 60 * 60;
     public static final long MAX_MEDIA_PLAYLIST_FRAGMENTS = 5000;
 
-    public static final String UPLOAD_BUCKET_FORMAT = "guidance-for-video-analytics-infrastructure-on-aws-%s";
+    // "guidance-for-video-analytics-infrastructure-on-aws-%accountId-%region"
+    public static final String UPLOAD_BUCKET_FORMAT = "guidance-for-video-analytics-infrastructure-on-aws-%s-%s"; 
 
     public static final String NEW_LINE_DELIMITER = "\n";
 

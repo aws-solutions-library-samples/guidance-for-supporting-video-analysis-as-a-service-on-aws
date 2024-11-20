@@ -9,11 +9,13 @@ import com.amazonaws.videoanalytics.videologistics.dependency.kvs.KvsService;
 import com.amazonaws.videoanalytics.videologistics.utils.GuidanceUUIDGenerator;
 import com.amazonaws.videoanalytics.videologistics.utils.KVSWebRTCUtils;
 import com.amazonaws.videoanalytics.videologistics.validator.DeviceValidator;
+import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.ACCOUNT_ID;
 
 import dagger.Component;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.regions.Region;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -36,4 +38,6 @@ public interface AWSVideoAnalyticsVLControlPlaneComponent {
     KVSWebRTCUtils getKVSWebRTCUtils();
     S3Presigner getS3Presigner();
     Region getRegion();
+    @Named(ACCOUNT_ID) String getAccountId();
+
 }
