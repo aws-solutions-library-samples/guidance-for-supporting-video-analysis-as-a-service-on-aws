@@ -13,6 +13,7 @@ service VideoAnalytic {
         LivestreamSession,
         ExportVideo,
         PlaybackSession,
-        Snapshot
+        Snapshot,
+        RegisterDevice
     ]
 }

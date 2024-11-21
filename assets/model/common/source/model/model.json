@@ -897,6 +897,14 @@
                 "smithy.api#pattern": "^[a-z0-9\\-]+$"
             }
         },
+        "com.amazonaws.videoanalytics#KVSStreamARNs": {
+            "type": "structure",
+            "members": {
+                "kvsStreamARNForPlayback": {
+                    "target": "smithy.api#String"
+                }
+            }
+        },
         "com.amazonaws.videoanalytics#KeyPair": {
             "type": "structure",
             "members": {

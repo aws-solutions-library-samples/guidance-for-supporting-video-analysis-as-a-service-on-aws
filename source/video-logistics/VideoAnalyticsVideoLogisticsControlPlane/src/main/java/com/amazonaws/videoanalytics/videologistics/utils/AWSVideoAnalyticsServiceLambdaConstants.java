@@ -24,6 +24,7 @@ public final class AWSVideoAnalyticsServiceLambdaConstants {
     public static final String UPLOAD_BUCKET_FORMAT = "guidance-for-video-analytics-infrastructure-on-aws-%s-%s"; 
 
     public static final String NEW_LINE_DELIMITER = "\n";
+    public static final int DATA_RETENTION_TIME_PERIOD_IN_HOURS = 2160;
 
     private AWSVideoAnalyticsServiceLambdaConstants() {
         // Private default constructor so that JaCoCo marks utility class as covered

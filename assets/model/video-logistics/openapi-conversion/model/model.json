@@ -1435,6 +1435,14 @@
                 "smithy.api#pattern": "^[a-z0-9\\-]+$"
             }
         },
+        "com.amazonaws.videoanalytics#KVSStreamARNs": {
+            "type": "structure",
+            "members": {
+                "kvsStreamARNForPlayback": {
+                    "target": "smithy.api#String"
+                }
+            }
+        },
         "com.amazonaws.videoanalytics#KeyPair": {
             "type": "structure",
             "members": {
@@ -1920,6 +1928,90 @@
                 }
             }
         },
+        "com.amazonaws.videoanalytics.videologistics#GetVLRegisterDeviceStatus": {
+            "type": "operation",
+            "input": {
+                "target": "com.amazonaws.videoanalytics.videologistics#GetVLRegisterDeviceStatusRequest"
+            },
+            "output": {
+                "target": "com.amazonaws.videoanalytics.videologistics#GetVLRegisterDeviceStatusResponse"
+            },
+            "errors": [
+                {
+                    "target": "com.amazonaws.videoanalytics#AccessDeniedException"
+                },
+                {
+                    "target": "com.amazonaws.videoanalytics#InternalServerException"
+                },
+                {
+                    "target": "com.amazonaws.videoanalytics#ResourceNotFoundException"
+                },
+                {
+                    "target": "com.amazonaws.videoanalytics#ValidationException"
+                }
+            ],
+            "traits": {
+                "aws.apigateway#integration": {
+                    "type": "aws_proxy",
+                    "httpMethod": "POST",
+                    "uri": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${GetVLRegisterDeviceStatusActivity}/invocations",
+                    "credentials": "arn:aws:iam::${AWS::AccountId}:role/VideoLogisticsApiGatewayRole"
+                },
+                "smithy.api#http": {
+                    "code": 200,
+                    "method": "GET",
+                    "uri": "/get-vl-register-device-status/{jobId}"
+                },
+                "smithy.api#readonly": {}
+            }
+        },
+        "com.amazonaws.videoanalytics.videologistics#GetVLRegisterDeviceStatusRequest": {
+            "type": "structure",
+            "members": {
+                "jobId": {
+                    "target": "com.amazonaws.videoanalytics#JobId",
+                    "traits": {
+                        "smithy.api#httpLabel": {},
+                        "smithy.api#required": {}
+                    }
+                }
+            },
+            "traits": {
+                "smithy.api#input": {}
+            }
+        },
+        "com.amazonaws.videoanalytics.videologistics#GetVLRegisterDeviceStatusResponse": {
+            "type": "structure",
+            "members": {
+                "jobId": {
+                    "target": "com.amazonaws.videoanalytics#JobId"
+                },
+                "deviceId": {
+                    "target": "com.amazonaws.videoanalytics#DeviceId"
+                },
+                "status": {
+                    "target": "com.amazonaws.videoanalytics#Status"
+                },
+                "createTime": {
+                    "target": "smithy.api#Timestamp",
+                    "traits": {
+                        "smithy.api#timestampFormat": "date-time"
+                    }
+                },
+                "modifiedTime": {
+                    "target": "smithy.api#Timestamp",
+                    "traits": {
+                        "smithy.api#timestampFormat": "date-time"
+                    }
+                },
+                "kvsStreamArns": {
+                    "target": "com.amazonaws.videoanalytics#KVSStreamARNs"
+                }
+            },
+            "traits": {
+                "smithy.api#output": {}
+            }
+        },
         "com.amazonaws.videoanalytics.videologistics#IceServer": {
             "type": "structure",
             "members": {
@@ -1994,6 +2086,17 @@
             "operations": [
                 {
                     "target": "com.amazonaws.videoanalytics.videologistics#CreatePlaybackSession"
+                }
+            ]
+        },
+        "com.amazonaws.videoanalytics.videologistics#RegisterDevice": {
+            "type": "resource",
+            "operations": [
+                {
+                    "target": "com.amazonaws.videoanalytics.videologistics#GetVLRegisterDeviceStatus"
+                },
+                {
+                    "target": "com.amazonaws.videoanalytics.videologistics#StartVLRegisterDevice"
                 }
             ]
         },
@@ -2129,6 +2232,68 @@
                 "smithy.api#output": {}
             }
         },
+        "com.amazonaws.videoanalytics.videologistics#StartVLRegisterDevice": {
+            "type": "operation",
+            "input": {
+                "target": "com.amazonaws.videoanalytics.videologistics#StartVLRegisterDeviceRequest"
+            },
+            "output": {
+                "target": "com.amazonaws.videoanalytics.videologistics#StartVLRegisterDeviceResponse"
+            },
+            "errors": [
+                {
+                    "target": "com.amazonaws.videoanalytics#AccessDeniedException"
+                },
+                {
+                    "target": "com.amazonaws.videoanalytics#InternalServerException"
+                },
+                {
+                    "target": "com.amazonaws.videoanalytics#ResourceNotFoundException"
+                },
+                {
+                    "target": "com.amazonaws.videoanalytics#ValidationException"
+                }
+            ],
+            "traits": {
+                "aws.apigateway#integration": {
+                    "type": "aws_proxy",
+                    "httpMethod": "POST",
+                    "uri": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${StartVLRegisterDeviceActivity}/invocations",
+                    "credentials": "arn:aws:iam::${AWS::AccountId}:role/VideoLogisticsApiGatewayRole"
+                },
+                "smithy.api#http": {
+                    "code": 200,
+                    "method": "POST",
+                    "uri": "/start-vl-register-device"
+                },
+                "smithy.api#idempotent": {}
+            }
+        },
+        "com.amazonaws.videoanalytics.videologistics#StartVLRegisterDeviceRequest": {
+            "type": "structure",
+            "members": {
+                "deviceId": {
+                    "target": "com.amazonaws.videoanalytics#DeviceId",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                }
+            },
+            "traits": {
+                "smithy.api#input": {}
+            }
+        },
+        "com.amazonaws.videoanalytics.videologistics#StartVLRegisterDeviceResponse": {
+            "type": "structure",
+            "members": {
+                "jobId": {
+                    "target": "com.amazonaws.videoanalytics#JobId"
+                }
+            },
+            "traits": {
+                "smithy.api#output": {}
+            }
+        },
         "com.amazonaws.videoanalytics.videologistics#StreamSource": {
             "type": "structure",
             "members": {
@@ -2164,6 +2329,9 @@
                 },
                 {
                     "target": "com.amazonaws.videoanalytics.videologistics#PlaybackSession"
+                },
+                {
+                    "target": "com.amazonaws.videoanalytics.videologistics#RegisterDevice"
                 },
                 {
                     "target": "com.amazonaws.videoanalytics.videologistics#Snapshot"
