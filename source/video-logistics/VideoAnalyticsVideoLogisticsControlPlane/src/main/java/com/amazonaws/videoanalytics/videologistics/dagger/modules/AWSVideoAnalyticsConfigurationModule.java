@@ -10,6 +10,8 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.REGION_NAME;
+import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.ACCOUNT_ID;
+
 
 
 @Module
@@ -19,6 +21,13 @@ public class AWSVideoAnalyticsConfigurationModule {
     @Named(REGION_NAME)
     public String providesRegion() {
         return LambdaConfiguration.getInstance().getRegion();
+    }
+
+    @Provides
+    @Singleton
+    @Named(ACCOUNT_ID)
+    String providesAccountId() {
+        return System.getenv(ACCOUNT_ID);
     }
 
     @Provides

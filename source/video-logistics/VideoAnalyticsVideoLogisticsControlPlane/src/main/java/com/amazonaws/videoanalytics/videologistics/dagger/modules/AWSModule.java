@@ -11,6 +11,7 @@ import software.amazon.awssdk.http.SdkHttpClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.kinesisvideo.KinesisVideoClient;
+import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -35,6 +36,14 @@ public class AWSModule {
     @Named(HTTP_CLIENT)
     public SdkHttpClient providesSdkHttpClient() {
         return ApacheHttpClient.builder().build();
+    }
+
+    @Provides
+    @Singleton
+    public S3Presigner providesS3Presigner(Region region) {
+        return S3Presigner.builder()
+                .region(region)
+                .build();
     }
 
     @Provides
