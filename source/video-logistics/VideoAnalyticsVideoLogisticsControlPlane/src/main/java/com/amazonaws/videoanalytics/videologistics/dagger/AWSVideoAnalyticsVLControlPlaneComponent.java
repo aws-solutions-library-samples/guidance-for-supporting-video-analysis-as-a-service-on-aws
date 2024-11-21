@@ -37,5 +37,4 @@ public interface AWSVideoAnalyticsVLControlPlaneComponent {
     S3Presigner getS3Presigner();
     Region getRegion();
     @Named(ACCOUNT_ID) String getAccountId();
-
 }
