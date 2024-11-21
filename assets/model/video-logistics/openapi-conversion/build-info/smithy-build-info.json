@@ -4,7 +4,9 @@
         "com.amazonaws.videoanalytics.videologistics#CreateLivestreamSession",
         "com.amazonaws.videoanalytics.videologistics#CreatePlaybackSession",
         "com.amazonaws.videoanalytics.videologistics#CreateSnapshotUploadPath",
-        "com.amazonaws.videoanalytics.videologistics#StartExportVideos"
+        "com.amazonaws.videoanalytics.videologistics#GetVLRegisterDeviceStatus",
+        "com.amazonaws.videoanalytics.videologistics#StartExportVideos",
+        "com.amazonaws.videoanalytics.videologistics#StartVLRegisterDevice"
     ],
     "projection": {
         "abstract": false,
@@ -24,6 +26,7 @@
         "com.amazonaws.videoanalytics.videologistics#ExportVideo",
         "com.amazonaws.videoanalytics.videologistics#LivestreamSession",
         "com.amazonaws.videoanalytics.videologistics#PlaybackSession",
+        "com.amazonaws.videoanalytics.videologistics#RegisterDevice",
         "com.amazonaws.videoanalytics.videologistics#Snapshot"
     ],
     "serviceShapeIds": [
@@ -155,6 +158,7 @@
         "smithy.api#externalDocumentation",
         "smithy.api#http",
         "smithy.api#httpError",
+        "smithy.api#httpLabel",
         "smithy.api#idempotent",
         "smithy.api#idRef",
         "smithy.api#input",
@@ -167,6 +171,7 @@
         "smithy.api#private",
         "smithy.api#protocolDefinition",
         "smithy.api#range",
+        "smithy.api#readonly",
         "smithy.api#recommended",
         "smithy.api#required",
         "smithy.api#tags",
@@ -184,7 +189,7 @@
             "severity": "WARNING",
             "shapeId": "com.amazonaws.videoanalytics.videologistics#ClientId",
             "message": "A pattern trait is applied without a trailing '$', meaning only part of the string must match the regular expression. Explicitly anchoring regular expressions is preferable because it is more restrictive by default and does not require modelers to understand that Smithy patterns are not automatically anchored.",
-            "filename": "/Volumes/workplace/guidance-for-video-analytics-infrastructure-on-aws/source/models/video-logistics/models/types/Livestream.smithy",
+            "filename": "/Volumes/workplace/local/guidance-for-video-analytics-infrastructure-on-aws/source/models/video-logistics/models/types/Livestream.smithy",
             "line": 23,
             "column": 1
         }

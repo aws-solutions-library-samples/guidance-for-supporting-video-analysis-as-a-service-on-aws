@@ -77,4 +77,36 @@ public class ExceptionTranslatorTest {
         InternalServerExceptionResponseContent exception = InternalServerExceptionResponseContent.fromJson(parseBody(responseMap));
         assertEquals(exception.getMessage(), VideoAnalyticsExceptionMessage.INTERNAL_SERVER_EXCEPTION);
     }
+
+    @Test
+    public void translateToLambdaResponse_WhenAwsServiceException_DelegatestoTranslateKvsException() throws IOException {
+        AwsServiceException awsServiceException = AwsServiceException.builder().build();
+        Map<String, Object> responseMap = ExceptionTranslator.translateToLambdaResponse(awsServiceException);
+    
+        assertEquals(responseMap.get(PROXY_LAMBDA_RESPONSE_STATUS_CODE_KEY), 500);
+        InternalServerExceptionResponseContent exception = InternalServerExceptionResponseContent.fromJson(parseBody(responseMap));
+        assertEquals(exception.getMessage(), VideoAnalyticsExceptionMessage.INTERNAL_SERVER_EXCEPTION);
+    }
+
+    @Test
+    public void translateToLambdaResponse_WhenGenericException_ReturnsInternalServerError() throws IOException {
+        Exception genericException = new RuntimeException("Some generic error");
+        
+        Map<String, Object> responseMap = ExceptionTranslator.translateToLambdaResponse(genericException);
+        
+        assertEquals(responseMap.get(PROXY_LAMBDA_RESPONSE_STATUS_CODE_KEY), 500);
+        InternalServerExceptionResponseContent exception = InternalServerExceptionResponseContent.fromJson(parseBody(responseMap));
+        assertEquals(exception.getMessage(), VideoAnalyticsExceptionMessage.INTERNAL_SERVER_EXCEPTION);
+    }
+
+    @Test
+    public void translateToLambdaResponse_WhenNullException_ReturnsInternalServerError() throws IOException {
+        Exception nullException = null;
+        
+        Map<String, Object> responseMap = ExceptionTranslator.translateToLambdaResponse(nullException);
+        
+        assertEquals(responseMap.get(PROXY_LAMBDA_RESPONSE_STATUS_CODE_KEY), 500);
+        InternalServerExceptionResponseContent exception = InternalServerExceptionResponseContent.fromJson(parseBody(responseMap));
+        assertEquals(exception.getMessage(), VideoAnalyticsExceptionMessage.INTERNAL_SERVER_EXCEPTION);
+    }
 }

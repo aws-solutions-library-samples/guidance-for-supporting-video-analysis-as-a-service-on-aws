@@ -47,3 +47,7 @@ string DeviceId
 @pattern("^s3://[a-z0-9][a-z0-9\\.-]{1,61}[a-z0-9](/.*)?$")
 @length(min: 1, max: 2048)
 string S3Path
+
+structure KVSStreamARNs {
+    kvsStreamARNForPlayback: String
+}

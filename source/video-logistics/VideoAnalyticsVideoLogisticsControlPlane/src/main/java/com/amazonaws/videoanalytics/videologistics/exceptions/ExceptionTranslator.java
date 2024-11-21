@@ -63,6 +63,17 @@ public class ExceptionTranslator {
         }
     }
 
+    public static Map<String, Object> translateToLambdaResponse(Exception e) {
+        if (e instanceof AwsServiceException) {
+            return translateKvsExceptionToLambdaResponse((AwsServiceException) e);
+        }
+        
+        InternalServerExceptionResponseContent exception = InternalServerExceptionResponseContent.builder()
+                .message(INTERNAL_SERVER_EXCEPTION)
+                .build();
+        return serializeResponse(500, exception.toJson());
+    }
+
     private ExceptionTranslator() {
         // Private default constructor so that JaCoCo marks utility class as covered
     }
