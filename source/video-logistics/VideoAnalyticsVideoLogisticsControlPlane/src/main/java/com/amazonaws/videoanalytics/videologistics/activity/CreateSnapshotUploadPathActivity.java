@@ -9,9 +9,7 @@ import com.amazonaws.videoanalytics.videologistics.client.s3.SnapshotS3Presigner
 import com.amazonaws.videoanalytics.videologistics.client.s3.ImageS3Presigner;
 import com.amazonaws.videoanalytics.videologistics.dagger.AWSVideoAnalyticsVLControlPlaneComponent;
 
-import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.AwsSessionCredentials;
-import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.core.document.Document;
 import software.amazon.awssdk.services.iot.model.InternalServerException;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
@@ -19,6 +17,7 @@ import static software.amazon.awssdk.utils.StringUtils.isBlank;
 
 import com.amazonaws.videoanalytics.videologistics.dagger.DaggerAWSVideoAnalyticsVLControlPlaneComponent;
 
+import java.math.BigDecimal;
 import java.net.URL;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -33,6 +32,7 @@ import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalytic
 import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.ACCOUNT_ID;
 import static com.amazonaws.videoanalytics.videologistics.utils.LambdaProxyUtils.parseBody;
 import static com.amazonaws.videoanalytics.videologistics.utils.LambdaProxyUtils.serializeResponse;
+import static org.apache.commons.lang3.StringUtils.indexOf;
 
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -84,28 +84,32 @@ public class CreateSnapshotUploadPathActivity implements RequestHandler<Map<Stri
         }
 
         String deviceId;
-        Long contentLength;
-        byte[] checkSum;
+        BigDecimal contentLength;
+        String checkSum;
         try {
             CreateSnapshotUploadPathRequestContent request = CreateSnapshotUploadPathRequestContent.fromJson(parseBody(input));
             deviceId = request.getDeviceId();
-            contentLength = request.getContentLength().longValue();
-            checkSum = request.getChecksum().getBytes(StandardCharsets.UTF_8);
+            contentLength = request.getContentLength();
+            checkSum = request.getChecksum();
         } catch (Exception e) {
             logger.log(e.toString());
             return serializeResponse(400, exception.toJson());
         }
 
+        if (deviceId.isEmpty() || checkSum.isEmpty()) {
+            logger.log("Invalid input, " + input);
+            return serializeResponse(400, exception.toJson());
+        }
+
         // used for bucketName
         String snapshotUploadBucketName = String.format(UPLOAD_BUCKET_FORMAT, accountId, region);
-        AwsCredentialsProvider credentialsProvider = DefaultCredentialsProvider.builder().build();
 
         // Generate presigned url for snapshot
         snapshotS3Presigner = new SnapshotS3Presigner(
-                S3Presigner.builder().credentialsProvider(credentialsProvider).build(),
+                s3Presigner,
                 snapshotUploadBucketName,
                 deviceId,
-                contentLength);
+                contentLength.longValue());
 
         URL rawPresignedUrl = snapshotS3Presigner.generateImageUploadURL(checkSum);
         String presignedUrl = rawPresignedUrl.toString();
