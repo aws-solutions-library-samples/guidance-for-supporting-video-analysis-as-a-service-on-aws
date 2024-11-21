@@ -5,6 +5,7 @@ use std::fmt::Debug;
 use std::str::FromStr;
 
 use async_trait::async_trait;
+use base64::{engine::general_purpose, Engine as _};
 use device_traits::{merge::Merge, DeviceStateModel};
 use http_client::client::HttpClient;
 use reqwest::{Request, Response, StatusCode};
@@ -21,12 +22,12 @@ use crate::soap;
 use crate::wsdl_rs::appmgmt::{GetAppsInfo, GetAppsInfoResponse};
 use crate::wsdl_rs::devicemgmt::{
     GetDeviceInformation, GetDeviceInformationResponse, GetServices, GetServicesResponse,
+    SystemReboot, SystemRebootResponse,
 };
 use crate::wsdl_rs::media::{
     GetProfiles, GetProfilesResponse, GetSnapshotUri, GetSnapshotUriResponse, GetStreamUri,
     GetStreamUriResponse, StreamSetup, StreamType, Transport, TransportProtocol,
 };
-use base64::{engine::general_purpose, Engine as _};
 
 /// struct to hold credential from GetUsers onvif call
 /// suppressing the warning for derive Debug, since credential shouldn't be printed at all
@@ -316,6 +317,27 @@ where
         info!("Rust struct Response from get_profiles: {:?}", media_services_profiles);
         Ok(media_services_profiles)
     }
+
+    /// Send request to Onvif server to reboot the device
+    #[instrument]
+    async fn system_reboot(&mut self) -> Result<(), Box<dyn Error + Send + Sync>> {
+        let system_reboot_onvif_struct: SystemReboot = SystemReboot {};
+        let no_digest_body_from_struct = soap::serialize(&system_reboot_onvif_struct)?;
+
+        // Create onvif request with given uri and body
+        let onvif_request_no_digest = self.create_onvif_request(
+            self.get_service_uri(OnvifServiceName::DeviceService)?,
+            no_digest_body_from_struct,
+        )?;
+
+        let onvif_response_str: String =
+            self.sign_onvif_request_with_digest_and_send(onvif_request_no_digest.borrow()).await?;
+        let system_reboot_resp: SystemRebootResponse =
+            soap::deserialize(onvif_response_str.as_str())?;
+
+        info!("System reboot ONVIF request was sent to process 1 successfully. Response from process 1: {:?}", system_reboot_resp.message);
+        Ok(())
+    }
 }
 
 // GRCOV_STOP_COVERAGE
@@ -324,6 +346,7 @@ impl<T> DeviceStateModel for OnvifClient<T>
 where
     T: HttpClient + std::fmt::Debug + Send + Sync,
 {
+    // TODO: parity with snapshot onvif client
     async fn bootstrap(
         &mut self,
         config_path: &str,
@@ -332,13 +355,17 @@ where
         info!("Bootstrapping the device! ");
         // prior to interacting with onvif server, get temp onvif password from config
         let onvif_config: OnvifClientConfig = get_onvif_config_from_file(config_path).await?;
-        self.credential = Some(Credential {
+        // convert the password into MD5 and encoded in base64
+        let pw_md5_hash = md5::compute(onvif_config.onvif_password.as_str());
+        let pw_md5_base64 = general_purpose::STANDARD.encode(*pw_md5_hash);
+        // new credential we want to update
+        let new_cred = Credential {
             username: onvif_config.onvif_account_name.to_owned(),
-            password: onvif_config.onvif_password.to_owned(),
-        });
+            password: pw_md5_base64,
+        };
+        self.credential = Some(new_cred);
 
         self.get_services(ip_address).await?;
-
         Ok(())
     }
 
@@ -369,6 +396,12 @@ where
         info!("Updated device info {:?}", device_info);
 
         Ok(device_info)
+    }
+
+    #[instrument]
+    async fn reboot_device(&mut self) -> Result<(), Box<dyn Error + Send + Sync>> {
+        self.system_reboot().await?;
+        Ok(())
     }
 }
 
@@ -1011,7 +1044,7 @@ mod tests {
             onvif_client.credential.unwrap(),
             Credential {
                 username: DIGEST_USERNAME.to_string(),
-                password: DIGEST_PASSWORD.to_string(),
+                password: ENCODED_DIGEST_PASSWORD.to_string(),
             }
         );
     }
@@ -1089,6 +1122,7 @@ mod tests {
         let profiles_resp = onvif_client.get_profiles().await.unwrap();
         let profiles = profiles_resp.profiles;
 
+        // Assert
         assert_eq!(profiles.len(), 2);
         assert_eq!(profiles.first().unwrap().token, "pf1");
         assert_eq!(profiles.get(1).unwrap().token, "pf2");
@@ -1129,8 +1163,6 @@ mod tests {
 
         let mut onvif_client = OnvifClient::new(mock_http_client);
 
-        // TODO: move onvif_client set up into helper function - setup_onvif_client()
-        // setup should include: service_paths, digest_params, credential
         onvif_client.service_paths.insert(
             OnvifServiceName::from_str(DEVICE_SERVICE).unwrap(),
             "http://172.18.14.11:80/onvif/device_service".to_string(),
@@ -1142,13 +1174,50 @@ mod tests {
 
         // Act
         let profiles_resp = onvif_client.get_snapshot_uri().await.unwrap();
+
+        // Assert
         assert_eq!(profiles_resp, "http://10.132.51.53:80/cgi-bin/video.cgi?mode=1&res=1");
+    }
+
+    #[tokio::test]
+    async fn verify_system_reboot() {
+        // Arrange
+        let mut mock_http_client = MockHttpClient::default();
+
+        mock_http_client
+            .expect_create_http_request_with_body()
+            .times(1)
+            .return_once(|_uri, _body| Ok(system_reboot_request_no_digest()));
+
+        let mut http_system_reboot_response: http_Response<String> = http_Response::default();
+        http_system_reboot_response.body_mut().push_str(SYSTEM_REBOOT_RESPONSE_BODY);
+        let system_reboot_response = Response::from(http_system_reboot_response);
+
+        mock_http_client
+            .expect_send_http_request()
+            .times(1)
+            .return_once(|_| Ok(system_reboot_response));
+
+        let mut onvif_client = OnvifClient::new(mock_http_client);
+
+        onvif_client.service_paths.insert(
+            OnvifServiceName::DeviceService,
+            "http://172.18.14.11:80/onvif/device_service".to_string(),
+        );
+
+        // Act
+        let system_reboot_resp = onvif_client.system_reboot().await;
+
+        // Assert
+        assert!(system_reboot_resp.is_ok());
     }
 
     const DIGEST_USERNAME: &str = VIDEO_ANALYTICS;
 
     const DIGEST_PASSWORD: &str = "videoanalytics12345";
 
+    const ENCODED_DIGEST_PASSWORD: &str = "wq7ap7w9Q6Ns83QUrUkZlw==";
+    
     const CNONCE: &str = r#"62d82aa9ca59e3a04cd1"#;
 
     // EXPIRED_CNONCE and CNONCE are just random strings in the test. We do not check the expiration of these values in anyway.
@@ -1739,4 +1808,28 @@ mod tests {
     fn get_snapshot_uri_request_with_digest() -> Request {
         build_request_with_valid_digest_header(DEVICE_SERVICE_URI, GET_SNAPSHOT_URI_REQUEST_BODY)
     }
+    const SYSTEM_REBOOT_REQUEST_BODY: &str = r#"
+    <s:Envelope xmlns:s="http://www.w3.org/2003/05/soap-envelope">
+        <s:Header>
+        </s:Header>
+            <s:Body xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+                <SystemReboot xmlns="http://www.onvif.org/ver10/device/wsdl">
+                </SystemReboot>
+            </s:Body>
+    </s:Envelope>"#;
+
+    fn system_reboot_request_no_digest() -> Request {
+        build_request_no_digest(DEVICE_SERVICE_URI, SYSTEM_REBOOT_REQUEST_BODY)
+    }
+
+    const SYSTEM_REBOOT_RESPONSE_BODY: &str = r#"
+    <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://www.w3.org/2003/05/soap-envelope" xmlns:SOAP-ENC="http://www.w3.org/2003/05/soap-encoding" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:chan="http://schemas.microsoft.com/ws/2005/02/duplex" xmlns:wsa5="http://www.w3.org/2005/08/addressing" xmlns:c14n="http://www.w3.org/2001/10/xml-exc-c14n#" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:saml1="urn:oasis:names:tc:SAML:1.0:assertion" xmlns:saml2="urn:oasis:names:tc:SAML:2.0:assertion" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:xenc="http://www.w3.org/2001/04/xmlenc#" xmlns:wsc="http://docs.oasis-open.org/ws-sx/ws-secureconversation/200512" xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" xmlns:xmime="http://tempuri.org/xmime.xsd" xmlns:xop="http://www.w3.org/2004/08/xop/include" xmlns:ns2="http://www.onvif.org/ver20/analytics/humanface" xmlns:ns3="http://www.onvif.org/ver20/analytics/humanbody" xmlns:wsrfbf="http://docs.oasis-open.org/wsrf/bf-2" xmlns:wstop="http://docs.oasis-open.org/wsn/t-1" xmlns:tt="http://www.onvif.org/ver10/schema" xmlns:wsrfr="http://docs.oasis-open.org/wsrf/r-2" xmlns:ns1="http://www.onvif.org/ver20/media/wsdl" xmlns:tan="http://www.onvif.org/ver20/analytics/wsdl" xmlns:tds="http://www.onvif.org/ver10/device/wsdl" xmlns:tev="http://www.onvif.org/ver10/events/wsdl" xmlns:wsnt="http://docs.oasis-open.org/wsn/b-2" xmlns:timg="http://www.onvif.org/ver20/imaging/wsdl" xmlns:tmd="http://www.onvif.org/ver10/deviceIO/wsdl" xmlns:tptz="http://www.onvif.org/ver20/ptz/wsdl" xmlns:trt="http://www.onvif.org/ver10/media/wsdl" xmlns:ns4="http://www.onvif.org/ver10/appmgmt/wsdl" xmlns:ter="http://www.onvif.org/ver10/error" xmlns:tns1="http://www.onvif.org/ver10/topics">
+    <SOAP-ENV:Header/>
+    <SOAP-ENV:Body>
+        <tds:SystemRebootResponse>
+            <tds:Message>System is now rebooting. rebooting may take about one minute.</tds:Message>
+        </tds:SystemRebootResponse>
+    </SOAP-ENV:Body>
+    </SOAP-ENV:Envelope>    
+    "#;
 }

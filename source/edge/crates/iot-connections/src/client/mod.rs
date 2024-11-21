@@ -1,3 +1,11 @@
+pub mod command;
+pub mod configuration;
+mod registration;
+mod snapshot;
+///Helper methods for working with IoT topics.
+pub mod topics;
+
+use crate::client::command::CommandHelper;
 use crate::client::configuration::ConfigurationHelper;
 use crate::client::registration::RegistrationHelper;
 use crate::client::snapshot::SnapshotHelper;
@@ -8,8 +16,9 @@ use crate::constants::{
 };
 use async_trait::async_trait;
 use config::Config;
+use device_traits::command::{Command, CommandStatus};
 use device_traits::connections::{
-    AsyncIotClientManager, AsyncPubSubClient, IotClientManager, PubSubMessage, QoS,
+    AsyncIotClientManager, AsyncPubSubClient, IotClientManager, PubSubClient, PubSubMessage, QoS,
 };
 use device_traits::state::State;
 use mqtt_client::{
@@ -20,14 +29,9 @@ use mqtt_client::{
 use rumqttc::LastWill;
 use serde_derive::Deserialize;
 use serde_json::Value;
-use std::{path::PathBuf, time::Duration};
+use std::borrow::BorrowMut;
+use std::{error::Error, path::PathBuf, time::Duration};
 use tracing::{info, instrument};
-
-mod configuration;
-mod registration;
-mod snapshot;
-///Helper methods for working with IoT topics.
-pub mod topics;
 
 /// Struct implements IotConnectionManager for MQTT with IoT
 #[derive(Debug, Clone, Deserialize)]
@@ -72,6 +76,42 @@ impl IotClientManager for IotMqttClientManager {
             mqtt_client.subscribe(shadow_rejected_topic.as_str(), QoS::AtLeastOnce).await?;
             mqtt_client.subscribe(shadow_delta_topic.as_str(), QoS::AtLeastOnce).await?;
         }
+
+        // subscribe to IoT Job MQTT topics
+        let iot_job_topic_helper = TopicHelper::new(self.client_id.to_owned(), None);
+        mqtt_client
+            .subscribe(iot_job_topic_helper.get_jobs_notify_topic().as_str(), QoS::AtLeastOnce)
+            .await?;
+        mqtt_client
+            .subscribe(
+                iot_job_topic_helper.get_jobs_start_next_accepted().as_str(),
+                QoS::AtLeastOnce,
+            )
+            .await?;
+        mqtt_client
+            .subscribe(
+                iot_job_topic_helper.get_jobs_start_next_rejected().as_str(),
+                QoS::AtLeastOnce,
+            )
+            .await?;
+        mqtt_client
+            .subscribe(
+                iot_job_topic_helper.get_jobs_update_accepted(None).as_str(),
+                QoS::AtLeastOnce,
+            )
+            .await?;
+        mqtt_client
+            .subscribe(
+                iot_job_topic_helper.get_jobs_update_rejected(None).as_str(),
+                QoS::AtLeastOnce,
+            )
+            .await?;
+        mqtt_client
+            .subscribe(iot_job_topic_helper.get_next_job_get_accepted().as_str(), QoS::AtLeastOnce)
+            .await?;
+        mqtt_client
+            .subscribe(iot_job_topic_helper.get_next_job_get_rejected().as_str(), QoS::AtLeastOnce)
+            .await?;
 
         Ok(mqtt_client)
     }
@@ -133,6 +173,65 @@ impl IotClientManager for IotMqttClientManager {
         }
 
         None
+    }
+
+    /// Used for updating command status
+    #[instrument]
+    async fn update_command_status(
+        &mut self,
+        status: CommandStatus,
+        job_id: String,
+        factory_mqtt_client: &mut Box<dyn PubSubClient + Send + Sync>,
+    ) -> anyhow::Result<()> {
+        let mut command_helper =
+            CommandHelper::new(factory_mqtt_client.borrow_mut(), self.client_id.to_string());
+
+        command_helper.update_command_status(status, job_id).await
+    }
+
+    /// Used for starting next command
+    #[instrument]
+    async fn start_next_command(
+        &mut self,
+        factory_mqtt_client: &mut Box<dyn PubSubClient + Send + Sync>,
+    ) -> anyhow::Result<Option<Command>> {
+        let mut command_helper =
+            CommandHelper::new(factory_mqtt_client.borrow_mut(), self.client_id.to_string());
+
+        command_helper.start_next_command().await
+    }
+
+    /// Get the next pending job execution for a thing
+    async fn get_next_pending_job_execution(
+        &mut self,
+        factory_mqtt_client: &mut Box<dyn PubSubClient + Send + Sync>,
+    ) -> anyhow::Result<Option<Value>> {
+        let mut command_helper =
+            CommandHelper::new(factory_mqtt_client.borrow_mut(), self.client_id.to_string());
+        command_helper.get_next_pending_job_execution().await
+    }
+
+    /// Update in progress job status when device boots up
+    async fn update_in_progress_job_status(
+        &mut self,
+        factory_mqtt_client: &mut Box<dyn PubSubClient + Send + Sync>,
+        next_pending_job_exec: Option<Value>,
+    ) -> Result<(), Box<dyn Error>> {
+        let mut command_helper =
+            CommandHelper::new(factory_mqtt_client.borrow_mut(), self.client_id.to_string());
+
+        Ok(command_helper.update_in_progress_job_status(next_pending_job_exec).await?)
+    }
+
+    /// Checks if there is a new job in the message to start
+    /// This function will return false if there are in-progress jobs (do not want to start a new job if there is 1 in progress already)
+    fn received_jobs_notify_message(
+        &self,
+        msg: &(dyn PubSubMessage + Send + Sync),
+    ) -> Option<String> {
+        let topic_helper = TopicHelper::new(self.client_id.to_string(), None);
+
+        CommandHelper::received_jobs_notify_message(msg, topic_helper.get_jobs_notify_topic())
     }
 }
 
@@ -214,6 +313,7 @@ impl ManagerLastWill {
 mod tests {
     use super::*;
     use crate::constants::STATE_SHADOW_FIELD;
+    use config::builder::AsyncState;
     use mqtt_client::builder::MQTTMessageBuilder;
     use serde_json::json;
     const TEST_STR: &str = "Content of str does not matter.";
@@ -224,6 +324,7 @@ mod tests {
     const CLIENT_ID: &str = "client-id";
     const MQTT_PORT: u16 = 100;
     const KEEP_ALIVE_MS: u64 = 6000;
+    const CONFIG_FILE_FROM_CURR: &str = "tests/files-for-integration-tests/connections-config.yaml";
 
     /// This test can be removed if rumqttc LastWill implements in the future Deserialize
     #[test]
@@ -301,6 +402,53 @@ mod tests {
             retain: RETAIN,
         }
     }
+
+    #[tokio::test]
+    async fn update_in_progress_job_status_test() {
+        let mut mqtt_client_manager = get_iot_client_manager().await;
+        let next_pending_job_exec = Some(json! {{}});
+
+        let res = mqtt_client_manager
+            .update_in_progress_job_status(
+                mqtt_client_manager.new_pub_sub_client().await.unwrap().borrow_mut(),
+                next_pending_job_exec,
+            )
+            .await;
+
+        assert!(!res.is_err());
+    }
+
+    #[test]
+    fn received_jobs_notify_message_test() {
+        let mqtt_client_manager = get_mqtt_client_manager();
+
+        let topic_helper = TopicHelper::new(CLIENT_ID.to_string(), None);
+
+        let mut message_builder = MQTTMessageBuilder::new_pub_sub_message_builder();
+        message_builder.set_topic(topic_helper.get_jobs_notify_topic().as_str());
+
+        let payload = json!({
+            "timestamp": 1517016948,
+            "jobs": {
+                "QUEUED": [ {
+                    "jobId": "job1",
+                    "queuedAt": 1517016947,
+                    "lastUpdatedAt": 1517016947,
+                    "executionNumber": 1,
+                    "versionNumber": 1
+                } ]
+            }
+        });
+        let payload = serde_json::to_string::<Value>(&payload)
+            .expect("Issue formatting Json.  Invalid code change.");
+        message_builder.set_payload(payload);
+        let message = message_builder.build_box_message();
+
+        let job_id = mqtt_client_manager.received_jobs_notify_message(message.as_ref());
+
+        assert_eq!(job_id.unwrap(), "job1");
+    }
+
     /// Create mqtt client manager for unit tests.
     fn get_mqtt_client_manager() -> IotMqttClientManager {
         let path = PathBuf::default().join(PATH);
@@ -316,5 +464,22 @@ mod tests {
             keep_alive_milli_sec: KEEP_ALIVE_MS,
             mqtt_port: MQTT_PORT,
         }
+    }
+
+    /// Helper function to create IoTClientManager from test config file
+    async fn get_iot_client_manager() -> AsyncIotClientManager {
+        let path_to_config = std::env::current_dir().unwrap().join(CONFIG_FILE_FROM_CURR);
+        let path_to_config = path_to_config.to_str().unwrap();
+        let config = get_config_from_files(path_to_config).await;
+        IotMqttClientManager::new_iot_connection_manager(config)
+    }
+
+    /// Helper function to create config object from file.
+    async fn get_config_from_files(path_to_config: &str) -> config::Config {
+        config::ConfigBuilder::<AsyncState>::default()
+            .add_source(config::File::with_name(path_to_config))
+            .build()
+            .await
+            .unwrap()
     }
 }

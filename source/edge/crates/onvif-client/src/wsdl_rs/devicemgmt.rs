@@ -88,3 +88,15 @@ pub mod service {
     #[yaserde(prefix = "tds", namespace = "tds: http://www.onvif.org/ver10/device/wsdl")]
     pub struct CapabilitiesType {}
 }
+
+#[derive(Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
+#[yaserde(prefix = "tds", namespace = "tds: http://www.onvif.org/ver10/device/wsdl")]
+pub struct SystemReboot {}
+
+#[derive(Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
+#[yaserde(prefix = "tds", namespace = "tds: http://www.onvif.org/ver10/device/wsdl")]
+pub struct SystemRebootResponse {
+    /// Contains the reboot message sent by the device.
+    #[yaserde(prefix = "tds", rename = "Message")]
+    pub message: String,
+}
