@@ -49,7 +49,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "487695d9fddaa0be8363a18e62926581a445854575b48f62b22fde8d865dc056.jar",
+          "S3Key": "24e15a2a788157759d26c2365e8c3129632d591e67b61fb9b239ce4bd8fe778b.jar",
         },
         "Description": "Lambda responsible for attaching cert to KVS Roles policy.",
         "Environment": {
@@ -97,7 +97,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "487695d9fddaa0be8363a18e62926581a445854575b48f62b22fde8d865dc056.jar",
+          "S3Key": "24e15a2a788157759d26c2365e8c3129632d591e67b61fb9b239ce4bd8fe778b.jar",
         },
         "Environment": {
           "Variables": {
@@ -144,7 +144,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "487695d9fddaa0be8363a18e62926581a445854575b48f62b22fde8d865dc056.jar",
+          "S3Key": "24e15a2a788157759d26c2365e8c3129632d591e67b61fb9b239ce4bd8fe778b.jar",
         },
         "Description": "Lambda to create KVS Stream using FVL API.",
         "Environment": {
@@ -208,7 +208,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "487695d9fddaa0be8363a18e62926581a445854575b48f62b22fde8d865dc056.jar",
+          "S3Key": "24e15a2a788157759d26c2365e8c3129632d591e67b61fb9b239ce4bd8fe778b.jar",
         },
         "Description": "Lambda responsible for checking to make sure fvl device registration workflow completes.",
         "Environment": {
@@ -248,7 +248,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "487695d9fddaa0be8363a18e62926581a445854575b48f62b22fde8d865dc056.jar",
+          "S3Key": "24e15a2a788157759d26c2365e8c3129632d591e67b61fb9b239ce4bd8fe778b.jar",
         },
         "Environment": {
           "Variables": {
@@ -334,7 +334,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "487695d9fddaa0be8363a18e62926581a445854575b48f62b22fde8d865dc056.jar",
+          "S3Key": "24e15a2a788157759d26c2365e8c3129632d591e67b61fb9b239ce4bd8fe778b.jar",
         },
         "Environment": {
           "Variables": {
