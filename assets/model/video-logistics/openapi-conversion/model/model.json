@@ -1959,7 +1959,7 @@
                 },
                 "smithy.api#http": {
                     "code": 200,
-                    "method": "GET",
+                    "method": "POST",
                     "uri": "/get-vl-register-device-status/{jobId}"
                 },
                 "smithy.api#readonly": {}
@@ -2264,7 +2264,7 @@
                 "smithy.api#http": {
                     "code": 200,
                     "method": "POST",
-                    "uri": "/start-vl-register-device"
+                    "uri": "/start-vl-register-device/{deviceId}"
                 },
                 "smithy.api#idempotent": {}
             }
@@ -2275,6 +2275,7 @@
                 "deviceId": {
                     "target": "com.amazonaws.videoanalytics#DeviceId",
                     "traits": {
+                        "smithy.api#httpLabel": {},
                         "smithy.api#required": {}
                     }
                 }

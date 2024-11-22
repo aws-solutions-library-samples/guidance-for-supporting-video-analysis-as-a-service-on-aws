@@ -16,7 +16,7 @@ use com.amazonaws.videoanalytics#ValidationException
     uri: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${StartVLRegisterDeviceActivity}/invocations",
     credentials: "arn:aws:iam::${AWS::AccountId}:role/VideoLogisticsApiGatewayRole"
 )
-@http(code: 200, method: "POST", uri: "/start-vl-register-device")
+@http(code: 200, method: "POST", uri: "/start-vl-register-device/{deviceId}")
 @idempotent
 operation StartVLRegisterDevice {
     input: StartVLRegisterDeviceRequest,
@@ -27,6 +27,7 @@ operation StartVLRegisterDevice {
 @input
 structure StartVLRegisterDeviceRequest {
     @required
+    @httpLabel
     deviceId: DeviceId,
 }
 

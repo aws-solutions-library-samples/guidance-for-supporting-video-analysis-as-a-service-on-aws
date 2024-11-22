@@ -13,8 +13,8 @@ public class SchemaConst {
     public static final String LAST_UPDATED_AT = "LastUpdatedAt";
     public static final String FAILURE_REASON = "FailureReason";
     // Register Device Job Attributes
-    public static final String FVL_REGISTER_DEVICE_JOB_TABLE_NAME =
-            "FVLRegisterDeviceJobTable";
+    public static final String VL_REGISTER_DEVICE_JOB_TABLE_NAME =
+            "VLRegisterDeviceJobTable";
     public static final String KVS_STREAM = "KvsStream";
     public static final String PLAYBACK_SIGNALING_CHANNEL_ARN = "PlaybackSignalingChannelARN";
     public static final String LIVE_STREAM_SIGNALING_CHANNEL_ARN = "LiveStreamSignalingChannelARN";

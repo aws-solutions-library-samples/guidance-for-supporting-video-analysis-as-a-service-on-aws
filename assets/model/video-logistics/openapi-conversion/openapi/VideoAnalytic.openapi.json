@@ -169,48 +169,8 @@
                 }
             }
         },
-        "/create-snapshot-upload-path": {
-            "post": {
-                "operationId": "CreateSnapshotUploadPath",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/CreateSnapshotUploadPathRequestContent"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "description": "CreateSnapshotUploadPath 200 response"
-                    },
-                    "400": {
-                        "description": "ValidationException 400 response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ValidationExceptionResponseContent"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "InternalServerException 500 response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/InternalServerExceptionResponseContent"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/get-vl-register-device-status/{jobId}": {
-            "get": {
+            "post": {
                 "operationId": "GetVLRegisterDeviceStatus",
                 "parameters": [
                     {
@@ -289,76 +249,22 @@
                 }
             }
         },
-        "/start-export-videos": {
-            "put": {
-                "operationId": "StartExportVideos",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/StartExportVideosRequestContent"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "description": "StartExportVideos 200 response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/StartExportVideosResponseContent"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "ValidationException 400 response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ValidationExceptionResponseContent"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "ResourceNotFoundException 404 response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ResourceNotFoundExceptionResponseContent"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "InternalServerException 500 response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/InternalServerExceptionResponseContent"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/start-vl-register-device": {
+        "/start-vl-register-device/{deviceId}": {
             "post": {
                 "operationId": "StartVLRegisterDevice",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/StartVLRegisterDeviceRequestContent"
-                            }
-                        }
-                    },
-                    "required": true
-                },
+                "parameters": [
+                    {
+                        "name": "deviceId",
+                        "in": "path",
+                        "schema": {
+                            "type": "string",
+                            "maxLength": 128,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9:_\\-]+$"
+                        },
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "StartVLRegisterDevice 200 response",
@@ -717,20 +623,6 @@
                         "pattern": "^[a-z0-9\\-]+$"
                     }
                 }
-            },
-            "StartVLRegisterDeviceRequestContent": {
-                "type": "object",
-                "properties": {
-                    "deviceId": {
-                        "type": "string",
-                        "maxLength": 128,
-                        "minLength": 1,
-                        "pattern": "^[a-zA-Z0-9:_\\-]+$"
-                    }
-                },
-                "required": [
-                    "deviceId"
-                ]
             },
             "StartVLRegisterDeviceResponseContent": {
                 "type": "object",
