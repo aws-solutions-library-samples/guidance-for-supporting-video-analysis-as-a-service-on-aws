@@ -409,3 +409,22 @@ pub struct MediaUri {
     #[yaserde(prefix = "tt", rename = "InvalidAfterReboot")]
     pub invalid_after_reboot: bool,
 }
+
+/// onvif API GetSnapshotUri for media service
+#[derive(Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
+#[yaserde(prefix = "trt", namespace = "trt: http://www.onvif.org/ver10/media/wsdl")]
+pub struct GetSnapshotUri {
+    /// The ProfileToken element indicates the media profile to use and will
+    /// define the configuration of the content of the stream.
+    #[yaserde(prefix = "trt", rename = "ProfileToken")]
+    pub profile_token: String,
+}
+
+/// Onvif API GetStreamUri Response for Media service
+#[derive(Default, PartialEq, Debug, YaSerialize, YaDeserialize)]
+#[yaserde(prefix = "trt", namespace = "trt: http://www.onvif.org/ver10/media/wsdl")]
+pub struct GetSnapshotUriResponse {
+    /// lists all media that exist in the media service
+    #[yaserde(prefix = "trt", rename = "MediaUri")]
+    pub media_uri: MediaUri,
+}

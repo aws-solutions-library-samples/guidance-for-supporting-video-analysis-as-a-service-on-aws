@@ -11,6 +11,7 @@ hex.workspace = true
 async-trait.workspace = true
 config.workspace = true
 device-traits.workspace = true
+snapshot-traits.workspace = true
 streaming-traits.workspace = true
 http-client.workspace = true
 tracing.workspace = true

@@ -39,3 +39,5 @@ onvif-client.workspace = true
 http-client.workspace = true
 streaming-traits.workspace = true
 gstreamer-pipeline.workspace = true
+snapshot-traits.workspace = true
+snapshot-client.workspace = true

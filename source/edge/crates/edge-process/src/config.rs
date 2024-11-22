@@ -21,6 +21,11 @@ pub struct MediaConfig {
     pub kvs_role_alias: String,
     /// Device Id.
     pub client_id: String,
+    /// Username for invoking HTTP GET with snapshot URI returned by Onvif GetSnapshotURI
+    /// https://www.onvif.org/ver10/media/wsdl/media.wsdl#op.GetSnapshotUri
+    pub snapshot_username: String,
+    /// Password for invoking HTTP GET with snapshot URI returned by Onvif GetSnapshotURI
+    pub snapshot_password: String,
 }
 
 /// get onvif config
@@ -46,6 +51,8 @@ mod tests {
     const AWS_REGION: &str = "us-west-2";
     const KVS_ROLE_ALIAS: &str = "FooBarRoleAlias";
     const DEVICE_ID: &str = "TestClientId";
+    const SNAPSHOT_USERNAME: &str = "Foo2";
+    const SNAPSHOT_PASSWORD: &str = "Bar2";
 
     #[tokio::test]
     async fn verify_get_video_processing_config() {
@@ -64,5 +71,7 @@ mod tests {
         assert_eq!(config.aws_region, AWS_REGION);
         assert_eq!(config.kvs_role_alias, KVS_ROLE_ALIAS);
         assert_eq!(config.client_id, DEVICE_ID);
+        assert_eq!(config.snapshot_username, SNAPSHOT_USERNAME);
+        assert_eq!(config.snapshot_password, SNAPSHOT_PASSWORD)
     }
 }

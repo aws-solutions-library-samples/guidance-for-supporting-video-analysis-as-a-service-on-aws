@@ -9,6 +9,7 @@ use device_traits::{merge::Merge, DeviceStateModel};
 use http_client::client::HttpClient;
 use reqwest::{Request, Response, StatusCode};
 use serde_json::{json, Value};
+use snapshot_traits::SnapshotConsumer;
 use streaming_traits::{StreamUriConfiguration, VideoStreamConsumer};
 use tracing::{debug, error, info, instrument, warn};
 
@@ -22,8 +23,8 @@ use crate::wsdl_rs::devicemgmt::{
     GetDeviceInformation, GetDeviceInformationResponse, GetServices, GetServicesResponse,
 };
 use crate::wsdl_rs::media::{
-    GetProfiles, GetProfilesResponse, GetStreamUri, GetStreamUriResponse, StreamSetup, StreamType,
-    Transport, TransportProtocol,
+    GetProfiles, GetProfilesResponse, GetSnapshotUri, GetSnapshotUriResponse, GetStreamUri,
+    GetStreamUriResponse, StreamSetup, StreamType, Transport, TransportProtocol,
 };
 use base64::{engine::general_purpose, Engine as _};
 
@@ -368,6 +369,67 @@ where
         info!("Updated device info {:?}", device_info);
 
         Ok(device_info)
+    }
+}
+
+#[async_trait]
+impl<T> SnapshotConsumer for OnvifClient<T>
+where
+    T: HttpClient + std::fmt::Debug + Send + Sync,
+{
+    /// set up services uri by calling ONVIF GetServices
+    async fn set_up_services_uri(&mut self, ip_address: String) -> Result<(), Box<dyn Error>> {
+        // This call gives us the uri that will be needed for get_services_uri method in
+        // all ONVIF call
+        self.get_services(ip_address).await?;
+        Ok(())
+    }
+
+    /// Set up new updated credentials for onvif.
+    async fn bootstrap(
+        &mut self,
+        username: String,
+        password: String,
+    ) -> Result<(), Box<dyn Error>> {
+        info!("Bootstrapping the device for snapshots!");
+        // convert the password into MD5 and encoded in base64
+        let pw_md5_hash = md5::compute(password.as_str());
+        let pw_md5_base64 = general_purpose::STANDARD.encode(*pw_md5_hash);
+        // new credential we want to update
+        let new_cred = Credential { username, password: pw_md5_base64 };
+        self.credential = Some(new_cred);
+        Ok(())
+    }
+
+    /// Get snapshot uri
+    async fn get_snapshot_uri(&mut self) -> Result<String, Box<dyn Error>> {
+        let get_profiles_response = self.get_profiles().await?;
+        let prof_resp = get_profiles_response
+            .profiles
+            .first()
+            .ok_or(OnvifClientError::OnvifGetProfilesError)?
+            .token
+            .to_string();
+
+        let get_snapshot_uri_onvif_struct: GetSnapshotUri =
+            GetSnapshotUri { profile_token: prof_resp };
+
+        let get_snapshot_uri_body = soap::serialize(&get_snapshot_uri_onvif_struct)?;
+
+        let get_snapshot_uri_no_digest = self.create_onvif_request(
+            // This is an ONVIF media service API, but all ONVIF APIs go through device service uri
+            self.get_service_uri(OnvifServiceName::DeviceService)?,
+            get_snapshot_uri_body,
+        )?;
+
+        let snapshot_uri_resp_str = self
+            .sign_onvif_request_with_digest_and_send(get_snapshot_uri_no_digest.borrow())
+            .await?;
+
+        let get_snapshot_uri_resp: GetSnapshotUriResponse =
+            soap::deserialize(snapshot_uri_resp_str.as_str())?;
+        info!("Successfully retrieved snapshot url: {:?}", get_snapshot_uri_resp);
+        return Ok(get_snapshot_uri_resp.media_uri.uri);
     }
 }
 
@@ -1032,6 +1094,57 @@ mod tests {
         assert_eq!(profiles.get(1).unwrap().token, "pf2");
     }
 
+    #[tokio::test]
+    async fn verify_get_snapshot_uri() {
+        // Arrange
+        let mut mock_http_client = MockHttpClient::default();
+
+        mock_http_client
+            .expect_create_http_request_with_body()
+            .times(1)
+            .return_once(|_uri, _body| Ok(get_profiles_request_no_digest()));
+
+        let mut http_get_profiles_response: http_Response<String> = http_Response::default();
+        http_get_profiles_response.body_mut().push_str(GET_PROFILE_RESPONSE_BODY);
+        let get_profiles_response = Response::from(http_get_profiles_response);
+
+        mock_http_client
+            .expect_send_http_request()
+            .times(1)
+            .return_once(|_| Ok(get_profiles_response));
+
+        mock_http_client
+            .expect_create_http_request_with_body()
+            .times(1)
+            .return_once(|_uri, _body| Ok(get_snapshot_uri_request_with_digest()));
+
+        let mut http_get_snapshot_uri_response: http_Response<String> = http_Response::default();
+        http_get_snapshot_uri_response.body_mut().push_str(GET_SNAPSHOT_URI_RESPONSE_BODY);
+        let get_snapshot_uri_response = Response::from(http_get_snapshot_uri_response);
+
+        mock_http_client
+            .expect_send_http_request()
+            .times(1)
+            .return_once(|_| Ok(get_snapshot_uri_response));
+
+        let mut onvif_client = OnvifClient::new(mock_http_client);
+
+        // TODO: move onvif_client set up into helper function - setup_onvif_client()
+        // setup should include: service_paths, digest_params, credential
+        onvif_client.service_paths.insert(
+            OnvifServiceName::from_str(DEVICE_SERVICE).unwrap(),
+            "http://172.18.14.11:80/onvif/device_service".to_string(),
+        );
+        onvif_client.service_paths.insert(
+            OnvifServiceName::from_str(MEDIA_SERVICE_VER10).unwrap(),
+            "http://172.18.14.11:80/onvif/device_service".to_string(),
+        );
+
+        // Act
+        let profiles_resp = onvif_client.get_snapshot_uri().await.unwrap();
+        assert_eq!(profiles_resp, "http://10.132.51.53:80/cgi-bin/video.cgi?mode=1&res=1");
+    }
+
     const DIGEST_USERNAME: &str = VIDEO_ANALYTICS;
 
     const DIGEST_PASSWORD: &str = "videoanalytics12345";
@@ -1595,4 +1708,35 @@ mod tests {
 		</trt:GetProfilesResponse>
 	</SOAP-ENV:Body>
         </SOAP-ENV:Envelope>"#;
+
+    const GET_SNAPSHOT_URI_REQUEST_BODY: &str = r#"
+    <s:Envelope xmlns:s="http://www.w3.org/2003/05/soap-envelope">
+        <s:Header>
+        </s:Header>
+            <s:Body xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+                <GetSnapshotUri xmlns="http://www.onvif.org/ver10/media/wsdl">
+                    <ProfileToken>pf1</ProfileToken>
+                </GetSnapshotUri>
+            </s:Body>
+    </s:Envelope>"#;
+
+    const GET_SNAPSHOT_URI_RESPONSE_BODY: &str = r#"<?xml version="1.0" encoding="UTF-8"?>
+    <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://www.w3.org/2003/05/soap-envelope" xmlns:SOAP-ENC="http://www.w3.org/2003/05/soap-encoding" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:chan="http://schemas.microsoft.com/ws/2005/02/duplex" xmlns:wsa5="http://www.w3.org/2005/08/addressing" xmlns:c14n="http://www.w3.org/2001/10/xml-exc-c14n#" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:saml1="urn:oasis:names:tc:SAML:1.0:assertion" xmlns:saml2="urn:oasis:names:tc:SAML:2.0:assertion" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:xenc="http://www.w3.org/2001/04/xmlenc#" xmlns:wsc="http://docs.oasis-open.org/ws-sx/ws-secureconversation/200512" xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" xmlns:xmime="http://tempuri.org/xmime.xsd" xmlns:xop="http://www.w3.org/2004/08/xop/include" xmlns:ns2="http://www.onvif.org/ver20/analytics/humanface" xmlns:ns3="http://www.onvif.org/ver20/analytics/humanbody" xmlns:wsrfbf="http://docs.oasis-open.org/wsrf/bf-2" xmlns:wstop="http://docs.oasis-open.org/wsn/t-1" xmlns:tt="http://www.onvif.org/ver10/schema" xmlns:wsrfr="http://docs.oasis-open.org/wsrf/r-2" xmlns:ns1="http://www.onvif.org/ver20/media/wsdl" xmlns:tan="http://www.onvif.org/ver20/analytics/wsdl" xmlns:tds="http://www.onvif.org/ver10/device/wsdl" xmlns:tev="http://www.onvif.org/ver10/events/wsdl" xmlns:wsnt="http://docs.oasis-open.org/wsn/b-2" xmlns:timg="http://www.onvif.org/ver20/imaging/wsdl" xmlns:tmd="http://www.onvif.org/ver10/deviceIO/wsdl" xmlns:tptz="http://www.onvif.org/ver20/ptz/wsdl" xmlns:trt="http://www.onvif.org/ver10/media/wsdl" xmlns:ter="http://www.onvif.org/ver10/error" xmlns:tns1="http://www.onvif.org/ver10/topics">
+        <SOAP-ENV:Header/>
+        <SOAP-ENV:Body>
+        <trt:GetSnapshotUriResponse>
+            <trt:MediaUri>
+                <tt:Uri>http://10.132.51.53:80/cgi-bin/video.cgi?mode=1&amp;res=1</tt:Uri>
+                <tt:InvalidAfterConnect>false</tt:InvalidAfterConnect>
+                <tt:InvalidAfterReboot>false</tt:InvalidAfterReboot>
+                <tt:Timeout>PT30S</tt:Timeout>
+            </trt:MediaUri>
+        </trt:GetSnapshotUriResponse>
+    </SOAP-ENV:Body>
+    </SOAP-ENV:Envelope>
+    "#;
+
+    fn get_snapshot_uri_request_with_digest() -> Request {
+        build_request_with_valid_digest_header(DEVICE_SERVICE_URI, GET_SNAPSHOT_URI_REQUEST_BODY)
+    }
 }

@@ -1,8 +1,8 @@
-use std::path::PathBuf;
-use serde_json::Value;
-use device_traits::connections::{PubSubClient, PubSubMessage};
 use crate::client::topics::TopicHelper;
 use crate::constants::PROVISION_SHADOW_NAME;
+use device_traits::connections::{PubSubClient, PubSubMessage};
+use serde_json::Value;
+use std::path::PathBuf;
 
 ///Helper class to aid in device state management.
 #[derive(Debug)]
@@ -13,7 +13,6 @@ pub struct RegistrationHelper {
 }
 
 impl RegistrationHelper {
-
     pub fn received_expected_shadow_message(
         message: &(dyn PubSubMessage + Send + Sync),
         expected_topic: String,
@@ -36,5 +35,4 @@ impl RegistrationHelper {
         }
         false
     }
-
 }

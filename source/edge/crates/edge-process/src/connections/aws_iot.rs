@@ -12,6 +12,7 @@ use device_traits::channel_utils::ServiceCommunicationManager;
 use device_traits::connections::{
     AsyncPubSubClient, IotClientManager, PubSubMessageBuilder, ShadowManager,
 };
+use device_traits::state::{State, StateManager};
 use iot_connections::shadow_manager::IotShadowManager;
 use mqtt_client::builder::MQTTMessageBuilder;
 use serde_json::json;
@@ -20,7 +21,6 @@ use tokio::select;
 use tokio::sync::mpsc::Sender;
 use tokio::task::JoinHandle;
 use tracing::{debug, error, info, instrument, warn};
-use device_traits::state::{State, StateManager};
 
 /// This creates a shadow which automatically sends messages to connections layer to update
 /// the cloud based shadow.  The iot communication service is injected into the shadow manager.
@@ -54,6 +54,7 @@ pub fn new_pub_sub_message_builder() -> Box<dyn PubSubMessageBuilder + Send + Sy
 pub async fn setup_and_start_iot_event_loop(
     config: &ConfigImpl,
     logger_config_tx: Sender<String>,
+    snapshot_tx: Sender<String>,
     pub_sub_client_manager: Box<dyn IotClientManager + Send + Sync>,
     mut iot_client: AsyncPubSubClient,
 ) -> anyhow::Result<JoinHandle<()>> {
@@ -109,6 +110,11 @@ pub async fn setup_and_start_iot_event_loop(
                                 let _ = logger_config_tx.send(message.to_string()).await;
                             }
                         }
+
+                        if let Some(message) = pub_sub_client_manager.received_snapshot_message(msg_in.as_ref()) {
+                            info!("Snapshot presigned url received {:?}", message);
+                            let _ = snapshot_tx.send(message).await;
+                        };
 
                         info!("received message :{}", msg_in.get_payload());
                     }
