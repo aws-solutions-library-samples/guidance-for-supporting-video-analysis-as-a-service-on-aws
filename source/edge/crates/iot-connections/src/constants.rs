@@ -16,3 +16,5 @@ pub(crate) const STATE_SHADOW_FIELD: &str = "state";
 pub(crate) const LOGGER_SETTINGS_FIELD: &str = "loggerSettings";
 pub(crate) const ENABLED_FIELD_FROM_CLOUD: &str = "enabled";
 pub(crate) const DISABLED_FIELD_FROM_CLOUD: &str = "disabled";
+pub(crate) const SNAPSHOT_SHADOW_NAME: &str = "snapshot";
+pub(crate) const PRESIGNED_URL_FIELD: &str = "presignedUrl";

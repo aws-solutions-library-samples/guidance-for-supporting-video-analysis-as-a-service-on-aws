@@ -1066,6 +1066,8 @@ dependencies = [
  "serde",
  "serde_derive",
  "serde_json",
+ "snapshot-client",
+ "snapshot-traits",
  "streaming-traits",
  "thiserror",
  "tokio",
@@ -2640,6 +2642,7 @@ dependencies = [
  "serde",
  "serde_derive",
  "serde_json",
+ "snapshot-traits",
  "streaming-traits",
  "thiserror",
  "tokio",
@@ -3650,6 +3653,39 @@ name = "smallvec"
 version = "1.13.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3c5e1a9a646d36c3599cd173a41282daf47c44583ad367b8e6837255952e5c67"
+
+[[package]]
+name = "snapshot-client"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "base64 0.22.1",
+ "device-traits",
+ "hex",
+ "http-client",
+ "mockall",
+ "serde_json",
+ "sha256",
+ "snapshot-traits",
+ "thiserror",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "snapshot-traits"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "device-traits",
+ "mockall",
+ "thiserror",
+ "tokio",
+ "tokio-util",
+ "tracing",
+]
 
 [[package]]
 name = "socket2"

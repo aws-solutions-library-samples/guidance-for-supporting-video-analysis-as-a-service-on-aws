@@ -3,6 +3,8 @@ pub const BUFFER_SIZE: usize = 10000;
 
 ///Shadow for device capabilities
 pub const PROVISION_SHADOW_NAME: &str = "provision";
+///Shadow for snapshots
+pub const SNAPSHOT_SHADOW_NAME: &str = "snapshot";
 pub const IS_STATUS_CHANGED: &str = "isStatusChanged";
 pub const LOG_SYNC: &str = "LOG_SYNC";
 pub const IS_ENABLED: &str = "isEnabled";

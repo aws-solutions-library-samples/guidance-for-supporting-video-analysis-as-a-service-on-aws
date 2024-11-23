@@ -71,12 +71,13 @@ This project uses the `Rustfmt` tool to format all rust files.  IDEs can be conf
 This crate contains all rust crates related to building the edge process client.
 
 - `edge-process` is the top level crate. This contains the `main.rs` file which is the entry point for the client.
-- `device-traits` is a supporting crate to enable local/remote communication.
+- `device-traits`, `snapshot-traits`, and `streaming-traits` are a supporting crates to enable local/remote communication.
 - `iot-connections` contains helper functions and utilities for publishing and parsing MQTT messages exchanged between cloud and edge.
 - `mqtt-client` is a wrapper over `rumqttc` which allows the edge process to communicate with AWS IoT.
 - `iot-client` is a wrapper over `aws-iot-sdk` which allows the edge processs to communicate with AWS IoT.
 - `http-client` is a wrapper over `reqwest`.
 - `onvif-client` is a wrapper over `http-client` which allows the edge process to communicate with the ONVIF service on devices.
+- `snapshot-client` is a wrapper over `http-client` for retrieving snapshots using the URI returned from the ONVIF service.
 - `ws-discovery-client` is a wrapper over `tokio::net` which allows the edge process to discover a device's public IP address (WS-discovery spec is required for all ONVIF devices).
 
 Code Organization: TBD.

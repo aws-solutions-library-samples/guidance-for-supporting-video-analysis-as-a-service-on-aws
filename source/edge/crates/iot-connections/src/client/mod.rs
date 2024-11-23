@@ -1,11 +1,17 @@
 use crate::client::configuration::ConfigurationHelper;
+use crate::client::registration::RegistrationHelper;
+use crate::client::snapshot::SnapshotHelper;
 use crate::client::topics::TopicHelper;
-use crate::constants::{DISABLED_FIELD_FROM_CLOUD, ENABLED_FIELD_FROM_CLOUD, LOGGER_SETTINGS_FIELD, PROVISION_SHADOW_NAME};
+use crate::constants::{
+    DISABLED_FIELD_FROM_CLOUD, ENABLED_FIELD_FROM_CLOUD, LOGGER_SETTINGS_FIELD,
+    PROVISION_SHADOW_NAME, SNAPSHOT_SHADOW_NAME,
+};
 use async_trait::async_trait;
 use config::Config;
 use device_traits::connections::{
     AsyncIotClientManager, AsyncPubSubClient, IotClientManager, PubSubMessage, QoS,
 };
+use device_traits::state::State;
 use mqtt_client::{
     client::MqttClient,
     client_settings::{AsyncIotClientSettings, TLSCredentialsResources},
@@ -16,13 +22,12 @@ use serde_derive::Deserialize;
 use serde_json::Value;
 use std::{path::PathBuf, time::Duration};
 use tracing::{info, instrument};
-use device_traits::state::State;
-use crate::client::registration::RegistrationHelper;
 
 mod configuration;
+mod registration;
+mod snapshot;
 ///Helper methods for working with IoT topics.
 pub mod topics;
-mod registration;
 
 /// Struct implements IotConnectionManager for MQTT with IoT
 #[derive(Debug, Clone, Deserialize)]
@@ -96,11 +101,18 @@ impl IotClientManager for IotMqttClientManager {
         )
     }
 
+    /// Checks if message is snapshot presigned url message
+    fn received_snapshot_message(&self, msg: &(dyn PubSubMessage + Send + Sync)) -> Option<String> {
+        let topic_helper =
+            TopicHelper::new(self.client_id.to_string(), Some(SNAPSHOT_SHADOW_NAME.to_string()));
+        SnapshotHelper::received_expected_shadow_message(
+            msg,
+            topic_helper.get_shadow_update_delta_topic(),
+        )
+    }
+
     /// Received a message to update the State of the device
-    fn received_state_message(
-        &self,
-        msg: &(dyn PubSubMessage + Send + Sync),
-    ) -> Option<State> {
+    fn received_state_message(&self, msg: &(dyn PubSubMessage + Send + Sync)) -> Option<State> {
         let topic_helper =
             TopicHelper::new(self.client_id.to_string(), Some(PROVISION_SHADOW_NAME.to_string()));
 
