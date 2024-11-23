@@ -5,15 +5,23 @@ import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.videoanalytics.devicemanagement.dao.StartCreateDeviceDAO;
 import com.amazonaws.videoanalytics.devicemanagement.dependency.ddb.DDBService;
+import com.amazonaws.videoanalytics.devicemanagement.dependency.apig.ApigService;
 import com.amazonaws.videoanalytics.devicemanagement.dagger.AWSVideoAnalyticsDMControlPlaneComponent;
 import com.amazonaws.videoanalytics.devicemanagement.dagger.DaggerAWSVideoAnalyticsDMControlPlaneComponent;
 import com.amazonaws.videoanalytics.devicemanagement.schema.CreateDevice;
 import com.amazonaws.videoanalytics.devicemanagement.utils.annotations.ExcludeFromJacocoGeneratedReport;
 import com.amazonaws.videoanalytics.devicemanagement.exceptions.RetryableException;
-import com.amazonaws.videoanalytics.devicemanagement.exceptions.ExceptionTranslator;
 import software.amazon.awssdk.awscore.exception.AwsServiceException;
 import software.amazon.awssdk.services.iot.model.InternalFailureException;
 import software.amazon.awssdk.services.iot.model.InvalidRequestException;
+import software.amazon.awssdk.http.SdkHttpResponse;
+import software.amazon.awssdk.http.HttpExecuteResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.stream.Collectors;
+import com.fasterxml.jackson.databind.JsonNode;
 
 import javax.inject.Inject;
 import java.util.Map;
@@ -27,11 +35,19 @@ public class VideoLogisticsWorkflowCheckerHandler implements RequestHandler<Map<
 
     private final DDBService ddbService;
     private final StartCreateDeviceDAO startCreateDeviceDAO;
+    private final ApigService apigService;
+    private final ObjectMapper objectMapper;
 
     @Inject
-    public VideoLogisticsWorkflowCheckerHandler(DDBService ddbService, StartCreateDeviceDAO startCreateDeviceDAO) {
+    public VideoLogisticsWorkflowCheckerHandler(
+            DDBService ddbService, 
+            StartCreateDeviceDAO startCreateDeviceDAO,
+            ApigService apigService,
+            ObjectMapper objectMapper) {
         this.ddbService = ddbService;
         this.startCreateDeviceDAO = startCreateDeviceDAO;
+        this.apigService = apigService;
+        this.objectMapper = objectMapper;
     }
 
     @ExcludeFromJacocoGeneratedReport
@@ -40,6 +56,8 @@ public class VideoLogisticsWorkflowCheckerHandler implements RequestHandler<Map<
         component.inject(this);
         this.ddbService = component.ddbService();
         this.startCreateDeviceDAO = component.startCreateDeviceDAO();
+        this.apigService = component.apigService();
+        this.objectMapper = component.objectMapper();
     }
 
     @Override
@@ -54,51 +72,54 @@ public class VideoLogisticsWorkflowCheckerHandler implements RequestHandler<Map<
                     .message("Missing required parameter: jobId")
                     .build();
             }
-
-            // Get the job ID and load the device record
+            
             String jobId = (String) requestParams.get(JOB_ID);
             CreateDevice createDevice = startCreateDeviceDAO.load(jobId);
 
-            // Get VL Job ID from the device record
             String vlJobId = createDevice.getVlJobId();
             if (vlJobId == null) {
-                // TODO: Remove this once we have a way to get the VL job ID from the device record
-                // For now, hardcoding to COMPLETED for pass-through logic and have a pass-through vlJobId
-                vlJobId = "mock-vl-job-id";
-                // TODO: Remove this once we have a way to get the VL job ID from the device record
-                // throw InvalidRequestException.builder()
-                //     .message("VL Job ID not found in device record")
-                //     .build();
+                throw InvalidRequestException.builder()
+                    .message("VL Job ID not found in device record")
+                    .build();
             }
 
-            // TODO: Call VL client to get actual job status
-            // For now, hardcoding to COMPLETED for pass-through logic
-            String currentState = "COMPLETED";
+            // Get VL registration status
+            HttpExecuteResponse response = apigService.invokeGetVlRegisterDeviceStatus(
+                vlJobId,
+                null,  // headers
+                null   // body
+            );
             
-            // Check the workflow status based on device state
-            switch (currentState) {
+            String responseBody = new BufferedReader(
+                new InputStreamReader(response.responseBody().get(), StandardCharsets.UTF_8))
+                .lines()
+                .collect(Collectors.joining("\n"));
+            logger.log("VL device registration status response: " + responseBody);
+                
+            JsonNode jsonNode = objectMapper.readTree(responseBody);
+            String status = jsonNode.get("status").asText();
+            
+            switch (status) {
                 case "COMPLETED":
-                    // Workflow completed successfully, proceed to next handler
+                    logger.log("VL device registration completed successfully");
                     return null;
-                case "RUNNING":
-                    logger.log("Video Analytics workflow still in progress.");
+                case "IN_PROGRESS":
+                case "PENDING":
+                    logger.log("VL device registration still in progress");
                     throw new RetryableException(WORKFLOW_IN_PROGRESS);
                 case "FAILED":
-                    logger.log("Video Analytics workflow failed.");
+                    logger.log("VL device registration failed");
                     throw InternalFailureException.builder()
                         .message(WORKFLOW_FAILED)
                         .build();
                 default:
-                    logger.log("Video Analytics workflow status was of unexpected format.");
+                    logger.log("VL device registration returned unexpected status: " + status);
                     throw InvalidRequestException.builder()
                         .message(WORKFLOW_INVALID_STATUS)
                         .build();
             }
-        } catch (InvalidRequestException e) {
-            logger.log("Invalid request: " + e.getMessage());
-            throw e;
-        } catch (RetryableException e) {
-            logger.log("Retryable exception occurred: " + e.getMessage());
+        } catch (InvalidRequestException | RetryableException e) {
+            logger.log(e.getMessage());
             throw e;
         } catch (Exception e) {
             logger.log("Unexpected error occurred: " + e.getMessage());

@@ -18,6 +18,8 @@ import software.amazon.awssdk.services.iot.IotClient;
 import software.amazon.awssdk.services.iotdataplane.IotDataPlaneClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+import software.amazon.awssdk.services.sfn.SfnClient;
+import software.amazon.awssdk.services.apigateway.ApiGatewayClient;
 
 /*
     Module to maintain singletons for AWS service dependencies
@@ -77,6 +79,30 @@ public class AWSModule {
     public DynamoDbEnhancedClient provideDynamoDbEnhancedClient(final DynamoDbClient ddbClient) {
         return DynamoDbEnhancedClient.builder()
                 .dynamoDbClient(ddbClient)
+                .build();
+    }
+
+    @Provides
+    @Singleton
+    public SfnClient provideSfnClient(@Named(CREDENTIALS_PROVIDER) final AwsCredentialsProvider credentialsProvider,
+                                    @Named(HTTP_CLIENT) final SdkHttpClient sdkHttpClient,
+                                    @Named(REGION_NAME) final String region) {
+        return SfnClient.builder()
+                .credentialsProvider(credentialsProvider)
+                .httpClient(sdkHttpClient)
+                .region(Region.of(region))
+                .build();
+    }
+
+    @Provides
+    @Singleton
+    public ApiGatewayClient provideApiGatewayClient(@Named(CREDENTIALS_PROVIDER) final AwsCredentialsProvider credentialsProvider,
+                                                   @Named(HTTP_CLIENT) final SdkHttpClient sdkHttpClient,
+                                                   @Named(REGION_NAME) final String region) {
+        return ApiGatewayClient.builder()
+                .credentialsProvider(credentialsProvider)
+                .httpClient(sdkHttpClient)
+                .region(Region.of(region))
                 .build();
     }
 }
