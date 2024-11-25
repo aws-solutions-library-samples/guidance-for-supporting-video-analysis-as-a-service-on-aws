@@ -98,6 +98,7 @@ public class JSON {
         gsonBuilder.registerTypeAdapterFactory(new com.amazonaws.videoanalytics.videologistics.CreateSnapshotUploadPathRequestContent.CustomTypeAdapterFactory());
         gsonBuilder.registerTypeAdapterFactory(new com.amazonaws.videoanalytics.videologistics.GetVLRegisterDeviceStatusResponseContent.CustomTypeAdapterFactory());
         gsonBuilder.registerTypeAdapterFactory(new com.amazonaws.videoanalytics.videologistics.IceServer.CustomTypeAdapterFactory());
+        gsonBuilder.registerTypeAdapterFactory(new com.amazonaws.videoanalytics.videologistics.ImportMediaObjectResponseContent.CustomTypeAdapterFactory());
         gsonBuilder.registerTypeAdapterFactory(new com.amazonaws.videoanalytics.videologistics.InternalServerExceptionResponseContent.CustomTypeAdapterFactory());
         gsonBuilder.registerTypeAdapterFactory(new com.amazonaws.videoanalytics.videologistics.KVSStreamARNs.CustomTypeAdapterFactory());
         gsonBuilder.registerTypeAdapterFactory(new com.amazonaws.videoanalytics.videologistics.ResourceNotFoundExceptionResponseContent.CustomTypeAdapterFactory());
