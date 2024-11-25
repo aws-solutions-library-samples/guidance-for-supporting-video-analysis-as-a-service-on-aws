@@ -19,7 +19,7 @@ import {
   createLambdaRole,
   AWSRegionUtils,
 } from "video_analytics_common_construct/";
-import { AWSRegion } from "video_analytics_common_construct/lib/serviceConstructs/util";
+import { AWSRegion, VIDEO_LOGISTICS_API_NAME } from "video_analytics_common_construct";
 import { Function, Runtime, Code } from "aws-cdk-lib/aws-lambda";
 import { LogGroup, RetentionDays } from "aws-cdk-lib/aws-logs";
 import { LambdaInvoke } from "aws-cdk-lib/aws-stepfunctions-tasks";
@@ -37,6 +37,8 @@ import {
 import * as fs from 'fs';
 import * as path from 'path';
 import * as iot from 'aws-cdk-lib/aws-iot';
+import { RestApi, IRestApi } from 'aws-cdk-lib/aws-apigateway';
+import { Fn } from 'aws-cdk-lib';
 
 export class StartCreateDevice extends VideoAnalyticsAsyncWorkflowResource {
   partitionKeyName = "JobId";
@@ -54,6 +56,7 @@ export class StartCreateDevice extends VideoAnalyticsAsyncWorkflowResource {
   private readonly setLoggerConfigLambda: Function;
   private readonly setLoggerConfigDynamoStatement: PolicyStatement;
   private readonly setLoggerConfigKmsStatement: PolicyStatement;
+  private readonly vlApiGateway: IRestApi;
 
   constructor(scope: Construct, id: string, props: WorkflowStackProps) {
     super(scope, id);
@@ -155,6 +158,18 @@ export class StartCreateDevice extends VideoAnalyticsAsyncWorkflowResource {
           `arn:aws:iot:${props.region}:${props.account}:thing/*`,
           `arn:aws:iot:${props.region}:${props.account}:endpoint/*`
         ],
+      }),
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        actions: [
+          'apigateway:GET',
+          'execute-api:Invoke'
+        ],
+        resources: [
+          `arn:aws:apigateway:${this.region}::/restapis`,
+          `arn:aws:apigateway:${this.region}::/restapis/*`,
+          `arn:aws:execute-api:${this.region}:${this.account}:*/*/*/*`
+        ]
       }),
     ]);
 
@@ -318,12 +333,14 @@ export class StartCreateDevice extends VideoAnalyticsAsyncWorkflowResource {
       code: Code.fromAsset(`${LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT}`),
       description: "Lambda to create KVS Stream using FVL API.",
       runtime: Runtime.JAVA_17,
-      handler: `${DM_WORKFLOW_JAVA_PATH_PREFIX}.update.CreateKVSStreamHandler::handleRequest`,
+      handler: `${DM_WORKFLOW_JAVA_PATH_PREFIX}.createdevice.CreateKVSStreamHandler::handleRequest`,
       memorySize: 512,
       role: this.role,
       environment: {
         AccountId: this.account.toString(),
         LambdaRoleArn: this.role.roleArn,
+        // this would be dynamically resolved in the Lambda for API Gateway endpoint resolving
+        VIDEO_LOGISTICS_API_NAME: VIDEO_LOGISTICS_API_NAME
       },
       timeout: Duration.minutes(5),
       logGroup: new LogGroup(this, "CreateKVSStreamLambdaLogGroup", {
@@ -340,7 +357,7 @@ export class StartCreateDevice extends VideoAnalyticsAsyncWorkflowResource {
         code: Code.fromAsset(`${LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT}`),
         description: "Lambda responsible for attaching cert to KVS Roles policy.",
         runtime: Runtime.JAVA_17,
-        handler: `${DM_WORKFLOW_JAVA_PATH_PREFIX}.update.AttachKvsAccessToCertHandler::handleRequest`,
+        handler: `${DM_WORKFLOW_JAVA_PATH_PREFIX}.createdevice.AttachKvsAccessToCertHandler::handleRequest`,
         memorySize: 512,
         role: this.role,
         environment: {
@@ -363,12 +380,14 @@ export class StartCreateDevice extends VideoAnalyticsAsyncWorkflowResource {
         description:
           "Lambda responsible for checking to make sure fvl device registration workflow completes.",
         runtime: Runtime.JAVA_17,
-        handler: `${DM_WORKFLOW_JAVA_PATH_PREFIX}.update.VideoLogisticsWorkflowCheckerHandler::handleRequest`,
+        handler: `${DM_WORKFLOW_JAVA_PATH_PREFIX}.createdevice.VideoLogisticsWorkflowCheckerHandler::handleRequest`,
         memorySize: 512,
         role: this.role,
         environment: {
           AccountId: this.account.toString(),
           LambdaRoleArn: this.role.roleArn,
+          // this would be dynamically resolved in the Lambda for API Gateway endpoint resolving
+          VIDEO_LOGISTICS_API_NAME: VIDEO_LOGISTICS_API_NAME
         },
         timeout: Duration.minutes(5),
         logGroup: new LogGroup(this, "VLWorkflowCheckerLambdaLogGroup", {

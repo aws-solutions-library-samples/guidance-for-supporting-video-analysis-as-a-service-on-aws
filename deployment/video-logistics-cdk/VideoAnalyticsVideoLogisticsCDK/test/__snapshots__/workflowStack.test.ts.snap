@@ -163,7 +163,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "32d918bda097c43ad86cd13b3d0279caa352c738afc045d18826e367a85f990d.jar",
+          "S3Key": "f93e4547cbac7f4ce906b37e330f99bfb1afa04f8cffa2fd0c755adbf502c5d4.jar",
         },
         "Description": "Lambda responsible for cleaning up KVS resources and updating the failure status in ddb.",
         "Environment": {
@@ -337,7 +337,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "32d918bda097c43ad86cd13b3d0279caa352c738afc045d18826e367a85f990d.jar",
+          "S3Key": "f93e4547cbac7f4ce906b37e330f99bfb1afa04f8cffa2fd0c755adbf502c5d4.jar",
         },
         "Description": "Lambda responsible for invocation of StepFunction",
         "Environment": {
@@ -685,7 +685,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "52046f46f1b49f3050b9ab578eb39a2d45356e865f875bd9b089b807f244b858.jar",
+          "S3Key": "1ac8a7262a3ae2e42ce590a3e28fa24c54e4e8c7bff13c1ad508878b32af0cba.jar",
         },
         "Description": "Lambda responsible for invocation of StepFunction",
         "Environment": {

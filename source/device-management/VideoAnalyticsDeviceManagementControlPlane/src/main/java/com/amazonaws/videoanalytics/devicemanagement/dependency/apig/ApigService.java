@@ -5,6 +5,9 @@ import software.amazon.awssdk.http.HttpExecuteResponse;
 import software.amazon.awssdk.http.SdkHttpClient;
 import software.amazon.awssdk.http.SdkHttpMethod;
 import software.amazon.awssdk.http.SdkHttpRequest;
+import software.amazon.awssdk.services.apigateway.ApiGatewayClient;
+import software.amazon.awssdk.services.apigateway.model.GetRestApisRequest;
+import software.amazon.awssdk.services.apigateway.model.RestApi;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -22,16 +25,50 @@ import org.slf4j.LoggerFactory;
 @Singleton
 public class ApigService {
     private static final Logger log = LoggerFactory.getLogger(ApigService.class);
+    private static final String VL_API_NAME = System.getenv("VIDEO_LOGISTICS_API_NAME");
+    private final SdkHttpClient httpClient;
+    private final ApiGatewayClient apiGatewayClient;
+    private String vlApiEndpoint;
+
+    @Inject
+    public ApigService(
+            @Named(HTTP_CLIENT) final SdkHttpClient httpClient,
+            ApiGatewayClient apiGatewayClient) {
+        this.httpClient = httpClient;
+        this.apiGatewayClient = apiGatewayClient;
+    }
+
+    private String getVlApiEndpoint() {
+        if (vlApiEndpoint == null) {
+            log.info("Fetching VL API endpoint URL for API: {}", VL_API_NAME);
+            try {
+                var restApis = apiGatewayClient.getRestApis(GetRestApisRequest.builder().build());
+                log.info("GetRestApis Response - Total APIs: {}, Position: {}", 
+                    restApis.items().size(),
+                    restApis.position());
+                String apiId = restApis.items().stream()
+                    .peek(api -> log.info("Found API: name={}, id={}", api.name(), api.id()))
+                    .filter(api -> VL_API_NAME.equals(api.name()))
+                    .map(RestApi::id)
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalStateException("Could not find API Gateway with name: " + VL_API_NAME));
+
+                String region = System.getenv("AWS_REGION");
+                String stage = "prod"; 
+                vlApiEndpoint = String.format("https://%s.execute-api.%s.amazonaws.com/%s",
+                    apiId, region, stage);
+                
+                log.info("Found VL API endpoint: {}", vlApiEndpoint);
+            } catch (Exception e) {
+                log.error("Failed to fetch VL API endpoint", e);
+                throw new IllegalStateException("Failed to fetch VL API endpoint", e);
+            }
+        }
+        return vlApiEndpoint;
+    }
 
     public enum HttpMethod {
         GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS;
-    }
-
-    private final SdkHttpClient httpClient;
-
-    @Inject
-    public ApigService(@Named(HTTP_CLIENT) final SdkHttpClient httpClient) {
-        this.httpClient = httpClient;
     }
 
     /**
@@ -103,12 +140,7 @@ public class ApigService {
             String body) throws Exception {
         log.info("Starting VL device registration for deviceId: {}", deviceId);
         
-        String baseUrl = System.getenv("VlApiEndpoint");
-        if (baseUrl == null || baseUrl.isEmpty()) {
-            log.error("VlApiEndpoint environment variable is not set");
-            throw new IllegalStateException("VlApiEndpoint environment variable is not set");
-        }
-
+        String baseUrl = getVlApiEndpoint();
         String url = String.format("%s/start-vl-register-device/%s", baseUrl, deviceId);
         try {
             HttpExecuteResponse response = invokePost(url, headers, body);
@@ -136,12 +168,7 @@ public class ApigService {
             String body) throws Exception {
         log.info("Checking VL device registration status for jobId: {}", jobId);
         
-        String baseUrl = System.getenv("VlApiEndpoint");
-        if (baseUrl == null || baseUrl.isEmpty()) {
-            log.error("VlApiEndpoint environment variable is not set");
-            throw new IllegalStateException("VlApiEndpoint environment variable is not set");
-        }
-
+        String baseUrl = getVlApiEndpoint();
         String url = String.format("%s/get-vl-register-device-status/%s", baseUrl, jobId);
         try {
             HttpExecuteResponse response = invokePost(url, headers, body);

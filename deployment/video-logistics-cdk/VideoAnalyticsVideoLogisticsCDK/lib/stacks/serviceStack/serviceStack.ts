@@ -1,4 +1,4 @@
-import { Duration, Fn, Stack, StackProps } from "aws-cdk-lib";
+import { Duration, Fn, Stack, StackProps, CfnOutput } from "aws-cdk-lib";
 import { MethodLoggingLevel, SpecRestApi } from 'aws-cdk-lib/aws-apigateway';
 import { CfnFunction } from "aws-cdk-lib/aws-cloudfront";
 import { Effect, PolicyStatement, Role, ServicePrincipal } from "aws-cdk-lib/aws-iam";
@@ -6,7 +6,7 @@ import { Function, Runtime, Code } from "aws-cdk-lib/aws-lambda";
 import { LogGroup, RetentionDays } from "aws-cdk-lib/aws-logs";
 import { Asset } from 'aws-cdk-lib/aws-s3-assets'
 import { Construct } from "constructs";
-import { AWSRegion, createApiGateway, createLambdaRole } from "video_analytics_common_construct";
+import { AWSRegion, createApiGateway, createLambdaRole, VIDEO_LOGISTICS_API_NAME } from "video_analytics_common_construct";
 
 import {
     VL_ACTIVITY_JAVA_PATH_PREFIX,
@@ -189,7 +189,7 @@ export class ServiceStack extends Stack {
     const transformedOpenApiSpec = Fn.transform("AWS::Include", transformMap);
 
     this.restApi = createApiGateway(this, 
-      "VideoAnalyticsVideoLogisticsAPIGateway",
+      VIDEO_LOGISTICS_API_NAME,
       transformedOpenApiSpec,
       this.account,
       this.region,

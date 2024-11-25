@@ -22,7 +22,6 @@ import dagger.Component;
 
 import javax.inject.Singleton;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.amazonaws.videoanalytics.devicemanagement.dependency.sfn.SfnService;
 
 @Singleton
 @Component(
@@ -51,6 +50,5 @@ public interface AWSVideoAnalyticsDMControlPlaneComponent {
     DDBService ddbService();
     StartCreateDeviceDAO startCreateDeviceDAO();
     ObjectMapper objectMapper();
-    SfnService sfnService();
     ApigService apigService();
 }

@@ -66,3 +66,10 @@ The Device Managment Application Lambda compiled jar is expected to be located a
 guidance-for-video-analytics-infrastructure-on-aws/assets/lambda-built/device-management-assets
 ```
 
+### REST API ID
+The REST API ID is exported from the Video Logistics CDK stack (../../video-logistics-cdk/VideoAnalyticsVideoLogisticsCDK/lib/stacks/serviceStack/serviceStack.ts) and can be referenced using the export name 'VideoLogisticsRestApiId'. This ID is exposed through a CloudFormation output in the service stack.
+
+This REST API ID is required for asynchronous workflow-based APIs, such as Device Registration, which needs the Video Logistics API endpoint to create KVS (Kinesis Video Streams) streams during the device registration process.
+
+**Note:** Due to this dependency on the Video Logistics API, the deployment order matters. The Video Logistics stack must be deployed before the Device Management stack. Noted for later reference of VL of DM api endpoint, deadlock circular dependency would become an issue, TODO! to collate into single stack for all async workflows and endpoint deployment.
+
