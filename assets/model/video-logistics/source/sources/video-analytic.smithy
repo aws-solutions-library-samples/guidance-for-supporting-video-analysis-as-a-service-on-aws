@@ -14,6 +14,7 @@ service VideoAnalytic {
         ExportVideo,
         PlaybackSession,
         Snapshot,
-        RegisterDevice
+        RegisterDevice,
+        Inference
     ]
 }

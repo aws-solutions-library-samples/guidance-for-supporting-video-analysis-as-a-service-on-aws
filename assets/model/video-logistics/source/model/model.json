@@ -2035,6 +2035,78 @@
                 "target": "com.amazonaws.videoanalytics.videologistics#IceServer"
             }
         },
+        "com.amazonaws.videoanalytics.videologistics#ImportMediaObject": {
+            "type": "operation",
+            "input": {
+                "target": "com.amazonaws.videoanalytics.videologistics#ImportMediaObjectRequest"
+            },
+            "output": {
+                "target": "com.amazonaws.videoanalytics.videologistics#ImportMediaObjectResponse"
+            },
+            "errors": [
+                {
+                    "target": "com.amazonaws.videoanalytics#InternalServerException"
+                },
+                {
+                    "target": "com.amazonaws.videoanalytics#ValidationException"
+                }
+            ],
+            "traits": {
+                "aws.apigateway#integration": {
+                    "type": "aws_proxy",
+                    "httpMethod": "POST",
+                    "uri": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${ImportMediaObjectActivity}/invocations",
+                    "credentials": "arn:aws:iam::${AWS::AccountId}:role/VideoLogisticsApiGatewayRole"
+                },
+                "smithy.api#http": {
+                    "code": 200,
+                    "method": "POST",
+                    "uri": "/import-media-object/{deviceId}"
+                },
+                "smithy.api#idempotent": {}
+            }
+        },
+        "com.amazonaws.videoanalytics.videologistics#ImportMediaObjectRequest": {
+            "type": "structure",
+            "members": {
+                "deviceId": {
+                    "target": "com.amazonaws.videoanalytics#DeviceId",
+                    "traits": {
+                        "smithy.api#httpLabel": {},
+                        "smithy.api#required": {}
+                    }
+                },
+                "mediaObject": {
+                    "target": "com.amazonaws.videoanalytics.videologistics#MediaObjectBlob",
+                    "traits": {
+                        "smithy.api#httpPayload": {},
+                        "smithy.api#required": {}
+                    }
+                }
+            },
+            "traits": {
+                "smithy.api#input": {}
+            }
+        },
+        "com.amazonaws.videoanalytics.videologistics#ImportMediaObjectResponse": {
+            "type": "structure",
+            "members": {
+                "contentLength": {
+                    "target": "smithy.api#Long"
+                }
+            },
+            "traits": {
+                "smithy.api#output": {}
+            }
+        },
+        "com.amazonaws.videoanalytics.videologistics#Inference": {
+            "type": "resource",
+            "operations": [
+                {
+                    "target": "com.amazonaws.videoanalytics.videologistics#ImportMediaObject"
+                }
+            ]
+        },
         "com.amazonaws.videoanalytics.videologistics#JobRunTimeInMinutes": {
             "type": "double"
         },
@@ -2045,6 +2117,14 @@
                     "target": "com.amazonaws.videoanalytics.videologistics#CreateLivestreamSession"
                 }
             ]
+        },
+        "com.amazonaws.videoanalytics.videologistics#MediaObjectBlob": {
+            "type": "blob",
+            "traits": {
+                "smithy.api#length": {
+                    "max": 50000000
+                }
+            }
         },
         "com.amazonaws.videoanalytics.videologistics#PeerConnectionState": {
             "type": "enum",
@@ -2323,6 +2403,9 @@
             "resources": [
                 {
                     "target": "com.amazonaws.videoanalytics.videologistics#ExportVideo"
+                },
+                {
+                    "target": "com.amazonaws.videoanalytics.videologistics#Inference"
                 },
                 {
                     "target": "com.amazonaws.videoanalytics.videologistics#LivestreamSession"
