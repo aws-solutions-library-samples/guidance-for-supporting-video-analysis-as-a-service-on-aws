@@ -18,7 +18,7 @@
     "projectionName": "source",
     "resourceShapeIds": [
         "com.amazonaws.videoanalytics.videologistics#ExportVideo",
-        "com.amazonaws.videoanalytics.videologistics#ForwardingRule",
+        "com.amazonaws.videoanalytics.videologistics#Inference",
         "com.amazonaws.videoanalytics.videologistics#LivestreamSession",
         "com.amazonaws.videoanalytics.videologistics#PlaybackSession",
         "com.amazonaws.videoanalytics.videologistics#RegisterDevice",

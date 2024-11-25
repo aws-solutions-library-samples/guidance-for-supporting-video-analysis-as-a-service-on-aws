@@ -15,6 +15,6 @@ service VideoAnalytic {
         PlaybackSession,
         Snapshot,
         RegisterDevice,
-        ForwardingRule
+        Inference
     ]
 }

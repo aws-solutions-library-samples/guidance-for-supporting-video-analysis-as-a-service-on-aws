@@ -1928,14 +1928,6 @@
                 }
             }
         },
-        "com.amazonaws.videoanalytics.videologistics#ForwardingRule": {
-            "type": "resource",
-            "operations": [
-                {
-                    "target": "com.amazonaws.videoanalytics.videologistics#ImportMediaObject"
-                }
-            ]
-        },
         "com.amazonaws.videoanalytics.videologistics#GetVLRegisterDeviceStatus": {
             "type": "operation",
             "input": {
@@ -2106,6 +2098,14 @@
             "traits": {
                 "smithy.api#output": {}
             }
+        },
+        "com.amazonaws.videoanalytics.videologistics#Inference": {
+            "type": "resource",
+            "operations": [
+                {
+                    "target": "com.amazonaws.videoanalytics.videologistics#ImportMediaObject"
+                }
+            ]
         },
         "com.amazonaws.videoanalytics.videologistics#JobRunTimeInMinutes": {
             "type": "double"
@@ -2405,7 +2405,7 @@
                     "target": "com.amazonaws.videoanalytics.videologistics#ExportVideo"
                 },
                 {
-                    "target": "com.amazonaws.videoanalytics.videologistics#ForwardingRule"
+                    "target": "com.amazonaws.videoanalytics.videologistics#Inference"
                 },
                 {
                     "target": "com.amazonaws.videoanalytics.videologistics#LivestreamSession"

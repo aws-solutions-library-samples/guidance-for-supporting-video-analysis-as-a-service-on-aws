@@ -1,17 +1,17 @@
 types/ExportVideo.smithy
 types/Playback.smithy
-types/ForwardingRule.smithy
+types/Inference.smithy
 types/Livestream.smithy
 resources/LivestreamSession.smithy
 resources/PlaybackSession.smithy
 resources/ExportVideo.smithy
 resources/RegisterDevice.smithy
-resources/ForwardingRule.smithy
 resources/Snapshot.smithy
+resources/Inference.smithy
 operations/LivestreamSession/CreateLivestreamSession.smithy
 operations/Snapshot/CreateSnapshotUploadPath.smithy
 operations/PlaybackSession/CreatePlaybackSession.smithy
-operations/ForwardingRule/ ImportMediaObject.smithy
+operations/Inference/ImportMediaObject.smithy
 operations/ExportVideo/StartExportVideos.smithy
 operations/RegisterDevice/StartVLRegisterDevice.smithy
 operations/RegisterDevice/GetVLRegisterDeviceStatus.smithy
