@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 @Singleton
 public class ApigService {
     private static final Logger log = LoggerFactory.getLogger(ApigService.class);
-    private static final String VL_API_NAME = System.getenv("VIDEO_LOGISTICS_API_NAME");
+    private static final String VL_API_NAME = System.getProperty("VIDEO_LOGISTICS_API_NAME", System.getenv("VIDEO_LOGISTICS_API_NAME"));
     private final SdkHttpClient httpClient;
     private final ApiGatewayClient apiGatewayClient;
     private String vlApiEndpoint;
