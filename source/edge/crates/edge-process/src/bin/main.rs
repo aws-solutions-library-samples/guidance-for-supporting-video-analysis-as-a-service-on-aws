@@ -107,7 +107,7 @@ async fn main() -> Result<ExitCode, Box<dyn Error>> {
         let interval = sleep(Duration::from_millis(1));
         tokio::pin!(interval);
         loop {
-            if !is_device_state_create_enable_or_disable() {
+            if !is_device_state_create_or_enable() {
                 sleep(Duration::from_millis(250)).await;
                 continue;
             }
@@ -275,7 +275,7 @@ async fn main() -> Result<ExitCode, Box<dyn Error>> {
     Ok(ExitCode::SUCCESS)
 }
 
-fn is_device_state_create_enable_or_disable() -> bool {
+fn is_device_state_create_or_enable() -> bool {
     let state = StateManager::get_state();
-    state == State::CreateOrEnableSteamingResources || state == State::DisableStreamingResources
+    state == State::CreateOrEnableSteamingResources
 }
