@@ -16,10 +16,7 @@ version = '1.0-beta'
 
 repositories {
     mavenCentral()
-    maven { url "https://aws.oss.sonatype.org/content/repositories/snapshots" }
-    // CodeGuru-Profiler java agent repository
-    maven { url "https://d1osg35nybn3tt.cloudfront.net" }
-
+    mavenLocal()
 }
 
 java {
@@ -42,6 +39,17 @@ sourceSets {
 }
 
 dependencies {
+    // AWS SDK BOM
+    implementation platform('software.amazon.awssdk:bom:2.20.26')
+    
+    // AWS SDK dependencies
+    implementation 'software.amazon.awssdk:sfn'
+    implementation 'software.amazon.awssdk:dynamodb'
+    implementation 'software.amazon.awssdk:dynamodb-enhanced'
+    implementation 'software.amazon.awssdk:iot'
+    implementation 'software.amazon.awssdk:iotdataplane'
+    implementation 'software.amazon.awssdk:apache-client'
+    
     // OpenAPI generated java client dependencies
     implementation 'javax.annotation:javax.annotation-api:1.3.2'
     implementation 'org.openapitools:jackson-databind-nullable:0.2.6'
@@ -62,22 +70,9 @@ dependencies {
     testImplementation 'com.fasterxml.jackson.core:jackson-core:2.12.7'
     testImplementation 'com.fasterxml.jackson.core:jackson-databind:2.12.7.1'
 
-    // AWS SDK dependencies
-    implementation 'software.amazon.awssdk:dynamodb-enhanced:2.20.26'
-    implementation 'software.amazon.cryptography:aws-database-encryption-sdk-dynamodb:3.1.0'
-    implementation 'software.amazon.awssdk:iot:2.20.26'
-    implementation 'software.amazon.awssdk:iotdataplane:2.20.26'
-    implementation 'software.amazon.awssdk:s3:2.20.26'
-    implementation 'software.amazon.awssdk:apache-client:2.20.26'
-    implementation 'software.amazon.awssdk:utils:2.20.26'
-    implementation 'software.amazon.awssdk:url-connection-client:2.20.26'
-    implementation 'com.amazonaws:aws-lambda-java-core:1.2.2'
-    implementation 'com.amazonaws:aws-lambda-java-events:3.11.1'
-    implementation 'com.amazonaws:aws-encryption-sdk-java:2.4.0'
-
     // Lombok
-    implementation 'org.projectlombok:lombok:1.18.26'
-    annotationProcessor 'org.projectlombok:lombok:1.18.26'
+    compileOnly 'org.projectlombok:lombok:1.18.30'
+    annotationProcessor 'org.projectlombok:lombok:1.18.30'
 
     // Logging dependencies
     implementation platform('org.apache.logging.log4j:log4j-bom:2.20.0')
@@ -98,6 +93,10 @@ dependencies {
     implementation 'com.google.dagger:dagger-compiler:2.48'
     implementation 'com.google.auto:auto-common:1.2.1'
     annotationProcessor 'com.google.dagger:dagger-compiler:2.48'
+
+    // API Gateway dependencies
+    implementation 'software.amazon.awssdk:apigateway:2.20.+' // For REST API Gateway
+    implementation 'software.amazon.awssdk:apigatewayv2:2.20.+' // For HTTP/WebSocket API Gateway
 }
 
 shadowJar {
@@ -205,6 +204,13 @@ task cleanBuildCache {
         }
 
         println "Build cache cleaning completed."
+    }
+}
+
+configurations.all {
+    resolutionStrategy {
+        force 'software.amazon.awssdk:sfn:2.20.26'
+        force 'software.amazon.awssdk:bom:2.20.26'
     }
 }
 

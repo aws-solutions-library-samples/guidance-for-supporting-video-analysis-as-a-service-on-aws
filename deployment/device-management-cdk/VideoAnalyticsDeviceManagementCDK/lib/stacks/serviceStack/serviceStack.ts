@@ -6,7 +6,7 @@ import { Function, Runtime, Code } from "aws-cdk-lib/aws-lambda";
 import { LogGroup, RetentionDays } from "aws-cdk-lib/aws-logs";
 import { Asset } from 'aws-cdk-lib/aws-s3-assets'
 import { Construct } from "constructs";
-import { AWSRegion, createApiGateway, createLambdaRole } from "video_analytics_common_construct";
+import { AWSRegion, createApiGateway, createLambdaRole, DEVICE_MANAGEMENT_API_NAME } from "video_analytics_common_construct";
 
 import {
     DM_ACTIVITY_JAVA_PATH_PREFIX,
@@ -240,7 +240,7 @@ export class ServiceStack extends Stack {
 
     // Create API Gateway with stage settings
     this.restApi = createApiGateway(this, 
-      "VideoAnalyticsDeviceManagementAPIGateway",
+      DEVICE_MANAGEMENT_API_NAME,
       transformedOpenApiSpec,
       this.account,
       this.region,

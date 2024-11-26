@@ -18,7 +18,7 @@ use com.amazonaws.videoanalytics#Status
     uri: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${GetVLRegisterDeviceStatusActivity}/invocations",
     credentials: "arn:aws:iam::${AWS::AccountId}:role/VideoLogisticsApiGatewayRole"
 )
-@http(code: 200, method: "GET", uri: "/get-vl-register-device-status/{jobId}")
+@http(code: 200, method: "POST", uri: "/get-vl-register-device-status/{jobId}")
 @readonly
 operation GetVLRegisterDeviceStatus {
     input: GetVLRegisterDeviceStatusRequest,

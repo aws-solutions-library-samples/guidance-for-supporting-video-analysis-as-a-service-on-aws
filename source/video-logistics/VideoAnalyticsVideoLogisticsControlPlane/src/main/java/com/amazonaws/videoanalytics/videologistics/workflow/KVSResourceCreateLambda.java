@@ -41,6 +41,7 @@ public class KVSResourceCreateLambda implements RequestHandler<Map<String, Objec
 
     @Override
     public Map<String, Object> handleRequest(Map<String, Object> input, Context context) {
+        
         String jobId = (String) input.get(JOB_ID);
         VLRegisterDeviceJob vlRegisterDeviceJob = vlRegisterDeviceJobDAO.load(jobId);
         String deviceId = vlRegisterDeviceJob.getDeviceId();

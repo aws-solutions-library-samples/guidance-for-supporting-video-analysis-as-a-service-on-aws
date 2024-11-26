@@ -38,9 +38,8 @@ export interface WorkflowStackProps extends StackProps {
 }
 
 class RegisterDeviceWorkflow extends VideoAnalyticsAsyncWorkflowResource {
-  partitionKeyName = 'CustomerAccountId';
-  sortKeyName = 'JobId';
-  name = 'FVLRegisterDeviceJobTable';
+  partitionKeyName = 'JobId';
+  name = 'VLRegisterDeviceJobTable';
   private fvlRegisterDeviceJobTablePolicy = new PolicyStatement({
     effect: Effect.ALLOW,
     actions: [
@@ -53,7 +52,7 @@ class RegisterDeviceWorkflow extends VideoAnalyticsAsyncWorkflowResource {
     resources: [Arn.format({ 
       service: 'dynamodb',
       resource: 'table',
-      resourceName: 'FVLRegisterDeviceJobTable'
+      resourceName: 'VLRegisterDeviceJobTable'
     }, Stack.of(this))]
   });
 
@@ -63,7 +62,7 @@ class RegisterDeviceWorkflow extends VideoAnalyticsAsyncWorkflowResource {
     resources: [Arn.format({ 
       service: 'dynamodb',
       resource: 'table',
-      resourceName: 'FVLRegisterDeviceJobTable'
+      resourceName: 'VLRegisterDeviceJobTable'
     }, Stack.of(this))]
   });
 
@@ -146,7 +145,7 @@ class RegisterDeviceWorkflow extends VideoAnalyticsAsyncWorkflowResource {
       description: 'Lambda responsible for invocation of StepFunction',
       runtime: Runtime.JAVA_17,
       // TODO: Update handler to match new lambda handler path
-      handler: 'com.amazon.awsvideoanalyticsvlcontrolplane.workflow.KVSResourceCreateLambda::handleRequest',
+      handler: 'com.amazonaws.videoanalytics.videologistics.workflow.KVSResourceCreateLambda::handleRequest',
       memorySize: 2048,
       role: this.kvsRole,
       environment: {
@@ -161,15 +160,13 @@ class RegisterDeviceWorkflow extends VideoAnalyticsAsyncWorkflowResource {
       })
     });
 
-    const failAndCleanupFvlRegHandler = new Function(this, 'FailAndCleanupFvlRegHandler', {
-      // TODO: Update lambda asset path once code compiled jar is available
+    const failAndCleanupVlRegHandler = new Function(this, 'FailAndCleanupVlRegHandler', {
       code: Code.fromAsset(LAMBDA_ASSET_PATH),
       description:
         'Lambda responsible for cleaning up KVS resources and updating the failure status in ddb.',
       runtime: Runtime.JAVA_17,
       handler:
-        // TODO: Update handler to match new lambda handler path
-        'com.amazon.awsvideoanalyticsvlcontrolplane.workflow.FailAndCleanupFVLDeviceRegistrationHandler::handleRequest',
+        'com.amazonaws.videoanalytics.videologistics.workflow.FailAndCleanupVLDeviceRegistrationHandler::handleRequest',
       memorySize: 2048,
       role: this.failureHandlerRole,
       environment: {
@@ -187,20 +184,18 @@ class RegisterDeviceWorkflow extends VideoAnalyticsAsyncWorkflowResource {
     const kvsCreateState = new LambdaInvoke(this, 'Create KVS ARN', {
       lambdaFunction: kvsLambda,
       payload: TaskInput.fromObject({
-        CustomerAccountId: JsonPath.stringAt(PARTITION_KEY_PATH),
-        JobId: JsonPath.stringAt(SORT_KEY_PATH)
+        JobId: JsonPath.stringAt(PARTITION_KEY_PATH),
       }),
       resultPath: RESULT_PATH
     });
 
-    const failAndCleanupFVLRegistrationState = new LambdaInvoke(
+    const failAndCleanupVLRegistrationState = new LambdaInvoke(
       this,
-      'FailAndCleanupFVLRegStatus',
+      'FailAndCleanupVLRegStatus',
       {
-        lambdaFunction: failAndCleanupFvlRegHandler,
+        lambdaFunction: failAndCleanupVlRegHandler,
         payload: TaskInput.fromObject({
-          CustomerAccountId: JsonPath.stringAt(PARTITION_KEY_PATH),
-          JobId: JsonPath.stringAt(SORT_KEY_PATH),
+          jobId: JsonPath.stringAt(PARTITION_KEY_PATH),
           FailureReason: JsonPath.stringAt(ERROR_MESSAGE_PATH)
         }),
         resultPath: RESULT_PATH
@@ -208,19 +203,19 @@ class RegisterDeviceWorkflow extends VideoAnalyticsAsyncWorkflowResource {
     );
 
     kvsCreateState.next(successState);
-    kvsCreateState.addCatch(failAndCleanupFVLRegistrationState, {
+    kvsCreateState.addCatch(failAndCleanupVLRegistrationState, {
       resultPath: RESULT_PATH_ERROR
     });
 
     //Failure step, End of workflow if it fails
-    failAndCleanupFVLRegistrationState.next(failState);
-    failAndCleanupFVLRegistrationState.addRetry({
+    failAndCleanupVLRegistrationState.next(failState);
+    failAndCleanupVLRegistrationState.addRetry({
       interval: Duration.seconds(2),
       maxAttempts: 5,
       backoffRate: 2
     });
 
-    this.stateMachine = new StateMachine(this, 'FVLRegisterDeviceStateMachine', {
+    this.stateMachine = new StateMachine(this, 'VLRegisterDeviceStateMachine', {
       definition: kvsCreateState
     });
   }
@@ -317,7 +312,8 @@ export function getWorkflowResources(
 ): VideoAnalyticsAsyncWorkflowResource[] {
   return [
     new RegisterDeviceWorkflow(scope, 'RegisterDeviceWorkflow', props),
-    new ModelSchema(scope, 'ModelSchema', props),
-    new VideoExportWorkflow(scope, 'VideoExport', props)
+    // TODO: Uncomment once addtional resources are implemented
+    // new ModelSchema(scope, 'ModelSchema', props),
+    // new VideoExportWorkflow(scope, 'VideoExport', props)
   ];
 }

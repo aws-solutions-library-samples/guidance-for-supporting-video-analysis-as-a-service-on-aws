@@ -24,7 +24,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-class FailAndCleanupFVLDeviceRegistrationHandlerTest {
+class FailAndCleanupVLDeviceRegistrationHandlerTest {
 
     @Mock
     private VLRegisterDeviceJobDAO vlRegisterDeviceJobDAO;
@@ -38,12 +38,12 @@ class FailAndCleanupFVLDeviceRegistrationHandlerTest {
     @Mock
     private Context context;
 
-    private FailAndCleanupFVLDeviceRegistrationHandler handler;
+    private FailAndCleanupVLDeviceRegistrationHandler handler;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        handler = new FailAndCleanupFVLDeviceRegistrationHandler(vlRegisterDeviceJobDAO, objectMapper, kinesisVideoClient);
+        handler = new FailAndCleanupVLDeviceRegistrationHandler(vlRegisterDeviceJobDAO, objectMapper, kinesisVideoClient);
     }
 
     @Test

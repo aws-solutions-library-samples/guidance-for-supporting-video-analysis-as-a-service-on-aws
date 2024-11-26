@@ -2,7 +2,6 @@ package com.amazonaws.videoanalytics.videologistics.activity;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
-import com.amazonaws.videoanalytics.videologistics.StartVLRegisterDeviceRequestContent;
 import com.amazonaws.videoanalytics.videologistics.dao.VLRegisterDeviceJobDAO;
 import com.amazonaws.videoanalytics.videologistics.schema.VLRegisterDeviceJob;
 import com.amazonaws.videoanalytics.videologistics.validator.DeviceValidator;
@@ -102,10 +101,9 @@ class StartVLRegisterDeviceActivityTest {
 
     private Map<String, Object> createValidInput(String deviceId) {
         Map<String, Object> input = new HashMap<>();
-        StartVLRegisterDeviceRequestContent requestContent = StartVLRegisterDeviceRequestContent.builder()
-                .deviceId(deviceId)
-                .build();
-        input.put("body", requestContent.toJson());
+        Map<String, String> pathParameters = new HashMap<>();
+        pathParameters.put("deviceId", deviceId);
+        input.put("pathParameters", pathParameters);
         return input;
     }
 }

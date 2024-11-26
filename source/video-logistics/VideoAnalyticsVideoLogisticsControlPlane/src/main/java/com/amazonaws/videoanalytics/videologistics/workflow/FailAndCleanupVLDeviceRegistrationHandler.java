@@ -21,8 +21,8 @@ import javax.inject.Inject;
 import com.amazonaws.videoanalytics.videologistics.schema.VLRegisterDeviceJob;
 import com.amazonaws.videoanalytics.videologistics.Status;
 
-public class FailAndCleanupFVLDeviceRegistrationHandler implements RequestHandler<Map<String, Object>, Map<String, Object>> {
-    private static final Logger LOG = LogManager.getLogger(FailAndCleanupFVLDeviceRegistrationHandler.class);
+public class FailAndCleanupVLDeviceRegistrationHandler implements RequestHandler<Map<String, Object>, Map<String, Object>> {
+    private static final Logger LOG = LogManager.getLogger(FailAndCleanupVLDeviceRegistrationHandler.class);
     private static final String FAILURE_REASON = "FailureReason";
     private static final String ERROR_MESSAGE = "errorMessage";
     private static final String JOB_ID = "jobId";
@@ -31,7 +31,7 @@ public class FailAndCleanupFVLDeviceRegistrationHandler implements RequestHandle
     private final KinesisVideoClient kinesisVideoClient;
 
     @Inject
-    public FailAndCleanupFVLDeviceRegistrationHandler(
+    public FailAndCleanupVLDeviceRegistrationHandler(
             VLRegisterDeviceJobDAO vlRegisterDeviceJobDAO,
             ObjectMapper objectMapper,
             KinesisVideoClient kinesisVideoClient) {
@@ -41,7 +41,7 @@ public class FailAndCleanupFVLDeviceRegistrationHandler implements RequestHandle
     }
 
     @ExcludeFromJacocoGeneratedReport
-    public FailAndCleanupFVLDeviceRegistrationHandler() {
+    public FailAndCleanupVLDeviceRegistrationHandler() {
         AWSVideoAnalyticsVLControlPlaneComponent component = DaggerAWSVideoAnalyticsVLControlPlaneComponent.create();
         component.inject(this);
         this.vlRegisterDeviceJobDAO = component.getVLRegisterDeviceJobDAO();
@@ -51,10 +51,17 @@ public class FailAndCleanupFVLDeviceRegistrationHandler implements RequestHandle
 
     @Override
     public Map<String, Object> handleRequest(Map<String, Object> input, Context context) {
-        LOG.info("Entering cleanup handler");
+        LOG.info("Entering cleanup handler with input: {}", input);
         
         String jobId = (String) input.get(JOB_ID);
+        if (StringUtils.isBlank(jobId)) {
+            throw new IllegalArgumentException("JobId cannot be null or empty");
+        }
+
         VLRegisterDeviceJob job = vlRegisterDeviceJobDAO.load(jobId);
+        if (job == null) {
+            throw new IllegalStateException("Could not find job with id: " + jobId);
+        }
 
         if (StringUtils.isNotBlank(job.getPlaybackSignalingChannelArn())) {
             LOG.info("Deleting playback signaling channel {}", job.getPlaybackSignalingChannelArn());
@@ -74,19 +81,26 @@ public class FailAndCleanupFVLDeviceRegistrationHandler implements RequestHandle
             job.setKvsStreamArn(null);
         }
 
-        job.setStatus(Status.FAILED.toString());
-        
         if (input.containsKey(FAILURE_REASON)) {
             try {
-                String failureReason = String.valueOf(objectMapper.readValue(
-                        input.get(FAILURE_REASON).toString(), Map.class).get(ERROR_MESSAGE));
-                job.setErrorMessage(failureReason);
-            } catch (JsonProcessingException e) {
-                LOG.error("Failed to parse error message", e);
+                String failureReason = input.get(FAILURE_REASON).toString();
+                // Parse the JSON string to get the error message
+                Map<String, Object> errorMap = objectMapper.readValue(failureReason, Map.class);
+                String errorMessage = (String) errorMap.get(ERROR_MESSAGE);
+                if (errorMessage != null) {
+                    job.setErrorMessage(errorMessage);
+                } else {
+                    job.setErrorMessage("Unknown error occurred");
+                }
+            } catch (JsonProcessingException | ClassCastException e) {
+                LOG.error("Failed to parse error message from input: {}", input.get(FAILURE_REASON), e);
+                job.setErrorMessage("Error parsing failure reason: " + input.get(FAILURE_REASON));
             }
         }
 
+        job.setStatus(Status.FAILED.toString());
         vlRegisterDeviceJobDAO.save(job);
+        
         return new HashMap<>();
     }
 

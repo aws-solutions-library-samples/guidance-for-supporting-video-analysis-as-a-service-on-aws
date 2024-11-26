@@ -26,7 +26,7 @@ const bootstrapStack = new DeviceManagementBootstrapStack(app, "DeviceManagement
 });
 
 // Create workflow stack with dependency on bootstrap stack
-const workflowStack = new WorkflowStack(app, "WorkflowStack", {
+const workflowStack = new WorkflowStack(app, "DeviceManagementWorkflowStack", {
   env: {
     account: account,
     region: region,
@@ -38,7 +38,7 @@ const workflowStack = new WorkflowStack(app, "WorkflowStack", {
 workflowStack.addDependency(bootstrapStack);
 
 // Create service stack with dependency on bootstrap stack
-const serviceStack = new ServiceStack(app, "ServiceStack", {
+const serviceStack = new ServiceStack(app, "DeviceManagementServiceStack", {
   env: {
     account: account,
     region: region,

@@ -181,6 +181,15 @@
     ],
     "validationEvents": [
         {
+            "id": "HttpMethodSemantics.UnnecessaryReadonlyTrait",
+            "severity": "WARNING",
+            "shapeId": "com.amazonaws.videoanalytics.videologistics#GetVLRegisterDeviceStatus",
+            "message": "This operation uses the `POST` method in the `http` trait, but is marked with the readonly trait",
+            "filename": "/Volumes/workplace/local/guidance-for-video-analytics-infrastructure-on-aws/source/models/video-logistics/models/operations/RegisterDevice/GetVLRegisterDeviceStatus.smithy",
+            "line": 21,
+            "column": 1
+        },
+        {
             "id": "PatternTrait",
             "severity": "WARNING",
             "shapeId": "com.amazonaws.videoanalytics.videologistics#ClientId",

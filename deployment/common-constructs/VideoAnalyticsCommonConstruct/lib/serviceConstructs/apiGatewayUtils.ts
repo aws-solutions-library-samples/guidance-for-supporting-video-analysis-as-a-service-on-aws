@@ -38,3 +38,7 @@ export function createApiGateway(
     })
   });
 }
+
+export const VIDEO_LOGISTICS_API_NAME = "VideoAnalyticsVideoLogisticsAPIGateway";
+export const DEVICE_MANAGEMENT_API_NAME = "VideoAnalyticsDeviceManagementAPIGateway";
+
