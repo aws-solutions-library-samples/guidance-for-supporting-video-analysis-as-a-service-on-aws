@@ -87,6 +87,37 @@ When you run `./gradlew build`, the following will happen automatically:
 4. Shadow JAR creation for application code + dependencies
 5. JAR deployment to `assets/lambda-built/device-management-assets` (transformJarToDeploymentAsset)
 
+## Video Logistics Integration
+Device Management workflows interact with Video Logistics endpoints through API Gateway. This integration requires:
+
+### Environment Variables(Defined in CDK deployment stack)
+- `VIDEO_LOGISTICS_API_NAME`: Name of the Video Logistics API Gateway
+- `AWS_REGION`: AWS region where the API Gateway is deployed
+
+### Endpoint Resolution
+The `ApigService` class dynamically resolves the Video Logistics API endpoint by:
+1. Looking up the API Gateway ID using the `VIDEO_LOGISTICS_API_NAME`
+2. Constructing the endpoint URL using the format:
+   ```
+   https://{api-id}.execute-api.{region}.amazonaws.com/prod
+   ```
+
+### Workflow Integration
+Device Management handlers (e.g., `CreateKVSStreamHandler`) use `ApigService` to:
+- Dynamically resolve the Video Logistics endpoint
+- Make HTTP requests to Video Logistics APIs
+- Handle responses and update workflow state
+
+Example workflow integration:
+```java
+// Resolve endpoint and invoke Video Logistics API
+HttpExecuteResponse response = apigService.invokeStartVlRegisterDevice(
+    deviceId,    // Device to register
+    headers,     // Optional HTTP headers
+    requestBody  // Optional request payload
+);
+```
+
 ## Notes
 - The project uses Shadow plugin to create a fat JAR that includes all dependencies for the lambda function Asset consumption
 - The build automatically includes source files from `../VideoAnalyticsDeviceManagementJavaClient/generated-src`

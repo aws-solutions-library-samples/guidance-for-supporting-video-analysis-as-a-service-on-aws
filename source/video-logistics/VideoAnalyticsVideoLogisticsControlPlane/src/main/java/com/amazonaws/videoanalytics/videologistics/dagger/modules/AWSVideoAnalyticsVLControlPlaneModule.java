@@ -19,7 +19,7 @@ public class AWSVideoAnalyticsVLControlPlaneModule {
     @Provides
     @Singleton
     public DynamoDbTable<VLRegisterDeviceJob> provideVLRegisterDeviceJobTable(DynamoDbEnhancedClient enhancedClient) {
-        return enhancedClient.table(SchemaConst.FVL_REGISTER_DEVICE_JOB_TABLE_NAME,
+        return enhancedClient.table(SchemaConst.VL_REGISTER_DEVICE_JOB_TABLE_NAME,
                 TableSchema.fromBean(VLRegisterDeviceJob.class));
     }
 

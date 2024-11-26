@@ -1,20 +1,25 @@
 import { Template } from 'aws-cdk-lib/assertions';
 import { Workflow } from '../lib/video_analytics_async_workflow';
 import { Stack, App } from 'aws-cdk-lib';
+import { Function } from 'aws-cdk-lib/aws-lambda';
 
-// Mock the Lambda asset
+// Mock the entire aws-lambda module
 jest.mock('aws-cdk-lib/aws-lambda', () => {
   const originalModule = jest.requireActual('aws-cdk-lib/aws-lambda');
+  
+  // Create a mock Function constructor that will set the handler we want
+  const MockFunction = function(scope: any, id: string, props: any) {
+    props.handler = 'com.amazonaws.videoanalytics.workflow.lambda.TriggerStepFunctionLambda::handleRequest';
+    return new originalModule.Function(scope, id, props);
+  };
+
   return {
     ...originalModule,
+    Function: MockFunction,
     Code: {
       fromAsset: jest.fn().mockReturnValue({
         bindToResource: jest.fn(),
         bind: jest.fn().mockReturnValue({ s3Location: { bucketName: 'test-bucket', objectKey: 'test-key' } }),
-      }),
-      fromInline: jest.fn().mockReturnValue({
-        bindToResource: jest.fn(),
-        bind: jest.fn().mockReturnValue({ inlineCode: 'console.log("Mock Lambda");' }),
       }),
     },
   };

@@ -1,16 +1,17 @@
-import { Duration, Fn, Stack, StackProps } from "aws-cdk-lib";
-import { SpecRestApi } from 'aws-cdk-lib/aws-apigateway';
+import { Duration, Fn, Stack, StackProps, CfnOutput } from "aws-cdk-lib";
+import { MethodLoggingLevel, SpecRestApi } from 'aws-cdk-lib/aws-apigateway';
 import { CfnFunction } from "aws-cdk-lib/aws-cloudfront";
 import { Effect, PolicyStatement, Role, ServicePrincipal } from "aws-cdk-lib/aws-iam";
 import { Function, Runtime, Code } from "aws-cdk-lib/aws-lambda";
 import { LogGroup, RetentionDays } from "aws-cdk-lib/aws-logs";
 import { Asset } from 'aws-cdk-lib/aws-s3-assets'
 import { Construct } from "constructs";
-import { AWSRegion, createApiGateway, createLambdaRole } from "video_analytics_common_construct";
+import { AWSRegion, createApiGateway, createLambdaRole, VIDEO_LOGISTICS_API_NAME } from "video_analytics_common_construct";
 
 import {
     VL_ACTIVITY_JAVA_PATH_PREFIX,
     LAMBDA_ASSET_PATH,
+    OPEN_API_SPEC_PATH,
   } from "../const";
 
 export interface ServiceStackProps extends StackProps {
@@ -97,6 +98,67 @@ export class ServiceStack extends Stack {
       }),
     });
 
+    const getVLRegisterDeviceStatusRole = createLambdaRole(this, "getVLRegisterDeviceStatusRole", [
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        actions: [
+          "dynamodb:Scan",
+          "dynamodb:GetItem", 
+          "dynamodb:UpdateItem",
+          "dynamodb:Query",
+          "dynamodb:BatchGetItem"
+        ],
+        resources: [
+          `arn:aws:dynamodb:${props.region}:${props.account}:table/VLRegisterDeviceJobTable`
+        ],
+      })
+    ]);
+
+    const getVLRegisterDeviceStatusLambda = new Function(this, "GetVLRegisterDeviceStatusActivity", {
+      runtime: Runtime.JAVA_17,
+      handler: `${VL_ACTIVITY_JAVA_PATH_PREFIX}.GetVLRegisterDeviceStatusActivity::handleRequest`,
+      code: Code.fromAsset(LAMBDA_ASSET_PATH),
+      memorySize: 512,
+      timeout: Duration.minutes(5),
+      environment: {
+          ACCOUNT_ID: this.account
+      },
+      role: getVLRegisterDeviceStatusRole,
+      logGroup: new LogGroup(this, "GetVLRegisterDeviceStatusActivityLogGroup", {
+          retention: RetentionDays.TEN_YEARS,
+          logGroupName: "/aws/lambda/GetVLRegisterDeviceStatusActivity",
+      }),
+    });
+
+    const startVLRegisterDeviceRole = createLambdaRole(this, "StartVLRegisterDeviceRole", [
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        actions: [
+          "dynamodb:PutItem",
+          "dynamodb:UpdateItem"
+        ],
+        resources: [
+          `arn:aws:dynamodb:${props.region}:${props.account}:table/VLRegisterDeviceJobTable`
+        ],
+      })
+    ]);
+
+    const startVLRegisterDeviceLambda = new Function(this, "StartVLRegisterDeviceActivity", {
+      runtime: Runtime.JAVA_17,
+      handler: `${VL_ACTIVITY_JAVA_PATH_PREFIX}.StartVLRegisterDeviceActivity::handleRequest`,
+      code: Code.fromAsset(LAMBDA_ASSET_PATH),
+      memorySize: 512,
+      timeout: Duration.minutes(5),
+      environment: {
+          ACCOUNT_ID: this.account
+      },
+      role: startVLRegisterDeviceRole,
+      logGroup: new LogGroup(this, "StartVLRegisterDeviceActivityLogGroup", {
+          retention: RetentionDays.TEN_YEARS,
+          logGroupName: "/aws/lambda/StartVLRegisterDeviceActivity",
+      }),
+    });
+
     apiGatewayRole.addToPolicy(new PolicyStatement({
       resources: ['*'],
       actions: ['lambda:InvokeFunction']
@@ -108,11 +170,15 @@ export class ServiceStack extends Stack {
     createLivestreamSessionCfnLambda.overrideLogicalId("CreateLivestreamSessionActivity");
     const createPlaybackSessionCfnLambda = createPlaybackSessionLambda.node.defaultChild as CfnFunction;
     createPlaybackSessionCfnLambda.overrideLogicalId("CreatePlaybackSessionActivity");
+    const startVLRegisterDeviceCfnLambda = startVLRegisterDeviceLambda.node.defaultChild as CfnFunction;
+    startVLRegisterDeviceCfnLambda.overrideLogicalId("StartVLRegisterDeviceActivity");
+    const getVLRegisterDeviceStatusCfnLambda = getVLRegisterDeviceStatusLambda.node.defaultChild as CfnFunction;
+    getVLRegisterDeviceStatusCfnLambda.overrideLogicalId("GetVLRegisterDeviceStatusActivity");
 
     // Upload spec to S3
     const originalSpec = new Asset(this, "openApiFile", {
       // manually added file at this location
-      path: "./lib/openapi/VideoAnalytic.openapi.json"
+      path: OPEN_API_SPEC_PATH
     });
 
     // Pulls the content back into the template. Being inline, this will now respect CF references within the file.
@@ -123,10 +189,15 @@ export class ServiceStack extends Stack {
     const transformedOpenApiSpec = Fn.transform("AWS::Include", transformMap);
 
     this.restApi = createApiGateway(this, 
-      "VideoAnalyticsVideoLogisticsAPIGateway",
+      VIDEO_LOGISTICS_API_NAME,
       transformedOpenApiSpec,
       this.account,
-      this.region
+      this.region,
+      {
+        loggingLevel: MethodLoggingLevel.OFF, 
+        dataTraceEnabled: false,
+        tracingEnabled: true
+      }
     );
   }
 }

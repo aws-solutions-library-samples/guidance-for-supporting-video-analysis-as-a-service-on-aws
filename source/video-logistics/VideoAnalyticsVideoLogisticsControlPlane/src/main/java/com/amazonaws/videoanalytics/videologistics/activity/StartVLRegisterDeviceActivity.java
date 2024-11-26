@@ -3,7 +3,6 @@ package com.amazonaws.videoanalytics.videologistics.activity;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
-import com.amazonaws.videoanalytics.videologistics.StartVLRegisterDeviceRequestContent;
 import com.amazonaws.videoanalytics.videologistics.StartVLRegisterDeviceResponseContent;
 import com.amazonaws.videoanalytics.videologistics.ValidationExceptionResponseContent;
 import com.amazonaws.videoanalytics.videologistics.dagger.AWSVideoAnalyticsVLControlPlaneComponent;
@@ -24,6 +23,7 @@ import com.amazonaws.videoanalytics.videologistics.Status;
 import static com.amazonaws.videoanalytics.videologistics.exceptions.VideoAnalyticsExceptionMessage.INVALID_INPUT_EXCEPTION;
 import static com.amazonaws.videoanalytics.videologistics.utils.LambdaProxyUtils.parseBody;
 import static com.amazonaws.videoanalytics.videologistics.utils.LambdaProxyUtils.serializeResponse;
+import java.util.Arrays;
 
 /**
  * Class for handling the request for StartVLRegisterDevice API.
@@ -61,24 +61,21 @@ public class StartVLRegisterDeviceActivity implements RequestHandler<Map<String,
         }
 
         try {
-            String body = parseBody(input);
-            if (body == null) {
+            Map<String, String> pathParameters = (Map<String, String>) input.get("pathParameters");
+            if (pathParameters == null || !pathParameters.containsKey("deviceId")) {
+                logger.log("Invalid or missing pathParameters: " + pathParameters);
                 return serializeResponse(400, exception.toJson());
             }
 
-            StartVLRegisterDeviceRequestContent request;
-            try {
-                request = StartVLRegisterDeviceRequestContent.fromJson(body);
-            } catch (Exception e) {
-                logger.log("Invalid JSON format: " + e.toString());
-                return serializeResponse(400, exception.toJson());
-            }
-
-            String deviceId = request.getDeviceId();
+            String deviceId = pathParameters.get("deviceId");
+            logger.log("Processing request for deviceId: " + deviceId);
+            
             deviceValidator.validateDeviceExists(deviceId);
+            logger.log("Device validation successful for deviceId: " + deviceId);
 
             String jobId = UUID.randomUUID().toString();
             String currentTime = Instant.now().toString();
+            logger.log("Generated jobId: " + jobId);
 
             VLRegisterDeviceJob job = VLRegisterDeviceJob.builder()
                     .jobId(jobId)
@@ -86,9 +83,13 @@ public class StartVLRegisterDeviceActivity implements RequestHandler<Map<String,
                     .status(Status.RUNNING.toString())
                     .createTime(currentTime)
                     .lastUpdated(currentTime)
+                    .workflowName(UUID.randomUUID().toString())
                     .build();
+            logger.log("Created VLRegisterDeviceJob: " + job.toString());
 
+            logger.log("Attempting to save job to DynamoDB...");
             vlRegisterDeviceJobDAO.save(job);
+            logger.log("Successfully saved job to DynamoDB");
 
             StartVLRegisterDeviceResponseContent response = StartVLRegisterDeviceResponseContent
                     .builder()
@@ -97,10 +98,18 @@ public class StartVLRegisterDeviceActivity implements RequestHandler<Map<String,
 
             return serializeResponse(200, response.toJson());
         } catch (AwsServiceException e) {
-            logger.log("Error during device registration: " + e.toString());
+            logger.log("AWS Service Exception during device registration: " + e.toString());
+            if (e.awsErrorDetails() != null) {
+                logger.log("Error details - Status code: " + e.statusCode() + 
+                          ", Error type: " + e.awsErrorDetails().errorCode() +
+                          ", Error message: " + e.awsErrorDetails().errorMessage());
+            } else {
+                logger.log("No AWS error details available. Status code: " + e.statusCode());
+            }
             return ExceptionTranslator.translateKvsExceptionToLambdaResponse(e);
         } catch (Exception e) {
-            logger.log("Error during device registration: " + e.toString());
+            logger.log("Unexpected error during device registration: " + e.toString());
+            logger.log("Stack trace: " + Arrays.toString(e.getStackTrace()));
             return ExceptionTranslator.translateToLambdaResponse(e);
         }
     }

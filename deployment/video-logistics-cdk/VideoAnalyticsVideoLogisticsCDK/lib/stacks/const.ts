@@ -71,3 +71,4 @@ export const VL_WORKFLOW_JAVA_PATH_PREFIX =
   "com.amazonaws.videoanalytics.videologistics.workflow";
 export const LAMBDA_ASSET_PATH =
   "../../../assets/lambda-built/video-logistics-assets/VideoAnalyticsVideoLogisticsControlPlane-1.0-beta.jar";
+export const OPEN_API_SPEC_PATH = "../../../assets/model/video-logistics/openapi-conversion/openapi/VideoAnalytic.openapi.json";

@@ -15,7 +15,7 @@ import com.amazonaws.videoanalytics.videologistics.dagger.modules.AWSVideoAnalyt
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.amazonaws.videoanalytics.videologistics.dao.VLRegisterDeviceJobDAO;
 import com.amazonaws.videoanalytics.videologistics.workflow.KVSResourceCreateLambda;
-import com.amazonaws.videoanalytics.videologistics.workflow.FailAndCleanupFVLDeviceRegistrationHandler;
+import com.amazonaws.videoanalytics.videologistics.workflow.FailAndCleanupVLDeviceRegistrationHandler;
 import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.ACCOUNT_ID;
 
 import dagger.Component;
@@ -41,7 +41,7 @@ public interface AWSVideoAnalyticsVLControlPlaneComponent {
     void inject(StartVLRegisterDeviceActivity lambda);
     void inject(GetVLRegisterDeviceStatusActivity lambda);
     void inject(KVSResourceCreateLambda lambda);
-    void inject(FailAndCleanupFVLDeviceRegistrationHandler lambda);
+    void inject(FailAndCleanupVLDeviceRegistrationHandler lambda);
     void inject(CreateSnapshotUploadPathActivity lambda);
 
     KvsService getKvsService();

@@ -17,11 +17,11 @@ import com.amazonaws.videoanalytics.devicemanagement.dao.StartCreateDeviceDAO;
 import com.amazonaws.videoanalytics.devicemanagement.workflow.createdevice.SetLoggerConfigHandler;
 import com.amazonaws.videoanalytics.devicemanagement.workflow.createdevice.CreateDeviceHandler;
 import com.amazonaws.videoanalytics.devicemanagement.workflow.createdevice.FailCreateDeviceHandler;
+import com.amazonaws.videoanalytics.devicemanagement.dependency.apig.ApigService;
 import dagger.Component;
 
 import javax.inject.Singleton;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 
 @Singleton
 @Component(
@@ -50,4 +50,5 @@ public interface AWSVideoAnalyticsDMControlPlaneComponent {
     DDBService ddbService();
     StartCreateDeviceDAO startCreateDeviceDAO();
     ObjectMapper objectMapper();
+    ApigService apigService();
 }
