@@ -97,6 +97,38 @@ export class ServiceStack extends Stack {
       }),
     });
 
+    const createSnapshotUploadPathRole = createLambdaRole(this, "CreateSnapshotUploadPathRole", [
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        actions: [
+          "s3:PutObject",
+          "iot:UpdateThing",
+          "iot:UpdateThingShadow"
+        ],
+        resources: [
+          `arn:aws:s3:${props.region}:${props.account}:fathom-fwd-rules/*`,
+          `arn:aws:iot:${props.region}:${props.account}:thing/*`
+        ],
+      })
+    ]);
+
+    const createSnapshotUploadPathLambda = new Function(this, "CreateSnapshotUploadPathActivity", {
+      runtime: Runtime.JAVA_17,
+      //TODO: Update this if any changes are made to the lambda handler path or asset built jar location
+      handler: `${VL_ACTIVITY_JAVA_PATH_PREFIX}.CreateSnapshotUploadPathActivity::handleRequest`,
+      code: Code.fromAsset(LAMBDA_ASSET_PATH),
+      memorySize: 512,
+      timeout: Duration.minutes(5),
+      environment: {
+          ACCOUNT_ID: this.account
+      },
+      role: createSnapshotUploadPathRole,
+      logGroup: new LogGroup(this, "CreateSnapshotUploadPathActivityLogGroup", {
+          retention: RetentionDays.TEN_YEARS,
+          logGroupName: "/aws/lambda/CreateSnapshotUploadPathActivity",
+      }),
+    });
+
     apiGatewayRole.addToPolicy(new PolicyStatement({
       resources: ['*'],
       actions: ['lambda:InvokeFunction']
@@ -108,6 +140,8 @@ export class ServiceStack extends Stack {
     createLivestreamSessionCfnLambda.overrideLogicalId("CreateLivestreamSessionActivity");
     const createPlaybackSessionCfnLambda = createPlaybackSessionLambda.node.defaultChild as CfnFunction;
     createPlaybackSessionCfnLambda.overrideLogicalId("CreatePlaybackSessionActivity");
+    const createSnapshotUploadPathCfnLambda = createSnapshotUploadPathLambda.node.defaultChild as CfnFunction;
+    createSnapshotUploadPathCfnLambda.overrideLogicalId("CreateSnapshotUploadPathActivity");
 
     // Upload spec to S3
     const originalSpec = new Asset(this, "openApiFile", {

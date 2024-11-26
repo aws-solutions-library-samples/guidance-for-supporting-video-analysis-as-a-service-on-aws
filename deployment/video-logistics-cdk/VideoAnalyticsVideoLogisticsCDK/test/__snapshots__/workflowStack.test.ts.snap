@@ -67,7 +67,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "782256c820d0888c65a5cd4d19d734b4126646f1380964a0915c65dff1257846.jar",
+          "S3Key": "64492df3a07ef1190b9e3c70da2bb6dd5872e1061dc23835e6cf1ed6cfc834fe.jar",
         },
         "Description": "Lambda responsible for invocation of StepFunction",
         "Environment": {
@@ -498,7 +498,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "575091b14cc0a71903849debebd74c9f138bf394b0321388f525de34eb38d3aa.zip",
+          "S3Key": "892bfe96aa4e31199846f86909120dab4469f12ea6d597779d0c0ebbbdfa713a.jar",
         },
         "Description": "Lambda responsible for invocation of StepFunction",
         "Environment": {
@@ -510,7 +510,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
             },
           },
         },
-        "Handler": "com.amazon.aws.videoanalytics.common.workflow.StreamProcessor::handleRequest",
+        "Handler": "com.amazonaws.videoanalytics.workflow.lambda.TriggerStepFunctionLambda::handleRequest",
         "MemorySize": 1028,
         "Role": {
           "Fn::GetAtt": [
@@ -699,7 +699,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "782256c820d0888c65a5cd4d19d734b4126646f1380964a0915c65dff1257846.jar",
+          "S3Key": "64492df3a07ef1190b9e3c70da2bb6dd5872e1061dc23835e6cf1ed6cfc834fe.jar",
         },
         "Description": "Lambda responsible for cleaning up KVS resources and updating the failure status in ddb.",
         "Environment": {
@@ -1010,7 +1010,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "782256c820d0888c65a5cd4d19d734b4126646f1380964a0915c65dff1257846.jar",
+          "S3Key": "64492df3a07ef1190b9e3c70da2bb6dd5872e1061dc23835e6cf1ed6cfc834fe.jar",
         },
         "Description": "Lambda responsible for invocation of StepFunction",
         "Environment": {
@@ -1226,7 +1226,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "575091b14cc0a71903849debebd74c9f138bf394b0321388f525de34eb38d3aa.zip",
+          "S3Key": "892bfe96aa4e31199846f86909120dab4469f12ea6d597779d0c0ebbbdfa713a.jar",
         },
         "Description": "Lambda responsible for invocation of StepFunction",
         "Environment": {
@@ -1238,7 +1238,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
             },
           },
         },
-        "Handler": "com.amazon.aws.videoanalytics.common.workflow.StreamProcessor::handleRequest",
+        "Handler": "com.amazonaws.videoanalytics.workflow.lambda.TriggerStepFunctionLambda::handleRequest",
         "MemorySize": 1028,
         "Role": {
           "Fn::GetAtt": [
@@ -1286,7 +1286,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "782256c820d0888c65a5cd4d19d734b4126646f1380964a0915c65dff1257846.jar",
+          "S3Key": "64492df3a07ef1190b9e3c70da2bb6dd5872e1061dc23835e6cf1ed6cfc834fe.jar",
         },
         "Description": "Lambda to handle export Video and upload to S3",
         "EphemeralStorage": {
@@ -1508,7 +1508,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "782256c820d0888c65a5cd4d19d734b4126646f1380964a0915c65dff1257846.jar",
+          "S3Key": "64492df3a07ef1190b9e3c70da2bb6dd5872e1061dc23835e6cf1ed6cfc834fe.jar",
         },
         "Description": "Lambda to handle updating the status of the video export job",
         "Handler": "com.amazon.awsvideoanalyticsvlcontrolplane.videologistics.videoExport.UpdateVideoExportJobStatusHandler::handleRequest",
@@ -1871,7 +1871,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "575091b14cc0a71903849debebd74c9f138bf394b0321388f525de34eb38d3aa.zip",
+          "S3Key": "892bfe96aa4e31199846f86909120dab4469f12ea6d597779d0c0ebbbdfa713a.jar",
         },
         "Description": "Lambda responsible for invocation of StepFunction",
         "Environment": {
@@ -1883,7 +1883,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
             },
           },
         },
-        "Handler": "com.amazon.aws.videoanalytics.common.workflow.StreamProcessor::handleRequest",
+        "Handler": "com.amazonaws.videoanalytics.workflow.lambda.TriggerStepFunctionLambda::handleRequest",
         "MemorySize": 1028,
         "Role": {
           "Fn::GetAtt": [
