@@ -13,25 +13,17 @@ use com.amazonaws.videoanalytics#ValidationException
     uri: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${ImportMediaObjectActivity}/invocations",
     credentials: "arn:aws:iam::${AWS::AccountId}:role/VideoLogisticsApiGatewayRole"
 )
-@http(code: 200, method: "POST", uri: "/import-media-object/{deviceId}")
+@http(code: 200, method: "POST", uri: "/import-media-object")
 @idempotent
 operation ImportMediaObject {
     input: ImportMediaObjectRequest,
-    output: ImportMediaObjectResponse,
     errors: [ValidationException, InternalServerException]
 }
 
 @input
 structure ImportMediaObjectRequest {
     @required
-    @httpLabel
     deviceId: DeviceId
     @required
-    @httpPayload
     mediaObject: MediaObjectBlob
-}
-
-@output
-structure ImportMediaObjectResponse {
-    contentLength: Long
 }

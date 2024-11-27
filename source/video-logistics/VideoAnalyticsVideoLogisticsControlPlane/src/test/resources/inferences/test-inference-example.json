@@ -1,0 +1,58 @@
+{
+  "MetadataStream": {
+    "VideoAnalytics": {
+      "Frame": {
+        "Source": "VA_HEAT",
+        "UtcTime": "2023-06-30T01:44:13",
+        "Transformation": {
+          "Translate": {
+            "x": -1,
+            "y": 1
+          },
+          "Scale": {
+            "x": 1,
+            "y": 1
+          }
+        },
+        "Object": {
+          "ObjectId": 6,
+          "Appearance": {
+            "Shape": {
+              "BoundingBox": {
+                "bottom": 0.2160579115152359,
+                "left": 0.37358295917510986,
+                "right": 0.39994168281555176,
+                "top": 0.12755586206912994
+              },
+              "CenterOfGravity": {
+                "x": 0.3867623209953308,
+                "y": 0.17180688679218292
+              }
+            },
+            "Class": {
+              "Type": {
+                "Likelihood": 0.8054792284965515,
+                "txt": "Person"
+              }
+            }
+          },
+          "Extension": {
+            "RoiId": 3,
+            "time": 1688089453,
+            "timeText": "2023-06-30T10:44:13+09:00",
+            "TriggerDateTime": "2023-06-30T10:44:13.564+0900",
+            "Sensitivity": 0.6231524348258972,
+            "BestThumbnailCapDateTimes": "2023-06-30T10:44:13+09:00 2023-06-30T10:44:13+09:00 2023-06-30T10:44:13+09:00"
+          }
+        },
+        "Extension": {
+          "Image": {
+              "ImageId": 0,
+              "data_size": 36896,
+              "data": "dGhpcyBpcyBhbiBpbWFnZQ=="
+            }
+        }
+      }
+    }
+  }
+}

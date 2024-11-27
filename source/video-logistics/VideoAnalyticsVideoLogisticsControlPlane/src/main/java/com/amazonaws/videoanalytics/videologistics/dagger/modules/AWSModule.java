@@ -11,6 +11,7 @@ import software.amazon.awssdk.http.SdkHttpClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.kinesisvideo.KinesisVideoClient;
+import software.amazon.awssdk.services.kinesis.KinesisClient;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 
 import javax.inject.Named;
@@ -86,5 +87,22 @@ public class AWSModule {
                         .retryPolicy(RetryMode.ADAPTIVE)
                         .build())
                 .build();
+    }
+
+    @Provides
+    @Singleton
+    public KinesisClient getKinesisClient(
+        @Named(CREDENTIALS_PROVIDER) final AwsCredentialsProvider credentialsProvider,
+        @Named(HTTP_CLIENT) final SdkHttpClient sdkHttpClient,
+        final Region region) {
+
+        return KinesisClient.builder()
+            .httpClient(sdkHttpClient)
+            .region(region)
+            .credentialsProvider(credentialsProvider)
+            .overrideConfiguration(ClientOverrideConfiguration.builder()
+                    .retryPolicy(RetryMode.ADAPTIVE)
+                    .build())
+            .build();
     }
 }

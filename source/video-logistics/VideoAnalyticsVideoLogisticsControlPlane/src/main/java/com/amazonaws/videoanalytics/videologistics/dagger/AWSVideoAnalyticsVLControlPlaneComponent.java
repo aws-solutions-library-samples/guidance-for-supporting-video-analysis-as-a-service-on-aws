@@ -6,11 +6,14 @@ import com.amazonaws.videoanalytics.videologistics.activity.CreateSnapshotUpload
 import com.amazonaws.videoanalytics.videologistics.dagger.modules.AWSModule;
 import com.amazonaws.videoanalytics.videologistics.dagger.modules.AWSVideoAnalyticsConfigurationModule;
 import com.amazonaws.videoanalytics.videologistics.dependency.kvs.KvsService;
+import com.amazonaws.videoanalytics.videologistics.inference.ImportMediaObjectHandler;
+import com.amazonaws.videoanalytics.videologistics.validator.InferenceValidator;
 import com.amazonaws.videoanalytics.videologistics.utils.GuidanceUUIDGenerator;
 import com.amazonaws.videoanalytics.videologistics.utils.KVSWebRTCUtils;
 import com.amazonaws.videoanalytics.videologistics.validator.DeviceValidator;
 import com.amazonaws.videoanalytics.videologistics.activity.StartVLRegisterDeviceActivity;
 import com.amazonaws.videoanalytics.videologistics.activity.GetVLRegisterDeviceStatusActivity;
+import com.amazonaws.videoanalytics.videologistics.activity.ImportMediaObjectActivity;
 import com.amazonaws.videoanalytics.videologistics.dagger.modules.AWSVideoAnalyticsVLControlPlaneModule;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.amazonaws.videoanalytics.videologistics.dao.VLRegisterDeviceJobDAO;
@@ -43,6 +46,7 @@ public interface AWSVideoAnalyticsVLControlPlaneComponent {
     void inject(KVSResourceCreateLambda lambda);
     void inject(FailAndCleanupVLDeviceRegistrationHandler lambda);
     void inject(CreateSnapshotUploadPathActivity lambda);
+    void inject(ImportMediaObjectActivity lambda);
 
     KvsService getKvsService();
     DeviceValidator getDeviceValidator();
@@ -53,5 +57,6 @@ public interface AWSVideoAnalyticsVLControlPlaneComponent {
     KinesisVideoClient getKinesisVideoClient();
     S3Presigner getS3Presigner();
     Region getRegion();
+    ImportMediaObjectHandler getImportMediaObjectHandler();
     @Named(ACCOUNT_ID) String getAccountId();
 }
