@@ -413,7 +413,7 @@
                 "target": "com.amazonaws.videoanalytics.videologistics#ImportMediaObjectRequest"
             },
             "output": {
-                "target": "com.amazonaws.videoanalytics.videologistics#ImportMediaObjectResponse"
+                "target": "smithy.api#Unit"
             },
             "errors": [
                 {
@@ -433,7 +433,7 @@
                 "smithy.api#http": {
                     "code": 200,
                     "method": "POST",
-                    "uri": "/import-media-object/{deviceId}"
+                    "uri": "/import-media-object"
                 },
                 "smithy.api#idempotent": {}
             }
@@ -444,31 +444,18 @@
                 "deviceId": {
                     "target": "com.amazonaws.videoanalytics#DeviceId",
                     "traits": {
-                        "smithy.api#httpLabel": {},
                         "smithy.api#required": {}
                     }
                 },
                 "mediaObject": {
                     "target": "com.amazonaws.videoanalytics.videologistics#MediaObjectBlob",
                     "traits": {
-                        "smithy.api#httpPayload": {},
                         "smithy.api#required": {}
                     }
                 }
             },
             "traits": {
                 "smithy.api#input": {}
-            }
-        },
-        "com.amazonaws.videoanalytics.videologistics#ImportMediaObjectResponse": {
-            "type": "structure",
-            "members": {
-                "contentLength": {
-                    "target": "smithy.api#Long"
-                }
-            },
-            "traits": {
-                "smithy.api#output": {}
             }
         },
         "com.amazonaws.videoanalytics.videologistics#Inference": {

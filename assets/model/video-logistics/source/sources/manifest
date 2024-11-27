@@ -16,3 +16,5 @@ operations/ExportVideo/StartExportVideos.smithy
 operations/RegisterDevice/StartVLRegisterDevice.smithy
 operations/RegisterDevice/GetVLRegisterDeviceStatus.smithy
 video-analytic.smithy
+build/smithy/source/model/model.json
+build/smithy/source/build-info/smithy-build-info.json

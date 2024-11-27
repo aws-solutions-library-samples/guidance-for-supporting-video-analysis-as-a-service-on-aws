@@ -27,3 +27,7 @@ pub(crate) const DEFAULT_KVS_PLUGIN_EXPECTED_BANDWIDTH: u32 = 125000_u32;
 pub(crate) const MAX_FRAGMENTS: u64 = 5;
 /// Max fragments in memory
 pub(crate) const MAX_FRAGMENTS_NO_MOTION: u64 = 2;
+/// GStreamer plugin responsible to filter stream based on caps.
+pub const CAPSFILTER: &str = "capsfilter";
+/// Start tag of onvif metadata stream.
+pub const METADATA_STREAM_START_TAG: &str = "MetadataStream";

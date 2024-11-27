@@ -1,0 +1,16 @@
+[package]
+name = "video-analytics-client"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+mockall.workspace = true
+iot-client.workspace = true
+aws-config.workspace = true
+aws-smithy-types.workspace = true
+aws-credential-types.workspace = true
+aws-types.workspace = true
+aws-sigv4.workspace = true
+http.workspace = true
+reqwest.workspace = true
+tracing.workspace = true

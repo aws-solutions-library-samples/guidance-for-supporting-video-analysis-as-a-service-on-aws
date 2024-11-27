@@ -5,6 +5,7 @@
 
 use async_trait::async_trait;
 use mockall::automock;
+use serde_json::Value;
 use std::error::Error;
 
 /// Module contains different errors thrown by VideoStreaming components.
@@ -68,4 +69,30 @@ pub trait VideoStreamConsumer {
     /// Set new credentials for onvif.
     async fn bootstrap(&mut self, username: String, password: String)
         -> Result<(), Box<dyn Error>>;
+}
+
+/// This trait is responsible to create streaming pipeline to get streamed information from Process 1 source and
+/// send it to correct sink in required format. This trait is also responsible to start and
+/// stop streaming pipeline.
+#[automock]
+#[async_trait]
+pub trait StreamingPipeline {
+    /// Builds video streaming pipeline.
+    async fn create_pipeline(
+        &self,
+        stream_uri_config: StreamUriConfiguration,
+    ) -> Result<(), Box<dyn Error>>;
+    /// Ensure video streaming pipeline to consume video data from device is started.
+    async fn ensure_start_pipeline(&mut self);
+    /// Ensure video streaming pipeline is stopped.
+    async fn ensure_stop_pipeline(&mut self);
+}
+
+/// This trait is responsible to do any pre-processing / post-processing on AI events before ingesting it to cloud.
+#[automock]
+pub trait EventProcessor {
+    /// Post-process AI events for transformations.
+    fn post_process_event(&self, event: String) -> Result<String, Box<dyn Error>>;
+    /// Returns processed event if motion detection event
+    fn get_motion_based_event(&self, event: String) -> Result<Option<Value>, Box<dyn Error>>;
 }

@@ -26,10 +26,13 @@ iot-client = { path = "./crates/iot-client"}
 kvs-client = { path = "./crates/kvs-client"}
 http-client = { path = "./crates/http-client"}
 onvif-client = { path = "./crates/onvif-client"}
+ws-discovery-client = { path = "./crates/ws-discovery-client" }
 streaming-traits = { path = "./crates/streaming-traits" }
 gstreamer-pipeline = { path = "./crates/gstreamer-pipeline" }
 snapshot-traits = { path = "./crates/snapshot-traits" }
 snapshot-client = { path = "./crates/snapshot-client" }
+event-processor = { path = "./crates/event-processor" }
+video-analytics-client = { path = "./crates/video-analytics-client" }
 
 # non-local crates
 tokio = { version = "1", features = ["full", "tracing"] }
@@ -53,7 +56,7 @@ rusqlite = {version = "0.29.0", features = ["bundled"]}
 aws-config = { version = "1.1.7", features = ["behavior-version-latest"] }
 aws-types = "1.0"
 aws-credential-types = "1.2.0"
-aws-sigv4 = "1.0"
+aws-sigv4 = { version = "1.0", features = ["http1"] }
 aws-smithy-http = "0.60"
 aws-smithy-types = "1.0"
 chrono = "0.4.30"
@@ -77,3 +80,5 @@ serde_bytes = "0.11"
 time = "0.3.1"
 xmlparser = "0.13.5"
 crossbeam-channel = "0.5.9"
+quickxml_to_serde = "0.5.0"
+quick-xml = "0.28.2"
