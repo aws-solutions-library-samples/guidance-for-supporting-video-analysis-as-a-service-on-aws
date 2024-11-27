@@ -6,6 +6,9 @@ edition.workspace = true
 publish = false
 
 [dependencies]
+event-processor.workspace = true
+iot-client.workspace = true
+video-analytics-client.workspace = true
 tokio.workspace = true
 tokio-util.workspace = true
 tracing.workspace = true

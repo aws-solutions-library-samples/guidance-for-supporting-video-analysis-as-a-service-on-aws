@@ -23,3 +23,7 @@ pub(crate) const FRAME_BUFFER_SIZE: usize = 20 * 30;
 pub(crate) const DEFAULT_KVS_PLUGIN_BUFFER_SIZE: u32 = 10_u32;
 /// In MBytes per second not mbps.
 pub(crate) const DEFAULT_KVS_PLUGIN_EXPECTED_BANDWIDTH: u32 = 125000_u32;
+/// GStreamer plugin responsible to filter stream based on caps.
+pub const CAPSFILTER: &str = "capsfilter";
+/// Start tag of onvif metadata stream.
+pub const METADATA_STREAM_START_TAG: &str = "MetadataStream";
