@@ -43,7 +43,7 @@ if `config.yaml` is placed in a `configurations` directory and the command is be
 
 ### Sending AI Events to Cloud
 
-Set API_GW_ENDPOINT environment variable to your VideoLogistics API GW endpoint `export API_GW_ENDPOINT=<endpoint>`. TODO: add API GW client to dynamically retrieve API GW id.
+By default, edge process will use the API GW with the name "VideoAnalyticsVideoLogisticsAPIGateway" (should match VIDEO_LOGISTICS_API_NAME in common-constructs). To override this, set API_GW_ENDPOINT environment variable to your desired API GW endpoint `export API_GW_ENDPOINT=<endpoint>`.
 
 ### Logging
 
