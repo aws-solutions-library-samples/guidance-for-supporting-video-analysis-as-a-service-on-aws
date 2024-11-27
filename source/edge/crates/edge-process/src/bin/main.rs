@@ -25,7 +25,6 @@ use snapshot_client::constants::INTERVAL_BETWEEN_SNAPSHOT_UPDATE;
 use std::env;
 use std::error::Error;
 use std::process::ExitCode;
-use std::sync::mpsc::sync_channel;
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 use tokio::sync::mpsc::channel;
@@ -247,10 +246,8 @@ async fn main() -> Result<ExitCode, Box<dyn Error>> {
         sleep(Duration::from_millis(250)).await;
     }
 
-    let (_motion_based_streaming_tx, motion_based_streaming_rx) = sync_channel(5);
-
     let uri_config = stream_uri_config.clone();
-    let mut streaming_service = create_streaming_service(uri_config, motion_based_streaming_rx);
+    let mut streaming_service = create_streaming_service(uri_config);
 
     let _gstreamer_pipeline_handle = tokio::spawn(async move {
         //Start pipeline when device is in the correct state.
