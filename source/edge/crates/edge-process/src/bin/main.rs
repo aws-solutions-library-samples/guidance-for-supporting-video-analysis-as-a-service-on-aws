@@ -248,9 +248,8 @@ async fn main() -> Result<ExitCode, Box<dyn Error>> {
     }
 
     let (motion_based_streaming_tx, motion_based_streaming_rx) = sync_channel(5);
-
     let uri_config = stream_uri_config.clone();
-    let mut streaming_service = create_streaming_service(uri_config, motion_based_streaming_rx);
+    let mut streaming_service = create_streaming_service(uri_config);
 
     let _gstreamer_pipeline_handle = tokio::spawn(async move {
         // Start pipeline when device is in the correct state.

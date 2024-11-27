@@ -17,10 +17,10 @@ This assumes the cameras are connected to a SSM host (AWS Systems Manager). If y
 3. Assume credentials for specific role that gives access to the SSM host
 
 #### Steps
-1. Forward port 80 on camera to port 8023 on local machine.
-2. Set environment variable `LOCALHOST_ENDPOINT` to `127.0.0.1:8023` by running `export LOCALHOST_ENDPOINT=127.0.0.1:8023`
-3. Forward port 5554 on camera to port 8024 on local machine.
-4. Set environment variable `RTSP_ENDPOINT` to `127.0.0.1:8024` by running `export RTSP_ENDPOINT=rtsp://127.0.0.1:8024/Ch1`
+1. Forward port 80 on camera to port 8023 on local machine. Assuming the ONVIF Server is running on port 80 on the remote host.
+2. Set environment variable `LOCALHOST_ENDPOINT` to `127.0.0.1:8023` by running `export LOCALHOST_ENDPOINT=127.0.0.1:8023`.
+3. Forward port 554 on camera to port 8024 on local machine. Assuming the RTSP Server is running on port 554 on the remote host.
+4. Set environment variable `RTSP_ENDPOINT` to `127.0.0.1:8024` by running `export RTSP_ENDPOINT=rtsp://127.0.0.1:8024/Ch1`.
 
 ### Running from Cargo
 
