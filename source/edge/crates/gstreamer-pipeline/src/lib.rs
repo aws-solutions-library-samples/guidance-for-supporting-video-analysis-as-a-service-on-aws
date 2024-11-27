@@ -8,5 +8,7 @@
 
 mod constants;
 pub mod event_ingestion;
+pub mod event_processor;
 pub mod hybrid_streaming_service;
+pub mod metadata_streaming_pipeline;
 mod util;
