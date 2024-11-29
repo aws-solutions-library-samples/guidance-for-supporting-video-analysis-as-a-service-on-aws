@@ -21,10 +21,9 @@ use video_analytics_client::video_analytics_client::VideoAnalyticsClient;
 /// Create streaming service.
 pub fn create_streaming_service(
     stream_uri_configuration: StreamUriConfiguration,
-    motion_based_streaming_rx: Receiver<String>,
 ) -> HybridStreamingService {
     let configs = get_pipeline_config(stream_uri_configuration).unwrap();
-    HybridStreamingService::new(configs, motion_based_streaming_rx)
+    HybridStreamingService::new(configs)
         .expect("Failed to create streaming service.")
 }
 
@@ -33,7 +32,7 @@ pub fn create_streaming_service(
 fn get_pipeline_config(
     stream_uri_configuration: StreamUriConfiguration,
 ) -> Result<StreamingServiceConfigurations, ChannelUtilError> {
-    // Confirm that other components can get the generated config object which is deserialize from the input config.
+    // Confirm that other components can get the generated config object which is deserialized from the input config.
     let mut get_configs = ServiceCommunicationManager::default();
     let configs = get_configs.get_configurations()?;
 
