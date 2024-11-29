@@ -5,10 +5,9 @@ use device_traits::channel_utils::error::ChannelUtilError;
 use device_traits::channel_utils::traits::IoTServiceSender;
 use device_traits::channel_utils::ServiceCommunicationManager;
 use device_traits::state::{State, StateManager};
-use iot_client::error::IoTClientError;
 use std::collections::VecDeque;
 use std::error::Error;
-use std::sync::mpsc::{Receiver, SyncSender, TrySendError};
+use std::sync::mpsc::{SyncSender, TrySendError};
 use std::sync::{Arc, Condvar, Mutex};
 use std::thread::JoinHandle as ThreadJoinHandle;
 use std::time::Duration;
@@ -23,8 +22,7 @@ pub fn create_streaming_service(
     stream_uri_configuration: StreamUriConfiguration,
 ) -> HybridStreamingService {
     let configs = get_pipeline_config(stream_uri_configuration).unwrap();
-    HybridStreamingService::new(configs)
-        .expect("Failed to create streaming service.")
+    HybridStreamingService::new(configs).expect("Failed to create streaming service.")
 }
 
 // Get iot info from the global messaging service and
@@ -51,6 +49,7 @@ fn get_pipeline_config(
     })
 }
 
+/// Ensures the pipeline is started/stopped according to device state
 pub async fn ensure_streaming_pipeline_in_correct_state(
     streaming_pipeline: &mut (dyn StreamingPipeline + Send + Sync),
     state: State,

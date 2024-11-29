@@ -1,12 +1,12 @@
+use crate::constants::MAX_FRAGMENTS_NO_MOTION;
+use crate::hybrid_streaming_service::frame::Frame;
+use crate::util::convert_ns_to_ms;
 use serde::{Deserialize, Serialize};
-use std::collections::{BTreeMap};
+use std::collections::BTreeMap;
 use std::sync::atomic::{AtomicBool, AtomicI32, Ordering};
 use std::sync::mpsc::{SyncSender, TrySendError};
 use std::sync::{Arc, Mutex};
 use tracing::{debug, error, trace};
-use crate::constants::{MAX_FRAGMENTS_NO_MOTION};
-use crate::hybrid_streaming_service::frame::Frame;
-use crate::util::convert_ns_to_ms;
 
 /// Allows for passing Fragments without unnecessary mem-copies.
 pub(crate) type FrameList = Vec<Arc<Frame>>;
@@ -26,7 +26,6 @@ pub(crate) struct VideoFragmentInformation {
 }
 
 impl VideoFragmentInformation {
-
     // Must insert a valid keyframe or will return None
     pub fn new_with_frame(key_frame: Arc<Frame>) -> Option<VideoFragmentInformation> {
         // Guard, fragments must begin with a keyframe.
@@ -50,7 +49,6 @@ impl VideoFragmentInformation {
         self.duration = frame.time_stamp_ns - self.start_of_fragment_timestamp;
         self.frame_list.push(frame);
     }
-
 }
 
 /// Forwarding service added frames into this struct.  It will store in memory and either
@@ -68,11 +66,7 @@ pub(crate) struct FragmentManager {
 }
 
 impl FragmentManager {
-
-    pub fn new(
-        realtime_tx: SyncSender<Arc<Frame>>,
-        fragment_max: u64,
-    ) -> Self {
+    pub fn new(realtime_tx: SyncSender<Arc<Frame>>, fragment_max: u64) -> Self {
         FragmentManager {
             fragment_map: Arc::new(Mutex::default()),
             fragment_max: Arc::new(fragment_max),

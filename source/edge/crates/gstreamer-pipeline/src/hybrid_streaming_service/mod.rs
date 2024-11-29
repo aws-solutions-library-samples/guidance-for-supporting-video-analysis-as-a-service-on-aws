@@ -2,20 +2,20 @@
 // GRCOV_STOP_COVERAGE
 
 use crate::constants::FRAME_BUFFER_SIZE;
+use crate::hybrid_streaming_service::forwarding_service::ForwardingService;
 use crate::hybrid_streaming_service::real_time_cloud_ingestion::RealtimeIngestionPipeline;
 use crate::hybrid_streaming_service::rtsp_pipeline::RTSPVideoPipeline;
-use std::sync::mpsc::{sync_channel};
+use std::sync::mpsc::sync_channel;
 use streaming_traits::error::VideoStreamingError;
 use streaming_traits::StreamingServiceConfigurations;
-use crate::hybrid_streaming_service::forwarding_service::ForwardingService;
 
+mod forwarding_service;
+mod fragment;
 pub(crate) mod frame;
 pub(crate) mod kvs_callbacks;
 mod message_service;
 mod real_time_cloud_ingestion;
 mod rtsp_pipeline;
-mod forwarding_service;
-mod fragment;
 
 /// StreamingService for hybrid streaming model.
 #[derive(Debug)]
@@ -28,7 +28,7 @@ pub struct HybridStreamingService {
 impl HybridStreamingService {
     /// Create a new streaming service, created in stopped state
     pub fn new(
-        streaming_configs: StreamingServiceConfigurations
+        streaming_configs: StreamingServiceConfigurations,
     ) -> Result<Self, VideoStreamingError> {
         // Define channels for communication between components in the streaming service.
         let (rtsp_tx, rtsp_rx) = sync_channel(FRAME_BUFFER_SIZE);
@@ -39,12 +39,13 @@ impl HybridStreamingService {
             RTSPVideoPipeline::new(rtsp_tx.clone(), streaming_configs.clone())?;
         let realtime_ingestion_pipeline =
             RealtimeIngestionPipeline::new(streaming_configs.clone(), realtime_rx)?;
-        let _forwarding_service = ForwardingService::new(
-            rtsp_rx,
-            realtime_tx,
-        );
+        let _forwarding_service = ForwardingService::new(rtsp_rx, realtime_tx);
 
-        Ok(HybridStreamingService { rtsp_video_pipeline, realtime_ingestion_pipeline, _forwarding_service })
+        Ok(HybridStreamingService {
+            rtsp_video_pipeline,
+            realtime_ingestion_pipeline,
+            _forwarding_service,
+        })
     }
 
     /// Ensure the service is running.
