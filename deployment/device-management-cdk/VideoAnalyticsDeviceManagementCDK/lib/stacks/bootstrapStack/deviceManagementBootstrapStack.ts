@@ -116,36 +116,18 @@ export class DeviceManagementBootstrapStack extends Stack {
                   "kinesisvideo:DescribeSignalingChannel",
                   "kinesisvideo:ConnectAsMaster",
                   "kinesisvideo:GetSignalingChannelEndpoint",
-                  "kinesisvideo:GetIceServerConfig",
-                  "s3:PutObject",
+                  "kinesisvideo:GetIceServerConfig"
                 ],
                 Resource: [
                   `arn:aws:kinesisvideo:${this.region}:${this.account}:stream/${IOT_CREDENTIAL_THING_NAME}/*`,
-                  `arn:aws:s3:::video-analytics-${this.account}-${this.region}/event-thumbnails/${IOT_CREDENTIAL_THING_NAME}/*`,
                   `arn:aws:kinesisvideo:${this.region}:${this.account}:channel/${IOT_CREDENTIAL_THING_NAME}-LiveStreamSignalingChannel/*`,
-                ],
-              },
-              {
-                Effect: "Allow",
-                Action: ["s3:PutObject", "s3:GetObject", "s3:ListBucket"],
-                Resource: [`arn:aws:s3:::${this.account}*`],
-              },
-              {
-                Effect: "Allow",
-                Action: [
-                  "iot:GetThingShadow",
-                  "iot:UpdateThingShadow",
-                  "iot:DeleteThingShadow"
-                ],
-                Resource: [
-                  `arn:aws:iot:${this.region}:${this.account}:thing/${IOT_CREDENTIAL_THING_NAME}`,
                 ],
               },
               {
                 Effect: "Allow",
                 Action: ["execute-api:Invoke"],
                 Resource: [
-                  `arn:aws:execute-api:${this.region}:${this.account}:*/*/POST/import-media-object/*`
+                  `arn:aws:execute-api:${this.region}:${this.account}:*/*/POST/import-media-object`
                 ],
               },
               {

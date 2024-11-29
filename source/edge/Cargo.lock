@@ -4447,6 +4447,7 @@ dependencies = [
  "iot-client",
  "mockall",
  "reqwest 0.11.27",
+ "serde_json",
  "tracing",
 ]
 

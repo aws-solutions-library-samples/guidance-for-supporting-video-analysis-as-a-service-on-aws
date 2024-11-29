@@ -12,6 +12,7 @@ use iot_client::client::IotCredentialProvider;
 use iot_client::error::IoTClientError::ClientError;
 use reqwest::header::{HeaderMap, HeaderValue};
 use reqwest::Client;
+use serde_json::{json, Value};
 use std::error::Error;
 use std::time::{Duration, SystemTime};
 use tracing::{debug, error, warn};
@@ -118,21 +119,25 @@ impl VideoAnalyticsClient {
             .unwrap()
             .into();
 
-        let uri_string =
-            format!("{}/import-media-object/{}", self.api_gw_endpoint.as_ref().unwrap(), device_id);
+        let uri_string = format!("{}/import-device", self.api_gw_endpoint.as_ref().unwrap());
+        let body = json!({
+            "deviceId": device_id,
+            "mediaObject": media_object
+        });
+        let body_string = body.to_string();
 
         let signable_request = SignableRequest::new(
             "POST",
             uri_string.clone(),
-            vec![("content-type", "application/octet-stream")].into_iter(),
-            SignableBody::Bytes(media_object.as_slice()),
+            vec![("content-type", "application/json")].into_iter(),
+            SignableBody::Bytes(body_string.as_bytes()),
         )
         .unwrap();
 
         let mut request = http::Request::builder()
             .uri(uri_string.clone())
             .method("POST")
-            .body(media_object.clone())
+            .body(body_string.clone())
             .unwrap();
 
         let (signing_instructions, _signature) =
@@ -148,10 +153,7 @@ impl VideoAnalyticsClient {
             )
             .unwrap(),
         );
-        headers.insert(
-            reqwest::header::CONTENT_TYPE,
-            HeaderValue::from_static("application/octet-stream"),
-        );
+        headers.insert(reqwest::header::CONTENT_TYPE, HeaderValue::from_static("application/json"));
         headers.insert(
             reqwest::header::HeaderName::from_static(X_AMZ_DATE),
             HeaderValue::from_str(
