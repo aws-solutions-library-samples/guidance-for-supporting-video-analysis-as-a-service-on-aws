@@ -1,13 +1,15 @@
+use crate::constants::MAX_FRAGMENTS;
+use crate::hybrid_streaming_service::fragment::FragmentManager;
+use crate::hybrid_streaming_service::frame::Frame;
+use crate::hybrid_streaming_service::kvs_callbacks::fragment_ack::{
+    get_kvs_fragment_rx_channel_for_realtime, KVSReceiver,
+};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::mpsc::{Receiver, RecvTimeoutError, SyncSender};
-use std::sync::{Arc};
+use std::sync::Arc;
 use std::thread::JoinHandle;
 use std::time::Duration;
 use tracing::{debug, error, info, warn};
-use crate::constants::{MAX_FRAGMENTS};
-use crate::hybrid_streaming_service::fragment::FragmentManager;
-use crate::hybrid_streaming_service::frame::Frame;
-use crate::hybrid_streaming_service::kvs_callbacks::fragment_ack::{get_kvs_fragment_rx_channel_for_realtime, KVSReceiver};
 
 #[derive(Debug)]
 pub(crate) struct ForwardingService {
@@ -22,25 +24,20 @@ pub(crate) struct ForwardingService {
 }
 
 impl ForwardingService {
-
     pub fn new(
         rtsp_buffer: Receiver<Arc<Frame>>,
-        realtime_tx: SyncSender<Arc<Frame>>
+        realtime_tx: SyncSender<Arc<Frame>>,
     ) -> ForwardingService {
         let cancellation_token = Arc::new(AtomicBool::new(false));
         let fragment_ack_rx = get_kvs_fragment_rx_channel_for_realtime();
         // Thread safe struct, clones are shallow copies.
-        let fragment_manager =
-            FragmentManager::new(realtime_tx, MAX_FRAGMENTS);
+        let fragment_manager = FragmentManager::new(realtime_tx, MAX_FRAGMENTS);
         let _event_loop = Self::setup_event_loop(
             rtsp_buffer,
             fragment_manager.clone(),
             cancellation_token.clone(),
         );
-        let _callback_loop = Self::setup_callback_loop(
-            cancellation_token.clone(),
-            fragment_ack_rx,
-        );
+        let _callback_loop = Self::setup_callback_loop(cancellation_token.clone(), fragment_ack_rx);
 
         ForwardingService {
             _event_loop,
@@ -84,7 +81,7 @@ impl ForwardingService {
     ) -> JoinHandle<()> {
         std::thread::spawn(move || {
             while !cancellation_token.load(Ordering::Relaxed) {
-                let mut ack_time_code: u64 = 0;
+                let ack_time_code: u64;
 
                 // Timeout so loop will check token periodically and shutdown thread when service is dropped.
                 match fragment_ack_rx.recv_timeout(Duration::from_secs(1)) {
@@ -108,5 +105,4 @@ impl ForwardingService {
             }
         })
     }
-
 }

@@ -37,8 +37,8 @@ pub async fn setup_and_start_log_sync_loop(
     };
     let data_base_client = create_database_client(dir_path);
     let log_read_join_handle = tokio::spawn(async move {
-        let mut log_setting_data = Value::String("".to_string());
-        let mut is_status_changed = false;
+        let mut log_setting_data: Value;
+        let mut is_status_changed: bool;
         while let Some(initialized_log_setting_data) = log_rx.recv().await {
             log_setting_data = initialized_log_setting_data.clone();
             is_status_changed =

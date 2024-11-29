@@ -51,8 +51,11 @@ pub enum DiscoveryMode {
 pub struct Device {
     /// The WS-Discovery UUID / address reference
     pub address: String,
+    /// Device hardware (ex. "ipvm")
     pub hardware: Option<String>,
+    /// Device name
     pub name: Option<String>,
+    /// Device types (ex. ["NetworkVideoTransmitter", "Device"])
     pub types: Vec<String>,
     /// http address of ONVIF device service
     pub urls: Vec<Url>,
