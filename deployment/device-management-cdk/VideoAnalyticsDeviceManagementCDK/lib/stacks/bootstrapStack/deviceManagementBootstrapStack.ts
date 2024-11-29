@@ -141,6 +141,20 @@ export class DeviceManagementBootstrapStack extends Stack {
                   `arn:aws:iot:${this.region}:${this.account}:thing/${IOT_CREDENTIAL_THING_NAME}`,
                 ],
               },
+              {
+                Effect: "Allow",
+                Action: ["execute-api:Invoke"],
+                Resource: [
+                  `arn:aws:execute-api:${this.region}:${this.account}:*/*/POST/import-media-object/*`
+                ],
+              },
+              {
+                Effect: "Allow",
+                Action: ["apigateway:GET"],
+                Resource: [
+                  `arn:aws:apigateway:${this.region}::/restapis`
+                ],
+              }
             ],
           },
         },
