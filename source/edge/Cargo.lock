@@ -283,6 +283,28 @@ dependencies = [
 ]
 
 [[package]]
+name = "aws-sdk-apigateway"
+version = "1.49.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "56b743772f4973cdc97b8c39c2e10963080acd528b2843a992a1dd5b0a2c2da9"
+dependencies = [
+ "aws-credential-types",
+ "aws-runtime",
+ "aws-smithy-async",
+ "aws-smithy-http",
+ "aws-smithy-json",
+ "aws-smithy-runtime",
+ "aws-smithy-runtime-api",
+ "aws-smithy-types",
+ "aws-types",
+ "bytes",
+ "http 0.2.12",
+ "once_cell",
+ "regex-lite",
+ "tracing",
+]
+
+[[package]]
 name = "aws-sdk-kinesisvideo"
 version = "1.49.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1108,6 +1130,28 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5443807d6dff69373d433ab9ef5378ad8df50ca6298caf15de6e52e24aaf54d5"
 
 [[package]]
+name = "event-processor"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "chrono",
+ "device-traits",
+ "mockall",
+ "mqtt-client",
+ "quick-xml 0.28.2",
+ "quickxml_to_serde",
+ "serde",
+ "serde_derive",
+ "serde_json",
+ "streaming-traits",
+ "thiserror",
+ "tokio",
+ "tokio-util",
+ "tracing",
+]
+
+[[package]]
 name = "fallible-iterator"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1479,6 +1523,7 @@ dependencies = [
  "base64 0.22.1",
  "crossbeam-channel",
  "device-traits",
+ "event-processor",
  "glib",
  "gstreamer",
  "gstreamer-app",
@@ -1486,6 +1531,7 @@ dependencies = [
  "gstreamer-rtp",
  "gstreamer-rtsp",
  "gstreamer-video",
+ "iot-client",
  "mockall",
  "queues",
  "serde",
@@ -1497,6 +1543,7 @@ dependencies = [
  "tokio",
  "tokio-util",
  "tracing",
+ "video-analytics-client",
  "xmlparser",
 ]
 
@@ -2395,6 +2442,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6877bb514081ee2a7ff5ef9de3281f14a4dd4bceac4c09388074a6b5df8a139a"
 
 [[package]]
+name = "minidom"
+version = "0.12.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fe549115a674f5ec64c754d85e37d6f42664bd0ef4ffb62b619489ad99c6cb1a"
+dependencies = [
+ "quick-xml 0.17.2",
+]
+
+[[package]]
 name = "minimal-lexical"
 version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2987,6 +3043,36 @@ name = "queues"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1475abae4f8ad4998590fe3acfe20104f0a5d48fc420c817cd2c09c3f56151f0"
+
+[[package]]
+name = "quick-xml"
+version = "0.17.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fe1e430bdcf30c9fdc25053b9c459bb1a4672af4617b6c783d7d91dc17c6bbb0"
+dependencies = [
+ "memchr",
+]
+
+[[package]]
+name = "quick-xml"
+version = "0.28.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0ce5e73202a820a31f8a0ee32ada5e21029c81fd9e3ebf668a40832e4219d9d1"
+dependencies = [
+ "memchr",
+]
+
+[[package]]
+name = "quickxml_to_serde"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "26f35112b35480fd72f63444289083eeedbd61d13907c82c4309f0ccda35e244"
+dependencies = [
+ "minidom",
+ "serde",
+ "serde_derive",
+ "serde_json",
+]
 
 [[package]]
 name = "quote"
@@ -3720,6 +3806,7 @@ dependencies = [
  "async-trait",
  "mockall",
  "serde",
+ "serde_json",
  "thiserror",
  "tokio",
  "tokio-util",
@@ -4347,6 +4434,22 @@ name = "version_check"
 version = "0.9.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0b928f33d975fc6ad9f86c8f283853ad26bdd5b10b7f1542aa2fa15e2289105a"
+
+[[package]]
+name = "video-analytics-client"
+version = "0.1.0"
+dependencies = [
+ "aws-credential-types",
+ "aws-sdk-apigateway",
+ "aws-sigv4",
+ "aws-types",
+ "http 1.1.0",
+ "iot-client",
+ "mockall",
+ "reqwest 0.11.27",
+ "serde_json",
+ "tracing",
+]
 
 [[package]]
 name = "vsimd"

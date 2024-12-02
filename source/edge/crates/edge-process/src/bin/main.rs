@@ -16,7 +16,7 @@ use edge_process::utils::{
     config::{Config, ConfigImpl},
     logger_setup::init_tracing,
 };
-use gstreamer_pipeline::event_ingestion::create_streaming_service;
+use gstreamer_pipeline::event_ingestion::{create_streaming_service, initiate_event_ingestion};
 use iot_connections::client::IotMqttClientManager;
 use once_cell::sync::Lazy;
 use reqwest::{Client, Proxy};
@@ -247,20 +247,19 @@ async fn main() -> Result<ExitCode, Box<dyn Error>> {
         sleep(Duration::from_millis(250)).await;
     }
 
-    let (_motion_based_streaming_tx, motion_based_streaming_rx) = sync_channel(5);
-
+    let (motion_based_streaming_tx, motion_based_streaming_rx) = sync_channel(5);
     let uri_config = stream_uri_config.clone();
-    let mut streaming_service = create_streaming_service(uri_config, motion_based_streaming_rx);
+    let mut streaming_service = create_streaming_service(uri_config);
 
     let _gstreamer_pipeline_handle = tokio::spawn(async move {
-        //Start pipeline when device is in the correct state.
+        // Start pipeline when device is in the correct state.
         loop {
             match StateManager::get_state() {
-                //Device has been set to ENABLED
+                // Device has been set to ENABLED
                 State::CreateOrEnableSteamingResources => {
                     streaming_service.ensure_start().await;
                 }
-                //Device has been set to DISABLED
+                // Device has been set to DISABLED
                 State::DisableStreamingResources => {
                     streaming_service.ensure_stop().await;
                 }
@@ -269,7 +268,11 @@ async fn main() -> Result<ExitCode, Box<dyn Error>> {
         }
     });
 
-    //This will keep process 2 alive until connections task stops.
+    // Setup AI metadata pipeline + control threads.
+    let (_thread_ai_event_handle, _task_ai_pipeline_control_handle) =
+        initiate_event_ingestion(stream_uri_config.clone(), motion_based_streaming_tx).await?;
+
+    // This will keep process 2 alive until connections task stops.
     try_join!(_iot_loop_handle)?;
 
     Ok(ExitCode::SUCCESS)

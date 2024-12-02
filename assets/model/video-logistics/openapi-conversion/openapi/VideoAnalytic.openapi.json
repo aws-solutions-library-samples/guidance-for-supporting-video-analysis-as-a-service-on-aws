@@ -299,42 +299,22 @@
                 }
             }
         },
-        "/import-media-object/{deviceId}": {
+        "/import-media-object": {
             "post": {
                 "operationId": "ImportMediaObject",
                 "requestBody": {
                     "content": {
-                        "application/octet-stream": {
+                        "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/ImportMediaObjectInputPayload"
+                                "$ref": "#/components/schemas/ImportMediaObjectRequestContent"
                             }
                         }
                     },
                     "required": true
                 },
-                "parameters": [
-                    {
-                        "name": "deviceId",
-                        "in": "path",
-                        "schema": {
-                            "type": "string",
-                            "maxLength": 128,
-                            "minLength": 1,
-                            "pattern": "^[a-zA-Z0-9:_\\-]+$"
-                        },
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "200": {
-                        "description": "ImportMediaObject 200 response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ImportMediaObjectResponseContent"
-                                }
-                            }
-                        }
+                        "description": "ImportMediaObject 200 response"
                     },
                     "400": {
                         "description": "ValidationException 400 response",
@@ -374,34 +354,21 @@
                 "operationId": "StartExportVideos",
                 "requestBody": {
                     "content": {
-                        "application/octet-stream": {
+                        "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/ImportMediaObjectInputPayload"
+                                "$ref": "#/components/schemas/StartExportVideosRequestContent"
                             }
                         }
                     },
                     "required": true
                 },
-                "parameters": [
-                    {
-                        "name": "deviceId",
-                        "in": "path",
-                        "schema": {
-                            "type": "string",
-                            "maxLength": 128,
-                            "minLength": 1,
-                            "pattern": "^[a-zA-Z0-9:_\\-]+$"
-                        },
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "200": {
-                        "description": "ImportMediaObject 200 response",
+                        "description": "StartExportVideos 200 response",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ImportMediaObjectResponseContent"
+                                    "$ref": "#/components/schemas/StartExportVideosResponseContent"
                                 }
                             }
                         }
@@ -416,6 +383,16 @@
                             }
                         }
                     },
+                    "404": {
+                        "description": "ResourceNotFoundException 404 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResourceNotFoundExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "InternalServerException 500 response",
                         "content": {
@@ -425,16 +402,6 @@
                                 }
                             }
                         }
-                    }
-                },
-                "x-amazon-apigateway-integration": {
-                    "type": "aws_proxy",
-                    "httpMethod": "POST",
-                    "uri": {
-                        "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${ImportMediaObjectActivity}/invocations"
-                    },
-                    "credentials": {
-                        "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/VideoLogisticsApiGatewayRole"
                     }
                 }
             }
@@ -704,18 +671,25 @@
                     }
                 }
             },
-            "ImportMediaObjectInputPayload": {
-                "type": "string",
-                "maxLength": 50000000,
-                "format": "byte"
-            },
-            "ImportMediaObjectResponseContent": {
+            "ImportMediaObjectRequestContent": {
                 "type": "object",
                 "properties": {
-                    "contentLength": {
-                        "type": "number"
+                    "deviceId": {
+                        "type": "string",
+                        "maxLength": 128,
+                        "minLength": 1,
+                        "pattern": "^[a-zA-Z0-9:_\\-]+$"
+                    },
+                    "mediaObject": {
+                        "type": "string",
+                        "maxLength": 50000000,
+                        "format": "byte"
                     }
-                }
+                },
+                "required": [
+                    "deviceId",
+                    "mediaObject"
+                ]
             },
             "InternalServerExceptionResponseContent": {
                 "type": "object",

@@ -8,3 +8,8 @@ pub fn get_current_time_since_unix_epoch_ns() -> u64 {
     let since_the_epoch = current_time.duration_since(UNIX_EPOCH).expect("Time went backwards");
     since_the_epoch.as_nanos() as u64
 }
+
+/// Convert ns to ms with integer division.  (What KVS Gstreamer plugin does.)
+pub(crate) fn convert_ns_to_ms(time_ns: u64) -> u64 {
+    time_ns / 1_000_000_u64
+}

@@ -190,7 +190,7 @@ impl KinesisVideoStreamClient {
                 aws_smithy_http::query::fmt_string(channel_arn)
             ))
             .build()
-            .map_err(|err| {})
+            .map_err(|_err| {})
             .unwrap();
 
         let signable_request = SignableRequest::new(

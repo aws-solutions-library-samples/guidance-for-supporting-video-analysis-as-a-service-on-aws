@@ -77,11 +77,14 @@ dependencies {
 
     implementation 'com.github.wnameless.json:json-flattener:0.8.0'
     implementation 'com.github.fge:json-schema-validator:2.2.4'
+    implementation 'com.networknt:json-schema-validator:1.5.4'
+
 
     implementation 'com.amazonaws:aws-encryption-sdk-java:2.4.0'
     implementation 'software.amazon.awssdk:kinesisvideo:2.29.6'
     implementation 'software.amazon.awssdk:kinesisvideosignaling:2.29.6'
     implementation 'software.amazon.awssdk:kinesisvideoarchivedmedia:2.29.6'
+    implementation 'software.amazon.awssdk:kinesis:2.29.6'
     implementation 'commons-codec:commons-codec:1.17.1'
     implementation 'software.amazon.awssdk:apache-client:2.20.26'
 

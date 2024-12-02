@@ -1,5 +1,4 @@
 use crate::client::topics::TopicHelper;
-use crate::constants::PROVISION_SHADOW_NAME;
 use device_traits::connections::{PubSubClient, PubSubMessage};
 use serde_json::Value;
 use std::path::PathBuf;
@@ -7,7 +6,7 @@ use std::path::PathBuf;
 ///Helper class to aid in device state management.
 #[derive(Debug)]
 pub struct RegistrationHelper {
-    factory_mqtt_client: Box<dyn PubSubClient + Send + Sync>,
+    mqtt_client: Box<dyn PubSubClient + Send + Sync>,
     dir_path: PathBuf,
     topic_helper: TopicHelper,
 }

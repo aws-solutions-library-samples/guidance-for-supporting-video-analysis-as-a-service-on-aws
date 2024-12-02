@@ -17,8 +17,10 @@ This assumes the cameras are connected to a SSM host (AWS Systems Manager). If y
 3. Assume credentials for specific role that gives access to the SSM host
 
 #### Steps
-1. Forward port 80 on camera to port 8023 on local machine.
-2. Set environment variable `LOCALHOST_ENDPOINT` to `127.0.0.1:8023` by running `export LOCALHOST_ENDPOINT=127.0.0.1:8023`
+1. Forward port 80 on camera to port 8023 on local machine. Assuming the ONVIF Server is running on port 80 on the remote host.
+2. Set environment variable `LOCALHOST_ENDPOINT` to `127.0.0.1:8023` by running `export LOCALHOST_ENDPOINT=127.0.0.1:8023`.
+3. Forward port 554 on camera to port 8024 on local machine. Assuming the RTSP Server is running on port 554 on the remote host.
+4. Set environment variable `RTSP_ENDPOINT` to `127.0.0.1:8024` by running `export RTSP_ENDPOINT=rtsp://127.0.0.1:8024/Ch1`.
 
 ### Running from Cargo
 
@@ -39,6 +41,10 @@ cargo run -p edge-process -- -c configurations/config.yaml
 ```
 if `config.yaml` is placed in a `configurations` directory and the command is being executed from the root level directory.
 
+### Sending AI Events to Cloud
+
+By default, edge process will use the API GW with the name "VideoAnalyticsVideoLogisticsAPIGateway" (should match VIDEO_LOGISTICS_API_NAME in common-constructs). To override this, set API_GW_ENDPOINT environment variable to your desired API GW endpoint `export API_GW_ENDPOINT=<endpoint>`.
+
 ### Logging
 
 - [Async Rust Logging Documentation](https://crates.io/crates/tracing)
@@ -52,11 +58,12 @@ The logger is set through specific environment variables.
 The default behavior of the logger will be to log to the filesystem.  However, if the `PRINT_LOGS_TO_TERMINAL` environment variable is set to any non-null value the logs will print to the terminal.
 
 The default log level is error but by setting the `LOG_LEVEL` environment variable the log level can be set with the following values:
-1. `DEBUG`
-2. `INFO`
-3. `WARN`
-4. `ERROR` (default, variable does not exist)
-5. `OFF`
+1. `TRACE`
+2. `DEBUG`
+3. `INFO`
+4. `WARN`
+5. `ERROR` (default, variable does not exist)
+6. `OFF`
 
 See https://docs.rs/tracing/latest/tracing/struct.Level.html for more details.
 
@@ -79,6 +86,8 @@ This crate contains all rust crates related to building the edge process client.
 - `onvif-client` is a wrapper over `http-client` which allows the edge process to communicate with the ONVIF service on devices.
 - `snapshot-client` is a wrapper over `http-client` for retrieving snapshots using the URI returned from the ONVIF service.
 - `ws-discovery-client` is a wrapper over `tokio::net` which allows the edge process to discover a device's public IP address (WS-discovery spec is required for all ONVIF devices).
+- `event-processor` is a wrapper over `quickxml_to_serde` which allows the edge process to process events received from Onvif metadata stream
+- `video-analytics-client` is a wrapper over `aws-sigv4` and `reqwest` which allows the edge process to send AI events to the video analytics guidance cloud.
 
 Code Organization: TBD.
 

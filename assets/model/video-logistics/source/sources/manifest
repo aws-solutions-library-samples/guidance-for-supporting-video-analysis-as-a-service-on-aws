@@ -16,3 +16,5 @@ operations/RegisterDevice/GetVLRegisterDeviceStatus.smithy
 operations/RegisterDevice/StartVLRegisterDevice.smithy
 operations/PlaybackSession/CreatePlaybackSession.smithy
 video-analytic.smithy
+build/smithy/source/model/model.json
+build/smithy/source/build-info/smithy-build-info.json
