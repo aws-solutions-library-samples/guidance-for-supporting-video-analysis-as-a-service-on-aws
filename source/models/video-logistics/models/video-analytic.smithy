@@ -11,9 +11,7 @@ service VideoAnalytic {
     version: "2024-10-18"
     resources: [
         LivestreamSession,
-        ExportVideo,
         PlaybackSession,
-        Snapshot,
         RegisterDevice,
         Inference
     ]

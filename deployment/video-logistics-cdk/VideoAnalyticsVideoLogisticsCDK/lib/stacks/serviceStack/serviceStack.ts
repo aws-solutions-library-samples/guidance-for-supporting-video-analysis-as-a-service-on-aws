@@ -190,65 +190,33 @@ export class ServiceStack extends Stack {
           logGroupName: "/aws/lambda/StartVLRegisterDeviceActivity",
       }),
     });
-    
-    const getVLRegisterDeviceStatusRole = createLambdaRole(this, "getVLRegisterDeviceStatusRole", [
+
+    apiGatewayRole.addToPolicy(new PolicyStatement({
+      resources: ['*'],
+      actions: ['lambda:InvokeFunction']
+    }));
+
+    const importMediaObjectRole = createLambdaRole(this, "ImportMediaObjectRole", [
       new PolicyStatement({
         effect: Effect.ALLOW,
-        actions: [
-          "dynamodb:Scan",
-          "dynamodb:GetItem", 
-          "dynamodb:UpdateItem",
-          "dynamodb:Query",
-          "dynamodb:BatchGetItem"
-        ],
-        resources: [
-          `arn:aws:dynamodb:${props.region}:${props.account}:table/VLRegisterDeviceJobTable`
-        ],
+        actions: ['kinesis:PutRecord'],
+        resources: ['*']
       })
     ]);
 
-    const getVLRegisterDeviceStatusLambda = new Function(this, "GetVLRegisterDeviceStatusActivity", {
+    const importMediaObjectLambda = new Function(this, "ImportMediaObjectActivity", {
       runtime: Runtime.JAVA_17,
-      handler: `${VL_ACTIVITY_JAVA_PATH_PREFIX}.GetVLRegisterDeviceStatusActivity::handleRequest`,
+      handler: `${VL_ACTIVITY_JAVA_PATH_PREFIX}.ImportMediaObjectActivity::handleRequest`,
       code: Code.fromAsset(LAMBDA_ASSET_PATH),
       memorySize: 512,
       timeout: Duration.minutes(5),
       environment: {
           ACCOUNT_ID: this.account
       },
-      role: getVLRegisterDeviceStatusRole,
-      logGroup: new LogGroup(this, "GetVLRegisterDeviceStatusActivityLogGroup", {
+      role: importMediaObjectRole,
+      logGroup: new LogGroup(this, "ImportMediaObjectActivityLogGroup", {
           retention: RetentionDays.TEN_YEARS,
-          logGroupName: "/aws/lambda/GetVLRegisterDeviceStatusActivity",
-      }),
-    });
-
-    const startVLRegisterDeviceRole = createLambdaRole(this, "StartVLRegisterDeviceRole", [
-      new PolicyStatement({
-        effect: Effect.ALLOW,
-        actions: [
-          "dynamodb:PutItem",
-          "dynamodb:UpdateItem"
-        ],
-        resources: [
-          `arn:aws:dynamodb:${props.region}:${props.account}:table/VLRegisterDeviceJobTable`
-        ],
-      })
-    ]);
-
-    const startVLRegisterDeviceLambda = new Function(this, "StartVLRegisterDeviceActivity", {
-      runtime: Runtime.JAVA_17,
-      handler: `${VL_ACTIVITY_JAVA_PATH_PREFIX}.StartVLRegisterDeviceActivity::handleRequest`,
-      code: Code.fromAsset(LAMBDA_ASSET_PATH),
-      memorySize: 512,
-      timeout: Duration.minutes(5),
-      environment: {
-          ACCOUNT_ID: this.account
-      },
-      role: startVLRegisterDeviceRole,
-      logGroup: new LogGroup(this, "StartVLRegisterDeviceActivityLogGroup", {
-          retention: RetentionDays.TEN_YEARS,
-          logGroupName: "/aws/lambda/StartVLRegisterDeviceActivity",
+          logGroupName: "/aws/lambda/ImportMediaObjectActivity",
       }),
     });
 
@@ -269,10 +237,8 @@ export class ServiceStack extends Stack {
     startVLRegisterDeviceCfnLambda.overrideLogicalId("StartVLRegisterDeviceActivity");
     const getVLRegisterDeviceStatusCfnLambda = getVLRegisterDeviceStatusLambda.node.defaultChild as CfnFunction;
     getVLRegisterDeviceStatusCfnLambda.overrideLogicalId("GetVLRegisterDeviceStatusActivity");
-    const startVLRegisterDeviceCfnLambda = startVLRegisterDeviceLambda.node.defaultChild as CfnFunction;
-    startVLRegisterDeviceCfnLambda.overrideLogicalId("StartVLRegisterDeviceActivity");
-    const getVLRegisterDeviceStatusCfnLambda = getVLRegisterDeviceStatusLambda.node.defaultChild as CfnFunction;
-    getVLRegisterDeviceStatusCfnLambda.overrideLogicalId("GetVLRegisterDeviceStatusActivity");
+    const importMediaObjectCfnLambda = importMediaObjectLambda.node.defaultChild as CfnFunction;
+    importMediaObjectCfnLambda.overrideLogicalId("ImportMediaObjectActivity");
 
     // Upload spec to S3
     const originalSpec = new Asset(this, "openApiFile", {

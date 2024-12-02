@@ -364,7 +364,7 @@ exports[`TimelineStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "64492df3a07ef1190b9e3c70da2bb6dd5872e1061dc23835e6cf1ed6cfc834fe.jar",
+          "S3Key": "62d203983cfbca0fd829eea485065fac95ad8392349dd65019c17144fd0907a5.jar",
         },
         "Description": "Lambda responsible for forwarding lambda to KDS ",
         "Environment": {
@@ -733,7 +733,7 @@ exports[`TimelineStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "64492df3a07ef1190b9e3c70da2bb6dd5872e1061dc23835e6cf1ed6cfc834fe.jar",
+          "S3Key": "62d203983cfbca0fd829eea485065fac95ad8392349dd65019c17144fd0907a5.jar",
         },
         "Description": "Lambda responsible for aggregation of video timelines",
         "Environment": {
@@ -970,7 +970,7 @@ exports[`TimelineStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "64492df3a07ef1190b9e3c70da2bb6dd5872e1061dc23835e6cf1ed6cfc834fe.jar",
+          "S3Key": "62d203983cfbca0fd829eea485065fac95ad8392349dd65019c17144fd0907a5.jar",
         },
         "Description": "Lambda responsible for exporting timeline information from S3 to DDB",
         "Environment": {

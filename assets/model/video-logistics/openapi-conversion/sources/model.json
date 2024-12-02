@@ -768,9 +768,6 @@
             "version": "2024-10-18",
             "resources": [
                 {
-                    "target": "com.amazonaws.videoanalytics.videologistics#ExportVideo"
-                },
-                {
                     "target": "com.amazonaws.videoanalytics.videologistics#Inference"
                 },
                 {
@@ -781,9 +778,6 @@
                 },
                 {
                     "target": "com.amazonaws.videoanalytics.videologistics#RegisterDevice"
-                },
-                {
-                    "target": "com.amazonaws.videoanalytics.videologistics#Snapshot"
                 }
             ],
             "traits": {
