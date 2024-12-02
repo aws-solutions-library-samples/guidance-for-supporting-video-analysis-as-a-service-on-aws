@@ -102,15 +102,15 @@ export class ServiceStack extends Stack {
       new PolicyStatement({
         effect: Effect.ALLOW,
         actions: [
-          "s3:PutObject",
-          "iot:UpdateThing",
-          "iot:UpdateThingShadow"
+          'apigateway:GET',
+          'execute-api:Invoke'
         ],
         resources: [
-          `arn:aws:s3:${props.region}:${props.account}:fwd-rules/*`,
-          `arn:aws:iot:${props.region}:${props.account}:thing/*`
-        ],
-      })
+          `arn:aws:apigateway:${this.region}::/restapis`,
+          `arn:aws:apigateway:${this.region}::/restapis/*`,
+          `arn:aws:execute-api:${this.region}:${this.account}:*/*/*/*`
+        ]
+      }),
     ]);
 
     const createSnapshotUploadPathLambda = new Function(this, "CreateSnapshotUploadPathActivity", {
