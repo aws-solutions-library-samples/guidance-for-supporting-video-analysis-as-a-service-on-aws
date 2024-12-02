@@ -12,7 +12,7 @@ use iot_client::client::IotCredentialProvider;
 use iot_client::error::IoTClientError::ClientError;
 use reqwest::header::{HeaderMap, HeaderValue};
 use reqwest::Client;
-use serde_json::{json, Value};
+use serde_json::json;
 use std::error::Error;
 use std::time::{Duration, SystemTime};
 use tracing::{debug, error, warn};
@@ -119,7 +119,7 @@ impl VideoAnalyticsClient {
             .unwrap()
             .into();
 
-        let uri_string = format!("{}/import-device", self.api_gw_endpoint.as_ref().unwrap());
+        let uri_string = format!("{}/import-media-object", self.api_gw_endpoint.as_ref().unwrap());
         let body = json!({
             "deviceId": device_id,
             "mediaObject": media_object
@@ -184,7 +184,7 @@ impl VideoAnalyticsClient {
         let resp = client
             .post(uri_string.clone())
             .headers(headers)
-            .body(media_object.clone())
+            .body(body_string.clone())
             .send()
             .await?;
 

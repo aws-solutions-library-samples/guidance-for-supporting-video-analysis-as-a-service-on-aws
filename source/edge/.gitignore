@@ -8,3 +8,5 @@ target/
 
 # Don't check in any certificates used for local testing
 /certificates
+
+Cargo.lock

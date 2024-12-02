@@ -83,11 +83,12 @@ This crate contains all rust crates related to building the edge process client.
 - `mqtt-client` is a wrapper over `rumqttc` which allows the edge process to communicate with AWS IoT.
 - `iot-client` is a wrapper over `aws-iot-sdk` which allows the edge process to communicate with AWS IoT.
 - `http-client` is a wrapper over `reqwest`.
-- `onvif-client` is a wrapper over `http-client` which allows the edge process to communicate with the ONVIF service on devices.
+- `onvif-client` is a wrapper over `http-client` which allows the edge process to communicate with the ONVIF service on devices. wsdl_rs and xsd_rs files were generated using [xsd-parser-rs](https://github.com/lumeohq/xsd-parser-rs).
 - `snapshot-client` is a wrapper over `http-client` for retrieving snapshots using the URI returned from the ONVIF service.
 - `ws-discovery-client` is a wrapper over `tokio::net` which allows the edge process to discover a device's public IP address (WS-discovery spec is required for all ONVIF devices).
+- `kvs-client` is a wrapper over `aws-sdk-kinesisvideo`, `aws-sdk-kinesisvideosignaling`, and `aws-sigv4` which allows the edge process to communicate with AWS KVS.
 - `event-processor` is a wrapper over `quickxml_to_serde` which allows the edge process to process events received from Onvif metadata stream
-- `video-analytics-client` is a wrapper over `aws-sigv4` and `reqwest` which allows the edge process to send AI events to the video analytics guidance cloud.
+- `video-analytics-client` is a wrapper over `aws-sdk-apigateway`, `aws-sigv4`, and `reqwest` which allows the edge process to send AI events to the video analytics guidance cloud (API GW deployed from VideoAnalyticsVideoLogisticsCDK).
 
 Code Organization: TBD.
 
