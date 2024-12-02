@@ -169,56 +169,6 @@
                 }
             }
         },
-        "/create-snapshot-upload-path": {
-            "post": {
-                "operationId": "CreateSnapshotUploadPath",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/CreateSnapshotUploadPathRequestContent"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "description": "CreateSnapshotUploadPath 200 response"
-                    },
-                    "400": {
-                        "description": "ValidationException 400 response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ValidationExceptionResponseContent"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "InternalServerException 500 response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/InternalServerExceptionResponseContent"
-                                }
-                            }
-                        }
-                    }
-                },
-                "x-amazon-apigateway-integration": {
-                    "type": "aws_proxy",
-                    "httpMethod": "POST",
-                    "uri": {
-                        "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${CreateSnapshotUploadPathActivity}/invocations"
-                    },
-                    "credentials": {
-                        "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/VideoLogisticsApiGatewayRole"
-                    }
-                }
-            }
-        },
         "/get-vl-register-device-status/{jobId}": {
             "post": {
                 "operationId": "GetVLRegisterDeviceStatus",
@@ -345,63 +295,6 @@
                     },
                     "credentials": {
                         "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/VideoLogisticsApiGatewayRole"
-                    }
-                }
-            }
-        },
-        "/start-export-videos": {
-            "put": {
-                "operationId": "StartExportVideos",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/StartExportVideosRequestContent"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "description": "StartExportVideos 200 response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/StartExportVideosResponseContent"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "ValidationException 400 response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ValidationExceptionResponseContent"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "ResourceNotFoundException 404 response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ResourceNotFoundExceptionResponseContent"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "InternalServerException 500 response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/InternalServerExceptionResponseContent"
-                                }
-                            }
-                        }
                     }
                 }
             }
@@ -592,28 +485,6 @@
                     }
                 }
             },
-            "CreateSnapshotUploadPathRequestContent": {
-                "type": "object",
-                "properties": {
-                    "deviceId": {
-                        "type": "string",
-                        "maxLength": 128,
-                        "minLength": 1,
-                        "pattern": "^[a-zA-Z0-9:_\\-]+$"
-                    },
-                    "checksum": {
-                        "type": "string"
-                    },
-                    "contentLength": {
-                        "type": "number"
-                    }
-                },
-                "required": [
-                    "checksum",
-                    "contentLength",
-                    "deviceId"
-                ]
-            },
             "GetVLRegisterDeviceStatusResponseContent": {
                 "type": "object",
                 "properties": {
@@ -758,48 +629,6 @@
                     "HLS",
                     "WEBRTC"
                 ]
-            },
-            "StartExportVideosRequestContent": {
-                "type": "object",
-                "properties": {
-                    "startTime": {
-                        "type": "number",
-                        "format": "double"
-                    },
-                    "endTime": {
-                        "type": "number",
-                        "format": "double"
-                    },
-                    "device": {
-                        "type": "string",
-                        "maxLength": 128,
-                        "minLength": 1,
-                        "pattern": "^[a-zA-Z0-9:_\\-]+$"
-                    },
-                    "exportS3Path": {
-                        "type": "string",
-                        "maxLength": 2048,
-                        "minLength": 1,
-                        "pattern": "^s3://[a-z0-9][a-z0-9\\.-]{1,61}[a-z0-9](/.*)?$"
-                    }
-                },
-                "required": [
-                    "device",
-                    "endTime",
-                    "exportS3Path",
-                    "startTime"
-                ]
-            },
-            "StartExportVideosResponseContent": {
-                "type": "object",
-                "properties": {
-                    "jobId": {
-                        "type": "string",
-                        "maxLength": 128,
-                        "minLength": 1,
-                        "pattern": "^[a-z0-9\\-]+$"
-                    }
-                }
             },
             "StartVLRegisterDeviceResponseContent": {
                 "type": "object",
