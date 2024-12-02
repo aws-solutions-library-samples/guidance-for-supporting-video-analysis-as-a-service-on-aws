@@ -302,6 +302,7 @@ export class DeviceManagementBootstrapStack extends Stack {
       policyName: "kvsDeviceIoTPolicy",
     });
 
+
     /**
      * Device in CREATED, ENABLED, and DISABLED state are all permitted to execute commands.
      * Therefore, iotJobsPolicy that grants IoT job permission is attached to all special state thing groups.
@@ -313,70 +314,70 @@ export class DeviceManagementBootstrapStack extends Stack {
      * MQTT subscription needs to be on topicfilter not topic name
      * https://docs.aws.amazon.com/iot/latest/developerguide/topics.html
      * */
-    const iotJobsPolicy = new iot.CfnPolicy(this, "IotJobPolicy", {
-      policyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Action: ["iot:Publish"],
-            Resource: [
-              `arn:aws:iot:${this.region}:${this.account}:topic/$aws/things/${IOT_CONNECTED_THING_NAME}/jobs/*/update`,
-              `arn:aws:iot:${this.region}:${this.account}:topic/$aws/things/${IOT_CONNECTED_THING_NAME}/jobs/start-next`,
-              `arn:aws:iot:${this.region}:${this.account}:topic/$aws/things/${IOT_CONNECTED_THING_NAME}/jobs/get`,
-              `arn:aws:iot:${this.region}:${this.account}:topic/$aws/things/${IOT_CONNECTED_THING_NAME}/jobs/$next/get`,
-            ],
-          },
-          {
-            Effect: "Allow",
-            Action: ["iot:Subscribe"],
-            Resource: [
-              // for MQTT topics:
-              // $aws/things/thingName/jobs/jobId/update/accepted
-              // $aws/things/thingName/jobs/jobId/update/rejected
-              `arn:aws:iot:${this.region}:${this.account}:topicfilter/$aws/things/${IOT_CONNECTED_THING_NAME}/jobs/*/update/*`,
-              // for MQTT topics:
-              // $aws/things/thingName/jobs/start-next/accepted
-              // $aws/things/thingName/jobs/start-next/rejected
-              `arn:aws:iot:${this.region}:${this.account}:topicfilter/$aws/things/${IOT_CONNECTED_THING_NAME}/jobs/start-next/*`,
-              // for MQTT topics:
-              // $aws/things/thingName/jobs/get/accepted
-              // $aws/things/thingName/jobs/get/rejected
-              `arn:aws:iot:${this.region}:${this.account}:topicfilter/$aws/things/${IOT_CONNECTED_THING_NAME}/jobs/get/*`,
-              `arn:aws:iot:${this.region}:${this.account}:topicfilter/$aws/things/${IOT_CONNECTED_THING_NAME}/jobs/notify`,
-              // for MQTT topics:
-              // $aws/things/thingName/jobs/$next/get/accepted
-              // $aws/things/thingName/jobs/$next/get/rejected
-              `arn:aws:iot:${this.region}:${this.account}:topicfilter/$aws/things/${IOT_CONNECTED_THING_NAME}/jobs/$next/get/*`,
-            ],
-          },
-          {
-            Effect: "Allow",
-            Action: ["iot:Receive"],
-            Resource: [
-              // for MQTT topic:
-              // $aws/things/thingName/jobs/jobId/update/accepted
-              // $aws/things/thingName/jobs/jobId/update/rejected
-              `arn:aws:iot:${this.region}:${this.account}:topic/$aws/things/${IOT_CONNECTED_THING_NAME}/jobs/*/update/*`,
-              // for MQTT topic:
-              // $aws/things/thingName/jobs/start-next/accepted
-              // $aws/things/thingName/jobs/start-next/rejected
-              `arn:aws:iot:${this.region}:${this.account}:topic/$aws/things/${IOT_CONNECTED_THING_NAME}/jobs/start-next/*`,
-              // for MQTT topic:
-              // $aws/things/thingName/jobs/get/accepted
-              // $aws/things/thingName/jobs/get/rejected
-              `arn:aws:iot:${this.region}:${this.account}:topic/$aws/things/${IOT_CONNECTED_THING_NAME}/jobs/get/*`,
-              `arn:aws:iot:${this.region}:${this.account}:topic/$aws/things/${IOT_CONNECTED_THING_NAME}/jobs/notify`,
-              // for MQTT topics:
-              // $aws/things/thingName/jobs/$next/get/accepted
-              // $aws/things/thingName/jobs/$next/get/rejected
-              `arn:aws:iot:${this.region}:${this.account}:topic/$aws/things/${IOT_CONNECTED_THING_NAME}/jobs/$next/get/*`,
-            ],
-          },
-        ],
-      },
-      policyName: `IotJobPolicy_${this.region}`,
-    });
+    // const iotJobsPolicy = new iot.CfnPolicy(this, "IotJobPolicy", {
+    //   policyDocument: {
+    //     Version: "2012-10-17",
+    //     Statement: [
+    //       {
+    //         Effect: "Allow",
+    //         Action: ["iot:Publish"],
+    //         Resource: [
+    //           `arn:aws:iot:${this.region}:${this.account}:topic/$aws/things/${IOT_CONNECTED_THING_NAME}/jobs/*/update`,
+    //           `arn:aws:iot:${this.region}:${this.account}:topic/$aws/things/${IOT_CONNECTED_THING_NAME}/jobs/start-next`,
+    //           `arn:aws:iot:${this.region}:${this.account}:topic/$aws/things/${IOT_CONNECTED_THING_NAME}/jobs/get`,
+    //           `arn:aws:iot:${this.region}:${this.account}:topic/$aws/things/${IOT_CONNECTED_THING_NAME}/jobs/$next/get`,
+    //         ],
+    //       },
+    //       {
+    //         Effect: "Allow",
+    //         Action: ["iot:Subscribe"],
+    //         Resource: [
+    //           // for MQTT topics:
+    //           // $aws/things/thingName/jobs/jobId/update/accepted
+    //           // $aws/things/thingName/jobs/jobId/update/rejected
+    //           `arn:aws:iot:${this.region}:${this.account}:topicfilter/$aws/things/${IOT_CONNECTED_THING_NAME}/jobs/*/update/*`,
+    //           // for MQTT topics:
+    //           // $aws/things/thingName/jobs/start-next/accepted
+    //           // $aws/things/thingName/jobs/start-next/rejected
+    //           `arn:aws:iot:${this.region}:${this.account}:topicfilter/$aws/things/${IOT_CONNECTED_THING_NAME}/jobs/start-next/*`,
+    //           // for MQTT topics:
+    //           // $aws/things/thingName/jobs/get/accepted
+    //           // $aws/things/thingName/jobs/get/rejected
+    //           `arn:aws:iot:${this.region}:${this.account}:topicfilter/$aws/things/${IOT_CONNECTED_THING_NAME}/jobs/get/*`,
+    //           `arn:aws:iot:${this.region}:${this.account}:topicfilter/$aws/things/${IOT_CONNECTED_THING_NAME}/jobs/notify`,
+    //           // for MQTT topics:
+    //           // $aws/things/thingName/jobs/$next/get/accepted
+    //           // $aws/things/thingName/jobs/$next/get/rejected
+    //           `arn:aws:iot:${this.region}:${this.account}:topicfilter/$aws/things/${IOT_CONNECTED_THING_NAME}/jobs/$next/get/*`,
+    //         ],
+    //       },
+    //       {
+    //         Effect: "Allow",
+    //         Action: ["iot:Receive"],
+    //         Resource: [
+    //           // for MQTT topic:
+    //           // $aws/things/thingName/jobs/jobId/update/accepted
+    //           // $aws/things/thingName/jobs/jobId/update/rejected
+    //           `arn:aws:iot:${this.region}:${this.account}:topic/$aws/things/${IOT_CONNECTED_THING_NAME}/jobs/*/update/*`,
+    //           // for MQTT topic:
+    //           // $aws/things/thingName/jobs/start-next/accepted
+    //           // $aws/things/thingName/jobs/start-next/rejected
+    //           `arn:aws:iot:${this.region}:${this.account}:topic/$aws/things/${IOT_CONNECTED_THING_NAME}/jobs/start-next/*`,
+    //           // for MQTT topic:
+    //           // $aws/things/thingName/jobs/get/accepted
+    //           // $aws/things/thingName/jobs/get/rejected
+    //           `arn:aws:iot:${this.region}:${this.account}:topic/$aws/things/${IOT_CONNECTED_THING_NAME}/jobs/get/*`,
+    //           `arn:aws:iot:${this.region}:${this.account}:topic/$aws/things/${IOT_CONNECTED_THING_NAME}/jobs/notify`,
+    //           // for MQTT topics:
+    //           // $aws/things/thingName/jobs/$next/get/accepted
+    //           // $aws/things/thingName/jobs/$next/get/rejected
+    //           `arn:aws:iot:${this.region}:${this.account}:topic/$aws/things/${IOT_CONNECTED_THING_NAME}/jobs/$next/get/*`,
+    //         ],
+    //       },
+    //     ],
+    //   },
+    //   policyName: `IotJobPolicy_${this.region}`,
+    // });
 
     const disabledStateIotPolicy = new iot.CfnPolicy(
       this,
@@ -475,6 +476,7 @@ export class DeviceManagementBootstrapStack extends Stack {
     attachDisabledPolicy.node.addDependency(disabledStateThingGroup);
     attachDisabledPolicy.node.addDependency(iotCustomResourceIamPolicy);
 
+    /*
     const attachIotJobPolicyToDisabledState = new AwsCustomResource(
       this,
       "AttachIotJobPolicyToDisabledState",
@@ -524,6 +526,7 @@ export class DeviceManagementBootstrapStack extends Stack {
     attachIotJobPolicyToDisabledState.node.addDependency(
       iotCustomResourceIamPolicy
     );
+    */
 
     const enabledStateIotPolicy = new iot.CfnPolicy(
       this,
@@ -628,6 +631,7 @@ export class DeviceManagementBootstrapStack extends Stack {
     attachEnabledPolicy.node.addDependency(iotCustomResourceIamPolicy);
     attachEnabledPolicy.node.addDependency(iotCustomResourceRole);
 
+    /** 
     const attachIotJobPolicyToEnabledState = new AwsCustomResource(
       this,
       "AttachIotJobPolicyToEnabledState",
@@ -674,6 +678,7 @@ export class DeviceManagementBootstrapStack extends Stack {
     attachIotJobPolicyToEnabledState.node.addDependency(enabledStateThingGroup);
     attachIotJobPolicyToEnabledState.node.addDependency(iotCustomResourceIamPolicy);
     attachIotJobPolicyToEnabledState.node.addDependency(iotCustomResourceRole);
+    */
 
     // Log Group for deviceTelemetryCloudWatchLogsPolicy and Rule
     const deviceTelemetryCloudWatchLogGroup = new LogGroup(
