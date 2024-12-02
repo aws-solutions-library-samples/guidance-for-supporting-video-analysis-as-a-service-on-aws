@@ -200,7 +200,7 @@ export class ServiceStack extends Stack {
           "iot:UpdateThingShadow"
         ],
         resources: [
-          `arn:aws:s3:${props.region}:${props.account}:fathom-fwd-rules/*`,
+          `arn:aws:s3:${props.region}:${props.account}:fwd-rules/*`,
           `arn:aws:iot:${props.region}:${props.account}:thing/*`
         ],
       })
@@ -220,6 +220,67 @@ export class ServiceStack extends Stack {
       logGroup: new LogGroup(this, "CreateSnapshotUploadPathActivityLogGroup", {
           retention: RetentionDays.TEN_YEARS,
           logGroupName: "/aws/lambda/CreateSnapshotUploadPathActivity",
+      }),
+    });
+    
+    const getVLRegisterDeviceStatusRole = createLambdaRole(this, "getVLRegisterDeviceStatusRole", [
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        actions: [
+          "dynamodb:Scan",
+          "dynamodb:GetItem", 
+          "dynamodb:UpdateItem",
+          "dynamodb:Query",
+          "dynamodb:BatchGetItem"
+        ],
+        resources: [
+          `arn:aws:dynamodb:${props.region}:${props.account}:table/VLRegisterDeviceJobTable`
+        ],
+      })
+    ]);
+
+    const getVLRegisterDeviceStatusLambda = new Function(this, "GetVLRegisterDeviceStatusActivity", {
+      runtime: Runtime.JAVA_17,
+      handler: `${VL_ACTIVITY_JAVA_PATH_PREFIX}.GetVLRegisterDeviceStatusActivity::handleRequest`,
+      code: Code.fromAsset(LAMBDA_ASSET_PATH),
+      memorySize: 512,
+      timeout: Duration.minutes(5),
+      environment: {
+          ACCOUNT_ID: this.account
+      },
+      role: getVLRegisterDeviceStatusRole,
+      logGroup: new LogGroup(this, "GetVLRegisterDeviceStatusActivityLogGroup", {
+          retention: RetentionDays.TEN_YEARS,
+          logGroupName: "/aws/lambda/GetVLRegisterDeviceStatusActivity",
+      }),
+    });
+
+    const startVLRegisterDeviceRole = createLambdaRole(this, "StartVLRegisterDeviceRole", [
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        actions: [
+          "dynamodb:PutItem",
+          "dynamodb:UpdateItem"
+        ],
+        resources: [
+          `arn:aws:dynamodb:${props.region}:${props.account}:table/VLRegisterDeviceJobTable`
+        ],
+      })
+    ]);
+
+    const startVLRegisterDeviceLambda = new Function(this, "StartVLRegisterDeviceActivity", {
+      runtime: Runtime.JAVA_17,
+      handler: `${VL_ACTIVITY_JAVA_PATH_PREFIX}.StartVLRegisterDeviceActivity::handleRequest`,
+      code: Code.fromAsset(LAMBDA_ASSET_PATH),
+      memorySize: 512,
+      timeout: Duration.minutes(5),
+      environment: {
+          ACCOUNT_ID: this.account
+      },
+      role: startVLRegisterDeviceRole,
+      logGroup: new LogGroup(this, "StartVLRegisterDeviceActivityLogGroup", {
+          retention: RetentionDays.TEN_YEARS,
+          logGroupName: "/aws/lambda/StartVLRegisterDeviceActivity",
       }),
     });
 
@@ -242,6 +303,10 @@ export class ServiceStack extends Stack {
     getVLRegisterDeviceStatusCfnLambda.overrideLogicalId("GetVLRegisterDeviceStatusActivity");
     const createSnapshotUploadPathCfnLambda = createSnapshotUploadPathLambda.node.defaultChild as CfnFunction;
     createSnapshotUploadPathCfnLambda.overrideLogicalId("CreateSnapshotUploadPathActivity");
+    const startVLRegisterDeviceCfnLambda = startVLRegisterDeviceLambda.node.defaultChild as CfnFunction;
+    startVLRegisterDeviceCfnLambda.overrideLogicalId("StartVLRegisterDeviceActivity");
+    const getVLRegisterDeviceStatusCfnLambda = getVLRegisterDeviceStatusLambda.node.defaultChild as CfnFunction;
+    getVLRegisterDeviceStatusCfnLambda.overrideLogicalId("GetVLRegisterDeviceStatusActivity");
 
     // Upload spec to S3
     const originalSpec = new Asset(this, "openApiFile", {
