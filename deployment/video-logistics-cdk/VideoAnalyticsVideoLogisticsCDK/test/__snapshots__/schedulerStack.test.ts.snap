@@ -58,7 +58,7 @@ exports[`SchedulerStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "f93e4547cbac7f4ce906b37e330f99bfb1afa04f8cffa2fd0c755adbf502c5d4.jar",
+          "S3Key": "64492df3a07ef1190b9e3c70da2bb6dd5872e1061dc23835e6cf1ed6cfc834fe.jar",
         },
         "Description": "Lambda responsible for PIT creation in Open Search",
         "Environment": {
