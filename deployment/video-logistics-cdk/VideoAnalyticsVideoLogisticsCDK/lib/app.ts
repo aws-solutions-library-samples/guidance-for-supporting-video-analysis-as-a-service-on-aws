@@ -35,7 +35,7 @@ const envConfig = {
 // new SchedulerStack(app, 'VideoLogisticsSchedulerStack', envConfig);
 // new TimelineStack(app, 'VideoLogisticsTimelineStack', envConfig);
 // new VideoExportStack(app, 'VideoLogisticsVideoExportStack', envConfig);
-// new WorkflowStack(app, 'VideoLogisticsWorkflowStack', envConfig);
+new WorkflowStack(app, 'VideoLogisticsWorkflowStack', envConfig);
 new ServiceStack(app, 'VideoLogisticsServiceStack', envConfig);
 
 app.synth();

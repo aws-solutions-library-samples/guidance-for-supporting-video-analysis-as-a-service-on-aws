@@ -2406,6 +2406,9 @@
                 },
                 {
                     "target": "com.amazonaws.videoanalytics.videologistics#RegisterDevice"
+                },
+                {
+                    "target": "com.amazonaws.videoanalytics.videologistics#Snapshot"
                 }
             ],
             "traits": {

@@ -191,7 +191,7 @@
             "severity": "WARNING",
             "shapeId": "com.amazonaws.videoanalytics.videologistics#GetVLRegisterDeviceStatus",
             "message": "This operation uses the `POST` method in the `http` trait, but is marked with the readonly trait",
-            "filename": "/Users/zangshim/Documents/GitHub/guidance-for-video-analytics-infrastructure-on-aws/source/models/video-logistics/models/operations/RegisterDevice/GetVLRegisterDeviceStatus.smithy",
+            "filename": "/Volumes/workplace/guidance-for-video-analytics-infrastructure-on-aws/source/models/video-logistics/models/operations/RegisterDevice/GetVLRegisterDeviceStatus.smithy",
             "line": 21,
             "column": 1
         },
