@@ -10,13 +10,46 @@ exports[`WorkflowStack Snapshot test 1`] = `
     },
   },
   "Resources": {
-    "RegisterDeviceWorkflowDataForwarderLambdaLogGroup2C7FBF4F": {
+<<<<<<< HEAD
+=======
+    "FVLRegisterDeviceJobTable62B0BD14": {
       "DeletionPolicy": "Retain",
       "Properties": {
-        "LogGroupName": "KvsCreateLambdaLogGroup",
-        "RetentionInDays": 3653,
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "CustomerAccountId",
+            "AttributeType": "S",
+          },
+          {
+            "AttributeName": "JobId",
+            "AttributeType": "S",
+          },
+        ],
+        "BillingMode": "PAY_PER_REQUEST",
+        "DeletionProtectionEnabled": true,
+        "KeySchema": [
+          {
+            "AttributeName": "CustomerAccountId",
+            "KeyType": "HASH",
+          },
+          {
+            "AttributeName": "JobId",
+            "KeyType": "RANGE",
+          },
+        ],
+        "PointInTimeRecoverySpecification": {
+          "PointInTimeRecoveryEnabled": true,
+        },
+        "SSESpecification": {
+          "SSEEnabled": true,
+        },
+        "StreamSpecification": {
+          "StreamViewType": "NEW_AND_OLD_IMAGES",
+        },
+        "TableClass": "STANDARD",
+        "TableName": "FVLRegisterDeviceJobTable",
       },
-      "Type": "AWS::Logs::LogGroup",
+      "Type": "AWS::DynamoDB::Table",
       "UpdateReplacePolicy": "Retain",
     },
     "ModelSchemaModelSchemaLambda7C0B018C": {
@@ -53,16 +86,15 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Type": "AWS::Lambda::Function",
     },
     "ModelSchemaModelSchemaLambdaLogGroupEEA2E713": {
-    "RegisterDeviceWorkflowFailAndCleanupFvlRegHandlerLogGroupFB8AF6F7": {
       "DeletionPolicy": "Retain",
       "Properties": {
-        "LogGroupName": "FailAndCleanupFvlRegHandlerLogGroup",
+        "LogGroupName": "ModelSchemaLambdaLogGroup",
         "RetentionInDays": 3653,
       },
       "Type": "AWS::Logs::LogGroup",
       "UpdateReplacePolicy": "Retain",
     },
-    "RegisterDeviceWorkflowFailAndCleanupFvlRegHandlerRole331A94CC": {
+    "ModelSchemaModelSchemaRoleF2BBA8C0": {
       "Properties": {
         "AssumeRolePolicyDocument": {
           "Statement": [
@@ -96,8 +128,11 @@ exports[`WorkflowStack Snapshot test 1`] = `
               "Statement": [
                 {
                   "Action": [
+                    "dynamodb:GetRecords",
                     "dynamodb:GetItem",
+                    "dynamodb:Query",
                     "dynamodb:PutItem",
+                    "dynamodb:UpdateItem",
                   ],
                   "Effect": "Allow",
                   "Resource": [
@@ -109,76 +144,17 @@ exports[`WorkflowStack Snapshot test 1`] = `
                           {
                             "Ref": "AWS::Partition",
                           },
-                          ":dynamodb:us-east-1:123456789012:table/VLRegisterDeviceJobTable",
+                          ":dynamodb:us-east-1:123456789012:table/ModelSchemaTable",
                         ],
                       ],
                     },
                     {
                       "Fn::GetAtt": [
-                        "VLRegisterDeviceJobTableA904F593",
+                        "ModelSchemaTableC01709D1",
                         "Arn",
                       ],
                     },
                   ],
-                },
-                {
-                  "Action": "sts:AssumeRole",
-                  "Effect": "Allow",
-                  "Resource": [
-                    {
-                      "Fn::Join": [
-                        "",
-                        [
-                          "arn:",
-                          {
-                            "Ref": "AWS::Partition",
-                          },
-                          ":iam::*:role/CrossAccountRoleForStartFVLRegisterDevice",
-                        ],
-                      ],
-                    },
-                    "arn:aws:iam::*:role/CrossAccountRoleForStartFVLRegisterDevice-iad",
-                  ],
-                },
-                {
-                  "Action": [
-                    "kinesisvideo:DeleteStream",
-                    "kinesisvideo:DeleteSignalingChannel",
-                  ],
-                  "Effect": "Allow",
-                  "Resource": {
-                    "Fn::Join": [
-                      "",
-                      [
-                        "arn:",
-                        {
-                          "Ref": "AWS::Partition",
-                        },
-                        ":kinesisvideo:us-east-1:123456789012:*",
-                      ],
-                    ],
-                  },
-                },
-                {
-                  "Action": [
-                    "kms:Decrypt",
-                    "kms:Encrypt",
-                    "kms:ReEncrypt*",
-                    "kms:GenerateDataKey*",
-                  ],
-                  "Effect": "Allow",
-                  "Resource": {
-                    "Fn::Join": [
-                      "",
-                      [
-                        "arn:",
-                        {
-                          "Ref": "AWS::Partition",
-                        },
-                        ":kms:us-east-1:123456789012:key/*",
-                      ],
-                    ],
-                  },
                 },
               ],
               "Version": "2012-10-17",
@@ -186,18 +162,138 @@ exports[`WorkflowStack Snapshot test 1`] = `
             "PolicyName": "AccessPolicy",
           },
         ],
-        "RoleName": "FailAndCleanupFvlRegHandlerRole",
+        "RoleName": "ModelSchemaRole",
       },
       "Type": "AWS::IAM::Role",
     },
-    "RegisterDeviceWorkflowFailAndCleanupVlRegHandler41AB87C8": {
+    "ModelSchemaModelSchemaStateMachine06537C9E": {
+      "DeletionPolicy": "Delete",
       "DependsOn": [
-        "RegisterDeviceWorkflowFailAndCleanupFvlRegHandlerRole331A94CC",
+        "ModelSchemaModelSchemaStateMachineRoleDefaultPolicyAEFD2AE0",
+        "ModelSchemaModelSchemaStateMachineRoleEBAF26F9",
       ],
       "Properties": {
-        "Code": {
-          "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "f93e4547cbac7f4ce906b37e330f99bfb1afa04f8cffa2fd0c755adbf502c5d4.jar",
+        "DefinitionString": {
+          "Fn::Join": [
+            "",
+            [
+              "{"StartAt":"ModelSchemaIndexTemplateCreate","States":{"ModelSchemaIndexTemplateCreate":{"End":true,"Retry":[{"ErrorEquals":["Lambda.ClientExecutionTimeoutException","Lambda.ServiceException","Lambda.AWSLambdaException","Lambda.SdkClientException"],"IntervalSeconds":2,"MaxAttempts":6,"BackoffRate":2}],"Type":"Task","Resource":"arn:",
+              {
+                "Ref": "AWS::Partition",
+              },
+              ":states:::lambda:invoke","Parameters":{"FunctionName":"",
+              {
+                "Fn::GetAtt": [
+                  "ModelSchemaModelSchemaLambda7C0B018C",
+                  "Arn",
+                ],
+              },
+              "","Payload.$":"$"}}}}",
+            ],
+          ],
+        },
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "ModelSchemaModelSchemaStateMachineRoleEBAF26F9",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "AWS::StepFunctions::StateMachine",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "ModelSchemaModelSchemaStateMachineRoleDefaultPolicyAEFD2AE0": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "ModelSchemaModelSchemaLambda7C0B018C",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "ModelSchemaModelSchemaLambda7C0B018C",
+                          "Arn",
+                        ],
+                      },
+                      ":*",
+                    ],
+                  ],
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "ModelSchemaModelSchemaStateMachineRoleDefaultPolicyAEFD2AE0",
+        "Roles": [
+          {
+            "Ref": "ModelSchemaModelSchemaStateMachineRoleEBAF26F9",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "ModelSchemaModelSchemaStateMachineRoleEBAF26F9": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "states.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "ModelSchemaTableC01709D1": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "CustomerAccountId",
+            "AttributeType": "S",
+          },
+          {
+            "AttributeName": "ModelSchemaId",
+            "AttributeType": "S",
+          },
+        ],
+        "BillingMode": "PAY_PER_REQUEST",
+        "DeletionProtectionEnabled": true,
+        "KeySchema": [
+          {
+            "AttributeName": "CustomerAccountId",
+            "KeyType": "HASH",
+          },
+          {
+            "AttributeName": "ModelSchemaId",
+            "KeyType": "RANGE",
+          },
+        ],
+        "PointInTimeRecoverySpecification": {
+          "PointInTimeRecoveryEnabled": true,
+        },
+        "SSESpecification": {
+          "SSEEnabled": true,
+        },
+        "StreamSpecification": {
+          "StreamViewType": "NEW_AND_OLD_IMAGES",
         },
         "TableClass": "STANDARD",
         "TableName": "ModelSchemaTable",
@@ -447,6 +543,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       },
       "Type": "AWS::Lambda::EventSourceMapping",
     },
+>>>>>>> 4034ceb (deployment-side integration for createUploadSnapshotPath)
     "RegisterDeviceWorkflowDataForwarderLambdaLogGroup2C7FBF4F": {
       "DeletionPolicy": "Retain",
       "Properties": {
@@ -456,6 +553,8 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Type": "AWS::Logs::LogGroup",
       "UpdateReplacePolicy": "Retain",
     },
+<<<<<<< HEAD
+=======
     "RegisterDeviceWorkflowFVLRegisterDeviceStateMachine1996E5D0": {
       "DeletionPolicy": "Delete",
       "DependsOn": [
@@ -622,6 +721,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       },
       "Type": "AWS::Lambda::Function",
     },
+>>>>>>> 4034ceb (deployment-side integration for createUploadSnapshotPath)
     "RegisterDeviceWorkflowFailAndCleanupFvlRegHandlerLogGroupFB8AF6F7": {
       "DeletionPolicy": "Retain",
       "Properties": {
@@ -678,13 +778,13 @@ exports[`WorkflowStack Snapshot test 1`] = `
                           {
                             "Ref": "AWS::Partition",
                           },
-                          ":dynamodb:us-east-1:123456789012:table/FVLRegisterDeviceJobTable",
+                          ":dynamodb:us-east-1:123456789012:table/VLRegisterDeviceJobTable",
                         ],
                       ],
                     },
                     {
                       "Fn::GetAtt": [
-                        "FVLRegisterDeviceJobTable62B0BD14",
+                        "VLRegisterDeviceJobTableA904F593",
                         "Arn",
                       ],
                     },
@@ -759,6 +859,40 @@ exports[`WorkflowStack Snapshot test 1`] = `
       },
       "Type": "AWS::IAM::Role",
     },
+    "RegisterDeviceWorkflowFailAndCleanupVlRegHandler41AB87C8": {
+      "DependsOn": [
+        "RegisterDeviceWorkflowFailAndCleanupFvlRegHandlerRole331A94CC",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
+          "S3Key": "f93e4547cbac7f4ce906b37e330f99bfb1afa04f8cffa2fd0c755adbf502c5d4.jar",
+        },
+        "Description": "Lambda responsible for cleaning up KVS resources and updating the failure status in ddb.",
+        "Environment": {
+          "Variables": {
+            "airportCode": "iad",
+            "tableName": "VLRegisterDeviceJobTable",
+          },
+        },
+        "Handler": "com.amazonaws.videoanalytics.videologistics.workflow.FailAndCleanupVLDeviceRegistrationHandler::handleRequest",
+        "LoggingConfig": {
+          "LogGroup": {
+            "Ref": "RegisterDeviceWorkflowFailAndCleanupFvlRegHandlerLogGroupFB8AF6F7",
+          },
+        },
+        "MemorySize": 2048,
+        "Role": {
+          "Fn::GetAtt": [
+            "RegisterDeviceWorkflowFailAndCleanupFvlRegHandlerRole331A94CC",
+            "Arn",
+          ],
+        },
+        "Runtime": "java17",
+        "Timeout": 720,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
     "RegisterDeviceWorkflowKVSStreamCreatorLambdaRole92F0C304": {
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -809,13 +943,13 @@ exports[`WorkflowStack Snapshot test 1`] = `
                           {
                             "Ref": "AWS::Partition",
                           },
-                          ":dynamodb:us-east-1:123456789012:table/FVLRegisterDeviceJobTable",
+                          ":dynamodb:us-east-1:123456789012:table/VLRegisterDeviceJobTable",
                         ],
                       ],
                     },
                     {
                       "Fn::GetAtt": [
-                        "FVLRegisterDeviceJobTable62B0BD14",
+                        "VLRegisterDeviceJobTableA904F593",
                         "Arn",
                       ],
                     },
@@ -906,16 +1040,20 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
+<<<<<<< HEAD
+          "S3Key": "f93e4547cbac7f4ce906b37e330f99bfb1afa04f8cffa2fd0c755adbf502c5d4.jar",
+=======
           "S3Key": "64492df3a07ef1190b9e3c70da2bb6dd5872e1061dc23835e6cf1ed6cfc834fe.jar",
+>>>>>>> 4034ceb (deployment-side integration for createUploadSnapshotPath)
         },
         "Description": "Lambda responsible for invocation of StepFunction",
         "Environment": {
           "Variables": {
             "airportCode": "iad",
-            "tableName": "FVLRegisterDeviceJobTable",
+            "tableName": "VLRegisterDeviceJobTable",
           },
         },
-        "Handler": "com.amazon.awsvideoanalyticsvlcontrolplane.workflow.KVSResourceCreateLambda::handleRequest",
+        "Handler": "com.amazonaws.videoanalytics.videologistics.workflow.KVSResourceCreateLambda::handleRequest",
         "LoggingConfig": {
           "LogGroup": {
             "Ref": "RegisterDeviceWorkflowDataForwarderLambdaLogGroup2C7FBF4F",
@@ -933,6 +1071,9 @@ exports[`WorkflowStack Snapshot test 1`] = `
       },
       "Type": "AWS::Lambda::Function",
     },
+<<<<<<< HEAD
+    "RegisterDeviceWorkflowVLRegisterDeviceStateMachineA6299E55": {
+=======
     "RegisterDeviceWorkflowWorkflowFVLRegisterDeviceJobTableDDBStreamProcessorLambdaRole637CC470": {
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -1189,32 +1330,103 @@ exports[`WorkflowStack Snapshot test 1`] = `
           "Size": 10240,
         },
         "Handler": "com.amazon.awsvideoanalyticsvlcontrolplane.videologistics.videoExport.ProcessVideoExportHandler::handleRequest",
-        "Description": "Lambda responsible for cleaning up KVS resources and updating the failure status in ddb.",
-        "Environment": {
-          "Variables": {
-            "airportCode": "iad",
-            "tableName": "VLRegisterDeviceJobTable",
-          },
-        },
-        "Handler": "com.amazonaws.videoanalytics.videologistics.workflow.FailAndCleanupVLDeviceRegistrationHandler::handleRequest",
         "LoggingConfig": {
           "LogGroup": {
-            "Ref": "RegisterDeviceWorkflowFailAndCleanupFvlRegHandlerLogGroupFB8AF6F7",
+            "Ref": "VideoExportExportVideoAndUploadLambdaLogGroupC78942E9",
           },
         },
         "MemorySize": 2048,
         "Role": {
           "Fn::GetAtt": [
-            "RegisterDeviceWorkflowFailAndCleanupFvlRegHandlerRole331A94CC",
+            "VideoExportStartVideoExportRole4AA5CCD7",
             "Arn",
           ],
         },
         "Runtime": "java17",
-        "Timeout": 720,
+        "Timeout": 900,
       },
       "Type": "AWS::Lambda::Function",
     },
-    "RegisterDeviceWorkflowKVSStreamCreatorLambdaRole92F0C304": {
+    "VideoExportExportVideoAndUploadLambdaLogGroupC78942E9": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "LogGroupName": "ExportVideoAndUploadLambdaLogGroup",
+        "RetentionInDays": 3653,
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "VideoExportJobTableC8C47CE3": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "CustomerAccountId_DeviceId",
+            "AttributeType": "S",
+          },
+          {
+            "AttributeName": "JobId",
+            "AttributeType": "S",
+          },
+          {
+            "AttributeName": "CustomerAccountId",
+            "AttributeType": "S",
+          },
+        ],
+        "BillingMode": "PAY_PER_REQUEST",
+        "DeletionProtectionEnabled": true,
+        "GlobalSecondaryIndexes": [
+          {
+            "IndexName": "DeviceJobStatus-Index",
+            "KeySchema": [
+              {
+                "AttributeName": "CustomerAccountId_DeviceId",
+                "KeyType": "HASH",
+              },
+            ],
+            "Projection": {
+              "ProjectionType": "ALL",
+            },
+          },
+          {
+            "IndexName": "AccountIDJobID-Index",
+            "KeySchema": [
+              {
+                "AttributeName": "CustomerAccountId",
+                "KeyType": "HASH",
+              },
+            ],
+            "Projection": {
+              "ProjectionType": "ALL",
+            },
+          },
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "CustomerAccountId_DeviceId",
+            "KeyType": "HASH",
+          },
+          {
+            "AttributeName": "JobId",
+            "KeyType": "RANGE",
+          },
+        ],
+        "PointInTimeRecoverySpecification": {
+          "PointInTimeRecoveryEnabled": true,
+        },
+        "SSESpecification": {
+          "SSEEnabled": true,
+        },
+        "StreamSpecification": {
+          "StreamViewType": "NEW_AND_OLD_IMAGES",
+        },
+        "TableClass": "STANDARD",
+        "TableName": "VideoExportJobTable",
+      },
+      "Type": "AWS::DynamoDB::Table",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "VideoExportStartVideoExportRole4AA5CCD7": {
       "Properties": {
         "AssumeRolePolicyDocument": {
           "Statement": [
@@ -1264,62 +1476,23 @@ exports[`WorkflowStack Snapshot test 1`] = `
                           {
                             "Ref": "AWS::Partition",
                           },
-                          ":dynamodb:us-east-1:123456789012:table/VLRegisterDeviceJobTable",
+                          ":dynamodb:us-east-1:123456789012:table/VideoExportResultTable",
                         ],
                       ],
                     },
                     {
                       "Fn::GetAtt": [
-                        "VLRegisterDeviceJobTableA904F593",
+                        "VideoExportJobTableC8C47CE3",
                         "Arn",
                       ],
                     },
                   ],
                 },
                 {
-                  "Action": "sts:AssumeRole",
-                  "Effect": "Allow",
-                  "Resource": [
-                    {
-                      "Fn::Join": [
-                        "",
-                        [
-                          "arn:",
-                          {
-                            "Ref": "AWS::Partition",
-                          },
-                          ":iam::*:role/CrossAccountRoleForStartFVLRegisterDevice",
-                        ],
-                      ],
-                    },
-                    "arn:aws:iam::*:role/CrossAccountRoleForStartFVLRegisterDevice-iad",
-                  ],
-                },
-                {
-                  "Action": [
-                    "kinesisvideo:CreateStream",
-                    "kinesisvideo:CreateSignalingChannel",
-                  ],
-                  "Effect": "Allow",
-                  "Resource": {
-                    "Fn::Join": [
-                      "",
-                      [
-                        "arn:",
-                        {
-                          "Ref": "AWS::Partition",
-                        },
-                        ":kinesisvideo:us-east-1:123456789012:*",
-                      ],
-                    ],
-                  },
-                },
-                {
                   "Action": [
                     "kms:Decrypt",
                     "kms:Encrypt",
                     "kms:ReEncrypt*",
-                    "kms:GenerateDataKey*",
                   ],
                   "Effect": "Allow",
                   "Resource": {
@@ -1337,12 +1510,23 @@ exports[`WorkflowStack Snapshot test 1`] = `
                 },
                 {
                   "Action": [
-                    "kms:Decrypt",
-                    "kms:GenerateDataKey*",
-                    "kms:ReEncrypt*",
+                    "kinesisvideo:GetClip",
+                    "kinesisvideo:GetDataEndpoint",
+                    "kinesisvideo:ListFragments",
                   ],
                   "Effect": "Allow",
-                  "Resource": "arn:*:kms:*:*:key/*",
+                  "Resource": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:",
+                        {
+                          "Ref": "AWS::Partition",
+                        },
+                        ":kinesisvideo:us-east-1:123456789012:*",
+                      ],
+                    ],
+                  },
                 },
               ],
               "Version": "2012-10-17",
@@ -1350,45 +1534,49 @@ exports[`WorkflowStack Snapshot test 1`] = `
             "PolicyName": "AccessPolicy",
           },
         ],
-        "RoleName": "KVSStreamCreatorLambdaRole",
+        "RoleName": "StartVideoExportRole",
       },
       "Type": "AWS::IAM::Role",
     },
-    "RegisterDeviceWorkflowKvsCreateLambdaA83CDBA5": {
+    "VideoExportUpdateJobStatusLambda5AC51E6E": {
       "DependsOn": [
-        "RegisterDeviceWorkflowKVSStreamCreatorLambdaRole92F0C304",
+        "VideoExportStartVideoExportRole4AA5CCD7",
       ],
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
           "S3Key": "64492df3a07ef1190b9e3c70da2bb6dd5872e1061dc23835e6cf1ed6cfc834fe.jar",
         },
-        "Description": "Lambda responsible for invocation of StepFunction",
-        "Environment": {
-          "Variables": {
-            "airportCode": "iad",
-            "tableName": "VLRegisterDeviceJobTable",
-          },
-        },
-        "Handler": "com.amazonaws.videoanalytics.videologistics.workflow.KVSResourceCreateLambda::handleRequest",
+        "Description": "Lambda to handle updating the status of the video export job",
+        "Handler": "com.amazon.awsvideoanalyticsvlcontrolplane.videologistics.videoExport.UpdateVideoExportJobStatusHandler::handleRequest",
         "LoggingConfig": {
           "LogGroup": {
-            "Ref": "RegisterDeviceWorkflowDataForwarderLambdaLogGroup2C7FBF4F",
+            "Ref": "VideoExportUpdateJobStatusLambdaLogGroupEEAB1B7A",
           },
         },
         "MemorySize": 2048,
         "Role": {
           "Fn::GetAtt": [
-            "RegisterDeviceWorkflowKVSStreamCreatorLambdaRole92F0C304",
+            "VideoExportStartVideoExportRole4AA5CCD7",
             "Arn",
           ],
         },
         "Runtime": "java17",
-        "Timeout": 720,
+        "Timeout": 120,
       },
       "Type": "AWS::Lambda::Function",
     },
-    "RegisterDeviceWorkflowVLRegisterDeviceStateMachineA6299E55": {
+    "VideoExportUpdateJobStatusLambdaLogGroupEEAB1B7A": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "LogGroupName": "UpdateJobStatusLambdaLogGroup",
+        "RetentionInDays": 3653,
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "VideoExportVideoExportStateMachine44F3D7FB": {
+>>>>>>> 4034ceb (deployment-side integration for createUploadSnapshotPath)
       "DeletionPolicy": "Delete",
       "DependsOn": [
         "RegisterDeviceWorkflowVLRegisterDeviceStateMachineRoleDefaultPolicyF76DF5AB",
@@ -1709,7 +1897,11 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
+<<<<<<< HEAD
+          "S3Key": "1ac8a7262a3ae2e42ce590a3e28fa24c54e4e8c7bff13c1ad508878b32af0cba.jar",
+=======
           "S3Key": "892bfe96aa4e31199846f86909120dab4469f12ea6d597779d0c0ebbbdfa713a.jar",
+>>>>>>> 4034ceb (deployment-side integration for createUploadSnapshotPath)
         },
         "Description": "Lambda responsible for invocation of StepFunction",
         "Environment": {
