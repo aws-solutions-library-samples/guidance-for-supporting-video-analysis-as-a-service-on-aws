@@ -107,7 +107,7 @@ export class ServiceStack extends Stack {
           "iot:UpdateThingShadow"
         ],
         resources: [
-          `arn:aws:s3:::${props.account}-fwd-rules/*`,
+          `arn:aws:s3:::guidance-for-video-analytics-infrastructure-on-aws-${props.account}-${props.region}/*`,
           `arn:aws:iot:${props.region}:${props.account}:thing/*`
         ],
       })
