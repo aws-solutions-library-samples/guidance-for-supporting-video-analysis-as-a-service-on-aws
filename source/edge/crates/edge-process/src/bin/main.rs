@@ -1,7 +1,6 @@
 use device_traits::connections::PubSubClient;
 use device_traits::state::{State, StateManager};
 use edge_process::config::get_media_config;
-use edge_process::connections::aws_iot::{new_iot_shadow_manager, setup_and_start_iot_event_loop};
 use edge_process::constants::{
     BUFFER_SIZE, IS_ENABLED, IS_STATUS_CHANGED, LOG_LEVEL, LOG_SYNC, PROVISION_SHADOW_NAME,
     SNAPSHOT_SHADOW_NAME, SYNC_FREQUENCY,
@@ -17,21 +16,30 @@ use edge_process::utils::{
     logger_setup::init_tracing,
 };
 use gstreamer_pipeline::event_ingestion::{create_streaming_service, initiate_event_ingestion};
+
+use device_traits::command::{Command, CommandStatus};
+use device_traits::DeviceStateModel;
+use edge_process::connections::aws_iot::{
+    new_iot_shadow_manager, setup_and_start_iot_event_loop, update_command_status,
+};
+use edge_process::device_state::get_device_model;
 use iot_connections::client::IotMqttClientManager;
 use once_cell::sync::Lazy;
 use reqwest::{Client, Proxy};
 use serde_json::{json, Value};
 use snapshot_client::constants::INTERVAL_BETWEEN_SNAPSHOT_UPDATE;
+use std::borrow::BorrowMut;
 use std::env;
 use std::error::Error;
 use std::process::ExitCode;
+use std::str::FromStr;
 use std::sync::mpsc::sync_channel;
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 use tokio::sync::mpsc::channel;
 use tokio::time::{sleep, Instant};
 use tokio::{select, try_join};
-use tracing::{debug, info};
+use tracing::{debug, error, info, warn};
 
 #[tokio::main]
 async fn main() -> Result<ExitCode, Box<dyn Error>> {
@@ -65,10 +73,22 @@ async fn main() -> Result<ExitCode, Box<dyn Error>> {
 
     let log_sync = env::var(LOG_SYNC).unwrap_or("FALSE".to_string()).eq("TRUE");
 
-    let pub_sub_client_manager =
+    let mut pub_sub_client_manager =
         IotMqttClientManager::new_iot_connection_manager(configurations.get_config());
-    let iot_client: Box<dyn PubSubClient + Send + Sync> =
+    let mut iot_client: Box<dyn PubSubClient + Send + Sync> =
         pub_sub_client_manager.new_pub_sub_client().await?;
+
+    // Get the next pending IoT job that's in progress when edge process starts up.
+    // For remote operations such as reboot device, there wll be pending job execution that needs to be mark completed when edge process boots up.
+    let next_pending_job_exec = pub_sub_client_manager
+        .get_next_pending_job_execution(iot_client.borrow_mut())
+        .await
+        .unwrap_or(Some(json! {{}}));
+    // Remote operations that trigger device to restart. For example: REBOOT.
+    // Only those those job types are required to be check when device boot up
+    let _ = pub_sub_client_manager
+        .update_in_progress_job_status(iot_client.borrow_mut(), next_pending_job_exec)
+        .await;
 
     let mut iot_shadow_client_provision_for_log = new_iot_shadow_manager(
         settings.get_client_id(),
@@ -133,8 +153,8 @@ async fn main() -> Result<ExitCode, Box<dyn Error>> {
     });
 
     let mut streaming_model =
-        device_streaming_config::get_device_streaming_config_instance(http_client);
-    streaming_model.set_up_services_uri(ip_address).await?;
+        device_streaming_config::get_device_streaming_config_instance(http_client.clone());
+    streaming_model.set_up_services_uri(ip_address.clone()).await?;
     streaming_model
         .bootstrap(
             config_media_path.onvif_account_name.clone(),
@@ -222,12 +242,64 @@ async fn main() -> Result<ExitCode, Box<dyn Error>> {
     let logger_config_tx_clone = logger_config_tx.clone();
     let snapshot_tx_clone = snapshot_tx.clone();
 
+    let mut onvif_client =
+        setup_device_model(http_client.clone(), config_path.clone(), ip_address.clone()).await?;
+
+    // TODO: add flags for conditional compilation
+    let (command_tx, mut command_rx) = channel::<Value>(BUFFER_SIZE);
+    let _command_join_handle = tokio::spawn(async move {
+        let interval = sleep(Duration::from_millis(1));
+        tokio::pin!(interval);
+        loop {
+            select! {
+                Some(command_info) = command_rx.recv() => {
+                    /* expected structure of command_info
+                        {
+                            "job_id": <job-id>,
+                            "command": Command enum,
+                        }
+                    */
+                    let command_type = command_info
+                    .get("command")
+                    .and_then(|command| command.as_str())
+                    .and_then(|command_str| Command::from_str(command_str).ok())
+                    .unwrap_or(Command::Unknown);
+
+                    let job_id_str = command_info
+                    .get("job_id")
+                    .and_then(|job_id| job_id.as_str())
+                    .unwrap_or("no job_id in the payload.");
+
+                    match command_type {
+                        Command::Reboot => {
+                            info!("Trying to reboot device");
+
+                            let res = onvif_client.reboot_device().await;
+                            if res.is_err() {
+                                error!("Error rebooting device: {:?}", res);
+                                update_command_status(CommandStatus::Failed, job_id_str.to_string());
+                            } else {
+                                info!("Initiated reboot");
+                                // do not update status to SUCCEEDED until after edge-process binary is restarted
+                            }
+                        },
+                        Command::Unknown => {
+                            warn!("Unrecognized command");
+                        },
+                    }
+                }
+            }
+        }
+    });
+    let command_tx_clone = command_tx.clone();
+
     let _iot_loop_handle = setup_and_start_iot_event_loop(
         &configurations,
         logger_config_tx_clone,
         snapshot_tx_clone,
         pub_sub_client_manager,
         iot_client,
+        command_tx_clone,
     )
     .await?;
 
@@ -281,4 +353,16 @@ async fn main() -> Result<ExitCode, Box<dyn Error>> {
 fn is_device_state_create_or_enable() -> bool {
     let state = StateManager::get_state();
     state == State::CreateOrEnableSteamingResources
+}
+
+async fn setup_device_model(
+    http_client: Client,
+    config_path: String,
+    ip_address: String,
+) -> Result<Box<dyn DeviceStateModel + Send + Sync>, Box<dyn Error>> {
+    let mut model = get_device_model(http_client);
+
+    // bootstrap the model layer before retrieving any information from the device
+    model.bootstrap(config_path.as_str(), ip_address).await?;
+    Ok(model)
 }

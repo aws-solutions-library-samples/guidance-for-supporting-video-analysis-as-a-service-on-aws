@@ -18,3 +18,7 @@ pub(crate) const ENABLED_FIELD_FROM_CLOUD: &str = "enabled";
 pub(crate) const DISABLED_FIELD_FROM_CLOUD: &str = "disabled";
 pub(crate) const SNAPSHOT_SHADOW_NAME: &str = "snapshot";
 pub(crate) const PRESIGNED_URL_FIELD: &str = "presignedUrl";
+///IoT Jobs execution
+pub const JOB_EXECUTION_FIELD: &str = "execution";
+///IoT Jobs jobId
+pub(crate) const JOB_ID_FIELD: &str = "jobId";

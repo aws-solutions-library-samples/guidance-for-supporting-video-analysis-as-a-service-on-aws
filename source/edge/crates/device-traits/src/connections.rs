@@ -1,3 +1,4 @@
+use crate::command::{Command, CommandStatus};
 use crate::state::State;
 use async_trait::async_trait;
 use mockall::automock;
@@ -53,6 +54,37 @@ pub trait IotClientManager {
     fn received_snapshot_message(&self, msg: &(dyn PubSubMessage + Send + Sync)) -> Option<String>;
     /// Received message to change the state of the device.
     fn received_state_message(&self, msg: &(dyn PubSubMessage + Send + Sync)) -> Option<State>;
+    /// Attempt to update IoT jobs status.  
+    async fn update_command_status(
+        &mut self,
+        status: CommandStatus,
+        job_id: String,
+        factory_mqtt_client: &mut Box<dyn PubSubClient + Send + Sync>,
+    ) -> anyhow::Result<()>;
+    /// Attempt to start next IoT job.  
+    async fn start_next_command(
+        &mut self,
+        factory_mqtt_client: &mut Box<dyn PubSubClient + Send + Sync>,
+    ) -> anyhow::Result<Option<Command>>;
+    /// Get the next pending job execution for a thing.
+    /// https://docs.aws.amazon.com/iot/latest/developerguide/jobs-mqtt-api.html
+    /// Accoding to IoT doc, any job executions with status IN_PROGRESS are returned first.
+    /// Job executions are returned in the order in which they were created.
+    async fn get_next_pending_job_execution(
+        &mut self,
+        factory_mqtt_client: &mut Box<dyn PubSubClient + Send + Sync>,
+    ) -> anyhow::Result<Option<Value>>;
+    /// Update in progress job status when device boots up for REBOOT command
+    async fn update_in_progress_job_status(
+        &mut self,
+        factory_mqtt_client: &mut Box<dyn PubSubClient + Send + Sync>,
+        next_pending_job_exec: Option<Value>,
+    ) -> Result<(), Box<dyn std::error::Error>>;
+    /// Received jobs notify message from cloud and should start new job
+    fn received_jobs_notify_message(
+        &self,
+        msg: &(dyn PubSubMessage + Send + Sync),
+    ) -> Option<String>;
 }
 
 #[async_trait]

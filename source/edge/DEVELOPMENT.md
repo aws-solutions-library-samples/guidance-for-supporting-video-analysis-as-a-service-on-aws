@@ -81,7 +81,7 @@ This crate contains all rust crates related to building the edge process client.
 - `device-traits`, `snapshot-traits`, and `streaming-traits` are a supporting crates to enable local/remote communication.
 - `iot-connections` contains helper functions and utilities for publishing and parsing MQTT messages exchanged between cloud and edge.
 - `mqtt-client` is a wrapper over `rumqttc` which allows the edge process to communicate with AWS IoT.
-- `iot-client` is a wrapper over `aws-iot-sdk` which allows the edge processs to communicate with AWS IoT.
+- `iot-client` is a wrapper over `aws-iot-sdk` which allows the edge process to communicate with AWS IoT.
 - `http-client` is a wrapper over `reqwest`.
 - `onvif-client` is a wrapper over `http-client` which allows the edge process to communicate with the ONVIF service on devices.
 - `snapshot-client` is a wrapper over `http-client` for retrieving snapshots using the URI returned from the ONVIF service.

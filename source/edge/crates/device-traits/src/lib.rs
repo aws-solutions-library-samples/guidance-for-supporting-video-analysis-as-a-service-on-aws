@@ -1,6 +1,7 @@
 /// Utils to organize tokio channels in the system.
 pub mod channel_utils;
 
+pub mod command;
 /// This mod will hold traits related to communications with AWS Cloud services
 pub mod connections;
 pub mod merge;
@@ -28,4 +29,7 @@ pub trait DeviceStateModel: Debug {
 
     ///Get device information in json String format
     async fn get_device_information(&mut self) -> Result<Value, Box<dyn Error>>;
+
+    ///Reboot device
+    async fn reboot_device(&mut self) -> Result<(), Box<dyn Error + Send + Sync>>;
 }

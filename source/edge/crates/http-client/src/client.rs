@@ -4,10 +4,10 @@ use async_trait::async_trait;
 use base64::{engine::general_purpose, Engine as _};
 use http::HeaderValue;
 use mockall::automock;
-use reqwest::{Body, Request, Response};
+use reqwest::{Request, Response};
 use sha256::digest;
 use std::error::Error;
-use tracing::{error, warn};
+use tracing::warn;
 
 /// This trait captures http activities
 #[automock]
@@ -42,13 +42,6 @@ pub trait HttpClient {
         service_uri: String,
         data: Vec<u8>,
     ) -> Result<Response, Box<dyn Error>>;
-
-    /// send firmware file to process 1 by uploading the file through http POST request
-    async fn send_software_update_file(
-        &self,
-        upload_uri: String,
-        firmware_body: Body,
-    ) -> Result<(), ClientError>;
 }
 
 /// a struct to wrap reqwest. Wrapping reqwest client allows implementing the defined trait - HttpClient
@@ -132,31 +125,5 @@ impl HttpClient for HttpClientImpl {
             .expect("Unable to build http put request");
         let res = self.inner.execute(req).await;
         Ok(res.expect("Failed to send http put request"))
-    }
-
-    async fn send_software_update_file(
-        &self,
-        upload_uri: String,
-        firmware_body: Body,
-    ) -> Result<(), ClientError> {
-        match self
-            .inner
-            .post(upload_uri)
-            .header(
-                reqwest::header::CONTENT_TYPE,
-                HeaderValue::from_static("application/x-www-form-urlencoded"),
-            )
-            .body(firmware_body)
-            .build()
-        {
-            Ok(req) => {
-                self.send_http_request(req).await?;
-                Ok(())
-            }
-            Err(e) => {
-                error!("Failed to build the http request for uploading firmware file. {:?}", e);
-                Ok(())
-            }
-        }
     }
 }

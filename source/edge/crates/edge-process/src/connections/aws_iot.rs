@@ -9,13 +9,15 @@ use device_traits::channel_utils::traits::{
     DeviceInformationSetup, IoTServiceSender, IoTServiceSetup,
 };
 use device_traits::channel_utils::ServiceCommunicationManager;
+use device_traits::command::CommandStatus;
 use device_traits::connections::{
     AsyncPubSubClient, IotClientManager, PubSubMessageBuilder, ShadowManager,
 };
 use device_traits::state::{State, StateManager};
 use iot_connections::shadow_manager::IotShadowManager;
 use mqtt_client::builder::MQTTMessageBuilder;
-use serde_json::json;
+use serde_json::{json, Value};
+use std::borrow::BorrowMut;
 use std::path::PathBuf;
 use tokio::select;
 use tokio::sync::mpsc::Sender;
@@ -55,8 +57,9 @@ pub async fn setup_and_start_iot_event_loop(
     config: &ConfigImpl,
     logger_config_tx: Sender<String>,
     snapshot_tx: Sender<String>,
-    pub_sub_client_manager: Box<dyn IotClientManager + Send + Sync>,
+    mut pub_sub_client_manager: Box<dyn IotClientManager + Send + Sync>,
     mut iot_client: AsyncPubSubClient,
+    command_tx: Sender<Value>,
 ) -> anyhow::Result<JoinHandle<()>> {
     // Connections startup sequence.
     ServiceCommunicationManager::create_global_device_information(&config.get_config())
@@ -116,8 +119,23 @@ pub async fn setup_and_start_iot_event_loop(
                             let _ = snapshot_tx.send(message).await;
                         };
 
+                        if let Some(job_id) = pub_sub_client_manager.received_jobs_notify_message(msg_in.as_ref()) {
+                            info!("New IoT Job message received.");
+                            let res = pub_sub_client_manager.start_next_command(iot_client.borrow_mut()).await.unwrap_or(None);
+
+                            if let Some(command) = res {
+                                let _ = command_tx.send(json!({"job_id": job_id, "command": command.as_str()})).await;
+                            } else {
+                                // Set command status to failed if a command is unrecognized
+                                warn!("Unrecognized command");
+                                let _ = pub_sub_client_manager.update_command_status(CommandStatus::Failed, job_id, iot_client.borrow_mut()).await;
+                            }
+
+                        }
+
                         info!("received message :{}", msg_in.get_payload());
                     }
+
                 }
             }
         }
@@ -149,6 +167,32 @@ fn trigger_shadows() {
             iot_sender.try_build_and_send_iot_message(topic.as_str(), payload.to_string())
         {
             panic!("{:?}", e);
+        }
+    }
+}
+
+/// Publish a message to IoT Jobs to update job status.
+pub fn update_command_status(status: CommandStatus, job_id: String) {
+    let mut iot_sender = Box::<ServiceCommunicationManager>::default();
+
+    let payload = json!({"status": status.as_str()});
+
+    let topic = match iot_sender.get_client_id() {
+        Ok(client_id) => {
+            format!("$aws/things/{}/jobs/{}/update", client_id, job_id)
+        }
+        Err(e) => {
+            panic!("{:?}", e);
+        }
+    };
+    // attempt to send mqtt message to update command status max 5 times
+    for i in 1..5 {
+        if let Err(e) =
+            iot_sender.try_build_and_send_iot_message(topic.as_str(), payload.to_string())
+        {
+            error!("Failed to update command status on attempt {}: {:?}", i, e);
+        } else {
+            break;
         }
     }
 }
