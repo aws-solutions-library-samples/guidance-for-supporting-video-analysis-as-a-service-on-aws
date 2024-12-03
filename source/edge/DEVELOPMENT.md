@@ -41,6 +41,13 @@ cargo run -p edge-process -- -c configurations/config.yaml
 ```
 if `config.yaml` is placed in a `configurations` directory and the command is being executed from the root level directory.
 
+### Cross compile for armv7
+The Cargo.toml in edge root directory is configured to cross compile for armv7. To cross compile for other architecture, follow similar pattern 
+
+1. Install cross rs by running `cargo install cross --git https://github.com/cross-rs/cross`
+2. Run `cross build --target armv7-unknown-linux-gnueabihf --release`
+3. If successfully compiled, the binary can be found at `guidance-for-video-analytics-infrastructure-on-aws/source/edge/target/armv7-unknown-linux-gnueabihf/release/edge-process`
+
 ### Sending AI Events to Cloud
 
 By default, edge process will use the API GW with the name "VideoAnalyticsVideoLogisticsAPIGateway" (should match VIDEO_LOGISTICS_API_NAME in common-constructs). To override this, set API_GW_ENDPOINT environment variable to your desired API GW endpoint `export API_GW_ENDPOINT=<endpoint>`.
