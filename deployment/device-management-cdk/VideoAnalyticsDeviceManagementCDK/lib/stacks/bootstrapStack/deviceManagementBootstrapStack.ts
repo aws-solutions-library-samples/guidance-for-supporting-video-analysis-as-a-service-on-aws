@@ -214,56 +214,6 @@ export class DeviceManagementBootstrapStack extends Stack {
       serverAccessLogsPrefix: "access-logs/",
     });
 
-    new CfnRole(this, "PermissionToPublishToSNSRole", {
-      roleName: "PermissionToPublishToSNSRole"!,
-      assumeRolePolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Principal: {
-              Service: ["iot.amazonaws.com"],
-            },
-            Action: ["sts:AssumeRole"],
-          },
-        ],
-      },
-      policies: [
-        {
-          policyName: "SNSWriteAccess",
-          policyDocument: {
-            Version: "2012-10-17",
-            Statement: [
-              {
-                Effect: "Allow",
-                Action: ["sns:Publish"],
-                Resource: [`arn:aws:sns:${this.region}:${this.account}:*`],
-              },
-              {
-                Effect: "Allow",
-                Action: [
-                  "kms:Decrypt",
-                  "kms:Generate*",
-                  "kms:DescribeKey",
-                  "kms:Encrypt",
-                  "kms:ReEncrypt*",
-                ],
-                Resource: [
-                  Stack.of(this).formatArn({
-                    service: "kms",
-                    region: this.region,
-                    account: this.account,
-                    resource: "key/*",
-                    arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-                  }),
-                ],
-              },
-            ],
-          },
-        },
-      ],
-    });
-
     if (deviceKvsRoleAlias == null) {
       throw new Error(
         `A combination of conditions caused 'deviceKvsRoleAlias' to be undefined. Fixit.`
