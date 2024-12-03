@@ -106,11 +106,18 @@ export class ServiceStack extends Stack {
           'execute-api:Invoke'
         ],
         resources: [
+<<<<<<< HEAD
           `arn:aws:apigateway:${this.region}::/restapis`,
           `arn:aws:apigateway:${this.region}::/restapis/*`,
           `arn:aws:execute-api:${this.region}:${this.account}:*/*/*/*`
         ]
       }),
+=======
+          `arn:aws:s3:${props.account}:fwd-rules/*`,
+          `arn:aws:iot:${props.region}:${props.account}:thing/*`
+        ],
+      })
+>>>>>>> e613148 (fixing ARN format for s3)
     ]);
 
     const createSnapshotUploadPathLambda = new Function(this, "CreateSnapshotUploadPathActivity", {
