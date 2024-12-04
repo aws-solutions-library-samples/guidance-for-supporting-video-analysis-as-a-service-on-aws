@@ -8,6 +8,7 @@ use aws_sigv4::http_request::{
 };
 use aws_sigv4::sign::v4;
 use aws_types::region::Region;
+use base64::{engine::general_purpose, Engine as _};
 use iot_client::client::IotCredentialProvider;
 use iot_client::error::IoTClientError::ClientError;
 use reqwest::header::{HeaderMap, HeaderValue};
@@ -122,7 +123,8 @@ impl VideoAnalyticsClient {
         let uri_string = format!("{}/import-media-object", self.api_gw_endpoint.as_ref().unwrap());
         let body = json!({
             "deviceId": device_id,
-            "mediaObject": media_object
+            // Gson's (cloud json parser) default behavior encodes the byte array as a Base64 string
+            "mediaObject": general_purpose::STANDARD.encode(media_object),
         });
         let body_string = body.to_string();
 
