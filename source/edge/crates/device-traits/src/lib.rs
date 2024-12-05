@@ -27,9 +27,21 @@ pub trait DeviceStateModel: Debug {
         ip_address: String,
     ) -> Result<(), Box<dyn Error>>;
 
-    ///Get device information in json String format
+    /// Get device information in json String format
     async fn get_device_information(&mut self) -> Result<Value, Box<dyn Error>>;
 
-    ///Reboot device
+    /// Reboot device
     async fn reboot_device(&mut self) -> Result<(), Box<dyn Error + Send + Sync>>;
+
+    /// Get video encoder configuration in json format (aligned with cloud)
+    async fn get_video_encoder_configurations(
+        &mut self,
+    ) -> Result<Value, Box<dyn Error + Send + Sync>>;
+
+    /// Set video encoder configuration with json format (aligned with cloud)
+    async fn set_video_encoder_configuration(
+        &mut self,
+        reference_token: String,
+        video_settings: Value,
+    ) -> Result<(), Box<dyn Error>>;
 }

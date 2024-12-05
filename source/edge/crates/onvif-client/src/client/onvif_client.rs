@@ -28,6 +28,16 @@ use crate::wsdl_rs::media::{
     GetProfiles, GetProfilesResponse, GetSnapshotUri, GetSnapshotUriResponse, GetStreamUri,
     GetStreamUriResponse, StreamSetup, StreamType, Transport, TransportProtocol,
 };
+use crate::wsdl_rs::media20::{
+    GetVideoEncoderConfigurations, GetVideoEncoderConfigurationsResponse,
+    SetVideoEncoderConfiguration, SetVideoEncoderConfigurationResponse,
+};
+use crate::xsd_rs::onvif_xsd::{VideoEncoder2Configuration, VideoRateControl2};
+
+use crate::client::constant::{
+    BIT_RATE_FIELD, BIT_RATE_TYPE_FIELD, CODEC_FIELD, FRAME_RATE_FIELD, GOP_RANGE_FIELD,
+    NAME_FIELD, RESOLUTION_FIELD,
+};
 
 /// struct to hold credential from GetUsers onvif call
 /// suppressing the warning for derive Debug, since credential shouldn't be printed at all
@@ -291,7 +301,7 @@ where
             self.sign_onvif_request_with_digest_and_send(get_apps_info_no_digest.borrow()).await?;
 
         let get_apps_info_resp: GetAppsInfoResponse = soap::deserialize(resp_str.as_str())?;
-        debug!("Rust struct Response from get_apps_info: {:?}", get_apps_info_resp);
+        debug!("Rust struct response from get_apps_info: {:?}", get_apps_info_resp);
         Ok(get_apps_info_resp)
     }
 
@@ -314,7 +324,7 @@ where
             .await?;
 
         let media_services_profiles: GetProfilesResponse = soap::deserialize(resp.as_str())?;
-        info!("Rust struct Response from get_profiles: {:?}", media_services_profiles);
+        debug!("Rust struct response from get_profiles: {:?}", media_services_profiles);
         Ok(media_services_profiles)
     }
 
@@ -336,6 +346,150 @@ where
             soap::deserialize(onvif_response_str.as_str())?;
 
         info!("System reboot ONVIF request was sent to process 1 successfully. Response from process 1: {:?}", system_reboot_resp.message);
+        Ok(())
+    }
+
+    /// Send request to Onvif server to get current video encoder configuration
+    #[instrument]
+    async fn get_video_encoder_configurations_media20(
+        &mut self,
+        configuration_token: Option<String>,
+    ) -> Result<GetVideoEncoderConfigurationsResponse, OnvifClientError> {
+        let get_video_encoder_configurations_onvif_struct: GetVideoEncoderConfigurations =
+            GetVideoEncoderConfigurations { profile_token: None, configuration_token };
+        let get_video_encoder_configurations_no_digest_body =
+            soap::serialize(&get_video_encoder_configurations_onvif_struct)?;
+
+        // create and send onvif request
+        let get_video_encoder_configurations_onvif_request_no_digest = self.create_onvif_request(
+            self.get_service_uri(OnvifServiceName::DeviceService)?,
+            get_video_encoder_configurations_no_digest_body,
+        )?;
+
+        let resp = self
+            .sign_onvif_request_with_digest_and_send(
+                get_video_encoder_configurations_onvif_request_no_digest.borrow(),
+            )
+            .await?;
+
+        let get_video_encoder_configurations: GetVideoEncoderConfigurationsResponse =
+            soap::deserialize(resp.as_str())?;
+        debug!(
+            "Rust struct response from get_video_encoder_configurations: {:?}",
+            get_video_encoder_configurations
+        );
+        Ok(get_video_encoder_configurations)
+    }
+
+    /// Send request to Onvif server to set video encoder configuration
+    #[instrument]
+    async fn set_video_encoder_configuration_media20(
+        &mut self,
+        reference_token: String,
+        vec_settings: Value,
+    ) -> Result<(), Box<dyn Error>> {
+        /* expected structure of vec_settings
+            {
+                "name": "VideoEncoderConfig1"
+                "codec": "H264",
+                "bitRateType": "VBR",
+                "frameRate": 15,
+                "resolution": "1920x1080",
+                "bitRate": 1024,
+                "gopRange": 60
+            }
+        */
+
+        let get_video_encoder_configurations_response =
+            self.get_video_encoder_configurations_media20(Some(reference_token.clone())).await?;
+        let mut vec = get_video_encoder_configurations_response
+            .configurations
+            .first()
+            .ok_or(OnvifClientError::OnvifGetVideoEncoderConfigurationsError)?
+            .to_owned();
+        let desired_vec: VideoEncoder2Configuration = serde_json::from_value(vec_settings.clone())?;
+        // Need to merge desired vec with current vec so that required fields are populated
+
+        if vec_settings.get(NAME_FIELD).is_some() {
+            vec.name = desired_vec.name
+        }
+
+        // Note: gstreamer pipeline only supports H264
+        if vec_settings.get(CODEC_FIELD).is_some() {
+            vec.encoding = desired_vec.encoding
+        }
+
+        // JPEG does not suport GOV length
+        if vec.encoding.eq("JPEG") {
+            vec.gov_length = None;
+        } else if vec_settings.get(GOP_RANGE_FIELD).is_some() {
+            vec.gov_length = desired_vec.gov_length;
+        }
+
+        if vec_settings.get(RESOLUTION_FIELD).is_some() {
+            vec.resolution = desired_vec.resolution;
+        }
+
+        let desired_rate_control: VideoRateControl2 = serde_json::from_value(vec_settings.clone())?;
+        if let Some(rate_control) = vec.rate_control {
+            if vec_settings.get(FRAME_RATE_FIELD).is_some() {
+                vec.rate_control = Some(VideoRateControl2 {
+                    frame_rate_limit: desired_rate_control.frame_rate_limit,
+                    bitrate_limit: rate_control.bitrate_limit,
+                    constant_bit_rate: rate_control.constant_bit_rate,
+                });
+            }
+
+            if vec_settings.get(BIT_RATE_FIELD).is_some() {
+                vec.rate_control = Some(VideoRateControl2 {
+                    frame_rate_limit: rate_control.frame_rate_limit,
+                    bitrate_limit: desired_rate_control.bitrate_limit,
+                    constant_bit_rate: rate_control.constant_bit_rate,
+                });
+            }
+
+            if vec_settings.get(BIT_RATE_TYPE_FIELD).is_some() {
+                vec.rate_control = Some(VideoRateControl2 {
+                    frame_rate_limit: rate_control.frame_rate_limit,
+                    bitrate_limit: rate_control.bitrate_limit,
+                    constant_bit_rate: desired_rate_control.constant_bit_rate,
+                });
+            }
+        } else {
+            // both of these fields are required to define rate_control if it did not exist before
+            if vec_settings.get(FRAME_RATE_FIELD).is_some()
+                && vec_settings.get(BIT_RATE_FIELD).is_some()
+            {
+                vec.rate_control = Some(desired_rate_control)
+            }
+        }
+
+        let set_video_encoder_configuration_onvif_struct: SetVideoEncoderConfiguration =
+            SetVideoEncoderConfiguration { configuration: vec };
+        let set_video_encoder_configuration_no_digest_body =
+            soap::serialize(&set_video_encoder_configuration_onvif_struct)?;
+
+        debug!(
+            "Rust struct request for set_video_encoder_configuration: {:?}",
+            set_video_encoder_configuration_onvif_struct
+        );
+
+        // create and send onvif request
+        let set_video_encoder_configuration_onvif_request_no_digest = self.create_onvif_request(
+            self.get_service_uri(OnvifServiceName::DeviceService)?,
+            set_video_encoder_configuration_no_digest_body,
+        )?;
+
+        let resp = self
+            .sign_onvif_request_with_digest_and_send(
+                set_video_encoder_configuration_onvif_request_no_digest.borrow(),
+            )
+            .await?;
+
+        // if this call returns soap fault, soap::deserialize will pass up the error
+        let _set_vec_resp: SetVideoEncoderConfigurationResponse = soap::deserialize(resp.as_str())?;
+
+        info!("Successfully set VideoEncoderConfiguration {}", reference_token);
         Ok(())
     }
 }
@@ -401,6 +555,62 @@ where
     #[instrument]
     async fn reboot_device(&mut self) -> Result<(), Box<dyn Error + Send + Sync>> {
         self.system_reboot().await?;
+        Ok(())
+    }
+
+    async fn get_video_encoder_configurations(
+        &mut self,
+    ) -> Result<Value, Box<dyn Error + Send + Sync>> {
+        let video_encoder_configurations =
+            self.get_video_encoder_configurations_media20(None).await?;
+
+        let vecs = video_encoder_configurations.configurations;
+
+        let mut video_settings_json = json!({});
+
+        for vec in vecs.iter() {
+            let vec_json = serde_json::to_value(vec)?;
+
+            video_settings_json.merge(&json!({
+                vec.token.to_owned(): vec_json
+            }));
+        }
+
+        let configurations_json = json!({
+            "videoSettings": video_settings_json
+        });
+
+        Ok(configurations_json)
+    }
+
+    #[instrument]
+    async fn set_video_encoder_configuration(
+        &mut self,
+        reference_token: String,
+        vec_settings: Value,
+    ) -> Result<(), Box<dyn Error>> {
+        /* expected structure of vec_settings
+            {
+                "name": "VideoEncoderConfig1"
+                "codec": "H264",
+                "bitRateType": "VBR",
+                "frameRate": 15,
+                "resolution": "1920x1080"
+                "bitRate": 1024,
+                "gopRange": 60
+            }
+        */
+
+        let res = self.set_video_encoder_configuration_media20(reference_token, vec_settings).await;
+        // If SetVideoEncoderConfiguration fails, we do not want to block process 2.
+        // It can try again when it receives the shadow delta again.
+        if res.is_err() {
+            warn!("Failed to set video encoder configuration: {:?}", res)
+        }
+        if res.is_ok() {
+            info!("Successfully set video encoder configuration")
+        }
+
         Ok(())
     }
 }
@@ -565,7 +775,10 @@ mod tests {
     use crate::client::onvif_client::OnvifClient;
     use crate::wsdl_rs::appmgmt::AppInfo;
     use crate::wsdl_rs::devicemgmt::Service;
-    use crate::xsd_rs::onvif_xsd::OnvifVersion;
+    use crate::xsd_rs::onvif_xsd::{
+        Ipaddress, Iptype, MulticastConfiguration, OnvifVersion, VideoEncoder2Configuration,
+        VideoResolution2,
+    };
 
     use super::*;
 
@@ -1212,12 +1425,136 @@ mod tests {
         assert!(system_reboot_resp.is_ok());
     }
 
+    async fn verify_get_video_encoder_configuration() {
+        // Arrange
+        let mut mock_http_client = MockHttpClient::default();
+
+        let mut get_video_encoder_configuration_http_response_ok: http_Response<String> =
+            http_Response::default();
+        *get_video_encoder_configuration_http_response_ok.status_mut() = StatusCode::OK;
+        get_video_encoder_configuration_http_response_ok
+            .body_mut()
+            .push_str(GET_VIDEO_ENCODER_CONFIGURATIONS_RESPONSE_BODY);
+        get_video_encoder_configuration_http_response_ok
+            .headers_mut()
+            .insert(WWW_AUTHENTICATE, HeaderValue::from_static(DIGEST_CHALLENGE));
+        let get_video_encoder_configuration_response_ok =
+            Response::from(get_video_encoder_configuration_http_response_ok);
+
+        mock_http_client.expect_add_header_to_http_request().return_once(|_, _| {
+            Ok(get_video_encoder_configurations_request_with_valid_digest_header())
+        });
+        mock_http_client
+            .expect_send_http_request()
+            .return_once(|_| Ok(get_video_encoder_configuration_response_ok));
+
+        let mut onvif_client = OnvifClient::new(mock_http_client);
+        onvif_client
+            .service_paths
+            .insert(OnvifServiceName::DeviceService, DEVICE_SERVICE_URI.to_string());
+
+        onvif_client.set_digest_params(&digest_in_http_response_header());
+        onvif_client.credential = Some(generate_onvif_credential());
+
+        // Act
+        let vecs_resp = onvif_client.get_video_encoder_configurations_media20(None).await.unwrap();
+
+        // Assert
+        assert_eq!(vecs_resp, get_video_encoder_configurations_response());
+    }
+
+    #[tokio::test]
+    async fn verify_set_video_encoder_configuration() {
+        // Arrange
+        let mut mock_http_client = MockHttpClient::default();
+
+        // calling get_video_encoder_configurations to get default settings
+        mock_http_client
+            .expect_create_http_request_with_body()
+            .times(1)
+            .return_once(|_uri, _body| Ok(get_video_encoder_configurations_request_no_digest()));
+
+        let mut get_video_encoder_configuration_http_response_ok: http_Response<String> =
+            http_Response::default();
+        *get_video_encoder_configuration_http_response_ok.status_mut() = StatusCode::OK;
+        get_video_encoder_configuration_http_response_ok
+            .body_mut()
+            .push_str(GET_VIDEO_ENCODER_CONFIGURATIONS_RESPONSE_BODY);
+        get_video_encoder_configuration_http_response_ok
+            .headers_mut()
+            .insert(WWW_AUTHENTICATE, HeaderValue::from_static(DIGEST_CHALLENGE));
+        let get_video_encoder_configuration_response_ok =
+            Response::from(get_video_encoder_configuration_http_response_ok);
+
+        mock_http_client.expect_add_header_to_http_request().times(1).return_once(|_, _| {
+            Ok(get_video_encoder_configurations_request_with_valid_digest_header())
+        });
+
+        mock_http_client
+            .expect_send_http_request()
+            .times(1)
+            .return_once(|_| Ok(get_video_encoder_configuration_response_ok));
+
+        // using input and default settings to pass to set_video_encoder_configuration
+        mock_http_client
+            .expect_create_http_request_with_body()
+            .times(1)
+            .return_once(|_uri, _body| Ok(set_video_encoder_configuration_request_no_digest()));
+
+        let mut set_video_encoder_configuration_http_response_ok: http_Response<String> =
+            http_Response::default();
+        *set_video_encoder_configuration_http_response_ok.status_mut() = StatusCode::OK;
+        set_video_encoder_configuration_http_response_ok
+            .body_mut()
+            .push_str(SET_VIDEO_ENCODER_CONFIGURATION_RESPONSE_BODY);
+        set_video_encoder_configuration_http_response_ok
+            .headers_mut()
+            .insert(WWW_AUTHENTICATE, HeaderValue::from_static(DIGEST_CHALLENGE));
+        let set_video_encoder_configuration_response_ok =
+            Response::from(set_video_encoder_configuration_http_response_ok);
+
+        mock_http_client.expect_add_header_to_http_request().times(1).return_once(|_, _| {
+            Ok(set_video_encoder_configuration_request_with_valid_digest_header())
+        });
+
+        mock_http_client
+            .expect_send_http_request()
+            .times(1)
+            .return_once(|_| Ok(set_video_encoder_configuration_response_ok));
+
+        let mut onvif_client = OnvifClient::new(mock_http_client);
+        onvif_client
+            .service_paths
+            .insert(OnvifServiceName::DeviceService, DEVICE_SERVICE_URI.to_string());
+
+        onvif_client.set_digest_params(&digest_in_http_response_header());
+        onvif_client.credential = Some(generate_onvif_credential());
+
+        // Act
+        let desired_settings = json!({
+            NAME_FIELD: "VideoEncoderConfig1",
+            CODEC_FIELD: "H264",
+            GOP_RANGE_FIELD: 30,
+            RESOLUTION_FIELD: "1920x1080",
+            BIT_RATE_TYPE_FIELD: "VBR",
+            FRAME_RATE_FIELD: 10,
+            BIT_RATE_FIELD: 4000,
+        });
+
+        let set_vec_resp = onvif_client
+            .set_video_encoder_configuration_media20(String::from("vec1"), desired_settings)
+            .await;
+
+        // Assert
+        assert!(set_vec_resp.is_ok());
+    }
+
     const DIGEST_USERNAME: &str = VIDEO_ANALYTICS;
 
     const DIGEST_PASSWORD: &str = "videoanalytics12345";
 
     const ENCODED_DIGEST_PASSWORD: &str = "wq7ap7w9Q6Ns83QUrUkZlw==";
-    
+
     const CNONCE: &str = r#"62d82aa9ca59e3a04cd1"#;
 
     // EXPIRED_CNONCE and CNONCE are just random strings in the test. We do not check the expiration of these values in anyway.
@@ -1832,4 +2169,148 @@ mod tests {
     </SOAP-ENV:Body>
     </SOAP-ENV:Envelope>    
     "#;
+
+    const GET_VIDEO_ENCODER_CONFIGURATIONS_REQUEST_BODY: &str = r#"
+        <s:Envelope xmlns:s="http://www.w3.org/2003/05/soap-envelope" xmlns:tr2="http://www.onvif.org/ver20/media/wsdl"">
+            <s:Header>
+            </s:Header>
+            <s:Body xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+                <tr2:GetVideoEncoderConfigurations>
+                </tr2:GetVideoEncoderConfigurations>
+            </s:Body>
+        </s:Envelope>
+    "#;
+
+    const GET_VIDEO_ENCODER_CONFIGURATIONS_RESPONSE_BODY: &str = r#"<?xml version="1.0" encoding="UTF-8"?>
+        <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://www.w3.org/2003/05/soap-envelope" xmlns:SOAP-ENC="http://www.w3.org/2003/05/soap-encoding" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:chan="http://schemas.microsoft.com/ws/2005/02/duplex" xmlns:wsa5="http://www.w3.org/2005/08/addressing" xmlns:c14n="http://www.w3.org/2001/10/xml-exc-c14n#" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:saml1="urn:oasis:names:tc:SAML:1.0:assertion" xmlns:saml2="urn:oasis:names:tc:SAML:2.0:assertion" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:xenc="http://www.w3.org/2001/04/xmlenc#" xmlns:wsc="http://docs.oasis-open.org/ws-sx/ws-secureconversation/200512" xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" xmlns:xmime="http://tempuri.org/xmime.xsd" xmlns:xop="http://www.w3.org/2004/08/xop/include" xmlns:ns2="http://www.onvif.org/ver20/analytics/humanface" xmlns:ns3="http://www.onvif.org/ver20/analytics/humanbody" xmlns:wsrfbf="http://docs.oasis-open.org/wsrf/bf-2" xmlns:wstop="http://docs.oasis-open.org/wsn/t-1" xmlns:tt="http://www.onvif.org/ver10/schema" xmlns:wsrfr="http://docs.oasis-open.org/wsrf/r-2" xmlns:ns1="http://www.onvif.org/ver20/media/wsdl" xmlns:tan="http://www.onvif.org/ver20/analytics/wsdl" xmlns:tds="http://www.onvif.org/ver10/device/wsdl" xmlns:tev="http://www.onvif.org/ver10/events/wsdl" xmlns:wsnt="http://docs.oasis-open.org/wsn/b-2" xmlns:timg="http://www.onvif.org/ver20/imaging/wsdl" xmlns:tmd="http://www.onvif.org/ver10/deviceIO/wsdl" xmlns:tptz="http://www.onvif.org/ver20/ptz/wsdl" xmlns:trt="http://www.onvif.org/ver10/media/wsdl" xmlns:ns4="http://www.onvif.org/ver10/appmgmt/wsdl" xmlns:ter="http://www.onvif.org/ver10/error" xmlns:tns1="http://www.onvif.org/ver10/topics">
+        <SOAP-ENV:Header/>
+        <SOAP-ENV:Body>
+            <ns1:GetVideoEncoderConfigurationsResponse>
+            <ns1:Configurations token="vec1" GovLength="30" Profile="High">
+                <tt:Name>VideoEncoderConfig1</tt:Name>
+                <tt:UseCount>1</tt:UseCount>
+                <tt:Encoding>H264</tt:Encoding>
+                <tt:Resolution>
+                <tt:Width>1920</tt:Width>
+                <tt:Height>1080</tt:Height>
+                </tt:Resolution>
+                <tt:RateControl ConstantBitRate="false">
+                <tt:FrameRateLimit>30</tt:FrameRateLimit>
+                <tt:BitrateLimit>4000</tt:BitrateLimit>
+                </tt:RateControl>
+                <tt:Multicast>
+                <tt:Address>
+                    <tt:Type>IPv4</tt:Type>
+                    <tt:IPv4Address>239.248.143.12</tt:IPv4Address>
+                </tt:Address>
+                <tt:Port>26384</tt:Port>
+                <tt:TTL>64</tt:TTL>
+                <tt:AutoStart>false</tt:AutoStart>
+                </tt:Multicast>
+                <tt:Quality>0</tt:Quality>
+            </ns1:Configurations>
+            </ns1:GetVideoEncoderConfigurationsResponse>
+        </SOAP-ENV:Body>
+        </SOAP-ENV:Envelope>
+    "#;
+
+    fn get_video_encoder_configurations_request_no_digest() -> Request {
+        build_request_no_digest(MEDIA_SERVICE_URI, GET_VIDEO_ENCODER_CONFIGURATIONS_REQUEST_BODY)
+    }
+
+    fn get_video_encoder_configurations_request_with_valid_digest_header() -> Request {
+        build_request_with_valid_digest_header(
+            MEDIA_SERVICE_URI,
+            GET_VIDEO_ENCODER_CONFIGURATIONS_REQUEST_BODY,
+        )
+    }
+
+    fn get_video_encoder_configurations_response() -> GetVideoEncoderConfigurationsResponse {
+        let resolution = VideoResolution2 { width: 1920, height: 1080 };
+
+        let rate_control = VideoRateControl2 {
+            constant_bit_rate: Some(false),
+            frame_rate_limit: 30.0,
+            bitrate_limit: 4000,
+        };
+
+        let address = Ipaddress {
+            _type: Iptype::Ipv4,
+            i_pv_4_address: Some(String::from("239.248.143.12")),
+            i_pv_6_address: None,
+        };
+
+        let multicast = MulticastConfiguration { address, port: 26384, ttl: 64, auto_start: false };
+
+        GetVideoEncoderConfigurationsResponse {
+            configurations: vec![VideoEncoder2Configuration {
+                token: String::from("vec1"),
+                gov_length: Some(30),
+                profile: Some(String::from("High")),
+                name: String::from("VideoEncoderConfig1"),
+                use_count: 1,
+                encoding: String::from("H264"),
+                resolution,
+                rate_control: Some(rate_control),
+                multicast: Some(multicast),
+                quality: 0.0,
+                guaranteed_frame_rate: None,
+            }],
+        }
+    }
+
+    const SET_VIDEO_ENCODER_CONFIGURATION_REQUEST_BODY: &str = r#"
+        <s:Envelope xmlns:s="http://www.w3.org/2003/05/soap-envelope" xmlns:tr2="http://www.onvif.org/ver20/media/wsdl" xmlns:
+        tt="http://www.onvif.org/ver10/schema">
+        <s:Header>
+        </s:Header>
+        <s:Body xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+            <tr2:SetVideoEncoderConfiguration>
+            <tr2:Configuration token="vec1" GovLength="30" Profile="High">
+                <tt:Name>VideoEncoderConfig1</tt:Name>
+                <tt:UseCount>1</tt:UseCount>
+                <tt:Encoding>H264</tt:Encoding>
+                <tt:Resolution>
+                <tt:Width>1920</tt:Width>
+                <tt:Height>1080</tt:Height>
+                </tt:Resolution>
+                <tt:RateControl ConstantBitRate="false">
+                <tt:FrameRateLimit>10</tt:FrameRateLimit>
+                <tt:BitrateLimit>4000</tt:BitrateLimit>
+                </tt:RateControl>
+                <tt:Multicast>
+                <tt:Address>
+                <tt:Type>IPv4</tt:Type>
+                <tt:IPv4Address>239.248.170.3</tt:IPv4Address>
+                </tt:Address>
+                <tt:Port>26384</tt:Port>
+                <tt:TTL>64</tt:TTL>
+                <tt:AutoStart>false</tt:AutoStart>
+                </tt:Multicast>
+                <tt:Quality>0</tt:Quality>
+                </ns1:Configurations>
+            </tr2:SetVideoEncoderConfiguration>
+        </s:Body>
+        </s:Envelope>
+    "#;
+
+    const SET_VIDEO_ENCODER_CONFIGURATION_RESPONSE_BODY: &str = r#"<?xml version="1.0" encoding="UTF-8"?>
+        <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://www.w3.org/2003/05/soap-envelope" xmlns:SOAP-ENC="http://www.w3.org/2003/05/soap-encoding" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:chan="http://schemas.microsoft.com/ws/2005/02/duplex" xmlns:wsa5="http://www.w3.org/2005/08/addressing" xmlns:c14n="http://www.w3.org/2001/10/xml-exc-c14n#" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:saml1="urn:oasis:names:tc:SAML:1.0:assertion" xmlns:saml2="urn:oasis:names:tc:SAML:2.0:assertion" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:xenc="http://www.w3.org/2001/04/xmlenc#" xmlns:wsc="http://docs.oasis-open.org/ws-sx/ws-secureconversation/200512" xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" xmlns:xmime="http://tempuri.org/xmime.xsd" xmlns:xop="http://www.w3.org/2004/08/xop/include" xmlns:ns2="http://www.onvif.org/ver20/analytics/humanface" xmlns:ns3="http://www.onvif.org/ver20/analytics/humanbody" xmlns:wsrfbf="http://docs.oasis-open.org/wsrf/bf-2" xmlns:wstop="http://docs.oasis-open.org/wsn/t-1" xmlns:tt="http://www.onvif.org/ver10/schema" xmlns:wsrfr="http://docs.oasis-open.org/wsrf/r-2" xmlns:ns1="http://www.onvif.org/ver20/media/wsdl" xmlns:tan="http://www.onvif.org/ver20/analytics/wsdl" xmlns:tds="http://www.onvif.org/ver10/device/wsdl" xmlns:tev="http://www.onvif.org/ver10/events/wsdl" xmlns:wsnt="http://docs.oasis-open.org/wsn/b-2" xmlns:timg="http://www.onvif.org/ver20/imaging/wsdl" xmlns:tmd="http://www.onvif.org/ver10/deviceIO/wsdl" xmlns:tptz="http://www.onvif.org/ver20/ptz/wsdl" xmlns:trt="http://www.onvif.org/ver10/media/wsdl" xmlns:ns4="http://www.onvif.org/ver10/appmgmt/wsdl" xmlns:ter="http://www.onvif.org/ver10/error" xmlns:tns1="http://www.onvif.org/ver10/topics">
+        <SOAP-ENV:Header/>
+        <SOAP-ENV:Body>
+            <ns1:SetVideoEncoderConfigurationResponse/>
+        </SOAP-ENV:Body>
+        </SOAP-ENV:Envelope>
+    "#;
+
+    fn set_video_encoder_configuration_request_no_digest() -> Request {
+        build_request_no_digest(MEDIA_SERVICE_URI, SET_VIDEO_ENCODER_CONFIGURATION_REQUEST_BODY)
+    }
+
+    fn set_video_encoder_configuration_request_with_valid_digest_header() -> Request {
+        build_request_with_valid_digest_header(
+            MEDIA_SERVICE_URI,
+            SET_VIDEO_ENCODER_CONFIGURATION_REQUEST_BODY,
+        )
+    }
 }

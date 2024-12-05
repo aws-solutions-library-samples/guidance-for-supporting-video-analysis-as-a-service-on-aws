@@ -3,7 +3,7 @@ use anyhow::anyhow;
 use async_trait::async_trait;
 use device_traits::channel_utils::traits::IoTServiceSender;
 use device_traits::{
-    connections::{PubSubMessage, PubSubMessageBuilder, QoS, ShadowManager},
+    connections::{PubSubMessage, PubSubMessageBuilder, ShadowManager},
     merge::Merge,
 };
 use serde_json::{json, Value};
@@ -22,8 +22,6 @@ pub struct IotShadowManager {
     // Name of the shadow, optional as classic shadows do not have a name.
     // If no name is provided this will assume a classic shadow.
     pub(crate) shadow_name: Option<String>,
-    // Quality of service of MQTT messages + subscriptions.
-    pub(crate) quality_of_service: QoS,
     // Used to send messages to be published by MQTT client.
     pub(crate) iot_channel: Box<dyn IoTServiceSender + Send + Sync>,
     // Used to hold local shadow document.
@@ -47,6 +45,9 @@ impl ShadowManager for IotShadowManager {
     /// https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-document.html
     #[instrument]
     async fn update_reported_state(&mut self, update_doc: Value) -> anyhow::Result<()> {
+        self.reported_state.merge(&update_doc);
+        debug!("New reported state added to shadow: {}", self.reported_state);
+
         let pub_sub_message = self.build_message_for_shadow_update(update_doc)?;
 
         self.iot_channel.send_iot_message(pub_sub_message).await?;
@@ -66,17 +67,6 @@ impl ShadowManager for IotShadowManager {
             warn!("Could not write shadow's desired state to file : {:?}", e);
         }
         Ok(())
-    }
-
-    /// Get the list of topics the MQTT client must subscribe to receive shadow messages from the cloud.
-    fn get_shadow_topics(&self) -> Vec<(String, QoS)> {
-        let mut output = Vec::new();
-        let prefix = self.get_shadow_topic_prefix();
-
-        for topic_suffix in constants::SHADOW_TOPICS_TO_SUBSCRIBE {
-            output.push((format!("{prefix}/{topic_suffix}"), self.quality_of_service))
-        }
-        output
     }
 
     /// Enable the storage of the desired state in the filesystem.  If device restarts while
@@ -113,7 +103,6 @@ impl IotShadowManager {
         IotShadowManager {
             thing_name: thing_name.to_string(),
             shadow_name,
-            quality_of_service: constants::QUALITY_OF_SERVICE,
             iot_channel,
             reported_state: Value::default(),
             desired_state: Value::default(),
@@ -233,22 +222,6 @@ mod tests {
     const SHADOW_NAME: &str = "ShadowName";
     const CLASSIC_SHADOW_TOPIC_PREFIX: &str = r"$aws/things/ThingName/shadow";
     const NAMED_SHADOW_TOPIC_PREFIX: &str = r"$aws/things/ThingName/shadow/name/ShadowName";
-
-    const GET_ACCEPTED_TOPIC_CLASSIC: &str = r"$aws/things/ThingName/shadow/get/accepted";
-    const GET_REJECTED_TOPIC_CLASSIC: &str = r"$aws/things/ThingName/shadow/get/rejected";
-    const UPDATE_DELTA_CLASSIC: &str = r"$aws/things/ThingName/shadow/update/delta";
-    const UPDATE_ACCEPTED_CLASSIC: &str = r"$aws/things/ThingName/shadow/update/accepted";
-    const UPDATE_REJECTED_CLASSIC: &str = r"$aws/things/ThingName/shadow/update/rejected";
-
-    const GET_ACCEPTED_TOPIC_NAMED: &str =
-        r"$aws/things/ThingName/shadow/name/ShadowName/get/accepted";
-    const GET_REJECTED_TOPIC_NAMED: &str =
-        r"$aws/things/ThingName/shadow/name/ShadowName/get/rejected";
-    const UPDATE_DELTA_NAMED: &str = r"$aws/things/ThingName/shadow/name/ShadowName/update/delta";
-    const UPDATE_ACCEPTED_NAMED: &str =
-        r"$aws/things/ThingName/shadow/name/ShadowName/update/accepted";
-    const UPDATE_REJECTED_NAMED: &str =
-        r"$aws/things/ThingName/shadow/name/ShadowName/update/rejected";
     const UPDATE_NAMED: &str = r"$aws/things/ThingName/shadow/name/ShadowName/update";
 
     /// Test constructor for shadow manager trait, create a named + unnamed shadow
@@ -281,34 +254,6 @@ mod tests {
         let classic_shadow = get_iot_shadow_manager(THING_NAME, None, None);
 
         assert_eq!(classic_shadow.get_shadow_topic_prefix(), CLASSIC_SHADOW_TOPIC_PREFIX);
-    }
-    /// Test the generation of the list of topics the mqtt client must subscribe to utilize shadows.
-    #[tokio::test]
-    async fn get_shadow_topics_classic_shadow_test() {
-        let classic_shadow = get_boxed_shadow_manager(THING_NAME, None, None);
-        let sub_list = classic_shadow.get_shadow_topics();
-        topic_list_helper(
-            sub_list,
-            GET_ACCEPTED_TOPIC_CLASSIC.to_owned(),
-            GET_REJECTED_TOPIC_CLASSIC.to_owned(),
-            UPDATE_DELTA_CLASSIC.to_owned(),
-            UPDATE_ACCEPTED_CLASSIC.to_owned(),
-            UPDATE_REJECTED_CLASSIC.to_owned(),
-        )
-    }
-    /// Test the generation of the list of topics the mqtt client must subscribe to utilize shadows.
-    #[tokio::test]
-    async fn get_shadow_topics_named_shadow_test() {
-        let named_shadow = get_boxed_shadow_manager(THING_NAME, Some(SHADOW_NAME.to_owned()), None);
-        let sub_list = named_shadow.get_shadow_topics();
-        topic_list_helper(
-            sub_list,
-            GET_ACCEPTED_TOPIC_NAMED.to_owned(),
-            GET_REJECTED_TOPIC_NAMED.to_owned(),
-            UPDATE_DELTA_NAMED.to_owned(),
-            UPDATE_ACCEPTED_NAMED.to_owned(),
-            UPDATE_REJECTED_NAMED.to_owned(),
-        )
     }
     ///Test message format of shadow update helper function.
     #[tokio::test]
@@ -363,23 +308,6 @@ mod tests {
 
         let new_device_state = json!({"status":"enabled","connected":"true"});
         named_shadow.update_reported_state(new_device_state.clone()).await.unwrap();
-    }
-
-    //Simple helper to ensure list has all required topics to subscribe too.
-    fn topic_list_helper(
-        topic_list: Vec<(String, QoS)>,
-        get_accepted_topic: String,
-        get_rejected_topic: String,
-        update_delta_topic: String,
-        update_accepted_topic: String,
-        update_rejected_topic: String,
-    ) {
-        assert_eq!(topic_list.len(), 5);
-        assert!(topic_list.contains(&(get_accepted_topic, constants::QUALITY_OF_SERVICE)));
-        assert!(topic_list.contains(&(get_rejected_topic, constants::QUALITY_OF_SERVICE)));
-        assert!(topic_list.contains(&(update_delta_topic, constants::QUALITY_OF_SERVICE)));
-        assert!(topic_list.contains(&(update_accepted_topic, constants::QUALITY_OF_SERVICE)));
-        assert!(topic_list.contains(&(update_rejected_topic, constants::QUALITY_OF_SERVICE)));
     }
     /// Helper function to create IoTShadowManagers for tests
     fn get_iot_shadow_manager(

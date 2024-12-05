@@ -29,8 +29,6 @@ pub trait ShadowManager {
     /// The cloud may not receive the update until device connects.
     async fn update_desired_state(&mut self, update_doc: Value) -> anyhow::Result<()>;
 
-    /// Get the list of topics the MQTT client must subscribe to receive shadow messages from the cloud.
-    fn get_shadow_topics(&self) -> Vec<(String, QoS)>;
     /// Turn on local storage of Shadow's desired state set by the cloud.  This is used to
     /// restore a device to the last instructed state in the event of a restart while disconnected from the cloud.
     async fn enable_storage(&mut self) -> anyhow::Result<()>;
@@ -45,6 +43,12 @@ pub trait IotClientManager {
     async fn new_pub_sub_client(&self) -> anyhow::Result<AsyncPubSubClient>;
     /// Create a new pub sub message for IoT communication.
     fn new_pub_sub_message(&self) -> Box<dyn PubSubMessage + Send + Sync>;
+    /// Attempt to publish video settings to AWS IoT.  
+    async fn publish_video_settings(
+        &mut self,
+        video_settings: Value,
+        factory_mqtt_client: &mut Box<dyn PubSubClient + Send + Sync>,
+    ) -> anyhow::Result<()>;
     /// Received logger settings message from cloud
     fn received_logger_settings_message(
         &self,
@@ -54,6 +58,11 @@ pub trait IotClientManager {
     fn received_snapshot_message(&self, msg: &(dyn PubSubMessage + Send + Sync)) -> Option<String>;
     /// Received message to change the state of the device.
     fn received_state_message(&self, msg: &(dyn PubSubMessage + Send + Sync)) -> Option<State>;
+    /// Received video settings message from cloud
+    fn received_video_settings_message(
+        &self,
+        msg: &(dyn PubSubMessage + Send + Sync),
+    ) -> Option<Value>;
     /// Attempt to update IoT jobs status.  
     async fn update_command_status(
         &mut self,

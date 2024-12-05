@@ -55,3 +55,25 @@ pub const CONFIG_PATH: &str = "tests/";
 /// digest uri.
 /// Note, certain devices read uri in this format. This may not be true for all ONVIF devices.
 pub const DIGEST_URI: &str = "/onvif/device_service";
+
+/// Video encoder configuration payload fields
+/// name field
+pub const NAME_FIELD: &str = "name";
+
+/// codec field
+pub const CODEC_FIELD: &str = "codec";
+
+/// bitRateType field
+pub const BIT_RATE_TYPE_FIELD: &str = "bitRateType";
+
+/// frameRate field
+pub const FRAME_RATE_FIELD: &str = "frameRate";
+
+/// resolution field
+pub const RESOLUTION_FIELD: &str = "resolution";
+
+/// bitRate field
+pub const BIT_RATE_FIELD: &str = "bitRate";
+
+/// gopRange field
+pub const GOP_RANGE_FIELD: &str = "gopRange";

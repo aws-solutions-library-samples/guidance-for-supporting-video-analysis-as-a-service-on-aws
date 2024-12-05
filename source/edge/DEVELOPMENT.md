@@ -29,7 +29,7 @@ The executable allows for CLI parameters to be entered. The required parameter i
 To execute, enter the following command
 
 ```
-cargo run -- -c "\<path to config file\>"
+cargo run -- -c <path to config file>
 ```
 Eg:
 ```
@@ -40,6 +40,26 @@ if the `config.yaml` is at the same level as the `edge-process` crate. or
 cargo run -p edge-process -- -c configurations/config.yaml
 ```
 if `config.yaml` is placed in a `configurations` directory and the command is being executed from the root level directory.
+
+#### Running with Optional Features
+
+Currently, the optional features available are:
+- config (video encoder configurations)
+  - If a configuration is sent from cloud when the config feature is not enabled, edge process will be no-op.
+- command (reboot command)
+  - If a command is sent from the cloud when the command feature is not enabled on edge, edge process will not receive the message.
+
+To execute, enter the following command
+
+```
+cargo run --features <feature> -- -c <path to config file>
+```
+Eg:
+```
+cargo run --features config -- -c config.yaml
+```
+
+Cargo documentation for [command-line feature options](https://doc.rust-lang.org/cargo/reference/features.html#command-line-feature-options)
 
 ### Cross compile for armv7
 The Cargo.toml in edge root directory is configured to cross compile for armv7. To cross compile for other architecture, follow similar pattern 

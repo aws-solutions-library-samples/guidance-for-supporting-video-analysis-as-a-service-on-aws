@@ -8,6 +8,17 @@ impl TopicHelper {
     pub(crate) fn new(client_id: String, shadow_name: Option<String>) -> Self {
         TopicHelper { client_id, shadow_name }
     }
+    // Get topic for updating an IoT shadow.
+    pub(crate) fn get_shadow_update_topic(&self) -> String {
+        match self.shadow_name.to_owned() {
+            None => {
+                format!("$aws/things/{}/shadow/update", self.client_id)
+            }
+            Some(name) => {
+                format!("$aws/things/{}/shadow/name/{}/update", self.client_id, name)
+            }
+        }
+    }
     pub(crate) fn get_shadow_update_delta_topic(&self) -> String {
         match self.shadow_name.to_owned() {
             None => {
@@ -37,6 +48,9 @@ impl TopicHelper {
                 format!("$aws/things/{}/shadow/name/{}/update/rejected", self.client_id, name)
             }
         }
+    }
+    pub(crate) fn get_shadow_name(&self) -> String {
+        self.shadow_name.to_owned().unwrap_or("shadow_name doesn't exist".to_string())
     }
     pub(crate) fn get_jobs_notify_topic(&self) -> String {
         format!("$aws/things/{}/jobs/notify", self.client_id)
@@ -90,9 +104,11 @@ mod tests {
 
     const CLIENT_ID: &str = "ThingName";
     const SHADOW_NAME: &str = "ShadowName";
+    const UPDATE_CLASSIC: &str = r"$aws/things/ThingName/shadow/update";
     const UPDATE_DELTA_CLASSIC: &str = r"$aws/things/ThingName/shadow/update/delta";
     const UPDATE_ACCEPTED_CLASSIC: &str = r"$aws/things/ThingName/shadow/update/accepted";
     const UPDATE_REJECTED_CLASSIC: &str = r"$aws/things/ThingName/shadow/update/rejected";
+    const UPDATE_NAMED: &str = r"$aws/things/ThingName/shadow/name/ShadowName/update";
     const UPDATE_DELTA_NAMED: &str = r"$aws/things/ThingName/shadow/name/ShadowName/update/delta";
     const UPDATE_ACCEPTED_NAMED: &str =
         r"$aws/things/ThingName/shadow/name/ShadowName/update/accepted";
@@ -120,6 +136,15 @@ mod tests {
         r"$aws/things/ThingName/jobs/$next/get/rejected";
 
     #[test]
+    fn get_update_topic_named_and_unnamed() {
+        let unnamed_topic_helper = get_unnamed_topic_helper();
+        assert_eq!(unnamed_topic_helper.get_shadow_update_topic(), UPDATE_CLASSIC);
+
+        let named_topic_helper = get_named_topic_helper();
+        assert_eq!(named_topic_helper.get_shadow_update_topic(), UPDATE_NAMED);
+    }
+
+    #[test]
     fn get_update_delta_topic_named_and_unnamed() {
         let unnamed_topic_helper = get_unnamed_topic_helper();
         assert_eq!(unnamed_topic_helper.get_shadow_update_delta_topic(), UPDATE_DELTA_CLASSIC);
@@ -144,6 +169,15 @@ mod tests {
 
         let named_topic_helper = get_named_topic_helper();
         assert_eq!(named_topic_helper.get_shadow_update_rejected(), UPDATE_REJECTED_NAMED);
+    }
+
+    #[test]
+    fn get_shadow_name() {
+        let unnamed_topic_helper = get_unnamed_topic_helper();
+        assert_eq!(unnamed_topic_helper.get_shadow_name(), "shadow_name doesn't exist");
+
+        let named_topic_helper = get_named_topic_helper();
+        assert_eq!(named_topic_helper.get_shadow_name(), SHADOW_NAME);
     }
 
     #[test]

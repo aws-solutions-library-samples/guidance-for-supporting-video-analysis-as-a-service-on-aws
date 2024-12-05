@@ -22,3 +22,6 @@ mqtt-client.workspace = true
 
 [dev-dependencies]
 mockall.workspace = true
+
+[features]
+command = []
