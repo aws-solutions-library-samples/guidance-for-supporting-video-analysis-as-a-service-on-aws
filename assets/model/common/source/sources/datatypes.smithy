@@ -51,3 +51,7 @@ string S3Path
 structure KVSStreamARNs {
     kvsStreamARNForPlayback: String
 }
+
+// The pattern for next tokens rejects new line, carriage return, greater than and less than symbols, ampersand, backslash, and backspace
+@pattern("^[^\\n\\r<>&'\"\\x08]+$")
+string NextToken

@@ -1,4 +1,5 @@
 types/Playback.smithy
+types/VideoTimeline.smithy
 types/ExportVideo.smithy
 types/Inference.smithy
 types/Livestream.smithy
@@ -14,5 +15,8 @@ operations/LivestreamSession/CreateLivestreamSession.smithy
 operations/Snapshot/CreateSnapshotUploadPath.smithy
 operations/RegisterDevice/GetVLRegisterDeviceStatus.smithy
 operations/RegisterDevice/StartVLRegisterDevice.smithy
+operations/VideoTimeline/ListVideoTimelines.smithy
+operations/VideoTimeline/ListDetailedVideoTimeline.smithy
+operations/VideoTimeline/PutVideoTimeline.smithy
 operations/PlaybackSession/CreatePlaybackSession.smithy
 video-analytic.smithy
