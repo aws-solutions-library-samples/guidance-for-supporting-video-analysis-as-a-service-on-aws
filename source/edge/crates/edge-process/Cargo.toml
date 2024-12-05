@@ -41,3 +41,7 @@ streaming-traits.workspace = true
 gstreamer-pipeline.workspace = true
 snapshot-traits.workspace = true
 snapshot-client.workspace = true
+
+[features]
+config = []
+command = []
