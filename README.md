@@ -213,4 +213,4 @@ Include a legal disclaimer
 
 ## Authors (optional)
 
-Name of code contributors
+Name of code contributors.
