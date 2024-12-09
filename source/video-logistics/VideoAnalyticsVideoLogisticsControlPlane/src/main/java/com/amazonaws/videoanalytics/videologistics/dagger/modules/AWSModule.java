@@ -13,6 +13,11 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.kinesisvideo.KinesisVideoClient;
 import software.amazon.awssdk.services.kinesis.KinesisClient;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.http.auth.aws.signer.AwsV4HttpSigner;
+import com.amazonaws.auth.AWSCredentialsProvider;
+import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
+import org.apache.http.HttpRequestInterceptor;
+import io.github.acm19.aws.interceptor.http.AwsRequestSigningApacheInterceptor;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -20,6 +25,9 @@ import javax.inject.Singleton;
 import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.CREDENTIALS_PROVIDER;
 import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.HTTP_CLIENT;
 import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.REGION_NAME;
+import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.OPENSEARCH_INTERCEPTOR_NAME;
+import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.OPENSEARCH_SIGNER_NAME;
+import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.OPENSEARCH_SERVICE_NAME;
 
 import dagger.Module;
 
@@ -104,5 +112,22 @@ public class AWSModule {
                     .retryPolicy(RetryMode.ADAPTIVE)
                     .build())
             .build();
+    }
+
+    @Provides
+    @Singleton
+    @Named(OPENSEARCH_SIGNER_NAME)
+    public AwsV4HttpSigner getOpenSearchAWS4Signer(@Named(REGION_NAME) final String regionName) {
+        return AwsV4HttpSigner.create();
+    }
+
+
+    @Provides
+    @Singleton
+    @Named(OPENSEARCH_INTERCEPTOR_NAME)
+    public HttpRequestInterceptor getOpenSearchSignerInterceptor(final @Named(CREDENTIALS_PROVIDER) AwsCredentialsProvider credentialsProvider,
+                                                                 final @Named(OPENSEARCH_SIGNER_NAME) AwsV4HttpSigner signer,
+                                                                 final @Named(REGION_NAME) String regionName) {
+        return new AwsRequestSigningApacheInterceptor(OPENSEARCH_SERVICE_NAME, signer, credentialsProvider, regionName);
     }
 }
