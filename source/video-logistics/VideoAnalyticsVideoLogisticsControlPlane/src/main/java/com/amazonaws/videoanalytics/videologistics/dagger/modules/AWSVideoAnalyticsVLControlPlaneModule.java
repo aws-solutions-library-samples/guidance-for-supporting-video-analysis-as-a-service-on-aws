@@ -70,6 +70,8 @@ public class AWSVideoAnalyticsVLControlPlaneModule {
     public DynamoDbTable<AggregateVideoTimeline> provideAggregateVideoTimelineTable(DynamoDbEnhancedClient enhancedClient) {
         return enhancedClient.table(SchemaConst.VIDEO_TIMELINE_TABLE_NAME,
                 TableSchema.fromBean(AggregateVideoTimeline.class));
+    }
+
     @Provides
     @Singleton
     public InferenceDeserializer provideInferenceDeserializer(final ObjectMapper objectMapper) {
@@ -81,7 +83,8 @@ public class AWSVideoAnalyticsVLControlPlaneModule {
     public DynamoDbTable<RawVideoTimeline> provideRawVideoTimelineTable(DynamoDbEnhancedClient enhancedClient) {
         return enhancedClient.table(SchemaConst.RAW_VIDEO_TIMELINE_TABLE_NAME,
                 TableSchema.fromBean(RawVideoTimeline.class));
-      
+    }
+
     @Provides
     @Singleton
     public OpenSearchClientProvider getOpenSearchClientProvider(final OpenSearchClientFactory openSearchClientFactory) {
@@ -92,7 +95,8 @@ public class AWSVideoAnalyticsVLControlPlaneModule {
     @Singleton
     public VideoTimelineUtils provideVideoTimelineUtils() {
         return new VideoTimelineUtils();
-      
+    }
+
     @Provides
     @Singleton
     public ThumbnailS3PresignerFactory provideThumbnailS3PresignerFactory() {
