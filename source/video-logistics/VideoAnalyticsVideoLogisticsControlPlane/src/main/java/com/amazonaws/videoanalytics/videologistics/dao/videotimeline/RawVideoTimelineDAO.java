@@ -96,7 +96,7 @@ public class RawVideoTimelineDAO {
         logger.log(String.format("Starting list for raw video timelines for deviceId=%s, " +
                 "startTime=%s, endTime=%s", deviceId, startTimeInMillis, endTimeInMillis));
 
-       String partitionKey = videoTimelineUtils.generateRawPartitionKey(deviceId, RAW_VIDEO_TYPE);
+       String partitionKey = videoTimelineUtils.generateRawPartitionKey(deviceId);
 
         QueryConditional condition = QueryConditional.sortBetween(
                 item -> item.partitionValue(partitionKey).sortValue(startTimeInMillis),

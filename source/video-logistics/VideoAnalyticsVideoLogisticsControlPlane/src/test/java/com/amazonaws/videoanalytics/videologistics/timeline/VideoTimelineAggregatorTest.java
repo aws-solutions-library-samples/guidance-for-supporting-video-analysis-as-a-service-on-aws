@@ -1,8 +1,9 @@
 package com.amazonaws.videoanalytics.videologistics.timeline;
 
-import com.amazonaws.videoanalytics.videologistics.timeline.VideoTimelineAggregator.AggregateVideoTimeline;
-import com.amazonaws.videoanalytics.videologistics.timeline.VideoTimelineAggregator.TimelineStorage;
-import com.amazonaws.videoanalytics.videologistics.timeline.VideoTimelineAggregator.VideoDensityLocation;
+import com.amazonaws.videoanalytics.videologistics.schema.VideoTimeline.AggregateVideoTimeline;
+import com.amazonaws.videoanalytics.videologistics.schema.VideoTimeline.VideoDensityLocation;
+import com.amazonaws.videoanalytics.videologistics.schema.VideoTimeline.TimeIncrementUnits;
+import com.amazonaws.videoanalytics.videologistics.timeline.TimelineStorage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
@@ -21,7 +22,7 @@ public class VideoTimelineAggregatorTest {
     private AggregateVideoTimeline videoTimelineBuilder(Long cloudDensity, Long deviceDensity) {
         return AggregateVideoTimeline.builder()
                 .deviceIdTimeUnit("1234#d123#HOURS")
-                .timeIncrementUnits("HOURS")
+                .timeIncrementUnits(TimeIncrementUnits.HOURS)
                 .cloudDensityInMillis(cloudDensity)
                 .deviceDensityInMillis(deviceDensity)
                 .unitTimestamp(1696442400000L)
@@ -39,7 +40,7 @@ public class VideoTimelineAggregatorTest {
 
     @Test
     public void getTimeBuckets_twoSecondInterval_returnsCorrectBuckets() {
-        String timeIncrementUnits = "SECONDS";
+        TimeIncrementUnits timeIncrementUnits = TimeIncrementUnits.SECONDS;
         Long timestampToBeStored = 1696444404000L;
         Long durationInMillis = 4000L;
 
@@ -65,7 +66,7 @@ public class VideoTimelineAggregatorTest {
 
     @Test
     public void getUpdatedVideoTimeline_emptyMapSingleSecondsBucketCloud_returnsCorrectDensity() {
-        String timeIncrementUnits = "SECONDS";
+        TimeIncrementUnits timeIncrementUnits = TimeIncrementUnits.SECONDS;
         String partialPK = "1234#d123#SECONDS";
         Long timestampToBeStored = 1696444400000L;
         VideoDensityLocation location = VideoDensityLocation.CLOUD;
@@ -81,7 +82,7 @@ public class VideoTimelineAggregatorTest {
 
     @Test
     public void getUpdatedVideoTimeline_nullSingleSecondsBucketDevice_returnsCorrectDensity() {
-        String timeIncrementUnits = "SECONDS";
+        TimeIncrementUnits timeIncrementUnits = TimeIncrementUnits.SECONDS;
         String PK = "1234#d123#SECONDS";
         Long timestampToBeStored = 1696444400000L;
         VideoDensityLocation location = VideoDensityLocation.DEVICE;
@@ -97,7 +98,7 @@ public class VideoTimelineAggregatorTest {
 
     @Test
     public void getUpdatedVideoTimeline_existingObjectHoursBucketCloud_updatesCloudDensity() {
-        String timeIncrementUnits = "HOURS";
+        TimeIncrementUnits timeIncrementUnits = TimeIncrementUnits.HOURS;
         String PK = "1234#d123#HOURS";
         Long timestampToBeStored = 1696444404000L;
         VideoDensityLocation location = VideoDensityLocation.CLOUD;
@@ -115,7 +116,7 @@ public class VideoTimelineAggregatorTest {
 
     @Test
     public void getUpdatedVideoTimeline_existingObjectHoursBucketCatchupTrue_updatesBothDensities() {
-        String timeIncrementUnits = "HOURS";
+        TimeIncrementUnits timeIncrementUnits = TimeIncrementUnits.HOURS;
         String PK = "1234#d123#HOURS";
         Long timestampToBeStored = 1696444404000L;
         VideoDensityLocation location = VideoDensityLocation.CLOUD;
@@ -135,7 +136,7 @@ public class VideoTimelineAggregatorTest {
 
     @Test
     public void getUpdatedVideoTimeline_existingObjectHoursBucketDevice_updatesDeviceDensity() {
-        String timeIncrementUnits = "HOURS";
+        TimeIncrementUnits timeIncrementUnits = TimeIncrementUnits.HOURS;
         String PK = "1234#d123#HOURS";
         Long timestampToBeStored = 1696444404000L;
         VideoDensityLocation location = VideoDensityLocation.DEVICE;

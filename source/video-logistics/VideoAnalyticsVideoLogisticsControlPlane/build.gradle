@@ -109,6 +109,8 @@ dependencies {
     testImplementation 'org.mockito:mockito-core:5.3.1'
     testImplementation 'org.mockito:mockito-junit-jupiter:5.3.1'
     testImplementation 'org.mockito:mockito-inline:3.12.4'
+
+    implementation 'javax.validation:validation-api:2.0.1.Final'
 }
 
 test {

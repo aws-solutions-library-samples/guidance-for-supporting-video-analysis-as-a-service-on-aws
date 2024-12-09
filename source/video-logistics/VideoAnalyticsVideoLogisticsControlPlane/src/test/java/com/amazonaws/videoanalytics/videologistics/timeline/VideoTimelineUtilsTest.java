@@ -1,6 +1,7 @@
 package com.amazonaws.videoanalytics.videologistics.timeline;
 
 import com.amazonaws.videoanalytics.videologistics.exceptions.VideoAnalyticsExceptionMessage;
+import com.amazonaws.videoanalytics.videologistics.schema.VideoTimeline.TimeIncrementUnits;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,21 +24,13 @@ public class VideoTimelineUtilsTest {
 
     @Test
     public void generateTimelinePartitionKey_ValidInput_ReturnsFormattedKey() {
-        String customerId = "837493034878";
         String deviceId = "d123";
-        String timeUnit = "SECONDS";
-        String result = videoTimelineUtils.generateTimelinePartitionKey(customerId, deviceId, timeUnit);
-        assertEquals(customerId + "#" + deviceId + "#" + timeUnit, result);
+        TimeIncrementUnits timeUnit = TimeIncrementUnits.SECONDS;
+        
+        String result = videoTimelineUtils.generateTimelinePartitionKey(deviceId, timeUnit);
+        assertEquals(String.format("%s#%s", deviceId, timeUnit.name()), result);
     }
 
-    @Test
-    public void generateTimelinePartitionKey_NullInput_ThrowsException() {
-        String customerId = "837493034878";
-        String deviceId = null;
-        String timeUnit = "SECONDS";
-        assertThrows(RuntimeException.class, () -> 
-            videoTimelineUtils.generateTimelinePartitionKey(customerId, deviceId, timeUnit));
-    }
 
     @Test
     public void encodedTimestampsToList_ValidInput_ReturnsLongList() {

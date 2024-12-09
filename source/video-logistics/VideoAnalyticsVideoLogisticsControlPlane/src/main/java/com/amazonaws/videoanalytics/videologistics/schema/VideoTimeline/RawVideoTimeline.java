@@ -42,10 +42,10 @@ public class RawVideoTimeline {
     @Getter(onMethod_ = { @DynamoDbAttribute(SchemaConst.LOCATION) })
     private VideoDensityLocation location;
 
-    @Getter(onMethod_ = { @DynamoDbAttribute(SchemaConst.CREATED_AT) })
+    @Getter(onMethod_ = { @DynamoDbAttribute(SchemaConst.CREATED_AT), @DynamoDbConvertedBy(DateAttributeConverter.class) })
     private Date createdAt;
 
-    @Getter(onMethod_ = { @DynamoDbAttribute(SchemaConst.LAST_UPDATED) })
+    @Getter(onMethod_ = { @DynamoDbAttribute(SchemaConst.LAST_UPDATED), @DynamoDbConvertedBy(DateAttributeConverter.class) })
     private Date lastUpdated;
 }
 
