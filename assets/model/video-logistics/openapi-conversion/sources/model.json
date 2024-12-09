@@ -224,6 +224,17 @@
         "com.amazonaws.videoanalytics.videologistics#DetailedFailureReason": {
             "type": "document"
         },
+        "com.amazonaws.videoanalytics.videologistics#DetailedVideoTimeline": {
+            "type": "structure",
+            "members": {
+                "cloud": {
+                    "target": "com.amazonaws.videoanalytics.videologistics#Timelines"
+                },
+                "device": {
+                    "target": "com.amazonaws.videoanalytics.videologistics#Timelines"
+                }
+            }
+        },
         "com.amazonaws.videoanalytics.videologistics#ExportVideo": {
             "type": "resource",
             "operations": [
@@ -475,6 +486,202 @@
         "com.amazonaws.videoanalytics.videologistics#JobRunTimeInMinutes": {
             "type": "double"
         },
+        "com.amazonaws.videoanalytics.videologistics#ListDetailedVideoTimeline": {
+            "type": "operation",
+            "input": {
+                "target": "com.amazonaws.videoanalytics.videologistics#ListDetailedVideoTimelineRequest"
+            },
+            "output": {
+                "target": "com.amazonaws.videoanalytics.videologistics#ListDetailedVideoTimelineResponse"
+            },
+            "errors": [
+                {
+                    "target": "com.amazonaws.videoanalytics#AccessDeniedException"
+                },
+                {
+                    "target": "com.amazonaws.videoanalytics#InternalServerException"
+                },
+                {
+                    "target": "com.amazonaws.videoanalytics#ResourceNotFoundException"
+                },
+                {
+                    "target": "com.amazonaws.videoanalytics#ValidationException"
+                }
+            ],
+            "traits": {
+                "aws.apigateway#integration": {
+                    "type": "aws_proxy",
+                    "httpMethod": "POST",
+                    "uri": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${ListDetailedVideoTimelineActivity}/invocations",
+                    "credentials": "arn:aws:iam::${AWS::AccountId}:role/VideoLogisticsApiGatewayRole"
+                },
+                "smithy.api#http": {
+                    "code": 200,
+                    "method": "POST",
+                    "uri": "/list-detailed-video-timeline"
+                },
+                "smithy.api#paginated": {
+                    "inputToken": "nextToken",
+                    "outputToken": "nextToken"
+                }
+            }
+        },
+        "com.amazonaws.videoanalytics.videologistics#ListDetailedVideoTimelineRequest": {
+            "type": "structure",
+            "members": {
+                "deviceId": {
+                    "target": "com.amazonaws.videoanalytics#DeviceId",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                },
+                "startTime": {
+                    "target": "smithy.api#Timestamp",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                },
+                "endTime": {
+                    "target": "smithy.api#Timestamp",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                },
+                "nextToken": {
+                    "target": "com.amazonaws.videoanalytics#NextToken"
+                }
+            },
+            "traits": {
+                "smithy.api#input": {}
+            }
+        },
+        "com.amazonaws.videoanalytics.videologistics#ListDetailedVideoTimelineResponse": {
+            "type": "structure",
+            "members": {
+                "deviceId": {
+                    "target": "com.amazonaws.videoanalytics#DeviceId"
+                },
+                "startTime": {
+                    "target": "smithy.api#Timestamp"
+                },
+                "endTime": {
+                    "target": "smithy.api#Timestamp"
+                },
+                "detailedVideoTimeline": {
+                    "target": "com.amazonaws.videoanalytics.videologistics#DetailedVideoTimeline"
+                },
+                "nextToken": {
+                    "target": "com.amazonaws.videoanalytics#NextToken"
+                }
+            },
+            "traits": {
+                "smithy.api#output": {}
+            }
+        },
+        "com.amazonaws.videoanalytics.videologistics#ListVideoTimelines": {
+            "type": "operation",
+            "input": {
+                "target": "com.amazonaws.videoanalytics.videologistics#ListVideoTimelinesRequest"
+            },
+            "output": {
+                "target": "com.amazonaws.videoanalytics.videologistics#ListVideoTimelinesResponse"
+            },
+            "errors": [
+                {
+                    "target": "com.amazonaws.videoanalytics#InternalServerException"
+                },
+                {
+                    "target": "com.amazonaws.videoanalytics#ValidationException"
+                }
+            ],
+            "traits": {
+                "aws.apigateway#integration": {
+                    "type": "aws_proxy",
+                    "httpMethod": "POST",
+                    "uri": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${ListVideoTimelinesActivity}/invocations",
+                    "credentials": "arn:aws:iam::${AWS::AccountId}:role/VideoLogisticsApiGatewayRole"
+                },
+                "smithy.api#http": {
+                    "code": 200,
+                    "method": "POST",
+                    "uri": "/list-video-timelines"
+                },
+                "smithy.api#paginated": {
+                    "inputToken": "nextToken",
+                    "outputToken": "nextToken"
+                }
+            }
+        },
+        "com.amazonaws.videoanalytics.videologistics#ListVideoTimelinesRequest": {
+            "type": "structure",
+            "members": {
+                "deviceId": {
+                    "target": "com.amazonaws.videoanalytics#DeviceId",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                },
+                "startTime": {
+                    "target": "smithy.api#Timestamp",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                },
+                "endTime": {
+                    "target": "smithy.api#Timestamp",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                },
+                "timeIncrement": {
+                    "target": "smithy.api#Integer",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                },
+                "timeIncrementUnits": {
+                    "target": "com.amazonaws.videoanalytics.videologistics#TimeIncrementUnits",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                },
+                "nextToken": {
+                    "target": "com.amazonaws.videoanalytics#NextToken"
+                }
+            },
+            "traits": {
+                "smithy.api#input": {}
+            }
+        },
+        "com.amazonaws.videoanalytics.videologistics#ListVideoTimelinesResponse": {
+            "type": "structure",
+            "members": {
+                "deviceId": {
+                    "target": "com.amazonaws.videoanalytics#DeviceId"
+                },
+                "startTime": {
+                    "target": "smithy.api#Timestamp"
+                },
+                "endTime": {
+                    "target": "smithy.api#Timestamp"
+                },
+                "timeIncrement": {
+                    "target": "smithy.api#Integer"
+                },
+                "timeIncrementUnits": {
+                    "target": "com.amazonaws.videoanalytics.videologistics#TimeIncrementUnits"
+                },
+                "videoTimelines": {
+                    "target": "com.amazonaws.videoanalytics.videologistics#VideoTimelineList"
+                },
+                "nextToken": {
+                    "target": "com.amazonaws.videoanalytics#NextToken"
+                }
+            },
+            "traits": {
+                "smithy.api#output": {}
+            }
+        },
         "com.amazonaws.videoanalytics.videologistics#LivestreamSession": {
             "type": "resource",
             "operations": [
@@ -533,6 +740,66 @@
                     "target": "com.amazonaws.videoanalytics.videologistics#CreatePlaybackSession"
                 }
             ]
+        },
+        "com.amazonaws.videoanalytics.videologistics#PutVideoTimeline": {
+            "type": "operation",
+            "input": {
+                "target": "com.amazonaws.videoanalytics.videologistics#PutVideoTimelineRequest"
+            },
+            "output": {
+                "target": "smithy.api#Unit"
+            },
+            "errors": [
+                {
+                    "target": "com.amazonaws.videoanalytics#InternalServerException"
+                },
+                {
+                    "target": "com.amazonaws.videoanalytics#ValidationException"
+                }
+            ],
+            "traits": {
+                "aws.apigateway#integration": {
+                    "type": "aws_proxy",
+                    "httpMethod": "POST",
+                    "uri": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${PutVideoTimelineActivity}/invocations",
+                    "credentials": "arn:aws:iam::${AWS::AccountId}:role/VideoLogisticsApiGatewayRole"
+                },
+                "smithy.api#http": {
+                    "code": 200,
+                    "method": "POST",
+                    "uri": "/put-video-timeline"
+                },
+                "smithy.api#idempotent": {}
+            }
+        },
+        "com.amazonaws.videoanalytics.videologistics#PutVideoTimelineRequest": {
+            "type": "structure",
+            "members": {
+                "deviceId": {
+                    "target": "com.amazonaws.videoanalytics#DeviceId",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                },
+                "location": {
+                    "target": "com.amazonaws.videoanalytics.videologistics#VideoDensityLocation",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                },
+                "timestamps": {
+                    "target": "smithy.api#Document",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                },
+                "durationInMillis": {
+                    "target": "smithy.api#Long"
+                }
+            },
+            "traits": {
+                "smithy.api#input": {}
+            }
         },
         "com.amazonaws.videoanalytics.videologistics#RegisterDevice": {
             "type": "resource",
@@ -763,6 +1030,52 @@
                 "target": "com.amazonaws.videoanalytics.videologistics#StreamSource"
             }
         },
+        "com.amazonaws.videoanalytics.videologistics#TimeIncrementUnits": {
+            "type": "enum",
+            "members": {
+                "SECONDS": {
+                    "target": "smithy.api#Unit",
+                    "traits": {
+                        "smithy.api#enumValue": "SECONDS"
+                    }
+                },
+                "MINUTES": {
+                    "target": "smithy.api#Unit",
+                    "traits": {
+                        "smithy.api#enumValue": "MINUTES"
+                    }
+                },
+                "HOURS": {
+                    "target": "smithy.api#Unit",
+                    "traits": {
+                        "smithy.api#enumValue": "HOURS"
+                    }
+                },
+                "DAYS": {
+                    "target": "smithy.api#Unit",
+                    "traits": {
+                        "smithy.api#enumValue": "DAYS"
+                    }
+                }
+            }
+        },
+        "com.amazonaws.videoanalytics.videologistics#Timeline": {
+            "type": "structure",
+            "members": {
+                "startTime": {
+                    "target": "smithy.api#Timestamp"
+                },
+                "endTime": {
+                    "target": "smithy.api#Timestamp"
+                }
+            }
+        },
+        "com.amazonaws.videoanalytics.videologistics#Timelines": {
+            "type": "list",
+            "member": {
+                "target": "com.amazonaws.videoanalytics.videologistics#Timeline"
+            }
+        },
         "com.amazonaws.videoanalytics.videologistics#VideoAnalytic": {
             "type": "service",
             "version": "2024-10-18",
@@ -781,12 +1094,75 @@
                 },
                 {
                     "target": "com.amazonaws.videoanalytics.videologistics#Snapshot"
+                },
+                {
+                    "target": "com.amazonaws.videoanalytics.videologistics#VideoTimelineOps"
                 }
             ],
             "traits": {
                 "aws.protocols#restJson1": {},
                 "smithy.api#title": "Video Analytic Guidance Solution - Video Logistics"
             }
+        },
+        "com.amazonaws.videoanalytics.videologistics#VideoDensityLocation": {
+            "type": "enum",
+            "members": {
+                "CLOUD": {
+                    "target": "smithy.api#Unit",
+                    "traits": {
+                        "smithy.api#enumValue": "CLOUD"
+                    }
+                },
+                "DEVICE": {
+                    "target": "smithy.api#Unit",
+                    "traits": {
+                        "smithy.api#enumValue": "DEVICE"
+                    }
+                }
+            }
+        },
+        "com.amazonaws.videoanalytics.videologistics#VideoTimeline": {
+            "type": "structure",
+            "members": {
+                "cloudDensity": {
+                    "target": "smithy.api#Float",
+                    "traits": {
+                        "smithy.api#range": {
+                            "min": 0,
+                            "max": 1
+                        }
+                    }
+                },
+                "deviceDensity": {
+                    "target": "smithy.api#Float",
+                    "traits": {
+                        "smithy.api#range": {
+                            "min": 0,
+                            "max": 1
+                        }
+                    }
+                }
+            }
+        },
+        "com.amazonaws.videoanalytics.videologistics#VideoTimelineList": {
+            "type": "list",
+            "member": {
+                "target": "com.amazonaws.videoanalytics.videologistics#VideoTimeline"
+            }
+        },
+        "com.amazonaws.videoanalytics.videologistics#VideoTimelineOps": {
+            "type": "resource",
+            "operations": [
+                {
+                    "target": "com.amazonaws.videoanalytics.videologistics#ListDetailedVideoTimeline"
+                },
+                {
+                    "target": "com.amazonaws.videoanalytics.videologistics#ListVideoTimelines"
+                },
+                {
+                    "target": "com.amazonaws.videoanalytics.videologistics#PutVideoTimeline"
+                }
+            ]
         }
     }
 }
