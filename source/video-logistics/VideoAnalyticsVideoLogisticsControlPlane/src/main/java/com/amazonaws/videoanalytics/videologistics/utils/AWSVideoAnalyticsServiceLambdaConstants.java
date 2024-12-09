@@ -25,6 +25,15 @@ public final class AWSVideoAnalyticsServiceLambdaConstants {
 
     public static final String NEW_LINE_DELIMITER = "\n";
     public static final int DATA_RETENTION_TIME_PERIOD_IN_HOURS = 2160;
+    
+    public static final int CONNECTION_TIMEOUT = 200000;
+
+    public static final String OPENSEARCH_INTERCEPTOR_NAME = "OpenSearchInterceptor";
+
+    public static final String OPENSEARCH_SIGNER_NAME = "esSigner";
+
+    public static final String OPENSEARCH_SERVICE_NAME = "es";
+
 
     private AWSVideoAnalyticsServiceLambdaConstants() {
         // Private default constructor so that JaCoCo marks utility class as covered

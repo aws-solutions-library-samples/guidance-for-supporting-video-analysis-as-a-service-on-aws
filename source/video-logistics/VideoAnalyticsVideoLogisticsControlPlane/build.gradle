@@ -93,6 +93,11 @@ dependencies {
     implementation 'org.apache.logging.log4j:log4j-slf4j-impl:2.20.0'
     implementation 'org.apache.logging.log4j:log4j-core:2.20.0'
 
+    implementation 'org.opensearch.client:opensearch-rest-high-level-client:2.18.0'
+    // https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk
+    implementation 'com.amazonaws:aws-java-sdk:1.12.779'
+    implementation 'io.github.acm19:aws-request-signing-apache-interceptor:3.0.0'
+
     // Test dependencies
     testImplementation 'software.amazon.awssdk:dynamodb-enhanced:2.20.26'
     testImplementation 'com.amazonaws:DynamoDBLocal:2.5.2'
