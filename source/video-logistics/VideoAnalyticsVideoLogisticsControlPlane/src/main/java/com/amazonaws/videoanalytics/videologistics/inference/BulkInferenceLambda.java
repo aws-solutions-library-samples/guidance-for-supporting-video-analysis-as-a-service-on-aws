@@ -104,7 +104,6 @@ public class BulkInferenceLambda implements RequestHandler<KinesisEvent, Streams
         if (!inferenceRequest.getValidRecords().isEmpty()) {
             // handle thumbnails
             for (Thumbnail thumbnail: inferenceRequest.getThumbnailUploadRequests()) {
-                //todo remove try-catch block once writes to shadows is functional (edge + cloud)
                 try {
                     thumbnail.upload();
                 } catch (IOException e) {
@@ -219,7 +218,6 @@ public class BulkInferenceLambda implements RequestHandler<KinesisEvent, Streams
                 List<ThumbnailMetadata> thumbnailMetadataList = kdsMetadata.getThumbnailMetadata();
 
                 if (kdsInference.getThumbnailS3Paths() == null || !inference.getThumbnailPayloads().isEmpty()) {
-                    // TODO: Remove this code once all binaries have been updated to deprecate PutInference API
                     ArrayList<byte[]> thumbnailPayloads = inference.getThumbnailPayloads();
                     for (int index = 0; index < thumbnailPayloads.size(); index++) {
                         byte[] thumbnailPayload = thumbnailPayloads.get(index);
