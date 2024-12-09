@@ -1,7 +1,7 @@
 package com.amazonaws.videoanalytics.videologistics.dao.videotimeline;
 
 
-import com.amazonaws.videoanalytics.videologistics.timeline.VideoTimeline;
+import com.amazonaws.videoanalytics.videologistics.VideoTimeline;
 import com.amazonaws.videoanalytics.videologistics.schema.VideoTimeline.AggregateVideoTimeline;
 import com.amazonaws.videoanalytics.videologistics.schema.VideoTimeline.PaginatedListResponse;
 import com.amazonaws.videoanalytics.videologistics.schema.VideoTimeline.TimeIncrementUnits;

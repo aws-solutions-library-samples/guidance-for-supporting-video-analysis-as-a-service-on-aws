@@ -6,6 +6,7 @@ types/Livestream.smithy
 resources/Snapshot.smithy
 resources/PlaybackSession.smithy
 resources/RegisterDevice.smithy
+resources/VideoTimeline.smithy
 resources/ExportVideo.smithy
 resources/LivestreamSession.smithy
 resources/Inference.smithy

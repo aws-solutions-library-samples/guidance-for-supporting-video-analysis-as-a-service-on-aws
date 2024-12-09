@@ -2722,6 +2722,9 @@
                 },
                 {
                     "target": "com.amazonaws.videoanalytics.videologistics#Snapshot"
+                },
+                {
+                    "target": "com.amazonaws.videoanalytics.videologistics#VideoTimelineOps"
                 }
             ],
             "traits": {
@@ -2774,6 +2777,20 @@
             "member": {
                 "target": "com.amazonaws.videoanalytics.videologistics#VideoTimeline"
             }
+        },
+        "com.amazonaws.videoanalytics.videologistics#VideoTimelineOps": {
+            "type": "resource",
+            "operations": [
+                {
+                    "target": "com.amazonaws.videoanalytics.videologistics#ListDetailedVideoTimeline"
+                },
+                {
+                    "target": "com.amazonaws.videoanalytics.videologistics#ListVideoTimelines"
+                },
+                {
+                    "target": "com.amazonaws.videoanalytics.videologistics#PutVideoTimeline"
+                }
+            ]
         },
         "smithy.openapi#SpecificationExtensionKey": {
             "type": "string",

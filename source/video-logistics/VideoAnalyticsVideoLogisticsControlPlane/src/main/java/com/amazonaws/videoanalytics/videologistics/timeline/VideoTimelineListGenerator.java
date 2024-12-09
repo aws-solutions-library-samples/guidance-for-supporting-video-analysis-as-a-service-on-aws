@@ -1,6 +1,6 @@
 package com.amazonaws.videoanalytics.videologistics.timeline;
 
-import com.amazonaws.videoanalytics.videologistics.timeline.VideoTimeline;
+import com.amazonaws.videoanalytics.videologistics.VideoTimeline;
 import com.amazonaws.videoanalytics.videologistics.schema.VideoTimeline.AggregateVideoTimeline;
 
 import java.util.ArrayList;
@@ -56,7 +56,10 @@ public class VideoTimelineListGenerator {
             int period = getCurrentPeriod(startTimeInMillis, unitTimestamp, timeIncrementInMillis);
 
             VideoTimeline videoTimeline = periodDensities.getOrDefault(period,
-                    VideoTimeline.builder().withCloudDensity(0F).withDeviceDensity(0F).build());
+                    VideoTimeline.builder()
+                        .cloudDensity(0F)
+                        .deviceDensity(0F)
+                        .build());
 
             videoTimeline.setCloudDensity(videoTimeline.getCloudDensity() + (float) cloudDensityInMillis/timeIncrementInMillis);
             videoTimeline.setDeviceDensity(videoTimeline.getDeviceDensity() + (float) deviceDensityInMillis/timeIncrementInMillis);
@@ -74,7 +77,10 @@ public class VideoTimelineListGenerator {
         List<VideoTimeline> videoTimelineList = new ArrayList<>(totalTimelines);
         for (int i = 0; i < totalTimelines; i++) {
             videoTimelineList.add(periodDensities.getOrDefault(i,
-                    VideoTimeline.builder().withCloudDensity(0F).withDeviceDensity(0F).build()));
+                    VideoTimeline.builder()
+                        .cloudDensity(0F)
+                        .deviceDensity(0F)
+                        .build()));
         }
         return videoTimelineList;
     }

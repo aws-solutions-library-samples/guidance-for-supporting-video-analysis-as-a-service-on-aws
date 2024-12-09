@@ -25,7 +25,8 @@
         "com.amazonaws.videoanalytics.videologistics#LivestreamSession",
         "com.amazonaws.videoanalytics.videologistics#PlaybackSession",
         "com.amazonaws.videoanalytics.videologistics#RegisterDevice",
-        "com.amazonaws.videoanalytics.videologistics#Snapshot"
+        "com.amazonaws.videoanalytics.videologistics#Snapshot",
+        "com.amazonaws.videoanalytics.videologistics#VideoTimelineOps"
     ],
     "serviceShapeIds": [
         "com.amazonaws.videoanalytics.videologistics#VideoAnalytic"

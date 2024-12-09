@@ -96,17 +96,25 @@ public class JSON {
         gsonBuilder.registerTypeAdapterFactory(new com.amazonaws.videoanalytics.videologistics.CreatePlaybackSessionRequestContent.CustomTypeAdapterFactory());
         gsonBuilder.registerTypeAdapterFactory(new com.amazonaws.videoanalytics.videologistics.CreatePlaybackSessionResponseContent.CustomTypeAdapterFactory());
         gsonBuilder.registerTypeAdapterFactory(new com.amazonaws.videoanalytics.videologistics.CreateSnapshotUploadPathRequestContent.CustomTypeAdapterFactory());
+        gsonBuilder.registerTypeAdapterFactory(new com.amazonaws.videoanalytics.videologistics.DetailedVideoTimeline.CustomTypeAdapterFactory());
         gsonBuilder.registerTypeAdapterFactory(new com.amazonaws.videoanalytics.videologistics.GetVLRegisterDeviceStatusResponseContent.CustomTypeAdapterFactory());
         gsonBuilder.registerTypeAdapterFactory(new com.amazonaws.videoanalytics.videologistics.IceServer.CustomTypeAdapterFactory());
         gsonBuilder.registerTypeAdapterFactory(new com.amazonaws.videoanalytics.videologistics.ImportMediaObjectRequestContent.CustomTypeAdapterFactory());
         gsonBuilder.registerTypeAdapterFactory(new com.amazonaws.videoanalytics.videologistics.InternalServerExceptionResponseContent.CustomTypeAdapterFactory());
         gsonBuilder.registerTypeAdapterFactory(new com.amazonaws.videoanalytics.videologistics.KVSStreamARNs.CustomTypeAdapterFactory());
+        gsonBuilder.registerTypeAdapterFactory(new com.amazonaws.videoanalytics.videologistics.ListDetailedVideoTimelineRequestContent.CustomTypeAdapterFactory());
+        gsonBuilder.registerTypeAdapterFactory(new com.amazonaws.videoanalytics.videologistics.ListDetailedVideoTimelineResponseContent.CustomTypeAdapterFactory());
+        gsonBuilder.registerTypeAdapterFactory(new com.amazonaws.videoanalytics.videologistics.ListVideoTimelinesRequestContent.CustomTypeAdapterFactory());
+        gsonBuilder.registerTypeAdapterFactory(new com.amazonaws.videoanalytics.videologistics.ListVideoTimelinesResponseContent.CustomTypeAdapterFactory());
+        gsonBuilder.registerTypeAdapterFactory(new com.amazonaws.videoanalytics.videologistics.PutVideoTimelineRequestContent.CustomTypeAdapterFactory());
         gsonBuilder.registerTypeAdapterFactory(new com.amazonaws.videoanalytics.videologistics.ResourceNotFoundExceptionResponseContent.CustomTypeAdapterFactory());
         gsonBuilder.registerTypeAdapterFactory(new com.amazonaws.videoanalytics.videologistics.SourceInfo.CustomTypeAdapterFactory());
         gsonBuilder.registerTypeAdapterFactory(new com.amazonaws.videoanalytics.videologistics.StartVLRegisterDeviceResponseContent.CustomTypeAdapterFactory());
         gsonBuilder.registerTypeAdapterFactory(new com.amazonaws.videoanalytics.videologistics.StreamSource.CustomTypeAdapterFactory());
+        gsonBuilder.registerTypeAdapterFactory(new com.amazonaws.videoanalytics.videologistics.Timeline.CustomTypeAdapterFactory());
         gsonBuilder.registerTypeAdapterFactory(new com.amazonaws.videoanalytics.videologistics.ValidationExceptionField.CustomTypeAdapterFactory());
         gsonBuilder.registerTypeAdapterFactory(new com.amazonaws.videoanalytics.videologistics.ValidationExceptionResponseContent.CustomTypeAdapterFactory());
+        gsonBuilder.registerTypeAdapterFactory(new com.amazonaws.videoanalytics.videologistics.VideoTimeline.CustomTypeAdapterFactory());
         gson = gsonBuilder.create();
     }
 

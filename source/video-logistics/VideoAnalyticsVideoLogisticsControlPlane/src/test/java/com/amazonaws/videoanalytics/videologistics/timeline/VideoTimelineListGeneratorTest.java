@@ -1,6 +1,6 @@
 package com.amazonaws.videoanalytics.videologistics.timeline;
 
-import com.amazonaws.videoanalytics.videologistics.timeline.VideoTimeline;
+import com.amazonaws.videoanalytics.videologistics.VideoTimeline;
 import com.amazonaws.videoanalytics.videologistics.schema.VideoTimeline.AggregateVideoTimeline;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,13 +28,34 @@ public class VideoTimelineListGeneratorTest {
         );
 
         List<VideoTimeline> expectedVideoTimelineList = List.of(
-                VideoTimeline.builder().withCloudDensity(0.4F).withDeviceDensity(0.0F).build(),
-                VideoTimeline.builder().withCloudDensity(0.0F).withDeviceDensity(0.0F).build(),
-                VideoTimeline.builder().withCloudDensity(0.2F).withDeviceDensity(0.0F).build(),
-                VideoTimeline.builder().withCloudDensity(0.0F).withDeviceDensity(0.0F).build(),
-                VideoTimeline.builder().withCloudDensity(0.4F).withDeviceDensity(0.4F).build(),
-                VideoTimeline.builder().withCloudDensity(0.2F).withDeviceDensity(0.0F).build(),
-                VideoTimeline.builder().withCloudDensity(0.0F).withDeviceDensity(0.0F).build()
+                VideoTimeline.builder()
+                        .cloudDensity(0.4F)
+                        .deviceDensity(0.0F)
+                        .build(),
+                VideoTimeline.builder()
+                        .cloudDensity(0.0F)
+                        .deviceDensity(0.0F)
+                        .build(),
+                VideoTimeline.builder()
+                        .cloudDensity(0.2F)
+                        .deviceDensity(0.0F)
+                        .build(),
+                VideoTimeline.builder()
+                        .cloudDensity(0.0F)
+                        .deviceDensity(0.0F)
+                        .build(),
+                VideoTimeline.builder()
+                        .cloudDensity(0.4F)
+                        .deviceDensity(0.4F)
+                        .build(),
+                VideoTimeline.builder()
+                        .cloudDensity(0.2F)
+                        .deviceDensity(0.0F)
+                        .build(),
+                VideoTimeline.builder()
+                        .cloudDensity(0.0F)
+                        .deviceDensity(0.0F)
+                        .build()
         );
 
         assertEquals(7, response.size());
