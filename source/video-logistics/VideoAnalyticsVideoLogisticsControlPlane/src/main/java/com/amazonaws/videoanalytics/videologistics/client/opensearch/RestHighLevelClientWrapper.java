@@ -16,6 +16,7 @@ import org.opensearch.client.RequestOptions;
 import org.opensearch.client.RestClient;
 import org.opensearch.client.RestHighLevelClient;
 import org.opensearch.common.unit.TimeValue;
+import org.opensearch.core.rest.RestStatus;
 
 import java.io.IOException;
 
@@ -49,6 +50,13 @@ public class RestHighLevelClientWrapper {
         CreatePitResponse response = client.createPit(request, RequestOptions.DEFAULT);
         return response.getId();
     }
+
+    public boolean deletePit(String pitId) throws IOException {
+        DeletePitRequest request = new DeletePitRequest(pitId);
+        DeletePitResponse response = client.deletePit(request, RequestOptions.DEFAULT);
+        return RestStatus.OK.equals(response.status());
+    }
+
 
     private RestHighLevelClient create(final String endpoint) {
         return new RestHighLevelClient(

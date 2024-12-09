@@ -2,6 +2,7 @@ package com.amazonaws.videoanalytics.videologistics.utils;
 
 import com.amazonaws.videoanalytics.videologistics.inference.KdsInference;
 import com.amazonaws.videoanalytics.videologistics.inference.ThumbnailMetadata;
+import com.amazonaws.videoanalytics.videologistics.inference.InferenceDeserializer;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -43,6 +44,8 @@ public class InferenceTestUtils {
     public static final ThumbnailMetadata THUMBNAIL_METADATA = new ThumbnailMetadata("CHECKSUM", 10L);
     public static final List<ThumbnailMetadata> THUMBNAIL_METADATA_LIST = Collections.unmodifiableList(List.of(THUMBNAIL_METADATA));
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    private static final InferenceDeserializer DESERIALIZER = new InferenceDeserializer(OBJECT_MAPPER);
+
 
     static {
         OBJECT_MAPPER.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
@@ -60,5 +63,9 @@ public class InferenceTestUtils {
         } catch (IOException e) {
             throw new RuntimeException("Fail to read inference file from " + fileName, e);
         }
+    }
+
+    public static KdsInference getKdsInference(String inference) {
+        return DESERIALIZER.deserialize(inference);
     }
 }
