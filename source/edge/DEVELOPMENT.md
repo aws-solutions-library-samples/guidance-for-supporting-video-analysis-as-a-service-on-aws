@@ -48,6 +48,7 @@ Currently, the optional features available are:
   - If a configuration is sent from cloud when the config feature is not enabled, edge process will be no-op.
 - command (reboot command)
   - If a command is sent from the cloud when the command feature is not enabled on edge, edge process will not receive the message.
+- ip-discovery (private IP self-discovery)
 
 To execute, enter the following command
 

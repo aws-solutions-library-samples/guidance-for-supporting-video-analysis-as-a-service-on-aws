@@ -23,6 +23,7 @@ use edge_process::connections::aws_iot::{
     new_iot_shadow_manager, setup_and_start_iot_event_loop, update_command_status,
 };
 use edge_process::device_state::get_device_model;
+use futures_util::stream::StreamExt;
 use iot_connections::client::IotMqttClientManager;
 use once_cell::sync::Lazy;
 use reqwest::{Client, Proxy};
@@ -40,6 +41,7 @@ use tokio::sync::mpsc::channel;
 use tokio::time::{sleep, Instant};
 use tokio::{select, try_join};
 use tracing::{debug, error, info, warn};
+use ws_discovery_client::client::ws_discovery_client::DiscoveryBuilder;
 
 #[tokio::main]
 async fn main() -> Result<ExitCode, Box<dyn Error>> {
@@ -77,6 +79,27 @@ async fn main() -> Result<ExitCode, Box<dyn Error>> {
         IotMqttClientManager::new_iot_connection_manager(configurations.get_config());
     let mut iot_client: Box<dyn PubSubClient + Send + Sync> =
         pub_sub_client_manager.new_pub_sub_client().await?;
+
+    // IP address discovery feature
+    if cfg!(feature = "ip-discovery") {
+        let mut private_ip_value = json!({});
+        let devices = DiscoveryBuilder::default().run().await.unwrap().collect::<Vec<_>>().await;
+
+        debug!("Devices found: {:?}", devices);
+        // There should only be 1 device found since we are using unicast
+        if devices.len() > 1 {
+            error!("More than 1 device IP received");
+        }
+        if let Some(host) =
+            devices.first().and_then(|device| device.urls.first()).and_then(|url| url.host())
+        {
+            private_ip_value = json!({"private_ip": host.to_string()});
+        }
+        pub_sub_client_manager
+            .publish_device_info(private_ip_value, iot_client.borrow_mut())
+            .await
+            .expect("Failed to publish device info at start up");
+    }
 
     // Reboot command feature
     if cfg!(feature = "command") {

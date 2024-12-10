@@ -143,15 +143,28 @@ impl IotClientManager for IotMqttClientManager {
     async fn publish_video_settings(
         &mut self,
         video_settings: Value,
-        factory_mqtt_client: &mut Box<dyn PubSubClient + Send + Sync>,
+        mqtt_client: &mut Box<dyn PubSubClient + Send + Sync>,
     ) -> anyhow::Result<()> {
         let mut configuration_helper = ConfigurationHelper::new(
-            factory_mqtt_client.borrow_mut(),
+            mqtt_client.borrow_mut(),
             self.client_id.to_string(),
             VIDEO_ENCODER_SHADOW_NAME.to_owned(),
         );
 
         configuration_helper.publish_reported_settings(video_settings).await
+    }
+
+    /// Used for publishing device info
+    #[instrument]
+    async fn publish_device_info(
+        &mut self,
+        device_info: Value,
+        mqtt_client: &mut Box<dyn PubSubClient + Send + Sync>,
+    ) -> anyhow::Result<()> {
+        let mut registration_helper =
+            RegistrationHelper::new(mqtt_client.borrow_mut(), self.client_id.to_string());
+
+        registration_helper.publish_device_info(device_info).await
     }
 
     /// Checks if message is logger settings message

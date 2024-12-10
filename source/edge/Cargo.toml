@@ -83,6 +83,7 @@ xmlparser = "0.13.5"
 crossbeam-channel = "0.5.9"
 quickxml_to_serde = "0.5.0"
 quick-xml = "0.28.2"
+futures-util = "0.3.28"
 
 [workspace.metadata.cross.target.armv7-unknown-linux-gnueabihf]
 pre-build = [

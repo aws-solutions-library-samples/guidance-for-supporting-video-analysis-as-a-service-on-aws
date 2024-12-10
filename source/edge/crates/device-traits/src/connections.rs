@@ -49,6 +49,12 @@ pub trait IotClientManager {
         video_settings: Value,
         factory_mqtt_client: &mut Box<dyn PubSubClient + Send + Sync>,
     ) -> anyhow::Result<()>;
+    /// Attempt to publish device info to AWS IoT.  
+    async fn publish_device_info(
+        &mut self,
+        device_info: Value,
+        factory_mqtt_client: &mut Box<dyn PubSubClient + Send + Sync>,
+    ) -> anyhow::Result<()>;
     /// Received logger settings message from cloud
     fn received_logger_settings_message(
         &self,
