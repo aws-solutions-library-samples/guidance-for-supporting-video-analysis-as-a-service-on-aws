@@ -28,6 +28,7 @@ serde.workspace = true
 once_cell.workspace = true
 thiserror.workspace = true
 rusqlite.workspace = true
+futures-util.workspace = true
 # Do not inherit from cargo workspace, should only be called executable crate.
 tracing-core = "0.1.30"
 
@@ -41,7 +42,9 @@ streaming-traits.workspace = true
 gstreamer-pipeline.workspace = true
 snapshot-traits.workspace = true
 snapshot-client.workspace = true
+ws-discovery-client.workspace = true
 
 [features]
 config = []
 command = []
+ip-discovery = []
