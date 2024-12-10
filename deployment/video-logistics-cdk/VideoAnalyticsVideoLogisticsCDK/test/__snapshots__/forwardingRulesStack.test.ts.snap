@@ -18,7 +18,7 @@ exports[`ForwardingRulesStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "62d203983cfbca0fd829eea485065fac95ad8392349dd65019c17144fd0907a5.jar",
+          "S3Key": "f83fdcea1ea405fa28d65cb997ac0290f0f7d303604d05c6551990a74d9c5af0.jar",
         },
         "Description": "Lambda responsible for forwarding data in accordance with forwarding rules",
         "Environment": {

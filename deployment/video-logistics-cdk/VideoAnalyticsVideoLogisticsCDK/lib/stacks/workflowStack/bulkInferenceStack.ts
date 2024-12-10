@@ -17,7 +17,8 @@ import {
   import { Key } from 'aws-cdk-lib/aws-kms';
   import { AWSRegion } from 'video_analytics_common_construct';
   import {
-    LAMBDA_ASSET_PATH
+    LAMBDA_ASSET_PATH,
+    VL_INFERENCE_JAVA_PATH_PREFIX
   } from '../const';
   
   export interface BulkInferenceStackProps extends StackProps {
@@ -78,12 +79,10 @@ import {
       );
   
       this.bulkInferenceLambda = new Function(this, 'BulkInferenceLambda', {
-        // TODO: Update lambda asset path once code compiled jar is available
         code: Code.fromAsset(LAMBDA_ASSET_PATH),
         description: 'Lambda responsible for Put inference in Open Search ',
         runtime: Runtime.JAVA_17,
-        // TODO: Update handler to match new lambda handler path
-        handler: 'com.amazon.awsvideoanalyticsvlcontrolplane.inference.BulkInferenceLambda::handleRequest',
+        handler: `${VL_INFERENCE_JAVA_PATH_PREFIX}.inference.BulkInferenceLambda::handleRequest`,
         memorySize: 2048,
         role: this.lambdaRole,
         environment: {
