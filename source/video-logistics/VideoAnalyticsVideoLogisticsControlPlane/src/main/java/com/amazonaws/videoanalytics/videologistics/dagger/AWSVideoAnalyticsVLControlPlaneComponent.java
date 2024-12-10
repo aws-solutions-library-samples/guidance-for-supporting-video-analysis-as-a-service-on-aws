@@ -20,6 +20,8 @@ import com.amazonaws.videoanalytics.videologistics.dao.VLRegisterDeviceJobDAO;
 import com.amazonaws.videoanalytics.videologistics.workflow.KVSResourceCreateLambda;
 import com.amazonaws.videoanalytics.videologistics.workflow.FailAndCleanupVLDeviceRegistrationHandler;
 import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.ACCOUNT_ID;
+import com.amazonaws.videoanalytics.videologistics.dependency.apig.ApigService;
+
 
 import dagger.Component;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
@@ -59,4 +61,5 @@ public interface AWSVideoAnalyticsVLControlPlaneComponent {
     Region getRegion();
     ImportMediaObjectHandler getImportMediaObjectHandler();
     @Named(ACCOUNT_ID) String getAccountId();
+    ApigService apigService();
 }

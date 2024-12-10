@@ -7,10 +7,13 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.videoanalytics.videologistics.CreateSnapshotUploadPathRequestContent;
 import com.amazonaws.videoanalytics.videologistics.client.s3.SnapshotS3Presigner;
 import com.amazonaws.videoanalytics.videologistics.client.s3.ImageS3Presigner;
+import com.amazonaws.videoanalytics.videologistics.InternalServerExceptionResponseContent;
+import com.amazonaws.videoanalytics.videologistics.dependency.apig.ApigService;
 import com.amazonaws.videoanalytics.videologistics.dagger.AWSVideoAnalyticsVLControlPlaneComponent;
 
 import software.amazon.awssdk.auth.credentials.AwsSessionCredentials;
 import software.amazon.awssdk.core.document.Document;
+import software.amazon.awssdk.http.HttpExecuteResponse;
 import software.amazon.awssdk.services.iot.model.InternalServerException;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import static software.amazon.awssdk.utils.StringUtils.isBlank;
@@ -50,14 +53,17 @@ public class CreateSnapshotUploadPathActivity implements RequestHandler<Map<Stri
     private final String SNAPSHOT = "snapshot";
     private String region;
     private String accountId;
+    private final ApigService apigService;
 
     @Inject
     public CreateSnapshotUploadPathActivity(final S3Presigner s3Presigner,
                                             final Region region,
-                                            @Named(ACCOUNT_ID) final String accountId) {
+                                            @Named(ACCOUNT_ID) final String accountId,
+                                            ApigService apigService) {
         this.s3Presigner = s3Presigner;
         this.region = region.toString();
         this.accountId = accountId;
+        this.apigService = apigService;
     }
 
     public CreateSnapshotUploadPathActivity() {
@@ -66,6 +72,7 @@ public class CreateSnapshotUploadPathActivity implements RequestHandler<Map<Stri
         this.s3Presigner = component.getS3Presigner();
         this.region = component.getRegion().toString();
         this.accountId = component.getAccountId();
+        this.apigService = component.apigService();
     }
 
     @Override
@@ -114,27 +121,33 @@ public class CreateSnapshotUploadPathActivity implements RequestHandler<Map<Stri
         URL rawPresignedUrl = snapshotS3Presigner.generateImageUploadURL(checkSum);
         String presignedUrl = rawPresignedUrl.toString();
 
-        return serializeResponse(200, "");
-
-        /* *
-        // TODO: add update device internal logic here
-
         // send url back to camera via a topic
         // connect and publish
         HashMap<String, Document> message = new HashMap<>();
         message.put("presignedUrl", Document.fromString(presignedUrl));
+
         // add topic name to shadow map
-        ShadowMap shadowMap = ShadowMap.builder()
+        /*ShadowMap shadowMap = ShadowMap.builder()
                 .shadowName(SNAPSHOT)
                 .stateDocument(Document.fromMap(message))
-                .build();
+                .build();*/
 
-        UpdateDeviceInternalRequest updateDeviceInternalRequest = UpdateDeviceInternalRequest.builder()
-                .deviceId(input.getDeviceId())
-                .shadowPayload(shadowMap)
-                .build();
+        String updateDeviceInternalRequest = String.format(
+            "{\"shadowPayload\":{\"shadowName\":\"%s\",\"stateDocument\":%s}}",
+            SNAPSHOT,
+            Document.fromMap(message).toString()
+        );
+
         try {
-            internalClient.updateDeviceInternal(updateDeviceInternalRequest);
+            // Start the device shadow update 
+            HttpExecuteResponse response = apigService.invokeUpdateDeviceShadow(
+                deviceId,
+                null,  // headers 
+                updateDeviceInternalRequest   // body 
+            );
+
+            // success response return
+            return serializeResponse(200, updateDeviceInternalRequest);
         }
         catch (Exception e) {
             logger.log(e.getMessage());
@@ -143,6 +156,5 @@ public class CreateSnapshotUploadPathActivity implements RequestHandler<Map<Stri
                     .build();
             return serializeResponse(500, internalServerException.toJson());
         }
-        */
     }
 }

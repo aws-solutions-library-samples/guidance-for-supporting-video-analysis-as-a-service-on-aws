@@ -13,6 +13,7 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.kinesisvideo.KinesisVideoClient;
 import software.amazon.awssdk.services.kinesis.KinesisClient;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.apigateway.ApiGatewayClient;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -104,5 +105,17 @@ public class AWSModule {
                     .retryPolicy(RetryMode.ADAPTIVE)
                     .build())
             .build();
+    }
+
+    @Provides
+    @Singleton
+    public ApiGatewayClient provideApiGatewayClient(@Named(CREDENTIALS_PROVIDER) final AwsCredentialsProvider credentialsProvider,
+                                                   @Named(HTTP_CLIENT) final SdkHttpClient sdkHttpClient,
+                                                   @Named(REGION_NAME) final String region) {
+        return ApiGatewayClient.builder()
+                .credentialsProvider(credentialsProvider)
+                .httpClient(sdkHttpClient)
+                .region(Region.of(region))
+                .build();
     }
 }

@@ -105,6 +105,10 @@ dependencies {
     // Annotation processing
     annotationProcessor 'com.google.dagger:dagger-compiler:2.48'
 
+    // API Gateway dependencies
+    implementation 'software.amazon.awssdk:apigateway:2.20.+' // For REST API Gateway
+    implementation 'software.amazon.awssdk:apigatewayv2:2.20.+' // For HTTP/WebSocket API Gateway
+
     // Add Mockito instead
     testImplementation 'org.mockito:mockito-core:5.3.1'
     testImplementation 'org.mockito:mockito-junit-jupiter:5.3.1'
