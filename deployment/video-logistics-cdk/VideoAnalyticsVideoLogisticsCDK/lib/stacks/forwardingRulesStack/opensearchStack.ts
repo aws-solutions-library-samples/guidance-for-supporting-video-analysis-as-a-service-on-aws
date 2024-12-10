@@ -23,6 +23,7 @@ export interface OpenSearchStackProps extends StackProps {
 }
 
 export class OpenSearchStack extends Stack {
+  public readonly opensearchEndpoint: string;
 
   constructor(scope: App, id: string, readonly props: OpenSearchStackProps) {
     super(scope, id, props);
@@ -32,13 +33,15 @@ export class OpenSearchStack extends Stack {
 
     const openSearchDomain = this.createOpenSearchDomain(props);
 
+    this.opensearchEndpoint = openSearchDomain.domainEndpoint;
+
     openSearchDomain.addAccessPolicies(
         new PolicyStatement({
           actions: ['es:*'],
           effect: Effect.ALLOW,
           principals: [
             new ServicePrincipal(OPEN_SEARCH_SERVICE_NAME),
-            // new ArnPrincipal(vlControlPlaneBulkLambdaRoleArn),
+            new ArnPrincipal(vlControlPlaneBulkLambdaRoleArn),
         ],
           resources: [openSearchDomain.domainArn, `${openSearchDomain.domainArn}/*`]
         })
