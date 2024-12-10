@@ -16,6 +16,8 @@ import com.amazonaws.videoanalytics.devicemanagement.VideoStreamingState;
 import com.amazonaws.videoanalytics.devicemanagement.utils.ShadowMapUtils;
 import com.amazonaws.videoanalytics.devicemanagement.utils.UpdateDeviceUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.common.collect.ImmutableMap;
+import com.google.gson.JsonObject;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -37,13 +39,6 @@ import software.amazon.awssdk.services.iotdataplane.model.GetThingShadowRequest;
 import software.amazon.awssdk.services.iotdataplane.model.GetThingShadowResponse;
 import software.amazon.awssdk.services.iotdataplane.model.UpdateThingShadowRequest;
 import software.amazon.awssdk.utils.StringUtils;
-import software.amazon.awssdk.services.iot.model.CreateThingRequest;
-import software.amazon.awssdk.services.iot.model.CreateThingResponse;
-import software.amazon.awssdk.services.iot.model.AttachThingPrincipalRequest;
-import software.amazon.awssdk.services.iot.model.IotException;
-import software.amazon.awssdk.services.iot.model.ConflictException;
-import java.util.UUID;
-import com.amazonaws.videoanalytics.devicemanagement.dao.StartCreateDeviceDAO;
 import javax.inject.Inject;
 import java.text.ParseException;
 import java.time.Instant;
@@ -58,10 +53,8 @@ import java.util.stream.Collectors;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyticsServiceLambdaConstants.AI_CHIP_SET_KEY;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyticsServiceLambdaConstants.AI_MODEL_VERSION_KEY;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyticsServiceLambdaConstants.AI_SDK_VERSION_KEY;
-import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyticsServiceLambdaConstants.AI_SETTINGS;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyticsServiceLambdaConstants.SDK_VERSION_KEY;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyticsServiceLambdaConstants.FIRMWARE_VERSION_KEY;
-import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyticsServiceLambdaConstants.IMAGING_SETTINGS;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyticsServiceLambdaConstants.IOT_FLEET_INDEXING_INDEX_AWS_THINGS;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyticsServiceLambdaConstants.IOT_FLEET_INDEXING_THING_NAME;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyticsServiceLambdaConstants.MAC_KEY;
@@ -77,20 +70,13 @@ import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyt
 import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyticsServiceLambdaConstants.SHADOW_METADATA_KEY;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyticsServiceLambdaConstants.SHADOW_REPORTED_KEY;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyticsServiceLambdaConstants.SHADOW_STATE_KEY;
-import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyticsServiceLambdaConstants.STREAMING_SETTINGS;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyticsServiceLambdaConstants.VIDEO_SETTINGS;
-import static com.amazonaws.videoanalytics.devicemanagement.utils.WorkflowConstants.AI_SHADOW_NAME;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.WorkflowConstants.PROVISIONING_SHADOW_NAME;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.WorkflowConstants.VIDEO_ENCODER_SHADOW_NAME;
-import com.amazonaws.videoanalytics.devicemanagement.StartCreateDeviceResponseContent;
-import com.google.common.collect.ImmutableMap;
 import software.amazon.awssdk.services.iot.model.RegisterThingRequest;
 import com.amazonaws.videoanalytics.devicemanagement.utils.ResourceReader;
 import software.amazon.awssdk.services.iot.model.UpdateCertificateRequest;
 import software.amazon.awssdk.services.iot.model.CertificateStatus;
-import com.google.gson.JsonObject;
-import software.amazon.awssdk.core.SdkBytes;
-import software.amazon.awssdk.services.iotdataplane.model.UpdateThingShadowRequest;
 import software.amazon.awssdk.services.iot.model.DescribeCertificateRequest;
 import software.amazon.awssdk.services.iot.model.CertificateDescription;
 import software.amazon.awssdk.services.iot.model.ResourceNotFoundException;
@@ -173,18 +159,18 @@ public class IotService {
         Map<String, String> deviceCapabilities = new HashMap<>();   
         Map<String, String> deviceSettings = new HashMap<>();
 
-        // Retrieving videoSettings and imagingSettings in videoEncoder iot shadow.
-        JSONObject getThingShadowResponseVideoAndImagingSettings;
+        // Retrieving videoSettings in videoEncoder iot shadow.
+        JSONObject getThingShadowResponseVideoSettings;
         try {
-            getThingShadowResponseVideoAndImagingSettings = getThingShadow(deviceIdentifier, VIDEO_ENCODER_SHADOW_NAME);
+            getThingShadowResponseVideoSettings = getThingShadow(deviceIdentifier, VIDEO_ENCODER_SHADOW_NAME);
         } catch (software.amazon.awssdk.services.iotdataplane.model.ResourceNotFoundException e) {
-            getThingShadowResponseVideoAndImagingSettings = new JSONObject();
+            getThingShadowResponseVideoSettings = new JSONObject();
         }
-        JSONObject shadowStateReportedVideoAndImagingSettings = getThingShadowResponseVideoAndImagingSettings
+        JSONObject shadowStateReportedVideoSettings = getThingShadowResponseVideoSettings
                 .optJSONObject(SHADOW_STATE_KEY, new JSONObject())
                 .optJSONObject(SHADOW_REPORTED_KEY);
-        if (shadowStateReportedVideoAndImagingSettings != null && !shadowStateReportedVideoAndImagingSettings.isEmpty()) {
-            JSONObject videoSettings = shadowStateReportedVideoAndImagingSettings.optJSONObject(VIDEO_SETTINGS);
+        if (shadowStateReportedVideoSettings != null && !shadowStateReportedVideoSettings.isEmpty()) {
+            JSONObject videoSettings = shadowStateReportedVideoSettings.optJSONObject(VIDEO_SETTINGS);
             if (videoSettings != null && !videoSettings.isEmpty()) {
                 ArrayList<String> videoSettingsList = new ArrayList<>();
                 for (String key: videoSettings.keySet()) {
@@ -192,33 +178,10 @@ public class IotService {
                     value.put(PROFILE_ID, key);
                     videoSettingsList.add(value.toString());
                 }
-                deviceSettings.put(VIDEO_SETTINGS, videoSettingsList.toString());
-
-                // populate streaming settings
-                String streamingSettings = shadowStateReportedVideoAndImagingSettings.optString(STREAMING_SETTINGS);
-                deviceSettings.put(STREAMING_SETTINGS, streamingSettings);                
+                deviceSettings.put(VIDEO_SETTINGS, videoSettingsList.toString());              
             }
         }
-        if (shadowStateReportedVideoAndImagingSettings != null && !shadowStateReportedVideoAndImagingSettings.isEmpty()) {
-            String imagingSettingsStr = shadowStateReportedVideoAndImagingSettings.optString(IMAGING_SETTINGS);
-            deviceSettings.put(IMAGING_SETTINGS, imagingSettingsStr);
-        }
 
-        // Retrieving aiSettings in ai iot shadow.
-        JSONObject getThingShadowResponseAiSettings;
-        try {
-            getThingShadowResponseAiSettings = getThingShadow(deviceIdentifier, AI_SHADOW_NAME);
-        } catch (software.amazon.awssdk.services.iotdataplane.model.ResourceNotFoundException e) {
-            getThingShadowResponseAiSettings = new JSONObject();
-        }
-        JSONObject shadowStateReportedAiSettings = getThingShadowResponseAiSettings
-                .optJSONObject(SHADOW_STATE_KEY, new JSONObject())
-                .optJSONObject(SHADOW_REPORTED_KEY);
-
-        if (shadowStateReportedAiSettings != null && !shadowStateReportedAiSettings.isEmpty()) {
-            String aiSettingsStr = shadowStateReportedAiSettings.optString(AI_SETTINGS);
-            deviceSettings.put(AI_SETTINGS, aiSettingsStr);
-        }
         List<String> deviceGroupId = new ArrayList<>();
 
         return GetDeviceResponseContent.builder()

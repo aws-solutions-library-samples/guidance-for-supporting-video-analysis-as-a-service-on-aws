@@ -44,9 +44,6 @@ public final class AWSVideoAnalyticsServiceLambdaConstants {
 
     public static final String VIDEO_SETTINGS = "videoSettings";
     public static final String PROFILE_ID = "profileId";
-    public static final String AI_SETTINGS = "aiSettings";
-    public static final String STREAMING_SETTINGS = "streamingSettings";
-    public static final String IMAGING_SETTINGS = "imagingSettings";
 
     public static final String IOT_FLEET_INDEXING_INDEX_AWS_THINGS = "AWS_Things";
     public static final String IOT_FLEET_INDEXING_CONNECTIVITY = "connectivity.connected:";

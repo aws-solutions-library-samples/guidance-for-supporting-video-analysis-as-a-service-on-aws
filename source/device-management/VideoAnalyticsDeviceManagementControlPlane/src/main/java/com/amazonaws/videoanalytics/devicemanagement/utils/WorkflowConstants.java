@@ -7,7 +7,6 @@ public class WorkflowConstants {
     public static final String MESSAGE_FIELD = "messageField";
     public static final String PROVISIONING_SHADOW_NAME = "provision";
     public static final String VIDEO_ENCODER_SHADOW_NAME = "videoEncoder";
-    public static final String AI_SHADOW_NAME = "ai";
     public static final String DEVICE_CREATE_CREDENTIALS_MESSAGE = "createCredentials";
     public static final String DEVICE_DEREGISTER_MESSAGE = "deregister";
     public static final String CREDENTIALS_ACTIVATED_MESSAGE = "credentialsActivated";
