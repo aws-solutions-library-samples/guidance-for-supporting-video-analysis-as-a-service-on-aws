@@ -8,6 +8,7 @@ import {
  } from "./stacks";
 import { AWSRegion } from "video_analytics_common_construct";
 import { VideoLogisticsBootstrapStack } from "./stacks/bootstrapStack/videoLogisticsBootstrapStack";
+import { OpenSearchStack } from "./stacks/forwardingRulesStack";
 
 const app = new App();
 
@@ -35,6 +36,7 @@ const envConfig = {
 // new SchedulerStack(app, 'VideoLogisticsSchedulerStack', envConfig);
 // new TimelineStack(app, 'VideoLogisticsTimelineStack', envConfig);
 // new VideoExportStack(app, 'VideoLogisticsVideoExportStack', envConfig);
+new OpenSearchStack(app, 'VideoLogisticsOpensearchStack', envConfig);
 new WorkflowStack(app, 'VideoLogisticsWorkflowStack', envConfig);
 new ServiceStack(app, 'VideoLogisticsServiceStack', envConfig);
 

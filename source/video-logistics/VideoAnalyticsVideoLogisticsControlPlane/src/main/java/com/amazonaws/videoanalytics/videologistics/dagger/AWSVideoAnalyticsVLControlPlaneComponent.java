@@ -77,5 +77,6 @@ public interface AWSVideoAnalyticsVLControlPlaneComponent {
     InferenceDeserializer getInferenceDeserializer();
     ThumbnailS3PresignerFactory getThumbnailS3PresignerFactory();
     ImageUploader getImageUploader();
+
     @Named(ACCOUNT_ID) String getAccountId();
 }
