@@ -3,7 +3,7 @@ use device_traits::state::{State, StateManager};
 use edge_process::config::get_media_config;
 use edge_process::constants::{
     BUFFER_SIZE, IS_ENABLED, IS_STATUS_CHANGED, LOG_LEVEL, LOG_SYNC, PROVISION_SHADOW_NAME,
-    SNAPSHOT_SHADOW_NAME, SYNC_FREQUENCY,
+    SNAPSHOT_SHADOW_NAME, SYNC_FREQUENCY, VIDEO_ENCODER_SHADOW_NAME,
 };
 use edge_process::device_streaming_config;
 use edge_process::device_thumbnail::{
@@ -78,17 +78,27 @@ async fn main() -> Result<ExitCode, Box<dyn Error>> {
     let mut iot_client: Box<dyn PubSubClient + Send + Sync> =
         pub_sub_client_manager.new_pub_sub_client().await?;
 
-    // Get the next pending IoT job that's in progress when edge process starts up.
-    // For remote operations such as reboot device, there wll be pending job execution that needs to be mark completed when edge process boots up.
-    let next_pending_job_exec = pub_sub_client_manager
-        .get_next_pending_job_execution(iot_client.borrow_mut())
-        .await
-        .unwrap_or(Some(json! {{}}));
-    // Remote operations that trigger device to restart. For example: REBOOT.
-    // Only those those job types are required to be check when device boot up
-    let _ = pub_sub_client_manager
-        .update_in_progress_job_status(iot_client.borrow_mut(), next_pending_job_exec)
-        .await;
+    // Reboot command feature
+    if cfg!(feature = "command") {
+        // Get the next pending IoT job that's in progress when edge process starts up.
+        // For remote operations such as reboot device, there wll be pending job execution that needs to be mark completed when edge process boots up.
+        let next_pending_job_exec = pub_sub_client_manager
+            .get_next_pending_job_execution(iot_client.borrow_mut())
+            .await
+            .unwrap_or(Some(json! {{}}));
+        // Remote operations that trigger device to restart. For example: REBOOT.
+        // Only those those job types are required to be check when device boot up
+        let _ = pub_sub_client_manager
+            .update_in_progress_job_status(iot_client.borrow_mut(), next_pending_job_exec)
+            .await;
+    }
+
+    let mut iot_shadow_client_video_config = new_iot_shadow_manager(
+        settings.get_client_id(),
+        Some(VIDEO_ENCODER_SHADOW_NAME.to_string()),
+        dir.to_owned(),
+    )
+    .await;
 
     let mut iot_shadow_client_provision_for_log = new_iot_shadow_manager(
         settings.get_client_id(),
@@ -103,6 +113,21 @@ async fn main() -> Result<ExitCode, Box<dyn Error>> {
         dir.to_owned(),
     )
     .await;
+
+    // Video encoder configuration feature
+    if cfg!(feature = "config") {
+        let mut device_model =
+            setup_device_model(http_client.clone(), config_path.clone(), ip_address.clone())
+                .await?;
+        // Get video settings from Process 1
+        let video_settings =
+            device_model.get_video_encoder_configurations().await.unwrap_or(json!({}));
+        pub_sub_client_manager
+            .publish_video_settings(video_settings, iot_client.borrow_mut())
+            .await
+            .expect("Failed to publish video settings at start up");
+    }
+
     let config_media_path = get_media_config(&config_path.clone()).await?;
 
     let mut thumbnail_model = get_device_snapshot_config_instance(http_client.clone());
@@ -169,6 +194,7 @@ async fn main() -> Result<ExitCode, Box<dyn Error>> {
         )
         .await?;
 
+    let (video_config_tx, mut video_config_rx) = channel::<Value>(BUFFER_SIZE);
     let (logger_config_tx, mut logger_config_rx) = channel::<String>(BUFFER_SIZE);
     let (log_tx, log_rx) = channel::<Value>(BUFFER_SIZE);
 
@@ -177,9 +203,40 @@ async fn main() -> Result<ExitCode, Box<dyn Error>> {
         Lazy::new(|| Arc::new(Mutex::new("INFO".to_string())));
     static LOG_SYNC_FREQUENCY: Lazy<Arc<Mutex<u64>>> = Lazy::new(|| Arc::new(Mutex::new(300)));
 
+    let mut config_onvif_client =
+        setup_device_model(http_client.clone(), config_path.clone(), ip_address.clone()).await?;
     let _config_join_handle = tokio::spawn(async move {
         loop {
             select! {
+                Some(video_settings) = video_config_rx.recv() => {
+                    // Video encoder configuration feature
+                    if cfg!(feature = "config") {
+                        /* expected structure of video_settings
+                            {
+                                "vec1": {
+                                    "codec": "H264",
+                                    "bitRateType": "VBR",
+                                    "frameRateLimit": 15,
+                                    "resolution": "1920x1080",
+                                    "bitRateLimit": 1024,
+                                    "gopLength": 60
+                                }
+                            }
+                        */
+                        let video_settings_object = video_settings.as_object().unwrap();
+                        for (key, value) in video_settings_object.iter() {
+                            info!("key: {}, value: {}", key, value);
+                            let _res = config_onvif_client.set_video_encoder_configuration(key.to_owned(), value.to_owned()).await;
+                        }
+                        let video_settings_res = config_onvif_client.get_video_encoder_configurations().await;
+                        match video_settings_res {
+                            Ok(video_settings) => iot_shadow_client_video_config.update_reported_state(video_settings).await.expect("Failed to update configuration shadow"),
+                            Err(_) => error!("Could not retrieve video settings after configuration"),
+                        }
+                    } else {
+                        info!("Video encoder configurations is not enabled. No-op.");
+                    }
+                },
                 Some(logger_settings) = logger_config_rx.recv() => {
                     /* expected structure of logger_settings
                         {
@@ -238,18 +295,15 @@ async fn main() -> Result<ExitCode, Box<dyn Error>> {
             }
         }
     });
-
+    let video_config_tx_clone = video_config_tx.clone();
     let logger_config_tx_clone = logger_config_tx.clone();
     let snapshot_tx_clone = snapshot_tx.clone();
 
-    let mut onvif_client =
+    let mut command_onvif_client =
         setup_device_model(http_client.clone(), config_path.clone(), ip_address.clone()).await?;
 
-    // TODO: add flags for conditional compilation
     let (command_tx, mut command_rx) = channel::<Value>(BUFFER_SIZE);
     let _command_join_handle = tokio::spawn(async move {
-        let interval = sleep(Duration::from_millis(1));
-        tokio::pin!(interval);
         loop {
             select! {
                 Some(command_info) = command_rx.recv() => {
@@ -260,32 +314,38 @@ async fn main() -> Result<ExitCode, Box<dyn Error>> {
                         }
                     */
                     let command_type = command_info
-                    .get("command")
-                    .and_then(|command| command.as_str())
-                    .and_then(|command_str| Command::from_str(command_str).ok())
-                    .unwrap_or(Command::Unknown);
+                        .get("command")
+                        .and_then(|command| command.as_str())
+                        .and_then(|command_str| Command::from_str(command_str).ok())
+                        .unwrap_or(Command::Unknown);
 
                     let job_id_str = command_info
-                    .get("job_id")
-                    .and_then(|job_id| job_id.as_str())
-                    .unwrap_or("no job_id in the payload.");
+                        .get("job_id")
+                        .and_then(|job_id| job_id.as_str())
+                        .unwrap_or("no job_id in the payload.");
 
-                    match command_type {
-                        Command::Reboot => {
-                            info!("Trying to reboot device");
+                    // Reboot command feature
+                    if cfg!(feature = "command") {
+                        match command_type {
+                            Command::Reboot => {
+                                info!("Trying to reboot device");
 
-                            let res = onvif_client.reboot_device().await;
-                            if res.is_err() {
-                                error!("Error rebooting device: {:?}", res);
-                                update_command_status(CommandStatus::Failed, job_id_str.to_string());
-                            } else {
-                                info!("Initiated reboot");
-                                // do not update status to SUCCEEDED until after edge-process binary is restarted
-                            }
-                        },
-                        Command::Unknown => {
-                            warn!("Unrecognized command");
-                        },
+                                let res = command_onvif_client.reboot_device().await;
+                                if res.is_err() {
+                                    error!("Error rebooting device: {:?}", res);
+                                    update_command_status(CommandStatus::Failed, job_id_str.to_string());
+                                } else {
+                                    info!("Initiated reboot");
+                                    // do not update status to SUCCEEDED until after edge-process binary is restarted
+                                }
+                            },
+                            Command::Unknown => {
+                                warn!("Unrecognized command");
+                            },
+                        }
+                    } else {
+                        info!("Reboot command is not enabled. Marking job as failed.");
+                        update_command_status(CommandStatus::Failed, job_id_str.to_string());
                     }
                 }
             }
@@ -297,6 +357,7 @@ async fn main() -> Result<ExitCode, Box<dyn Error>> {
         &configurations,
         logger_config_tx_clone,
         snapshot_tx_clone,
+        video_config_tx_clone,
         pub_sub_client_manager,
         iot_client,
         command_tx_clone,

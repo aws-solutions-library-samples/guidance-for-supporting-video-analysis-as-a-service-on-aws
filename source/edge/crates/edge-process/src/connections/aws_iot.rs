@@ -2,7 +2,7 @@
 // We do not want to include file in code coverage report as unit testing dependency injection
 // will not provide any benefit.
 
-use crate::constants::{BUFFER_SIZE, LOG_SYNC, PROVISION_SHADOW_NAME};
+use crate::constants::{BUFFER_SIZE, LOG_SYNC, PROVISION_SHADOW_NAME, VIDEO_ENCODER_SHADOW_NAME};
 use crate::utils::config::Config;
 use crate::utils::config::ConfigImpl;
 use device_traits::channel_utils::traits::{
@@ -57,6 +57,7 @@ pub async fn setup_and_start_iot_event_loop(
     config: &ConfigImpl,
     logger_config_tx: Sender<String>,
     snapshot_tx: Sender<String>,
+    video_config_tx: Sender<Value>,
     mut pub_sub_client_manager: Box<dyn IotClientManager + Send + Sync>,
     mut iot_client: AsyncPubSubClient,
     command_tx: Sender<Value>,
@@ -119,6 +120,11 @@ pub async fn setup_and_start_iot_event_loop(
                             let _ = snapshot_tx.send(message).await;
                         };
 
+                        if let Some(message) = pub_sub_client_manager.received_video_settings_message(msg_in.as_ref()) {
+                            info!("Video settings received {:?}", message);
+                            let _ = video_config_tx.send(message).await;
+                        };
+
                         if let Some(job_id) = pub_sub_client_manager.received_jobs_notify_message(msg_in.as_ref()) {
                             info!("New IoT Job message received.");
                             let res = pub_sub_client_manager.start_next_command(iot_client.borrow_mut()).await.unwrap_or(None);
@@ -153,7 +159,7 @@ fn trigger_shadows() {
 
     let payload = json!({"state":{}});
 
-    let shadows = &[PROVISION_SHADOW_NAME];
+    let shadows = &[PROVISION_SHADOW_NAME, VIDEO_ENCODER_SHADOW_NAME];
     for shadow in shadows {
         let topic = match iot_sender.get_client_id() {
             Ok(id) => {

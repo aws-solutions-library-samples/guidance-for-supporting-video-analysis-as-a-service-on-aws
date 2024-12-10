@@ -7,12 +7,20 @@ import com.amazonaws.videoanalytics.videologistics.schema.VLRegisterDeviceJob;
 import com.amazonaws.videoanalytics.videologistics.schema.SchemaConst;
 import com.amazonaws.videoanalytics.videologistics.inference.SchemaRepository;
 import com.amazonaws.videoanalytics.videologistics.inference.InferenceSerializer;
+import com.amazonaws.videoanalytics.videologistics.inference.InferenceDeserializer;
 import com.amazonaws.videoanalytics.videologistics.validator.InferenceValidator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+import com.amazonaws.videoanalytics.videologistics.schema.VideoTimeline.AggregateVideoTimeline;
+import com.amazonaws.videoanalytics.videologistics.schema.VideoTimeline.RawVideoTimeline;
+import com.amazonaws.videoanalytics.videologistics.timeline.VideoTimelineUtils;
+import com.amazonaws.videoanalytics.videologistics.client.opensearch.OpenSearchClientFactory;
+import com.amazonaws.videoanalytics.videologistics.client.opensearch.OpenSearchClientProvider;
+import com.amazonaws.videoanalytics.videologistics.client.s3.ThumbnailS3PresignerFactory;
+import com.amazonaws.videoanalytics.videologistics.client.s3.ImageUploader;
 
 import javax.inject.Singleton;
 
@@ -55,5 +63,49 @@ public class AWSVideoAnalyticsVLControlPlaneModule {
     @Singleton
     public InferenceSerializer provideInferenceSerializer(final ObjectMapper objectMapper) {
         return new InferenceSerializer(objectMapper);
+    }
+
+    @Provides
+    @Singleton
+    public DynamoDbTable<AggregateVideoTimeline> provideAggregateVideoTimelineTable(DynamoDbEnhancedClient enhancedClient) {
+        return enhancedClient.table(SchemaConst.VIDEO_TIMELINE_TABLE_NAME,
+                TableSchema.fromBean(AggregateVideoTimeline.class));
+    }
+
+    @Provides
+    @Singleton
+    public InferenceDeserializer provideInferenceDeserializer(final ObjectMapper objectMapper) {
+        return new InferenceDeserializer(objectMapper);
+    }
+
+    @Provides
+    @Singleton
+    public DynamoDbTable<RawVideoTimeline> provideRawVideoTimelineTable(DynamoDbEnhancedClient enhancedClient) {
+        return enhancedClient.table(SchemaConst.RAW_VIDEO_TIMELINE_TABLE_NAME,
+                TableSchema.fromBean(RawVideoTimeline.class));
+    }
+
+    @Provides
+    @Singleton
+    public OpenSearchClientProvider getOpenSearchClientProvider(final OpenSearchClientFactory openSearchClientFactory) {
+        return new OpenSearchClientProvider(openSearchClientFactory);
+    }
+
+    @Provides
+    @Singleton
+    public VideoTimelineUtils provideVideoTimelineUtils() {
+        return new VideoTimelineUtils();
+    }
+
+    @Provides
+    @Singleton
+    public ThumbnailS3PresignerFactory provideThumbnailS3PresignerFactory() {
+        return new ThumbnailS3PresignerFactory();
+    }
+
+    @Provides
+    @Singleton
+    public ImageUploader provideImageUploader() {
+        return new ImageUploader();
     }
 }

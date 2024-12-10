@@ -5,6 +5,8 @@ pub const BUFFER_SIZE: usize = 10000;
 pub const PROVISION_SHADOW_NAME: &str = "provision";
 ///Shadow for snapshots
 pub const SNAPSHOT_SHADOW_NAME: &str = "snapshot";
+///Shadow for video settings
+pub const VIDEO_ENCODER_SHADOW_NAME: &str = "videoEncoder";
 pub const IS_STATUS_CHANGED: &str = "isStatusChanged";
 pub const LOG_SYNC: &str = "LOG_SYNC";
 pub const IS_ENABLED: &str = "isEnabled";

@@ -46,35 +46,62 @@ import java.util.Set;
 import com.amazonaws.videoanalytics.JSON;
 
 /**
- * StartExportVideosResponseContent
+ * VideoTimeline
  */
 @lombok.Builder
 @lombok.AllArgsConstructor
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
-public class StartExportVideosResponseContent {
-  public static final String SERIALIZED_NAME_JOB_ID = "jobId";
-  @SerializedName(SERIALIZED_NAME_JOB_ID)
-  private String jobId;
+public class VideoTimeline {
+  public static final String SERIALIZED_NAME_CLOUD_DENSITY = "cloudDensity";
+  @SerializedName(SERIALIZED_NAME_CLOUD_DENSITY)
+  private Float cloudDensity;
 
-  public StartExportVideosResponseContent() {
+  public static final String SERIALIZED_NAME_DEVICE_DENSITY = "deviceDensity";
+  @SerializedName(SERIALIZED_NAME_DEVICE_DENSITY)
+  private Float deviceDensity;
+
+  public VideoTimeline() {
   }
 
-  public StartExportVideosResponseContent jobId(String jobId) {
-    this.jobId = jobId;
+  public VideoTimeline cloudDensity(Float cloudDensity) {
+    this.cloudDensity = cloudDensity;
     return this;
   }
 
   /**
-   * Get jobId
-   * @return jobId
+   * Get cloudDensity
+   * minimum: 0
+   * maximum: 1
+   * @return cloudDensity
    */
   @javax.annotation.Nullable
-  public String getJobId() {
-    return jobId;
+  public Float getCloudDensity() {
+    return cloudDensity;
   }
 
-  public void setJobId(String jobId) {
-    this.jobId = jobId;
+  public void setCloudDensity(Float cloudDensity) {
+    this.cloudDensity = cloudDensity;
+  }
+
+
+  public VideoTimeline deviceDensity(Float deviceDensity) {
+    this.deviceDensity = deviceDensity;
+    return this;
+  }
+
+  /**
+   * Get deviceDensity
+   * minimum: 0
+   * maximum: 1
+   * @return deviceDensity
+   */
+  @javax.annotation.Nullable
+  public Float getDeviceDensity() {
+    return deviceDensity;
+  }
+
+  public void setDeviceDensity(Float deviceDensity) {
+    this.deviceDensity = deviceDensity;
   }
 
 
@@ -87,20 +114,22 @@ public class StartExportVideosResponseContent {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    StartExportVideosResponseContent startExportVideosResponseContent = (StartExportVideosResponseContent) o;
-    return Objects.equals(this.jobId, startExportVideosResponseContent.jobId);
+    VideoTimeline videoTimeline = (VideoTimeline) o;
+    return Objects.equals(this.cloudDensity, videoTimeline.cloudDensity) &&
+        Objects.equals(this.deviceDensity, videoTimeline.deviceDensity);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(jobId);
+    return Objects.hash(cloudDensity, deviceDensity);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class StartExportVideosResponseContent {\n");
-    sb.append("    jobId: ").append(toIndentedString(jobId)).append("\n");
+    sb.append("class VideoTimeline {\n");
+    sb.append("    cloudDensity: ").append(toIndentedString(cloudDensity)).append("\n");
+    sb.append("    deviceDensity: ").append(toIndentedString(deviceDensity)).append("\n");
     sb.append("}");
     return sb.toString();
   }
@@ -123,7 +152,8 @@ public class StartExportVideosResponseContent {
   static {
     // a set of all properties/fields (JSON key names)
     openapiFields = new HashSet<String>();
-    openapiFields.add("jobId");
+    openapiFields.add("cloudDensity");
+    openapiFields.add("deviceDensity");
 
     // a set of required properties/fields (JSON key names)
     openapiRequiredFields = new HashSet<String>();
@@ -133,48 +163,45 @@ public class StartExportVideosResponseContent {
    * Validates the JSON Element and throws an exception if issues found
    *
    * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to StartExportVideosResponseContent
+   * @throws IOException if the JSON Element is invalid with respect to VideoTimeline
    */
   public static void validateJsonElement(JsonElement jsonElement) throws IOException {
       if (jsonElement == null) {
-        if (!StartExportVideosResponseContent.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in StartExportVideosResponseContent is not found in the empty JSON string", StartExportVideosResponseContent.openapiRequiredFields.toString()));
+        if (!VideoTimeline.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format("The required field(s) %s in VideoTimeline is not found in the empty JSON string", VideoTimeline.openapiRequiredFields.toString()));
         }
       }
 
       Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
       // check to see if the JSON string contains additional fields
       for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!StartExportVideosResponseContent.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `StartExportVideosResponseContent` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        if (!VideoTimeline.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `VideoTimeline` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
         }
       }
         JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if ((jsonObj.get("jobId") != null && !jsonObj.get("jobId").isJsonNull()) && !jsonObj.get("jobId").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `jobId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("jobId").toString()));
-      }
   }
 
   public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
     @SuppressWarnings("unchecked")
     @Override
     public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!StartExportVideosResponseContent.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'StartExportVideosResponseContent' and its subtypes
+       if (!VideoTimeline.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'VideoTimeline' and its subtypes
        }
        final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<StartExportVideosResponseContent> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(StartExportVideosResponseContent.class));
+       final TypeAdapter<VideoTimeline> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(VideoTimeline.class));
 
-       return (TypeAdapter<T>) new TypeAdapter<StartExportVideosResponseContent>() {
+       return (TypeAdapter<T>) new TypeAdapter<VideoTimeline>() {
            @Override
-           public void write(JsonWriter out, StartExportVideosResponseContent value) throws IOException {
+           public void write(JsonWriter out, VideoTimeline value) throws IOException {
              JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
              elementAdapter.write(out, obj);
            }
 
            @Override
-           public StartExportVideosResponseContent read(JsonReader in) throws IOException {
+           public VideoTimeline read(JsonReader in) throws IOException {
              JsonElement jsonElement = elementAdapter.read(in);
              validateJsonElement(jsonElement);
              return thisAdapter.fromJsonTree(jsonElement);
@@ -185,18 +212,18 @@ public class StartExportVideosResponseContent {
   }
 
   /**
-   * Create an instance of StartExportVideosResponseContent given an JSON string
+   * Create an instance of VideoTimeline given an JSON string
    *
    * @param jsonString JSON string
-   * @return An instance of StartExportVideosResponseContent
-   * @throws IOException if the JSON string is invalid with respect to StartExportVideosResponseContent
+   * @return An instance of VideoTimeline
+   * @throws IOException if the JSON string is invalid with respect to VideoTimeline
    */
-  public static StartExportVideosResponseContent fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, StartExportVideosResponseContent.class);
+  public static VideoTimeline fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, VideoTimeline.class);
   }
 
   /**
-   * Convert an instance of StartExportVideosResponseContent to an JSON string
+   * Convert an instance of VideoTimeline to an JSON string
    *
    * @return JSON string
    */

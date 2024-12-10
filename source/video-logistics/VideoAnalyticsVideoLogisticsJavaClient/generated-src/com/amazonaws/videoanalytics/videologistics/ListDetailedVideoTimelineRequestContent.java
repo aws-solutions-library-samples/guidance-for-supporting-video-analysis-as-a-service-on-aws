@@ -46,12 +46,16 @@ import java.util.Set;
 import com.amazonaws.videoanalytics.JSON;
 
 /**
- * StartExportVideosRequestContent
+ * ListDetailedVideoTimelineRequestContent
  */
 @lombok.Builder
 @lombok.AllArgsConstructor
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
-public class StartExportVideosRequestContent {
+public class ListDetailedVideoTimelineRequestContent {
+  public static final String SERIALIZED_NAME_DEVICE_ID = "deviceId";
+  @SerializedName(SERIALIZED_NAME_DEVICE_ID)
+  private String deviceId;
+
   public static final String SERIALIZED_NAME_START_TIME = "startTime";
   @SerializedName(SERIALIZED_NAME_START_TIME)
   private Double startTime;
@@ -60,18 +64,33 @@ public class StartExportVideosRequestContent {
   @SerializedName(SERIALIZED_NAME_END_TIME)
   private Double endTime;
 
-  public static final String SERIALIZED_NAME_DEVICE = "device";
-  @SerializedName(SERIALIZED_NAME_DEVICE)
-  private String device;
+  public static final String SERIALIZED_NAME_NEXT_TOKEN = "nextToken";
+  @SerializedName(SERIALIZED_NAME_NEXT_TOKEN)
+  private String nextToken;
 
-  public static final String SERIALIZED_NAME_EXPORT_S3_PATH = "exportS3Path";
-  @SerializedName(SERIALIZED_NAME_EXPORT_S3_PATH)
-  private String exportS3Path;
-
-  public StartExportVideosRequestContent() {
+  public ListDetailedVideoTimelineRequestContent() {
   }
 
-  public StartExportVideosRequestContent startTime(Double startTime) {
+  public ListDetailedVideoTimelineRequestContent deviceId(String deviceId) {
+    this.deviceId = deviceId;
+    return this;
+  }
+
+  /**
+   * Get deviceId
+   * @return deviceId
+   */
+  @javax.annotation.Nonnull
+  public String getDeviceId() {
+    return deviceId;
+  }
+
+  public void setDeviceId(String deviceId) {
+    this.deviceId = deviceId;
+  }
+
+
+  public ListDetailedVideoTimelineRequestContent startTime(Double startTime) {
     this.startTime = startTime;
     return this;
   }
@@ -90,7 +109,7 @@ public class StartExportVideosRequestContent {
   }
 
 
-  public StartExportVideosRequestContent endTime(Double endTime) {
+  public ListDetailedVideoTimelineRequestContent endTime(Double endTime) {
     this.endTime = endTime;
     return this;
   }
@@ -109,41 +128,22 @@ public class StartExportVideosRequestContent {
   }
 
 
-  public StartExportVideosRequestContent device(String device) {
-    this.device = device;
+  public ListDetailedVideoTimelineRequestContent nextToken(String nextToken) {
+    this.nextToken = nextToken;
     return this;
   }
 
   /**
-   * Get device
-   * @return device
+   * Get nextToken
+   * @return nextToken
    */
-  @javax.annotation.Nonnull
-  public String getDevice() {
-    return device;
+  @javax.annotation.Nullable
+  public String getNextToken() {
+    return nextToken;
   }
 
-  public void setDevice(String device) {
-    this.device = device;
-  }
-
-
-  public StartExportVideosRequestContent exportS3Path(String exportS3Path) {
-    this.exportS3Path = exportS3Path;
-    return this;
-  }
-
-  /**
-   * Get exportS3Path
-   * @return exportS3Path
-   */
-  @javax.annotation.Nonnull
-  public String getExportS3Path() {
-    return exportS3Path;
-  }
-
-  public void setExportS3Path(String exportS3Path) {
-    this.exportS3Path = exportS3Path;
+  public void setNextToken(String nextToken) {
+    this.nextToken = nextToken;
   }
 
 
@@ -156,26 +156,26 @@ public class StartExportVideosRequestContent {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    StartExportVideosRequestContent startExportVideosRequestContent = (StartExportVideosRequestContent) o;
-    return Objects.equals(this.startTime, startExportVideosRequestContent.startTime) &&
-        Objects.equals(this.endTime, startExportVideosRequestContent.endTime) &&
-        Objects.equals(this.device, startExportVideosRequestContent.device) &&
-        Objects.equals(this.exportS3Path, startExportVideosRequestContent.exportS3Path);
+    ListDetailedVideoTimelineRequestContent listDetailedVideoTimelineRequestContent = (ListDetailedVideoTimelineRequestContent) o;
+    return Objects.equals(this.deviceId, listDetailedVideoTimelineRequestContent.deviceId) &&
+        Objects.equals(this.startTime, listDetailedVideoTimelineRequestContent.startTime) &&
+        Objects.equals(this.endTime, listDetailedVideoTimelineRequestContent.endTime) &&
+        Objects.equals(this.nextToken, listDetailedVideoTimelineRequestContent.nextToken);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(startTime, endTime, device, exportS3Path);
+    return Objects.hash(deviceId, startTime, endTime, nextToken);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class StartExportVideosRequestContent {\n");
+    sb.append("class ListDetailedVideoTimelineRequestContent {\n");
+    sb.append("    deviceId: ").append(toIndentedString(deviceId)).append("\n");
     sb.append("    startTime: ").append(toIndentedString(startTime)).append("\n");
     sb.append("    endTime: ").append(toIndentedString(endTime)).append("\n");
-    sb.append("    device: ").append(toIndentedString(device)).append("\n");
-    sb.append("    exportS3Path: ").append(toIndentedString(exportS3Path)).append("\n");
+    sb.append("    nextToken: ").append(toIndentedString(nextToken)).append("\n");
     sb.append("}");
     return sb.toString();
   }
@@ -198,52 +198,51 @@ public class StartExportVideosRequestContent {
   static {
     // a set of all properties/fields (JSON key names)
     openapiFields = new HashSet<String>();
+    openapiFields.add("deviceId");
     openapiFields.add("startTime");
     openapiFields.add("endTime");
-    openapiFields.add("device");
-    openapiFields.add("exportS3Path");
+    openapiFields.add("nextToken");
 
     // a set of required properties/fields (JSON key names)
     openapiRequiredFields = new HashSet<String>();
+    openapiRequiredFields.add("deviceId");
     openapiRequiredFields.add("startTime");
     openapiRequiredFields.add("endTime");
-    openapiRequiredFields.add("device");
-    openapiRequiredFields.add("exportS3Path");
   }
 
   /**
    * Validates the JSON Element and throws an exception if issues found
    *
    * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to StartExportVideosRequestContent
+   * @throws IOException if the JSON Element is invalid with respect to ListDetailedVideoTimelineRequestContent
    */
   public static void validateJsonElement(JsonElement jsonElement) throws IOException {
       if (jsonElement == null) {
-        if (!StartExportVideosRequestContent.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in StartExportVideosRequestContent is not found in the empty JSON string", StartExportVideosRequestContent.openapiRequiredFields.toString()));
+        if (!ListDetailedVideoTimelineRequestContent.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format("The required field(s) %s in ListDetailedVideoTimelineRequestContent is not found in the empty JSON string", ListDetailedVideoTimelineRequestContent.openapiRequiredFields.toString()));
         }
       }
 
       Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
       // check to see if the JSON string contains additional fields
       for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!StartExportVideosRequestContent.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `StartExportVideosRequestContent` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        if (!ListDetailedVideoTimelineRequestContent.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `ListDetailedVideoTimelineRequestContent` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
         }
       }
 
       // check to make sure all required properties/fields are present in the JSON string
-      for (String requiredField : StartExportVideosRequestContent.openapiRequiredFields) {
+      for (String requiredField : ListDetailedVideoTimelineRequestContent.openapiRequiredFields) {
         if (jsonElement.getAsJsonObject().get(requiredField) == null) {
           throw new IllegalArgumentException(String.format("The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
         }
       }
         JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if (!jsonObj.get("device").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `device` to be a primitive type in the JSON string but got `%s`", jsonObj.get("device").toString()));
+      if (!jsonObj.get("deviceId").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format("Expected the field `deviceId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("deviceId").toString()));
       }
-      if (!jsonObj.get("exportS3Path").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `exportS3Path` to be a primitive type in the JSON string but got `%s`", jsonObj.get("exportS3Path").toString()));
+      if ((jsonObj.get("nextToken") != null && !jsonObj.get("nextToken").isJsonNull()) && !jsonObj.get("nextToken").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format("Expected the field `nextToken` to be a primitive type in the JSON string but got `%s`", jsonObj.get("nextToken").toString()));
       }
   }
 
@@ -251,22 +250,22 @@ public class StartExportVideosRequestContent {
     @SuppressWarnings("unchecked")
     @Override
     public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!StartExportVideosRequestContent.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'StartExportVideosRequestContent' and its subtypes
+       if (!ListDetailedVideoTimelineRequestContent.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'ListDetailedVideoTimelineRequestContent' and its subtypes
        }
        final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<StartExportVideosRequestContent> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(StartExportVideosRequestContent.class));
+       final TypeAdapter<ListDetailedVideoTimelineRequestContent> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(ListDetailedVideoTimelineRequestContent.class));
 
-       return (TypeAdapter<T>) new TypeAdapter<StartExportVideosRequestContent>() {
+       return (TypeAdapter<T>) new TypeAdapter<ListDetailedVideoTimelineRequestContent>() {
            @Override
-           public void write(JsonWriter out, StartExportVideosRequestContent value) throws IOException {
+           public void write(JsonWriter out, ListDetailedVideoTimelineRequestContent value) throws IOException {
              JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
              elementAdapter.write(out, obj);
            }
 
            @Override
-           public StartExportVideosRequestContent read(JsonReader in) throws IOException {
+           public ListDetailedVideoTimelineRequestContent read(JsonReader in) throws IOException {
              JsonElement jsonElement = elementAdapter.read(in);
              validateJsonElement(jsonElement);
              return thisAdapter.fromJsonTree(jsonElement);
@@ -277,18 +276,18 @@ public class StartExportVideosRequestContent {
   }
 
   /**
-   * Create an instance of StartExportVideosRequestContent given an JSON string
+   * Create an instance of ListDetailedVideoTimelineRequestContent given an JSON string
    *
    * @param jsonString JSON string
-   * @return An instance of StartExportVideosRequestContent
-   * @throws IOException if the JSON string is invalid with respect to StartExportVideosRequestContent
+   * @return An instance of ListDetailedVideoTimelineRequestContent
+   * @throws IOException if the JSON string is invalid with respect to ListDetailedVideoTimelineRequestContent
    */
-  public static StartExportVideosRequestContent fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, StartExportVideosRequestContent.class);
+  public static ListDetailedVideoTimelineRequestContent fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, ListDetailedVideoTimelineRequestContent.class);
   }
 
   /**
-   * Convert an instance of StartExportVideosRequestContent to an JSON string
+   * Convert an instance of ListDetailedVideoTimelineRequestContent to an JSON string
    *
    * @return JSON string
    */

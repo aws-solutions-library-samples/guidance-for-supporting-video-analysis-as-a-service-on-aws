@@ -6,7 +6,16 @@ import com.amazonaws.videoanalytics.videologistics.activity.CreateSnapshotUpload
 import com.amazonaws.videoanalytics.videologistics.dagger.modules.AWSModule;
 import com.amazonaws.videoanalytics.videologistics.dagger.modules.AWSVideoAnalyticsConfigurationModule;
 import com.amazonaws.videoanalytics.videologistics.dependency.kvs.KvsService;
+
+import com.amazonaws.videoanalytics.videologistics.inference.BulkInferenceLambda;
 import com.amazonaws.videoanalytics.videologistics.inference.ImportMediaObjectHandler;
+import com.amazonaws.videoanalytics.videologistics.inference.InferenceSerializer;
+import com.amazonaws.videoanalytics.videologistics.inference.InferenceDeserializer;
+
+import com.amazonaws.videoanalytics.videologistics.client.opensearch.OpenSearchClientProvider;
+import com.amazonaws.videoanalytics.videologistics.client.s3.ThumbnailS3PresignerFactory;
+import com.amazonaws.videoanalytics.videologistics.client.s3.ImageUploader;
+
 import com.amazonaws.videoanalytics.videologistics.validator.InferenceValidator;
 import com.amazonaws.videoanalytics.videologistics.utils.GuidanceUUIDGenerator;
 import com.amazonaws.videoanalytics.videologistics.utils.KVSWebRTCUtils;
@@ -21,7 +30,8 @@ import com.amazonaws.videoanalytics.videologistics.workflow.KVSResourceCreateLam
 import com.amazonaws.videoanalytics.videologistics.workflow.FailAndCleanupVLDeviceRegistrationHandler;
 import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.ACCOUNT_ID;
 import com.amazonaws.videoanalytics.videologistics.dependency.apig.ApigService;
-
+import com.amazonaws.videoanalytics.videologistics.dao.videotimeline.VideoTimelineDAO;
+import com.amazonaws.videoanalytics.videologistics.dao.videotimeline.RawVideoTimelineDAO;
 
 import dagger.Component;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
@@ -48,6 +58,7 @@ public interface AWSVideoAnalyticsVLControlPlaneComponent {
     void inject(KVSResourceCreateLambda lambda);
     void inject(FailAndCleanupVLDeviceRegistrationHandler lambda);
     void inject(CreateSnapshotUploadPathActivity lambda);
+    void inject(BulkInferenceLambda lambda);
     void inject(ImportMediaObjectActivity lambda);
 
     KvsService getKvsService();
@@ -60,6 +71,13 @@ public interface AWSVideoAnalyticsVLControlPlaneComponent {
     S3Presigner getS3Presigner();
     Region getRegion();
     ImportMediaObjectHandler getImportMediaObjectHandler();
+    VideoTimelineDAO getVideoTimelineDAO();
+    RawVideoTimelineDAO getRawVideoTimelineDAO();
+    OpenSearchClientProvider getOpenSearchClientProvider();
+    InferenceSerializer getInferenceSerializer();
+    InferenceDeserializer getInferenceDeserializer();
+    ThumbnailS3PresignerFactory getThumbnailS3PresignerFactory();
+    ImageUploader getImageUploader();
     @Named(ACCOUNT_ID) String getAccountId();
     ApigService apigService();
 }

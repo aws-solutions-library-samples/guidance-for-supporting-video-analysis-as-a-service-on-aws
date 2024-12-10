@@ -12,7 +12,7 @@ use crate::client::snapshot::SnapshotHelper;
 use crate::client::topics::TopicHelper;
 use crate::constants::{
     DISABLED_FIELD_FROM_CLOUD, ENABLED_FIELD_FROM_CLOUD, LOGGER_SETTINGS_FIELD,
-    PROVISION_SHADOW_NAME, SNAPSHOT_SHADOW_NAME,
+    PROVISION_SHADOW_NAME, SNAPSHOT_SHADOW_NAME, VIDEO_ENCODER_SHADOW_NAME, VIDEO_SETTINGS_FIELD,
 };
 use async_trait::async_trait;
 use config::Config;
@@ -62,7 +62,7 @@ impl IotClientManager for IotMqttClientManager {
         info!("MQTT client created");
 
         // subscribe to delta, accepted, and rejected shadow topics for all named shadow
-        let shadows = &[PROVISION_SHADOW_NAME];
+        let shadows = &[PROVISION_SHADOW_NAME, SNAPSHOT_SHADOW_NAME, VIDEO_ENCODER_SHADOW_NAME];
 
         for shadow in shadows {
             let topic_helper =
@@ -77,41 +77,52 @@ impl IotClientManager for IotMqttClientManager {
             mqtt_client.subscribe(shadow_delta_topic.as_str(), QoS::AtLeastOnce).await?;
         }
 
-        // subscribe to IoT Job MQTT topics
-        let iot_job_topic_helper = TopicHelper::new(self.client_id.to_owned(), None);
-        mqtt_client
-            .subscribe(iot_job_topic_helper.get_jobs_notify_topic().as_str(), QoS::AtLeastOnce)
-            .await?;
-        mqtt_client
-            .subscribe(
-                iot_job_topic_helper.get_jobs_start_next_accepted().as_str(),
-                QoS::AtLeastOnce,
-            )
-            .await?;
-        mqtt_client
-            .subscribe(
-                iot_job_topic_helper.get_jobs_start_next_rejected().as_str(),
-                QoS::AtLeastOnce,
-            )
-            .await?;
-        mqtt_client
-            .subscribe(
-                iot_job_topic_helper.get_jobs_update_accepted(None).as_str(),
-                QoS::AtLeastOnce,
-            )
-            .await?;
-        mqtt_client
-            .subscribe(
-                iot_job_topic_helper.get_jobs_update_rejected(None).as_str(),
-                QoS::AtLeastOnce,
-            )
-            .await?;
-        mqtt_client
-            .subscribe(iot_job_topic_helper.get_next_job_get_accepted().as_str(), QoS::AtLeastOnce)
-            .await?;
-        mqtt_client
-            .subscribe(iot_job_topic_helper.get_next_job_get_rejected().as_str(), QoS::AtLeastOnce)
-            .await?;
+        // Only subscribe to IoT Job MQTT topics if command feature is enabled
+        // IoT jobs policy may not be attached to device
+        if cfg!(feature = "command") {
+            let iot_job_topic_helper = TopicHelper::new(self.client_id.to_owned(), None);
+            mqtt_client
+                .subscribe(iot_job_topic_helper.get_jobs_notify_topic().as_str(), QoS::AtLeastOnce)
+                .await?;
+            mqtt_client
+                .subscribe(
+                    iot_job_topic_helper.get_jobs_start_next_accepted().as_str(),
+                    QoS::AtLeastOnce,
+                )
+                .await?;
+            mqtt_client
+                .subscribe(
+                    iot_job_topic_helper.get_jobs_start_next_rejected().as_str(),
+                    QoS::AtLeastOnce,
+                )
+                .await?;
+            mqtt_client
+                .subscribe(
+                    iot_job_topic_helper.get_jobs_update_accepted(None).as_str(),
+                    QoS::AtLeastOnce,
+                )
+                .await?;
+            mqtt_client
+                .subscribe(
+                    iot_job_topic_helper.get_jobs_update_rejected(None).as_str(),
+                    QoS::AtLeastOnce,
+                )
+                .await?;
+            mqtt_client
+                .subscribe(
+                    iot_job_topic_helper.get_next_job_get_accepted().as_str(),
+                    QoS::AtLeastOnce,
+                )
+                .await?;
+            mqtt_client
+                .subscribe(
+                    iot_job_topic_helper.get_next_job_get_rejected().as_str(),
+                    QoS::AtLeastOnce,
+                )
+                .await?;
+        } else {
+            info!("Reboot command is not enabled. Skipping subscription to IoT Job MQTT topics.");
+        }
 
         Ok(mqtt_client)
     }
@@ -125,6 +136,22 @@ impl IotClientManager for IotMqttClientManager {
         let retain = false;
 
         Box::new(MqttMessage::new(topic, qos, payload, retain))
+    }
+
+    /// Used for publishing videoSettings
+    #[instrument]
+    async fn publish_video_settings(
+        &mut self,
+        video_settings: Value,
+        factory_mqtt_client: &mut Box<dyn PubSubClient + Send + Sync>,
+    ) -> anyhow::Result<()> {
+        let mut configuration_helper = ConfigurationHelper::new(
+            factory_mqtt_client.borrow_mut(),
+            self.client_id.to_string(),
+            VIDEO_ENCODER_SHADOW_NAME.to_owned(),
+        );
+
+        configuration_helper.publish_reported_settings(video_settings).await
     }
 
     /// Checks if message is logger settings message
@@ -173,6 +200,22 @@ impl IotClientManager for IotMqttClientManager {
         }
 
         None
+    }
+
+    /// Checks if message is video settings message
+    fn received_video_settings_message(
+        &self,
+        msg: &(dyn PubSubMessage + Send + Sync),
+    ) -> Option<Value> {
+        let topic_helper = TopicHelper::new(
+            self.client_id.to_string(),
+            Some(VIDEO_ENCODER_SHADOW_NAME.to_string()),
+        );
+        ConfigurationHelper::received_expected_shadow_message(
+            msg,
+            topic_helper.get_shadow_update_delta_topic(),
+            VIDEO_SETTINGS_FIELD,
+        )
     }
 
     /// Used for updating command status
@@ -389,6 +432,29 @@ mod tests {
 
         let received_settings =
             mqtt_client_manager.received_logger_settings_message(message.as_ref());
+
+        assert_eq!(received_settings.unwrap(), settings);
+    }
+
+    #[test]
+    fn received_video_settings_message_test() {
+        let mqtt_client_manager = get_mqtt_client_manager();
+
+        let topic_helper =
+            TopicHelper::new(CLIENT_ID.to_string(), Some(VIDEO_ENCODER_SHADOW_NAME.to_string()));
+
+        let mut message_builder = MQTTMessageBuilder::new_pub_sub_message_builder();
+        message_builder.set_topic(topic_helper.get_shadow_update_delta_topic().as_str());
+
+        let settings = json!({"encoding": "H264"});
+        let payload = json!({ STATE_SHADOW_FIELD: { VIDEO_SETTINGS_FIELD: settings } });
+        let payload = serde_json::to_string::<Value>(&payload)
+            .expect("Issue formatting Json.  Invalid code change.");
+        message_builder.set_payload(payload);
+        let message = message_builder.build_box_message();
+
+        let received_settings =
+            mqtt_client_manager.received_video_settings_message(message.as_ref());
 
         assert_eq!(received_settings.unwrap(), settings);
     }
