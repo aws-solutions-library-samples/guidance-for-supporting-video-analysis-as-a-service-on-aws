@@ -16,6 +16,8 @@ import com.amazonaws.videoanalytics.devicemanagement.VideoStreamingState;
 import com.amazonaws.videoanalytics.devicemanagement.utils.UpdateDeviceUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.ImmutableList;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonNull;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,12 +25,19 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.services.iot.IotClient;
+import software.amazon.awssdk.services.iot.model.AttachPolicyRequest;
+import software.amazon.awssdk.services.iot.model.AttachPolicyResponse;
+import software.amazon.awssdk.services.iot.model.CertificateDescription;
+import software.amazon.awssdk.services.iot.model.DescribeCertificateRequest;
+import software.amazon.awssdk.services.iot.model.DescribeCertificateResponse;
 import software.amazon.awssdk.services.iot.model.DescribeThingRequest;
 import software.amazon.awssdk.services.iot.model.DescribeThingResponse;
 import software.amazon.awssdk.services.iot.model.GroupNameAndArn;
 import software.amazon.awssdk.services.iot.model.InvalidRequestException;
 import software.amazon.awssdk.services.iot.model.ListThingGroupsForThingRequest;
 import software.amazon.awssdk.services.iot.model.ListThingGroupsForThingResponse;
+import software.amazon.awssdk.services.iot.model.ListThingPrincipalsRequest;
+import software.amazon.awssdk.services.iot.model.ListThingPrincipalsResponse;
 import software.amazon.awssdk.services.iot.model.ResourceNotFoundException;
 import software.amazon.awssdk.services.iot.model.SearchIndexRequest;
 import software.amazon.awssdk.services.iot.model.SearchIndexResponse;
@@ -37,14 +46,9 @@ import software.amazon.awssdk.services.iot.model.ThingDocument;
 import software.amazon.awssdk.services.iotdataplane.IotDataPlaneClient;
 import software.amazon.awssdk.services.iotdataplane.model.GetThingShadowRequest;
 import software.amazon.awssdk.services.iotdataplane.model.GetThingShadowResponse;
-import static org.mockito.Mockito.verify;
-import static com.amazonaws.videoanalytics.devicemanagement.utils.TestConstants.CERTIFICATE_ID;
 import com.google.common.collect.ImmutableMap;
 import software.amazon.awssdk.services.iot.model.RegisterThingRequest;
 import com.amazonaws.videoanalytics.devicemanagement.utils.ResourceReader;
-import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.when;
 import software.amazon.awssdk.services.iotdataplane.model.UpdateThingShadowRequest;
 import software.amazon.awssdk.services.iotdataplane.model.UpdateThingShadowResponse;
 
@@ -58,7 +62,6 @@ import java.util.Map;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyticsServiceLambdaConstants.AI_CHIP_SET_KEY;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyticsServiceLambdaConstants.AI_MODEL_VERSION_KEY;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyticsServiceLambdaConstants.AI_SDK_VERSION_KEY;
-import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyticsServiceLambdaConstants.AI_SETTINGS;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyticsServiceLambdaConstants.FIRMWARE_VERSION_KEY;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyticsServiceLambdaConstants.IOT_FLEET_INDEXING_INDEX_AWS_THINGS;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyticsServiceLambdaConstants.MAC_KEY;
@@ -80,7 +83,6 @@ import static com.amazonaws.videoanalytics.devicemanagement.utils.TestConstants.
 import static com.amazonaws.videoanalytics.devicemanagement.utils.TestConstants.DEVICE_ID;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.TestConstants.DEVICE_TYPE_NAME;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.TestConstants.EXPECTED_DEVICE_SETTINGS_STRING;
-import static com.amazonaws.videoanalytics.devicemanagement.utils.TestConstants.EXPECTED_DEVICE_SETTINGS_WITH_ADDITIONAL_SETTINGS_STRING;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.TestConstants.FIRMWARE_VERSION_VALUE;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.TestConstants.FLEET_INDEXING_QUERY_STRING;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.TestConstants.MAC_VALUE;
@@ -99,36 +101,18 @@ import static com.amazonaws.videoanalytics.devicemanagement.utils.TestConstants.
 import static com.amazonaws.videoanalytics.devicemanagement.utils.TestConstants.THING_ARN;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.TestConstants.THING_ID;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.TestConstants.TIMESTAMP;
-import static com.amazonaws.videoanalytics.devicemanagement.utils.WorkflowConstants.AI_SHADOW_NAME;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.WorkflowConstants.PROVISIONING_SHADOW_NAME;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.WorkflowConstants.VIDEO_ENCODER_SHADOW_NAME;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
-
-import software.amazon.awssdk.core.SdkBytes;
-import software.amazon.awssdk.services.iotdataplane.model.UpdateThingShadowRequest;
-import software.amazon.awssdk.services.iotdataplane.model.UpdateThingShadowResponse;
-
-import com.google.gson.JsonObject;
-import com.google.gson.JsonNull;
-
-import software.amazon.awssdk.services.iot.model.DescribeCertificateRequest;
-import software.amazon.awssdk.services.iot.model.DescribeCertificateResponse;
-import software.amazon.awssdk.services.iot.model.CertificateDescription;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import software.amazon.awssdk.services.iot.model.ListThingPrincipalsRequest;
-import software.amazon.awssdk.services.iot.model.ListThingPrincipalsResponse;
-import software.amazon.awssdk.services.iot.model.AttachPolicyRequest;
-import software.amazon.awssdk.services.iot.model.AttachPolicyResponse;
+import static org.mockito.Mockito.verify;
 
 public class IotServiceTest {
     private static final String ARN_PREFIX = "arn:partition:service:region:account-id:cert/";
@@ -214,7 +198,7 @@ public class IotServiceTest {
         assertEquals(deviceGroupIdsList, responseFromIotService.getDeviceGroupIds());
         assertEquals(expectedMetaData, responseFromIotService.getDeviceMetaData());
         assertEquals(expectedDeviceCapabilities, responseFromIotService.getDeviceCapabilities());
-        assertEquals(EXPECTED_DEVICE_SETTINGS_WITH_ADDITIONAL_SETTINGS_STRING, responseFromIotService.getDeviceSettings().toString());
+        assertEquals(EXPECTED_DEVICE_SETTINGS_STRING, responseFromIotService.getDeviceSettings().toString());
     }
 
     @Test
@@ -292,7 +276,7 @@ public class IotServiceTest {
         assertEquals(expectedMetaData.getDeviceStatus().getStorage().get(0).getTotalCapacity(), "0");
         assertEquals(expectedMetaData.getDeviceStatus().getStorage().get(0).getUsedCapacity(), "0");
         assertEquals(expectedDeviceCapabilities, responseFromIotService.getDeviceCapabilities());
-        assertEquals(EXPECTED_DEVICE_SETTINGS_WITH_ADDITIONAL_SETTINGS_STRING, responseFromIotService.getDeviceSettings().toString());
+        assertEquals(EXPECTED_DEVICE_SETTINGS_STRING, responseFromIotService.getDeviceSettings().toString());
     }
 
     @Test
@@ -335,17 +319,6 @@ public class IotServiceTest {
                 .payload(SdkBytes.fromUtf8String(buildVideoEncoderShadowPayload()))
                 .build();                
         when(iotDataPlaneClient.getThingShadow(getThingShadowRequestVideoEncoder)).thenReturn(getThingShadowResponseVideoEncoder);
-
-        GetThingShadowRequest getThingShadowRequestAi = GetThingShadowRequest
-                .builder()
-                .thingName(DEVICE_ID)
-                .shadowName(AI_SHADOW_NAME)
-                .build();    
-        GetThingShadowResponse getThingShadowResponseAi = GetThingShadowResponse
-                .builder()
-                .payload(SdkBytes.fromUtf8String(buildAiShadowPayload()))
-                .build();                
-        when(iotDataPlaneClient.getThingShadow(getThingShadowRequestAi)).thenReturn(getThingShadowResponseAi);
 
         Map<String, String> expectedDeviceCapabilities = new HashMap<>();
 
@@ -585,7 +558,7 @@ public class IotServiceTest {
     }
 
     private String buildVideoEncoderShadowPayload(){
-        // videoEncoder shadow reported contains two vec profiles and imagingSettings
+        // videoEncoder shadow reported contains two vec profiles
         /*
         {
         "state": {
@@ -593,9 +566,6 @@ public class IotServiceTest {
           "videoSettings": {
            "vec1": {'profileOneVideoSettings'},
            "vec2": {'profileTwoVideoSettings'}
-          }
-          "imagingSettings": {
-            "reversal": OFF | MIRROR | V-FLIP | ROTATE
           }
          }
         }
@@ -629,49 +599,14 @@ public class IotServiceTest {
         videoSettings.put("vec1", profileOneVideoSettings);
         videoSettings.put("vec2", profileTwoVideoSettings);
 
-        JSONObject imagingSettings = new JSONObject();
-        imagingSettings.put("reversal", "V-FLIP");
-
-        JSONObject streamingSettings = new JSONObject();
-        streamingSettings.put("type", "CONTINUOUS");
-
         JSONObject allSettings = new JSONObject();
         allSettings.put("videoSettings", videoSettings);
-        allSettings.put("imagingSettings", imagingSettings);
-        allSettings.put("streamingSettings", streamingSettings);
 
         JSONObject videoEncoderReportedShadow = new JSONObject();
         videoEncoderReportedShadow.put(SHADOW_REPORTED_KEY, allSettings);
         videoEncoderShadow.put(SHADOW_STATE_KEY, videoEncoderReportedShadow);
 
         return videoEncoderShadow.toString();
-    }
-
-    private String buildAiShadowPayload(){
-        // ai shadow reported contains one profile
-        /*
-        {
-        "state": {
-         "reported": {
-          "aiSettings": {
-           <settings>
-          }
-         }
-        }
-         */
-        JSONObject aiSettings = new JSONObject();
-        aiSettings.put("mode", "intrusion");
-
-        JSONObject aiProfiles = new JSONObject();
-        aiProfiles.put(AI_SETTINGS, aiSettings);
-
-        JSONObject aiReportedShadow = new JSONObject();
-        aiReportedShadow.put(SHADOW_REPORTED_KEY, aiProfiles);
-
-        JSONObject aiShadow = new JSONObject();
-        aiShadow.put(SHADOW_STATE_KEY, aiReportedShadow);
-
-        return aiShadow.toString();
     }
 
     private String buildEmptyDesiredStateShadow() {
@@ -737,19 +672,7 @@ public class IotServiceTest {
                 .builder()
                 .payload(SdkBytes.fromUtf8String(buildVideoEncoderShadowPayload()))
                 .build();                
-        when(iotDataPlaneClient.getThingShadow(getThingShadowRequestVideoEncoder)).thenReturn(getThingShadowResponseVideoEncoder);
-
-        GetThingShadowRequest getThingShadowRequestAi = GetThingShadowRequest
-                .builder()
-                .thingName(DEVICE_ID)
-                .shadowName(AI_SHADOW_NAME)
-                .build();    
-
-        GetThingShadowResponse getThingShadowResponseAi = GetThingShadowResponse
-                .builder()
-                .payload(SdkBytes.fromUtf8String(buildAiShadowPayload()))
-                .build();                
-        when(iotDataPlaneClient.getThingShadow(getThingShadowRequestAi)).thenReturn(getThingShadowResponseAi);
+        when(iotDataPlaneClient.getThingShadow(getThingShadowRequestVideoEncoder)).thenReturn(getThingShadowResponseVideoEncoder); 
     }
 
     private DeviceMetaData buildExpectedDeviceMetaData() {

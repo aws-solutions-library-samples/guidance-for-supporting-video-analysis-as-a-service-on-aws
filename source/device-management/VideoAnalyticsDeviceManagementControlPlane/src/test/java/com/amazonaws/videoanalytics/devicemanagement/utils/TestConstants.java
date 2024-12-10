@@ -33,7 +33,6 @@ public final class TestConstants {
 
     public final static String FLEET_INDEXING_QUERY_STRING = "connectivity.connected:true";
 
-    public final static String EXPECTED_DEVICE_SETTINGS_STRING = "{streamingSettings={\"type\":\"CONTINUOUS\"}, videoSettings=[{\"codec\":\"H264\",\"bitRateType\":\"VBR\",\"frameRateLimit\":15,\"gopLength\":30,\"profileId\":\"vec2\",\"resolution\":{\"width\":320,\"height\":240},\"bitRateLimit\":128}, {\"codec\":\"H264\",\"bitRateType\":\"CBR\",\"frameRateLimit\":30,\"gopLength\":10,\"profileId\":\"vec1\",\"resolution\":{\"width\":1280,\"height\":720},\"bitRateLimit\":800}], imagingSettings={\"reversal\":\"V-FLIP\"}, aiSettings={\"mode\":\"intrusion\"}}";
-    public final static String EXPECTED_DEVICE_SETTINGS_WITH_ADDITIONAL_SETTINGS_STRING = "{streamingSettings={\"type\":\"CONTINUOUS\"}, videoSettings=[{\"codec\":\"H264\",\"bitRateType\":\"VBR\",\"frameRateLimit\":15,\"gopLength\":30,\"profileId\":\"vec2\",\"resolution\":{\"width\":320,\"height\":240},\"bitRateLimit\":128}, {\"codec\":\"H264\",\"bitRateType\":\"CBR\",\"frameRateLimit\":30,\"gopLength\":10,\"profileId\":\"vec1\",\"resolution\":{\"width\":1280,\"height\":720},\"bitRateLimit\":800}], imagingSettings={\"reversal\":\"V-FLIP\"}, aiSettings={\"mode\":\"intrusion\"}}";
+    public final static String EXPECTED_DEVICE_SETTINGS_STRING = "{videoSettings=[{\"codec\":\"H264\",\"bitRateType\":\"VBR\",\"frameRateLimit\":15,\"gopLength\":30,\"profileId\":\"vec2\",\"resolution\":{\"width\":320,\"height\":240},\"bitRateLimit\":128}, {\"codec\":\"H264\",\"bitRateType\":\"CBR\",\"frameRateLimit\":30,\"gopLength\":10,\"profileId\":\"vec1\",\"resolution\":{\"width\":1280,\"height\":720},\"bitRateLimit\":800}]}";
 }
 
