@@ -102,7 +102,12 @@ dependencies {
 shadowJar {
     archiveClassifier.set('')
     mergeServiceFiles()
-    zip64 true
+    zip64 true    
+    minimize() // This will remove unused classes
+    // Exclude dependencies that are available in the Lambda runtime
+    exclude 'org/apache/log4j/**'
+    exclude 'org/apache/logging/log4j/**'
+    exclude 'software/amazon/awssdk/**'
     outputs.upToDateWhen { false }
     dependsOn classes  // Ensure Java compilation happens first
 }

@@ -14,8 +14,6 @@ import software.amazon.awssdk.services.kinesisvideo.KinesisVideoClient;
 import software.amazon.awssdk.services.kinesis.KinesisClient;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.http.auth.aws.signer.AwsV4HttpSigner;
-import com.amazonaws.auth.AWSCredentialsProvider;
-import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import org.apache.http.HttpRequestInterceptor;
 import io.github.acm19.aws.interceptor.http.AwsRequestSigningApacheInterceptor;
 

@@ -29,7 +29,6 @@ export class OpenSearchStack extends Stack {
     super(scope, id, props);
 
     const vlControlPlaneBulkLambdaRoleArn =`arn:aws:iam::${props.account}:role/BulkInferenceLambdaRole`;
-    const vlControlPlanePitCreationLambdaRoleArn =`arn:aws:iam::${props.account}:role/PitCreationLambdaRole`;
 
     const openSearchDomain = this.createOpenSearchDomain(props);
 
