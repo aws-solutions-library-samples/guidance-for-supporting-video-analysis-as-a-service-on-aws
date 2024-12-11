@@ -66,6 +66,7 @@ public class BulkInferenceLambdaTest {
     private static final String MOCK_AWS_REGION = "mock-region-value";
     private static final String MOCK_AWS_STAGE = "Dev";
     private static final String MOCK_ACCOUNT_ID = "12312313132";
+    private static final String MOCK_OPENSEARCH_ENDPOINT = "https://somerandomendpoint.com";
 
     @Rule
     private final EnvironmentVariables environmentVariables = new EnvironmentVariables();
@@ -111,6 +112,7 @@ public class BulkInferenceLambdaTest {
     @BeforeEach
     public void setup() throws MalformedURLException {
         environmentVariables.set("AWS_REGION", MOCK_AWS_REGION);
+        environmentVariables.set("opensearchEndpoint", MOCK_OPENSEARCH_ENDPOINT);
         environmentVariables.set("Stage", MOCK_AWS_STAGE);
         MockitoAnnotations.openMocks(this);
         when(openSearchClientProvider.getInstance(any(String.class))).thenReturn(openSearchClient);
