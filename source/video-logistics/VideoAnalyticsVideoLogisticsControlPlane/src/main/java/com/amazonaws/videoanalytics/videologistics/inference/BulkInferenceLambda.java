@@ -52,6 +52,7 @@ public class BulkInferenceLambda implements RequestHandler<KinesisEvent, Streams
     private final ThumbnailS3PresignerFactory presignerFactory;
     private final ImageUploader imageUploader;
     private final String accountId;
+    private final String endpoint = System.getProperty("opensearchEndpoint", System.getenv("opensearchEndpoint"));
 
     @ExcludeFromJacocoGeneratedReport
     public BulkInferenceLambda() {
@@ -90,7 +91,7 @@ public class BulkInferenceLambda implements RequestHandler<KinesisEvent, Streams
             throw new IllegalArgumentException(INVALID_INPUT_EXCEPTION);
         }
         // TODO: Get opensearch endpoint from cdk
-        OpenSearchClient openSearchClient = openSearchClientProvider.getInstance("TODO_ENDPOINT");
+        OpenSearchClient openSearchClient = openSearchClientProvider.getInstance(this.endpoint);
 
         InferenceRequest inferenceRequest = parseKinesisEvent(event);
         // https://docs.aws.amazon.com/lambda/latest/dg/with-kinesis.html#services-kinesis-batchfailurereporting
