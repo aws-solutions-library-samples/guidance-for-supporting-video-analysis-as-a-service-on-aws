@@ -94,8 +94,6 @@ dependencies {
     implementation 'org.apache.logging.log4j:log4j-core:2.20.0'
 
     implementation 'org.opensearch.client:opensearch-rest-high-level-client:2.18.0'
-    // https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk
-    implementation 'com.amazonaws:aws-java-sdk:1.12.779'
     implementation 'io.github.acm19:aws-request-signing-apache-interceptor:3.0.0'
 
     // Test dependencies
@@ -191,6 +189,11 @@ shadowJar {
     archiveClassifier.set('')
     mergeServiceFiles()
     zip64 true
+    minimize() // This will remove unused classes
+    // Exclude dependencies that are available in the Lambda runtime
+    exclude 'org/apache/log4j/**'
+    exclude 'org/apache/logging/log4j/**'
+    exclude 'software/amazon/awssdk/**'
     outputs.upToDateWhen { false }
     dependsOn classes
 }

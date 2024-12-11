@@ -23,6 +23,7 @@ import {
   
   export interface BulkInferenceStackProps extends StackProps {
     region: AWSRegion;
+    opensearchEndpoint: string;
   }
   
   /**
@@ -87,6 +88,7 @@ import {
         role: this.lambdaRole,
         environment: {
           AWSRegion: props.region,
+          opensearchEndpoint: props.opensearchEndpoint
         },
         timeout: Duration.minutes(12),
         logGroup: new LogGroup(this, 'BulkInferenceLambdaLogGroup', {

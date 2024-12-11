@@ -23,14 +23,16 @@ export interface OpenSearchStackProps extends StackProps {
 }
 
 export class OpenSearchStack extends Stack {
+  public readonly opensearchEndpoint: string;
 
   constructor(scope: App, id: string, readonly props: OpenSearchStackProps) {
     super(scope, id, props);
 
     const vlControlPlaneBulkLambdaRoleArn =`arn:aws:iam::${props.account}:role/BulkInferenceLambdaRole`;
-    const vlControlPlanePitCreationLambdaRoleArn =`arn:aws:iam::${props.account}:role/PitCreationLambdaRole`;
 
     const openSearchDomain = this.createOpenSearchDomain(props);
+
+    this.opensearchEndpoint = openSearchDomain.domainEndpoint;
 
     openSearchDomain.addAccessPolicies(
         new PolicyStatement({
@@ -38,7 +40,7 @@ export class OpenSearchStack extends Stack {
           effect: Effect.ALLOW,
           principals: [
             new ServicePrincipal(OPEN_SEARCH_SERVICE_NAME),
-            // new ArnPrincipal(vlControlPlaneBulkLambdaRoleArn),
+            new ArnPrincipal(vlControlPlaneBulkLambdaRoleArn),
         ],
           resources: [openSearchDomain.domainArn, `${openSearchDomain.domainArn}/*`]
         })
