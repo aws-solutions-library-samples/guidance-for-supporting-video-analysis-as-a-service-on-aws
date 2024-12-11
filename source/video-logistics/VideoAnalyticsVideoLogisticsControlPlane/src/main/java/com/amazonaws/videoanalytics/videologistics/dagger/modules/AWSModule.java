@@ -13,6 +13,7 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.kinesisvideo.KinesisVideoClient;
 import software.amazon.awssdk.services.kinesis.KinesisClient;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.apigateway.ApiGatewayClient;
 import software.amazon.awssdk.http.auth.aws.signer.AwsV4HttpSigner;
 import org.apache.http.HttpRequestInterceptor;
 import io.github.acm19.aws.interceptor.http.AwsRequestSigningApacheInterceptor;
@@ -119,7 +120,6 @@ public class AWSModule {
         return AwsV4HttpSigner.create();
     }
 
-
     @Provides
     @Singleton
     @Named(OPENSEARCH_INTERCEPTOR_NAME)
@@ -127,5 +127,17 @@ public class AWSModule {
                                                                  final @Named(OPENSEARCH_SIGNER_NAME) AwsV4HttpSigner signer,
                                                                  final @Named(REGION_NAME) String regionName) {
         return new AwsRequestSigningApacheInterceptor(OPENSEARCH_SERVICE_NAME, signer, credentialsProvider, regionName);
+    }
+
+    @Provides
+    @Singleton
+    public ApiGatewayClient provideApiGatewayClient(@Named(CREDENTIALS_PROVIDER) final AwsCredentialsProvider credentialsProvider,
+                                                   @Named(HTTP_CLIENT) final SdkHttpClient sdkHttpClient,
+                                                   @Named(REGION_NAME) final String region) {
+        return ApiGatewayClient.builder()
+                .credentialsProvider(credentialsProvider)
+                .httpClient(sdkHttpClient)
+                .region(Region.of(region))
+                .build();
     }
 }

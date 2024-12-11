@@ -6,7 +6,7 @@ import { Function, Runtime, Code } from "aws-cdk-lib/aws-lambda";
 import { LogGroup, RetentionDays } from "aws-cdk-lib/aws-logs";
 import { Asset } from 'aws-cdk-lib/aws-s3-assets'
 import { Construct } from "constructs";
-import { AWSRegion, createApiGateway, createLambdaRole, VIDEO_LOGISTICS_API_NAME } from "video_analytics_common_construct";
+import { AWSRegion, createApiGateway, createLambdaRole, DEVICE_MANAGEMENT_API_NAME, VIDEO_LOGISTICS_API_NAME } from "video_analytics_common_construct";
 
 import {
     VL_ACTIVITY_JAVA_PATH_PREFIX,
@@ -111,6 +111,15 @@ export class ServiceStack extends Stack {
           `arn:aws:execute-api:${this.region}:${this.account}:*/*/*/*`
         ]
       }),
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        actions: [
+          's3:PutObject',
+        ],
+        resources: [
+          `arn:aws:s3:::video-analytics-image-upload-bucket-${this.account}-${this.region}/*`
+        ]
+      })
     ]);
 
     const createSnapshotUploadPathLambda = new Function(this, "CreateSnapshotUploadPathActivity", {
@@ -121,7 +130,8 @@ export class ServiceStack extends Stack {
       memorySize: 512,
       timeout: Duration.minutes(5),
       environment: {
-          ACCOUNT_ID: this.account
+          ACCOUNT_ID: this.account,
+          DEVICE_MANAGEMENT_API_NAME: DEVICE_MANAGEMENT_API_NAME
       },
       role: createSnapshotUploadPathRole,
       logGroup: new LogGroup(this, "CreateSnapshotUploadPathActivityLogGroup", {

@@ -29,6 +29,7 @@ import com.amazonaws.videoanalytics.videologistics.dao.VLRegisterDeviceJobDAO;
 import com.amazonaws.videoanalytics.videologistics.workflow.KVSResourceCreateLambda;
 import com.amazonaws.videoanalytics.videologistics.workflow.FailAndCleanupVLDeviceRegistrationHandler;
 import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.ACCOUNT_ID;
+import com.amazonaws.videoanalytics.videologistics.dependency.apig.ApigService;
 import com.amazonaws.videoanalytics.videologistics.dao.videotimeline.VideoTimelineDAO;
 import com.amazonaws.videoanalytics.videologistics.dao.videotimeline.RawVideoTimelineDAO;
 
@@ -77,6 +78,6 @@ public interface AWSVideoAnalyticsVLControlPlaneComponent {
     InferenceDeserializer getInferenceDeserializer();
     ThumbnailS3PresignerFactory getThumbnailS3PresignerFactory();
     ImageUploader getImageUploader();
-
     @Named(ACCOUNT_ID) String getAccountId();
+    ApigService apigService();
 }

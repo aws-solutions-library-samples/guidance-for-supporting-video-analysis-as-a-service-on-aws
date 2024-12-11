@@ -14,7 +14,6 @@ service VideoAnalytic {
         PlaybackSession,
         RegisterDevice,
         Snapshot,
-        Inference,
-        VideoTimelineOps
+        Inference
     ]
 }
