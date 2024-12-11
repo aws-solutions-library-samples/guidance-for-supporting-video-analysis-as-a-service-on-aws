@@ -80,6 +80,7 @@ dependencies {
     implementation 'org.apache.logging.log4j:log4j-api'
     implementation 'com.amazonaws:aws-lambda-java-log4j2:1.5.1'
     implementation 'org.apache.logging.log4j:log4j-layout-template-json:2.20.0'
+    implementation 'commons-logging:commons-logging:1.3.4'
 
     // JSON handling
     implementation 'com.google.code.gson:gson:2.10.1'
@@ -103,11 +104,13 @@ shadowJar {
     archiveClassifier.set('')
     mergeServiceFiles()
     zip64 true    
-    minimize() // This will remove unused classes
+    minimize {
+        exclude(dependency('commons-logging:commons-logging:1.3.4'))
+    }
     // Exclude dependencies that are available in the Lambda runtime
-    exclude 'org/apache/log4j/**'
-    exclude 'org/apache/logging/log4j/**'
-    exclude 'software/amazon/awssdk/**'
+    // exclude 'org/apache/log4j/**'
+    // exclude 'org/apache/logging/log4j/**'
+    // exclude 'software/amazon/awssdk/**'
     outputs.upToDateWhen { false }
     dependsOn classes  // Ensure Java compilation happens first
 }

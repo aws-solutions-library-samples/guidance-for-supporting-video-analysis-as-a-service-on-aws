@@ -55,4 +55,17 @@ public class LambdaProxyUtils {
             throw new RuntimeException("Failed to parse request body", e);
         }
     }
+
+    public static String parseBodyMap(Map<String, Object> request) {
+        if (request == null || request.get("body") == null) {
+            return null;
+        }
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            Map<String, Object> map = mapper.convertValue(request.get(PROXY_LAMBDA_BODY_KEY), Map.class);
+            return mapper.writeValueAsString(map);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to parse request body", e);
+        }
+    }
 }

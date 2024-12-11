@@ -5,6 +5,7 @@ import com.amazonaws.services.lambda.runtime.LambdaLogger;
 
 import com.amazonaws.videoanalytics.videologistics.CreateSnapshotUploadPathRequestContent;
 import com.amazonaws.videoanalytics.videologistics.client.s3.SnapshotS3Presigner;
+import com.amazonaws.videoanalytics.videologistics.dependency.apig.ApigService;
 
 import com.amazonaws.videoanalytics.videologistics.ValidationExceptionReason;
 import com.amazonaws.videoanalytics.videologistics.ValidationExceptionResponseContent;
@@ -77,15 +78,16 @@ public class CreateSnapshotUploadPathActivityTest {
     private Context context;
     @Mock
     private LambdaLogger logger;
+    @Mock
+    private ApigService apigService;
 
     @InjectMocks
     private CreateSnapshotUploadPathActivity createSnapshotUploadPathActivity;
 
-    String proxyLambdaBody = String.format(
-        "{\"deviceId\": \"%s\", \"checksum\": \"%s\", \"contentLength\": \"%s\"}", 
-        DEVICE_ID, 
-        CHECKSUM, 
-        CONTENT_LENGTH
+    Map<String, Object> proxyLambdaBody = Map.ofEntries(
+        entry("deviceId", DEVICE_ID),
+        entry("checksum", CHECKSUM),
+        entry("contentLength", CONTENT_LENGTH)
     );
     Map<String, Object> lambdaProxyRequest = Map.ofEntries(
         entry(PROXY_LAMBDA_BODY_KEY, proxyLambdaBody)
@@ -122,32 +124,16 @@ public class CreateSnapshotUploadPathActivityTest {
         URL expectedUrl = new URL(S3_PRESIGNED_URL); 
         assertEquals(expectedUrl, presignedUrl);
         
-        Map<String, Object> actualMessage = new CreateSnapshotUploadPathActivity(s3Presigner, region, SNAPSHOT_ACCOUNT_ID)
+        Map<String, Object> actualMessage = new CreateSnapshotUploadPathActivity(s3Presigner, region, SNAPSHOT_ACCOUNT_ID, apigService)
             .handleRequest(lambdaProxyRequest, context);
-        Map<String, Object> expectedMessage = serializeResponse(200, "");
+        Map<String, Object> expectedMessage = serializeResponse(200, 
+            "{\"shadowPayload\":{\"shadowName\":\"snapshot\",\"stateDocument\":{\"presignedUrl\": \"http://s3.amazonaws.zom/testBucket/key.jpeg?pregin-bits\"}}}");
         assertEquals(expectedMessage, actualMessage);
-        /*
-        // TODO: after update device internal logic added in activity code, modify to match expected behavior
-
-        ShadowMap shadowMap = ShadowMap
-                .builder()
-                .stateDocument(Document.fromMap(message))
-                .shadowName(SNAPSHOT_SHADOW_NAME)
-                .build();
-
-        UpdateDeviceInternalRequest updateDeviceInternalRequest = UpdateDeviceInternalRequest
-                .builder()
-                .deviceId(DEVICE_ID)
-                .shadowPayload(shadowMap)
-                .build();
-        
-        assertNull(internalClient.updateDeviceInternal(updateDeviceInternalRequest));
-        */
     }
 
     @Test
     public void createSnapshotUploadPathNullInputActivityTest() {
-        Map<String, Object> actualMessage = new CreateSnapshotUploadPathActivity(s3Presigner, region, SNAPSHOT_ACCOUNT_ID)
+        Map<String, Object> actualMessage = new CreateSnapshotUploadPathActivity(s3Presigner, region, SNAPSHOT_ACCOUNT_ID, apigService)
             .handleRequest(null, context);
 
         final ValidationExceptionResponseContent exception = ValidationExceptionResponseContent.builder()
@@ -171,7 +157,7 @@ public class CreateSnapshotUploadPathActivityTest {
             entry(PROXY_LAMBDA_BODY_KEY, blankDeviceInputProxyLambdaBody)
         );
 
-        Map<String, Object> actualMessage = new CreateSnapshotUploadPathActivity(s3Presigner, region, SNAPSHOT_ACCOUNT_ID)
+        Map<String, Object> actualMessage = new CreateSnapshotUploadPathActivity(s3Presigner, region, SNAPSHOT_ACCOUNT_ID, apigService)
             .handleRequest(blankDeviceInputLambdaProxyRequest, context);
 
         final ValidationExceptionResponseContent exception = ValidationExceptionResponseContent.builder()
@@ -194,7 +180,7 @@ public class CreateSnapshotUploadPathActivityTest {
             entry(PROXY_LAMBDA_BODY_KEY, blankChecksumProxyLambdaBody)
         );
 
-        Map<String, Object> actualMessage = new CreateSnapshotUploadPathActivity(s3Presigner, region, SNAPSHOT_ACCOUNT_ID)
+        Map<String, Object> actualMessage = new CreateSnapshotUploadPathActivity(s3Presigner, region, SNAPSHOT_ACCOUNT_ID, apigService)
             .handleRequest(blankChecksumLambdaProxyRequest, context);
 
         final ValidationExceptionResponseContent exception = ValidationExceptionResponseContent.builder()
@@ -217,7 +203,7 @@ public class CreateSnapshotUploadPathActivityTest {
             entry(PROXY_LAMBDA_BODY_KEY, blankChecksumProxyLambdaBody)
         );
 
-        Map<String, Object> actualMessage = new CreateSnapshotUploadPathActivity(s3Presigner, region, SNAPSHOT_ACCOUNT_ID)
+        Map<String, Object> actualMessage = new CreateSnapshotUploadPathActivity(s3Presigner, region, SNAPSHOT_ACCOUNT_ID, apigService)
             .handleRequest(blankChecksumLambdaProxyRequest, context);
 
         final ValidationExceptionResponseContent exception = ValidationExceptionResponseContent.builder()

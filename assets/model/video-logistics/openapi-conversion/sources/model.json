@@ -1094,9 +1094,6 @@
                 },
                 {
                     "target": "com.amazonaws.videoanalytics.videologistics#Snapshot"
-                },
-                {
-                    "target": "com.amazonaws.videoanalytics.videologistics#VideoTimelineOps"
                 }
             ],
             "traits": {
