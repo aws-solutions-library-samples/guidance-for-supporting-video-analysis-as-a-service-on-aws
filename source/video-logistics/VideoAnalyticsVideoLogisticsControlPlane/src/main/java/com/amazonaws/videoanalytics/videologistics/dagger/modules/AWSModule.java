@@ -17,6 +17,8 @@ import software.amazon.awssdk.services.apigateway.ApiGatewayClient;
 import software.amazon.awssdk.http.auth.aws.signer.AwsV4HttpSigner;
 import org.apache.http.HttpRequestInterceptor;
 import io.github.acm19.aws.interceptor.http.AwsRequestSigningApacheInterceptor;
+import software.amazon.awssdk.services.s3.S3Client;
+import com.amazonaws.videoanalytics.videologistics.client.s3.S3Proxy;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -140,4 +142,23 @@ public class AWSModule {
                 .region(Region.of(region))
                 .build();
     }
+    public S3Client providesS3Client(@Named(HTTP_CLIENT) final SdkHttpClient sdkHttpClient,
+                                    @Named(CREDENTIALS_PROVIDER) final AwsCredentialsProvider credentialsProvider,
+                                    final Region region) {
+        return S3Client.builder()
+                .httpClient(sdkHttpClient)
+                .credentialsProvider(credentialsProvider)
+                .region(region)
+                .overrideConfiguration(ClientOverrideConfiguration.builder()
+                        .retryPolicy(RetryMode.ADAPTIVE)
+                        .build())
+                .build();
+    }
+
+    @Provides
+    @Singleton
+    public S3Proxy providesS3Proxy(final S3Client s3Client) {
+        return new S3Proxy(s3Client);
+    }
+    
 }
