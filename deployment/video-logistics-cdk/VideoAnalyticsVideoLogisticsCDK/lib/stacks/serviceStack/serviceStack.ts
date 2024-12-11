@@ -190,7 +190,6 @@ export class ServiceStack extends Stack {
           logGroupName: "/aws/lambda/StartVLRegisterDeviceActivity",
       }),
     });
-<<<<<<< HEAD
 
     apiGatewayRole.addToPolicy(new PolicyStatement({
       resources: ['*'],
@@ -220,8 +219,6 @@ export class ServiceStack extends Stack {
           logGroupName: "/aws/lambda/ImportMediaObjectActivity",
       }),
     });
-=======
->>>>>>> 5a202a9 (removing duplicate variables from vl cdk)
 
     apiGatewayRole.addToPolicy(new PolicyStatement({
       resources: ['*'],
@@ -240,11 +237,8 @@ export class ServiceStack extends Stack {
     startVLRegisterDeviceCfnLambda.overrideLogicalId("StartVLRegisterDeviceActivity");
     const getVLRegisterDeviceStatusCfnLambda = getVLRegisterDeviceStatusLambda.node.defaultChild as CfnFunction;
     getVLRegisterDeviceStatusCfnLambda.overrideLogicalId("GetVLRegisterDeviceStatusActivity");
-<<<<<<< HEAD
     const importMediaObjectCfnLambda = importMediaObjectLambda.node.defaultChild as CfnFunction;
     importMediaObjectCfnLambda.overrideLogicalId("ImportMediaObjectActivity");
-=======
->>>>>>> 5a202a9 (removing duplicate variables from vl cdk)
 
     // Upload spec to S3
     const originalSpec = new Asset(this, "openApiFile", {
