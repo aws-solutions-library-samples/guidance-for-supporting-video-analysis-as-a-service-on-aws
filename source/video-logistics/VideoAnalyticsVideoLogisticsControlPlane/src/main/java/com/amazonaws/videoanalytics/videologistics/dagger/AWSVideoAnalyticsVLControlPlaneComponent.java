@@ -52,7 +52,8 @@ import com.amazonaws.videoanalytics.videologistics.timeline.PutVideoTimelineHand
 import com.amazonaws.videoanalytics.videologistics.timeline.VideoTimelineAggregator;
 import com.amazonaws.videoanalytics.videologistics.timeline.TimelineKDSMetadataSerDe;
 
-
+import com.amazonaws.videoanalytics.videologistics.activity.PutVideoTimelineActivity;
+import com.amazonaws.videoanalytics.videologistics.activity.ListVideoTimelinesActivity;
 @Component(
         modules = {
                 AWSModule.class,
@@ -71,6 +72,8 @@ public interface AWSVideoAnalyticsVLControlPlaneComponent {
     void inject(CreateSnapshotUploadPathActivity lambda);
     void inject(BulkInferenceLambda lambda);
     void inject(ImportMediaObjectActivity lambda);
+    void inject(PutVideoTimelineActivity lambda);
+    void inject(ListVideoTimelinesActivity lambda);
 
     KvsService getKvsService();
     DeviceValidator getDeviceValidator();
