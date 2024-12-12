@@ -37,6 +37,7 @@ const envConfig = {
 // new SchedulerStack(app, 'VideoLogisticsSchedulerStack', envConfig);
 // new TimelineStack(app, 'VideoLogisticsTimelineStack', envConfig);
 // new VideoExportStack(app, 'VideoLogisticsVideoExportStack', envConfig);
+new VideoLogisticsBootstrapStack(app, 'VideoLogisticsBootstrapStack', envConfig);
 let opensearchStack = new OpenSearchStack(app, 'VideoLogisticsOpensearchStack', envConfig);
 new BulkInferenceStack(app, 'VideoLogisticsBulkInferenceStack', {...envConfig, opensearchEndpoint: opensearchStack.opensearchEndpoint});
 new WorkflowStack(app, 'VideoLogisticsWorkflowStack', envConfig);
