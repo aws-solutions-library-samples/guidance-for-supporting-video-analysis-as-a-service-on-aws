@@ -1,11 +1,22 @@
-import { Duration, Fn, Stack, StackProps, CfnOutput } from "aws-cdk-lib";
+import { Duration, Fn, Stack, StackProps } from "aws-cdk-lib";
 import { MethodLoggingLevel, SpecRestApi } from 'aws-cdk-lib/aws-apigateway';
 import { CfnFunction } from "aws-cdk-lib/aws-cloudfront";
-import { Effect, PolicyStatement, Role, ServicePrincipal } from "aws-cdk-lib/aws-iam";
-import { Function, Runtime, Code } from "aws-cdk-lib/aws-lambda";
+import { 
+  ArnPrincipal,
+  CfnRole,
+  Effect,
+  PolicyDocument,
+  PolicyStatement,
+  Role,
+  ServicePrincipal
+} from "aws-cdk-lib/aws-iam";
+import { CfnAlias, Key } from "aws-cdk-lib/aws-kms";
+import { Function, Runtime, Code, CfnPermission } from "aws-cdk-lib/aws-lambda";
 import { LogGroup, RetentionDays } from "aws-cdk-lib/aws-logs";
 import { Asset } from 'aws-cdk-lib/aws-s3-assets'
 import { Construct } from "constructs";
+import { CfnTopicRule } from "aws-cdk-lib/aws-iot";
+import { Queue, QueueEncryption } from "aws-cdk-lib/aws-sqs";
 import { AWSRegion, createApiGateway, createLambdaRole, DEVICE_MANAGEMENT_API_NAME, VIDEO_LOGISTICS_API_NAME } from "video_analytics_common_construct";
 
 import {
@@ -138,6 +149,186 @@ export class ServiceStack extends Stack {
           retention: RetentionDays.TEN_YEARS,
           logGroupName: "/aws/lambda/CreateSnapshotUploadPathActivity",
       }),
+    });
+
+    // Snapshot Resources
+    const snapIoTRuleDlqRole = new CfnRole(this, "SnapIoTRuleDLQRole", {
+      assumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Action: ["sts:AssumeRole"],
+            Effect: "Allow",
+            Principal: {
+              Service: ["iot.amazonaws.com"],
+            },
+          },
+        ],
+      },
+      policies: [
+        {
+          policyName: "SnapIoTRuleDLQPolicy",
+          policyDocument: {
+            Version: "2012-10-17",
+            Statement: [
+              {
+                Sid: "SnapIoTRuleDLQAccess",
+                Effect: "Allow",
+                Action: ["sqs:SendMessage"],
+                Resource: "*",
+              },
+            ],
+          },
+        },
+      ],
+    });
+
+    const snapLambdaDlqRole = new CfnRole(this, "SnapLambdaDLQRole", {
+      assumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Action: ["sts:AssumeRole"],
+            Effect: "Allow",
+            Principal: {
+              Service: ["iot.amazonaws.com"],
+            },
+          },
+        ],
+      },
+      policies: [
+        {
+          policyName: "SnapLambdaDLQPolicy",
+          policyDocument: {
+            Version: "2012-10-17",
+            Statement: [
+              {
+                Sid: "SnapLambdaDLQAccess",
+                Effect: "Allow",
+                Action: ["sqs:SendMessage"],
+                Resource: "*",
+              },
+            ],
+          },
+        },
+      ],
+    });
+
+    if (snapIoTRuleDlqRole == null) {
+      throw new Error(
+        `A combination of conditions caused 'snapIoTRuleDlqRole' to be undefined. Fixit.`
+      );
+    }
+    if (snapLambdaDlqRole == null) {
+      throw new Error(
+        `A combination of conditions caused 'snapLambdaDlqRole' to be undefined. Fixit.`
+      );
+    }
+
+    const snapDlqKmsKey = new Key(this, "SnapDLQKmsKey", {
+      description: "Kms key for snapshot DLQ.",
+      enableKeyRotation: true,
+      policy: new PolicyDocument({
+        statements: [
+          new PolicyStatement({
+            effect: Effect.ALLOW,
+            principals: [
+              new ArnPrincipal(
+                `arn:${this.partition}:iam::${this.account}:root`
+              ),
+            ],
+            actions: ["kms:*"],
+            resources: ["*"],
+          }),
+          new PolicyStatement({
+            effect: Effect.ALLOW,
+            principals: [
+              new ArnPrincipal(snapLambdaDlqRole.attrArn),
+              new ArnPrincipal(snapIoTRuleDlqRole.attrArn),
+              new ArnPrincipal(createSnapshotUploadPathLambda.role?.roleArn!),
+            ],
+            actions: [
+              "kms:Generate*",
+              "kms:DescribeKey",
+              "kms:Encrypt",
+              "kms:ReEncrypt*",
+              "kms:Decrypt",
+            ],
+            resources: ["*"],
+          }),
+        ],
+      }),
+    });
+
+    if (snapDlqKmsKey == null) {
+      throw new Error(
+        `A combination of conditions caused 'snapDlqKmsKey' to be undefined. Fixit.`
+      );
+    }
+    new CfnAlias(this, "SnapDLQKmsKeyAlias", {
+      aliasName: "alias/SnapDLQKmsKey",
+      targetKeyId: snapDlqKmsKey.keyId,
+    });
+
+    const snapIoTRuleDlq = new Queue(this, "SnapIoTRuleDLQ", {
+      queueName: "SnapIoTRuleDLQ",
+      enforceSSL: true,
+      encryption: QueueEncryption.KMS,
+      encryptionMasterKey: snapDlqKmsKey,
+    });
+
+    const snapLambdaDlq = new Queue(this, "SnapLambdaDLQ", {
+      queueName: "SnapLambdaDLQ",
+      enforceSSL: true,
+      encryption: QueueEncryption.KMS,
+      encryptionMasterKey: snapDlqKmsKey,
+    });
+
+    if (snapLambdaDlq == null) {
+      throw new Error(
+        `A combination of conditions caused 'snapLambdaDlq' to be undefined. Fixit.`
+      );
+    }
+
+    if (snapIoTRuleDlq == null) {
+      throw new Error(
+        `A combination of conditions caused 'snapIoTRuleDlq' to be undefined. Fixit.`
+      );
+    }
+
+    const snapIoTToLambdaRule = new CfnTopicRule(this, "snapIoTToLambdaRule", {
+      topicRulePayload: {
+        description: "Forward snapshots to destination.",
+        ruleDisabled: false,
+        sql: "SELECT checksum as body.checksum, contentLength as body.contentLength, topic(2) as body.deviceId FROM 'videoanalytics/+/snapshot'",
+        awsIotSqlVersion: "2016-03-23",
+        actions: [
+          {
+            lambda: {
+              functionArn: createSnapshotUploadPathLambda.functionArn,
+            },
+          },
+        ],
+        errorAction: {
+          sqs: {
+            queueUrl: snapIoTRuleDlq.queueUrl,
+            roleArn: snapIoTRuleDlqRole.attrArn,
+            useBase64: false,
+          },
+        },
+      },
+    });
+
+    if (snapIoTToLambdaRule == null) {
+      throw new Error(
+        `A combination of conditions caused 'snapIoTToLambdaRule' to be undefined. Fixit.`
+      );
+    }
+    new CfnPermission(this, "GetSnapshotProxyLambdaFunctionPermission", {
+      action: "lambda:InvokeFunction",
+      functionName: createSnapshotUploadPathLambda.functionArn,
+      principal: "iot.amazonaws.com",
+      sourceArn: snapIoTToLambdaRule.attrArn,
     });
     
     const getVLRegisterDeviceStatusRole = createLambdaRole(this, "getVLRegisterDeviceStatusRole", [
