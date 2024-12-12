@@ -21,11 +21,24 @@ import com.amazonaws.videoanalytics.videologistics.client.opensearch.OpenSearchC
 import com.amazonaws.videoanalytics.videologistics.client.opensearch.OpenSearchClientProvider;
 import com.amazonaws.videoanalytics.videologistics.client.s3.ThumbnailS3PresignerFactory;
 import com.amazonaws.videoanalytics.videologistics.client.s3.ImageUploader;
+import com.amazonaws.videoanalytics.videologistics.timeline.TimestampListDeserializer;
+import com.amazonaws.videoanalytics.videologistics.timeline.BatchTimelineMapper;
+import com.amazonaws.videoanalytics.videologistics.utils.S3BucketRegionalizer;
+import com.amazonaws.videoanalytics.videologistics.dao.videotimeline.RawVideoTimelineDAO;
+import com.amazonaws.videoanalytics.videologistics.timeline.VideoTimelineUtils;
+import software.amazon.awssdk.regions.Region;
+import javax.inject.Named;
 
 import javax.inject.Singleton;
+import com.amazonaws.videoanalytics.videologistics.timeline.VideoTimelineAggregator;
+import com.amazonaws.videoanalytics.videologistics.dao.videotimeline.VideoTimelineDAO;
+import com.amazonaws.videoanalytics.videologistics.timeline.TimelineKDSMetadataSerDe;
+import com.amazonaws.videoanalytics.videologistics.timeline.DetailedVideoTimelineGenerator;
 
 @Module
 public class AWSVideoAnalyticsVLControlPlaneModule {
+
+    private static final String ACCOUNT_ID = "accountId";
 
     @Provides
     @Singleton
@@ -107,5 +120,70 @@ public class AWSVideoAnalyticsVLControlPlaneModule {
     @Singleton
     public ImageUploader provideImageUploader() {
         return new ImageUploader();
+    }
+
+    @Provides
+    @Singleton
+    public TimestampListDeserializer provideTimestampListDeserializer(final ObjectMapper objectMapper) {
+        return new TimestampListDeserializer(objectMapper);
+    }
+
+    @Provides
+    @Singleton
+    public BatchTimelineMapper provideBatchTimelineMapper(final ObjectMapper objectMapper) {
+        return new BatchTimelineMapper(objectMapper);
+    }
+
+    @Provides
+    @Singleton
+    @Named(ACCOUNT_ID)
+    public String provideAccountId() {
+        return System.getenv("AWS_ACCOUNT_ID");
+    }
+
+    @Provides
+    @Singleton
+    public S3BucketRegionalizer provideS3BucketRegionalizer(
+            final Region region,
+            @Named(ACCOUNT_ID) final String serviceAccountId) {
+        return new S3BucketRegionalizer(region, serviceAccountId);
+    }
+
+    @Provides
+    @Singleton
+    public RawVideoTimelineDAO provideRawVideoTimelineDAO(
+            final DynamoDbTable<RawVideoTimeline> rawVideoTimelineTable,
+            final VideoTimelineUtils videoTimelineUtils) {
+        return new RawVideoTimelineDAO(rawVideoTimelineTable, videoTimelineUtils);
+    }
+
+    @Provides
+    @Singleton
+    public VideoTimelineAggregator provideVideoTimelineAggregator(
+            final VideoTimelineUtils videoTimelineUtils) {
+        return new VideoTimelineAggregator(videoTimelineUtils);
+    }
+
+    @Provides
+    @Singleton
+    public VideoTimelineDAO provideVideoTimelineDAO(
+            final DynamoDbEnhancedClient ddbClient,
+            final DynamoDbTable<AggregateVideoTimeline> videoTimelineTable,
+            final VideoTimelineUtils videoTimelineUtils,
+            final VideoTimelineAggregator videoTimelineAggregator) {
+        return new VideoTimelineDAO(ddbClient, videoTimelineTable, videoTimelineUtils, videoTimelineAggregator);
+    }
+
+    @Provides
+    @Singleton
+    public TimelineKDSMetadataSerDe provideTimelineKDSMetadataSerDe(
+            final ObjectMapper objectMapper) {
+        return new TimelineKDSMetadataSerDe(objectMapper);
+    }
+
+    @Provides
+    @Singleton
+    public DetailedVideoTimelineGenerator provideDetailedVideoTimelineGenerator(RawVideoTimelineDAO rawVideoTimelineDAO) {
+        return new DetailedVideoTimelineGenerator(rawVideoTimelineDAO);
     }
 }

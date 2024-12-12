@@ -41,6 +41,21 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import software.amazon.awssdk.services.kinesisvideo.KinesisVideoClient;
+import software.amazon.awssdk.services.kinesis.KinesisClient;
+
+import com.amazonaws.videoanalytics.videologistics.client.s3.S3Proxy;
+import com.amazonaws.videoanalytics.videologistics.timeline.TimestampListDeserializer;
+import com.amazonaws.videoanalytics.videologistics.timeline.BatchTimelineMapper;
+import com.amazonaws.videoanalytics.videologistics.timeline.VideoTimelineUtils;
+import com.amazonaws.videoanalytics.videologistics.utils.S3BucketRegionalizer;
+import com.amazonaws.videoanalytics.videologistics.timeline.PutVideoTimelineHandler;
+import com.amazonaws.videoanalytics.videologistics.timeline.VideoTimelineAggregator;
+import com.amazonaws.videoanalytics.videologistics.timeline.TimelineKDSMetadataSerDe;
+
+import com.amazonaws.videoanalytics.videologistics.activity.PutVideoTimelineActivity;
+import com.amazonaws.videoanalytics.videologistics.activity.ListVideoTimelinesActivity;
+import com.amazonaws.videoanalytics.videologistics.activity.ListDetailedVideoTimelineActivity;
+import com.amazonaws.videoanalytics.videologistics.timeline.DetailedVideoTimelineGenerator;
 
 @Component(
         modules = {
@@ -60,7 +75,9 @@ public interface AWSVideoAnalyticsVLControlPlaneComponent {
     void inject(CreateSnapshotUploadPathActivity lambda);
     void inject(BulkInferenceLambda lambda);
     void inject(ImportMediaObjectActivity lambda);
-
+    void inject(PutVideoTimelineActivity lambda);
+    void inject(ListVideoTimelinesActivity lambda);
+    void inject(ListDetailedVideoTimelineActivity lambda);
     KvsService getKvsService();
     DeviceValidator getDeviceValidator();
     GuidanceUUIDGenerator getGuidanceUUIDGenerator();
@@ -80,4 +97,14 @@ public interface AWSVideoAnalyticsVLControlPlaneComponent {
     ImageUploader getImageUploader();
     @Named(ACCOUNT_ID) String getAccountId();
     ApigService apigService();
+    S3Proxy getS3Proxy();
+    TimestampListDeserializer getTimestampListDeserializer();
+    BatchTimelineMapper getBatchTimelineMapper();
+    S3BucketRegionalizer getS3BucketRegionalizer();
+    VideoTimelineUtils getVideoTimelineUtils();
+    PutVideoTimelineHandler getPutVideoTimelineHandler();
+    VideoTimelineAggregator getVideoTimelineAggregator();
+    TimelineKDSMetadataSerDe getTimelineKDSMetadataSerDe();
+    KinesisClient getKinesisClient();
+    DetailedVideoTimelineGenerator getDetailedVideoTimelineGenerator();
 }
