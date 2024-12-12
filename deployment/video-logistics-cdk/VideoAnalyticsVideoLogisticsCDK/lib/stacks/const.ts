@@ -68,7 +68,7 @@ export const LAMBDA_PACKAGE_NAME = 'AWSVideoAnalyticsVLControlPlane-1.0';
 export const VL_ACTIVITY_JAVA_PATH_PREFIX =
   "com.amazonaws.videoanalytics.videologistics.activity";
   export const VL_INFERENCE_JAVA_PATH_PREFIX =
-  "com.amazonaws.videoanalytics.videologistics.inferece";
+  "com.amazonaws.videoanalytics.videologistics.inference";
 export const VL_WORKFLOW_JAVA_PATH_PREFIX =
   "com.amazonaws.videoanalytics.videologistics.workflow";
 export const LAMBDA_ASSET_PATH =
