@@ -64,6 +64,6 @@ public class RestHighLevelClientWrapper {
                         .setHttpClientConfigCallback(
                                 httpClientConfigCallback -> httpClientConfigCallback.addInterceptorLast(interceptor))
                         .setRequestConfigCallback(requestConfigBuilder -> requestConfigBuilder.setConnectTimeout(CONNECTION_TIMEOUT)
-                                .setSocketTimeout(CONNECTION_TIMEOUT)));
+                        .setSocketTimeout(CONNECTION_TIMEOUT)));
     }
 }

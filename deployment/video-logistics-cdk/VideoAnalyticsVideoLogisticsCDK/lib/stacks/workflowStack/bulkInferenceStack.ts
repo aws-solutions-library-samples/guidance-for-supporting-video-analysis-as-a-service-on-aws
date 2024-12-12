@@ -24,6 +24,7 @@ import {
   export interface BulkInferenceStackProps extends StackProps {
     region: AWSRegion;
     opensearchEndpoint: string;
+    account: string;
   }
   
   /**
@@ -83,11 +84,12 @@ import {
         code: Code.fromAsset(LAMBDA_ASSET_PATH),
         description: 'Lambda responsible for Put inference in Open Search ',
         runtime: Runtime.JAVA_17,
-        handler: `${VL_INFERENCE_JAVA_PATH_PREFIX}.inference.BulkInferenceLambda::handleRequest`,
+        handler: `${VL_INFERENCE_JAVA_PATH_PREFIX}.BulkInferenceLambda::handleRequest`,
         memorySize: 2048,
         role: this.lambdaRole,
         environment: {
           AWSRegion: props.region,
+          ACCOUNT_ID: this.account,
           opensearchEndpoint: props.opensearchEndpoint
         },
         timeout: Duration.minutes(12),

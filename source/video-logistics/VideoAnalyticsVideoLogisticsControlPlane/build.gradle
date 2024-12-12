@@ -194,6 +194,9 @@ shadowJar {
     zip64 true
     minimize {
         exclude(dependency('commons-logging:commons-logging:1.3.4'))
+        exclude(dependency('org.opensearch:.*'))
+        exclude(dependency('org.opensearch.client:.*'))
+        exclude(dependency('org.opensearch.plugin:.*'))
     }
     // Exclude dependencies that are available in the Lambda runtime
     // exclude 'org/apache/log4j/**'
