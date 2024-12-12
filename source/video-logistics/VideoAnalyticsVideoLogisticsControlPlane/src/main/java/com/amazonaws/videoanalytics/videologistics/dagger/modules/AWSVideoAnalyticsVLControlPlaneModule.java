@@ -33,6 +33,7 @@ import javax.inject.Singleton;
 import com.amazonaws.videoanalytics.videologistics.timeline.VideoTimelineAggregator;
 import com.amazonaws.videoanalytics.videologistics.dao.videotimeline.VideoTimelineDAO;
 import com.amazonaws.videoanalytics.videologistics.timeline.TimelineKDSMetadataSerDe;
+import com.amazonaws.videoanalytics.videologistics.timeline.DetailedVideoTimelineGenerator;
 
 @Module
 public class AWSVideoAnalyticsVLControlPlaneModule {
@@ -178,5 +179,11 @@ public class AWSVideoAnalyticsVLControlPlaneModule {
     public TimelineKDSMetadataSerDe provideTimelineKDSMetadataSerDe(
             final ObjectMapper objectMapper) {
         return new TimelineKDSMetadataSerDe(objectMapper);
+    }
+
+    @Provides
+    @Singleton
+    public DetailedVideoTimelineGenerator provideDetailedVideoTimelineGenerator(RawVideoTimelineDAO rawVideoTimelineDAO) {
+        return new DetailedVideoTimelineGenerator(rawVideoTimelineDAO);
     }
 }

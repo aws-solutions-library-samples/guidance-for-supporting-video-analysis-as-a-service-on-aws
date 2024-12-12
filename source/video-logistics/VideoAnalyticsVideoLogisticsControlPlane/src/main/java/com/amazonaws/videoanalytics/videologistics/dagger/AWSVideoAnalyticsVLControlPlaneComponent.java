@@ -54,6 +54,9 @@ import com.amazonaws.videoanalytics.videologistics.timeline.TimelineKDSMetadataS
 
 import com.amazonaws.videoanalytics.videologistics.activity.PutVideoTimelineActivity;
 import com.amazonaws.videoanalytics.videologistics.activity.ListVideoTimelinesActivity;
+import com.amazonaws.videoanalytics.videologistics.activity.ListDetailedVideoTimelineActivity;
+import com.amazonaws.videoanalytics.videologistics.timeline.DetailedVideoTimelineGenerator;
+
 @Component(
         modules = {
                 AWSModule.class,
@@ -74,7 +77,7 @@ public interface AWSVideoAnalyticsVLControlPlaneComponent {
     void inject(ImportMediaObjectActivity lambda);
     void inject(PutVideoTimelineActivity lambda);
     void inject(ListVideoTimelinesActivity lambda);
-
+    void inject(ListDetailedVideoTimelineActivity lambda);
     KvsService getKvsService();
     DeviceValidator getDeviceValidator();
     GuidanceUUIDGenerator getGuidanceUUIDGenerator();
@@ -103,4 +106,5 @@ public interface AWSVideoAnalyticsVLControlPlaneComponent {
     VideoTimelineAggregator getVideoTimelineAggregator();
     TimelineKDSMetadataSerDe getTimelineKDSMetadataSerDe();
     KinesisClient getKinesisClient();
+    DetailedVideoTimelineGenerator getDetailedVideoTimelineGenerator();
 }

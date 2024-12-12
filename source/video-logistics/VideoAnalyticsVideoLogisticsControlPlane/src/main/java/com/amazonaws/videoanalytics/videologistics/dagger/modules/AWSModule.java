@@ -142,6 +142,9 @@ public class AWSModule {
                 .region(Region.of(region))
                 .build();
     }
+
+    @Provides
+    @Singleton
     public S3Client providesS3Client(@Named(HTTP_CLIENT) final SdkHttpClient sdkHttpClient,
                                     @Named(CREDENTIALS_PROVIDER) final AwsCredentialsProvider credentialsProvider,
                                     final Region region) {
@@ -160,5 +163,4 @@ public class AWSModule {
     public S3Proxy providesS3Proxy(final S3Client s3Client) {
         return new S3Proxy(s3Client);
     }
-    
 }
