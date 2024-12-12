@@ -33,6 +33,7 @@ snapshot-traits = { path = "./crates/snapshot-traits" }
 snapshot-client = { path = "./crates/snapshot-client" }
 event-processor = { path = "./crates/event-processor" }
 video-analytics-client = { path = "./crates/video-analytics-client" }
+webrtc-client = { path = "./crates/webrtc-client" }
 
 # non-local crates
 tokio = { version = "1", features = ["full", "tracing"] }
@@ -84,6 +85,12 @@ crossbeam-channel = "0.5.9"
 quickxml_to_serde = "0.5.0"
 quick-xml = "0.28.2"
 futures-util = "0.3.28"
+bytes = "^1.4.0"
+futures-channel = "0.3.28"
+h264-reader = "0.6.0"
+signal = "0.7.0"
+tokio-tungstenite = { version = "0.20.1", features = ["rustls-tls-webpki-roots"] }
+webrtc = "^0.9.0"
 
 [workspace.metadata.cross.target.armv7-unknown-linux-gnueabihf]
 pre-build = [

@@ -78,19 +78,19 @@ impl KinesisVideoStreamClient {
         )
         .await?;
 
-        return Ok(KinesisVideoStreamClient { presigned_url, ice_server_configs });
+        Ok(KinesisVideoStreamClient { presigned_url, ice_server_configs })
     }
 
     async fn retrieve_creds_from_iot(
         iot_credential_provider: IotCredentialProvider,
     ) -> Result<Credentials, KVSClientError> {
         match iot_credential_provider.retrieve_creds_from_iot().await {
-            Ok(credentials_provider) => return Ok(credentials_provider),
+            Ok(credentials_provider) => Ok(credentials_provider),
             Err(e) => {
                 error!("Unable to fetch credentials {:?}", e);
-                return Err(ClientError("Unable to fetch credentials".to_string()));
+                Err(ClientError("Unable to fetch credentials".to_string()))
             }
-        };
+        }
     }
 
     fn get_signaling_channel_name(thing_name: String) -> String {
@@ -126,7 +126,7 @@ impl KinesisVideoStreamClient {
             return Err(ClientError("No channel ARN found".to_string()));
         };
 
-        return Ok(channel_arn.to_string());
+        Ok(channel_arn.to_string())
     }
 
     async fn get_signaling_channel_endpoint(

@@ -286,7 +286,6 @@ impl CommandHelper<'_> {
     }
 }
 
-// TODO: add tests once we know how to propery pass in the mock factory_mqtt_client when its passed in as a borrow_mut()
 // Ignore borrowed box as it is required by mockall test tool.
 #[cfg(test)]
 #[allow(clippy::borrowed_box)]

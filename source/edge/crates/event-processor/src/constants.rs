@@ -22,7 +22,7 @@ pub const BASIC_EVENT: &str = "Event";
 pub const UPDATE_ATTRIBUTES_EVENT: &str = "UpdateAttributes";
 /// Trajectory Event Name.
 pub const TRAJECTORY_EVENT: &str = "Trajectory";
-/// Model Version. TODO: In future, this will be derived from AI model deployed on device.
+/// Model Version.
 pub const MODEL_VERSION: &str = "1.0";
 /// ModelName Key in Processed Event Json ingested to CLoud.
 pub const MODEL_NAME_KEY: &str = "modelName";

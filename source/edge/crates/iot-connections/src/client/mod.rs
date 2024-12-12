@@ -2,6 +2,7 @@ pub mod command;
 pub mod configuration;
 mod registration;
 mod snapshot;
+pub mod streaming;
 ///Helper methods for working with IoT topics.
 pub mod topics;
 
@@ -12,7 +13,8 @@ use crate::client::snapshot::SnapshotHelper;
 use crate::client::topics::TopicHelper;
 use crate::constants::{
     DISABLED_FIELD_FROM_CLOUD, ENABLED_FIELD_FROM_CLOUD, LOGGER_SETTINGS_FIELD,
-    PROVISION_SHADOW_NAME, SNAPSHOT_SHADOW_NAME, VIDEO_ENCODER_SHADOW_NAME, VIDEO_SETTINGS_FIELD,
+    PROVISION_SHADOW_NAME, SNAPSHOT_SHADOW_NAME, STREAMING_PEER_CONNECTIONS_FROM_CLOUD,
+    VIDEO_ENCODER_SHADOW_NAME, VIDEO_SETTINGS_FIELD,
 };
 use async_trait::async_trait;
 use config::Config;
@@ -31,6 +33,7 @@ use serde_derive::Deserialize;
 use serde_json::Value;
 use std::borrow::BorrowMut;
 use std::{error::Error, path::PathBuf, time::Duration};
+use streaming::StreamingHelper;
 use tracing::{info, instrument};
 
 /// Struct implements IotConnectionManager for MQTT with IoT
@@ -215,6 +218,19 @@ impl IotClientManager for IotMqttClientManager {
             msg,
             topic_helper.get_shadow_update_delta_topic(),
             VIDEO_SETTINGS_FIELD,
+        )
+    }
+
+    /// Checks if message is enabled message
+    fn received_livestream_shadow_message(
+        &self,
+        msg: &(dyn PubSubMessage + Send + Sync),
+    ) -> Option<String> {
+        let topic_helper = TopicHelper::new(self.client_id.to_string(), None);
+        StreamingHelper::received_expected_shadow_message(
+            msg,
+            topic_helper.get_shadow_update_delta_topic(),
+            STREAMING_PEER_CONNECTIONS_FROM_CLOUD,
         )
     }
 
