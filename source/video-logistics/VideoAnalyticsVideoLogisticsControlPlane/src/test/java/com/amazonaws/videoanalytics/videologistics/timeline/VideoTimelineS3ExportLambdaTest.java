@@ -62,6 +62,8 @@ class VideoTimelineS3ExportLambdaTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        when(s3BucketRegionalizer.getRegionalizedBucketName("videoanalytics-timeline-bucket"))
+                .thenReturn(VIDEO_TIMELINE_TABLE);
     }
 
     @Test
@@ -71,8 +73,12 @@ class VideoTimelineS3ExportLambdaTest {
                 new TimestampInfo(1696444412123L, 4000L)
         );
 
+        S3Object s3Object = S3Object.builder()
+                .key("file1")
+                .build();
+
         ListObjectsV2Response mockResponse = ListObjectsV2Response.builder()
-                .contents(S3Object.builder().key("file1").build())
+                .contents(Collections.singletonList(s3Object))
                 .isTruncated(false)
                 .build();
 
@@ -82,8 +88,6 @@ class VideoTimelineS3ExportLambdaTest {
                 .location(VideoDensityLocation.CLOUD.name())
                 .build();
 
-        when(s3BucketRegionalizer.getRegionalizedBucketName(SchemaConst.VIDEO_TIMELINE_TABLE_NAME))
-                .thenReturn(VIDEO_TIMELINE_TABLE);
         when(s3Proxy.listS3Objects(VIDEO_TIMELINE_TABLE, null)).thenReturn(mockResponse);
         when(s3Proxy.getS3ObjectBytes(anyString(), anyString())).thenReturn(responseBytes);
         when(batchTimelineMapper.deserialize(any())).thenReturn(batchTimeline);
@@ -121,8 +125,6 @@ class VideoTimelineS3ExportLambdaTest {
                 .location(VideoDensityLocation.CLOUD.name())
                 .build();
 
-        when(s3BucketRegionalizer.getRegionalizedBucketName(SchemaConst.VIDEO_TIMELINE_TABLE_NAME))
-                .thenReturn(VIDEO_TIMELINE_TABLE);
         when(s3Proxy.listS3Objects(VIDEO_TIMELINE_TABLE, null)).thenReturn(firstResponse);
         when(s3Proxy.listS3Objects(VIDEO_TIMELINE_TABLE, "token")).thenReturn(secondResponse);
         when(s3Proxy.getS3ObjectBytes(anyString(), anyString())).thenReturn(responseBytes);
@@ -141,8 +143,6 @@ class VideoTimelineS3ExportLambdaTest {
                 .isTruncated(false)
                 .build();
 
-        when(s3BucketRegionalizer.getRegionalizedBucketName(SchemaConst.VIDEO_TIMELINE_TABLE_NAME))
-                .thenReturn(VIDEO_TIMELINE_TABLE);
         when(s3Proxy.listS3Objects(VIDEO_TIMELINE_TABLE, null)).thenReturn(mockResponse);
 
         videoTimelineS3ExportLambda.handleRequest(EVENT, context);
@@ -159,8 +159,6 @@ class VideoTimelineS3ExportLambdaTest {
                 .isTruncated(false)
                 .build();
 
-        when(s3BucketRegionalizer.getRegionalizedBucketName(SchemaConst.VIDEO_TIMELINE_TABLE_NAME))
-                .thenReturn(VIDEO_TIMELINE_TABLE);
         when(s3Proxy.listS3Objects(VIDEO_TIMELINE_TABLE, null)).thenReturn(mockResponse);
         when(s3Proxy.getS3ObjectBytes(anyString(), anyString())).thenReturn(responseBytes);
         doThrow(new IOException("Failed to deserialize")).when(batchTimelineMapper).deserialize(any());

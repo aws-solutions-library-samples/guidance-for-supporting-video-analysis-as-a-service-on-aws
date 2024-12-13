@@ -12,6 +12,9 @@ import javax.inject.Inject;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import com.amazonaws.videoanalytics.videologistics.utils.annotations.ExcludeFromJacocoGeneratedReport;
+import com.amazonaws.videoanalytics.videologistics.dagger.AWSVideoAnalyticsVLControlPlaneComponent;
+import com.amazonaws.videoanalytics.videologistics.dagger.DaggerAWSVideoAnalyticsVLControlPlaneComponent;
 
 public class VideoDensityUpdateLambda implements RequestHandler<KinesisEvent, Void> {
 
@@ -25,6 +28,15 @@ public class VideoDensityUpdateLambda implements RequestHandler<KinesisEvent, Vo
         this.rawVideoTimelineDAO = rawVideoTimelineDAO;
         this.videoTimelineDAO = videoTimelineDAO;
         this.timelineKDSMetadataSerDe = timelineKDSMetadataSerDe;
+    }
+
+    @ExcludeFromJacocoGeneratedReport
+    public VideoDensityUpdateLambda() {
+        AWSVideoAnalyticsVLControlPlaneComponent component = DaggerAWSVideoAnalyticsVLControlPlaneComponent.create();
+        component.inject(this);
+        this.rawVideoTimelineDAO = component.getRawVideoTimelineDAO();
+        this.videoTimelineDAO = component.getVideoTimelineDAO();
+        this.timelineKDSMetadataSerDe = component.getTimelineKDSMetadataSerDe();
     }
 
     @Override

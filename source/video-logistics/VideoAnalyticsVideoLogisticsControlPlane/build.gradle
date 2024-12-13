@@ -192,16 +192,13 @@ shadowJar {
     mergeServiceFiles()
     zip64 true
     minimize {
+        exclude(dependency('software.amazon.awssdk.enhanced:.*'))
         exclude(dependency('commons-logging:commons-logging:1.3.4'))
         exclude(dependency('software.amazon.awssdk:dynamodb-enhanced:2.20.26'))
         exclude(dependency('org.opensearch:.*'))
         exclude(dependency('org.opensearch.client:.*'))
         exclude(dependency('org.opensearch.plugin:.*'))
     }
-    // Exclude dependencies that are available in the Lambda runtime
-    // exclude 'org/apache/log4j/**'
-    // exclude 'org/apache/logging/log4j/**'
-    // exclude 'software/amazon/awssdk/**'
     outputs.upToDateWhen { false }
     dependsOn classes
 }

@@ -16,6 +16,9 @@ import software.amazon.awssdk.services.s3.model.ListObjectsV2Response;
 import software.amazon.awssdk.services.s3.model.S3Object;
 import javax.inject.Inject;
 import java.io.IOException;
+import com.amazonaws.videoanalytics.videologistics.utils.annotations.ExcludeFromJacocoGeneratedReport;
+import com.amazonaws.videoanalytics.videologistics.dagger.AWSVideoAnalyticsVLControlPlaneComponent;
+import com.amazonaws.videoanalytics.videologistics.dagger.DaggerAWSVideoAnalyticsVLControlPlaneComponent;
 
 public class VideoTimelineS3ExportLambda implements RequestHandler<ScheduledEvent, Void> {
 
@@ -25,6 +28,16 @@ public class VideoTimelineS3ExportLambda implements RequestHandler<ScheduledEven
     private final BatchTimelineMapper batchTimelineMapper;
     private final S3Proxy s3Proxy;
     private final S3BucketRegionalizer s3BucketRegionalizer;
+
+    @ExcludeFromJacocoGeneratedReport
+    public VideoTimelineS3ExportLambda() {
+        AWSVideoAnalyticsVLControlPlaneComponent component = DaggerAWSVideoAnalyticsVLControlPlaneComponent.create();
+        component.inject(this);
+        this.rawVideoTimelineDAO = component.getRawVideoTimelineDAO();
+        this.batchTimelineMapper = component.getBatchTimelineMapper();
+        this.s3Proxy = component.getS3Proxy();
+        this.s3BucketRegionalizer = component.getS3BucketRegionalizer();
+    }
 
     @Inject
     public VideoTimelineS3ExportLambda(RawVideoTimelineDAO rawVideoTimelineDAO, 
@@ -42,7 +55,7 @@ public class VideoTimelineS3ExportLambda implements RequestHandler<ScheduledEven
             throw new RuntimeException(VideoAnalyticsExceptionMessage.INVALID_INPUT);
         }
         LOG.info("Start migration to S3 for event: {}", scheduledEvent);
-        String bucketName = s3BucketRegionalizer.getRegionalizedBucketName(SchemaConst.VIDEO_TIMELINE_TABLE_NAME);
+        String bucketName = s3BucketRegionalizer.getRegionalizedBucketName("videoanalytics-timeline-bucket");
         String continuationToken = null;
 
         ListObjectsV2Response result;

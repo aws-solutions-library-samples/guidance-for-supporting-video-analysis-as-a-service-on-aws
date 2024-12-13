@@ -29,6 +29,9 @@ import static com.amazonaws.videoanalytics.videologistics.schema.VideoTimeline.T
 import static com.amazonaws.videoanalytics.videologistics.schema.SchemaConst.LOCATION;
 import static com.amazonaws.videoanalytics.videologistics.schema.SchemaConst.RAW_PARTITION_KEY;
 import static com.amazonaws.videoanalytics.videologistics.schema.SchemaConst.RAW_SORT_KEY;
+import com.amazonaws.videoanalytics.videologistics.dagger.AWSVideoAnalyticsVLControlPlaneComponent;
+import com.amazonaws.videoanalytics.videologistics.dagger.DaggerAWSVideoAnalyticsVLControlPlaneComponent;
+import com.amazonaws.videoanalytics.videologistics.utils.annotations.ExcludeFromJacocoGeneratedReport;
 
 
 public class TimelineForwarderLambda implements RequestHandler<DynamodbEvent, Void> {
@@ -40,6 +43,17 @@ public class TimelineForwarderLambda implements RequestHandler<DynamodbEvent, Vo
     private final VideoTimelineAggregator videoTimelineAggregator;
     private final KinesisClient kinesisClient;
     private final TimelineKDSMetadataSerDe timelineKDSMetadataSerDe;
+
+    @ExcludeFromJacocoGeneratedReport
+    public TimelineForwarderLambda() {
+        AWSVideoAnalyticsVLControlPlaneComponent component = DaggerAWSVideoAnalyticsVLControlPlaneComponent.create();
+        component.inject(this);
+        this.timelineKDSMetadataSerDe = component.getTimelineKDSMetadataSerDe();
+        this.kinesisClient = component.getKinesisClient();
+        this.rawVideoTimelineDAO = component.getRawVideoTimelineDAO();
+        this.videoTimelineDAO = component.getVideoTimelineDAO();
+        this.videoTimelineAggregator = component.getVideoTimelineAggregator();
+    }
 
     @Inject
     public TimelineForwarderLambda(

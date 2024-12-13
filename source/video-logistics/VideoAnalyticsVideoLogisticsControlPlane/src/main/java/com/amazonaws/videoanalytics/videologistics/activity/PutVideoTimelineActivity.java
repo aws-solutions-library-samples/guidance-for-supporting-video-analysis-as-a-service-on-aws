@@ -42,21 +42,29 @@ public class PutVideoTimelineActivity implements RequestHandler<Map<String, Obje
 
     @Override
     public Map<String, Object> handleRequest(Map<String, Object> input, Context context) {
-        LOG.info("Entered PutVideoTimeline method");
+        LOG.info("Entered PutVideoTimeline method with input: {}", input);
         
         ValidationExceptionResponseContent exception = ValidationExceptionResponseContent.builder()
                 .message(INVALID_INPUT)
                 .build();
 
         if (input == null) {
+            LOG.error("Received null input");
             return serializeResponse(400, exception.toJson());
         }
 
         try {
-            PutVideoTimelineRequestContent request = PutVideoTimelineRequestContent.fromJson(parseBody(input));
+            String body = parseBody(input);
+            LOG.info("Parsed request body: {}", body);
+            
+            PutVideoTimelineRequestContent request = PutVideoTimelineRequestContent.fromJson(body);
+            LOG.info("Parsed request content: {}", request);
             
             String timestampsJson = objectMapper.writeValueAsString(request.getTimestamps());
+            LOG.info("Timestamps JSON: {}", timestampsJson);
+            
             String locationString = request.getLocation().toString();
+            LOG.info("Location: {}", locationString);
             
             putVideoTimelineHandler.addVideoTimelines(
                 request.getDeviceId(),

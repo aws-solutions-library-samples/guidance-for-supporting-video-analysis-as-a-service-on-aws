@@ -22,11 +22,12 @@ import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSortK
 @Data
 @SuppressFBWarnings
 public class RawVideoTimeline {
-    @Getter(onMethod_ = { @DynamoDbSortKey, @DynamoDbAttribute(SchemaConst.TIMESTAMP) })
-    private Long timestamp;
 
     @Getter(onMethod_ = { @DynamoDbPartitionKey, @DynamoDbAttribute(SchemaConst.DEVICE_ID) })
     private String deviceId;
+
+    @Getter(onMethod_ = { @DynamoDbSortKey, @DynamoDbAttribute(SchemaConst.TIMESTAMP) })
+    private Long timestamp;
 
     @Getter(onMethod_ = { @DynamoDbAttribute(SchemaConst.DURATION_IN_MILLIS) })
     private Long durationInMillis;
