@@ -1,11 +1,13 @@
 package org.example;
 
+import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.services.iot.IotClient;
 import software.amazon.awssdk.services.iot.model.*;
 import software.amazon.awssdk.services.iotdataplane.IotDataPlaneClient;
 import software.amazon.awssdk.services.iotdataplane.model.DeleteThingShadowRequest;
 import software.amazon.awssdk.services.iotdataplane.model.GetThingShadowRequest;
 import software.amazon.awssdk.services.iotdataplane.model.IotDataPlaneException;
+import software.amazon.awssdk.services.iotdataplane.model.UpdateThingShadowRequest;
 import software.amazon.awssdk.services.kinesisvideo.KinesisVideoClient;
 import software.amazon.awssdk.services.kinesisvideo.model.DeleteSignalingChannelRequest;
 import software.amazon.awssdk.services.kinesisvideo.model.DescribeSignalingChannelRequest;
@@ -17,6 +19,7 @@ import software.amazon.awssdk.services.kinesisvideo.model.KinesisVideoException;
 import software.amazon.awssdk.arns.Arn;
 import software.amazon.awssdk.arns.ArnResource;
 
+import com.google.gson.JsonObject;
 import java.util.Arrays;
 import java.util.List;
 
@@ -32,7 +35,7 @@ public class Handler {
     }
 
     public void sendRequest() {
-        deleteDevice("AnnieTest5");
+        updateShadowForConfiguration("AnnieThing1210");
     }
 
     public void deleteDevice(final String deviceId) {
@@ -174,6 +177,56 @@ public class Handler {
         try {
             iotClient.deleteThing(deleteThingRequest);
         } catch (IotException e) {
+            System.out.println(e);
+        }
+    }
+
+    public void updateShadowForConfiguration(final String thingName) {
+        // Validate if device exists
+        System.out.println("Checking if device exist.");
+        try {
+            iotClient.describeThing(DescribeThingRequest.builder().thingName(thingName).build());
+        } catch (ResourceNotFoundException e){
+            System.out.printf("Thing %s doesn't exist.%n", thingName);
+            return;
+        }
+
+        System.out.println("Updating IoT Device Shadow");
+
+        // Set this value to the shadow name
+        String shadowName = "videoEncoder";
+
+        // Creating a json object with the desired configuration
+        // Recommended to validate desired configuration input if not hardcoded
+        JsonObject configurationJson = new JsonObject();
+        JsonObject videoSettings = new JsonObject();
+        JsonObject vec1 = new JsonObject();
+        vec1.addProperty("name", "GuidanceConfiguration");
+        vec1.addProperty("bitRateType", "CBR");
+        vec1.addProperty("bitRate", 512);
+        vec1.addProperty("frameRate", 15);
+        vec1.addProperty("gopRange", 30);
+        vec1.addProperty("resolution", "1920x1080");
+        videoSettings.add("vec1", vec1);
+        configurationJson.add("videoSettings", videoSettings);
+
+        // Create desired state
+        JsonObject desired = new JsonObject();
+        desired.add("desired", configurationJson);
+
+        // Create state document
+        JsonObject messagePayload = new JsonObject();
+        messagePayload.add("state", desired);
+
+        UpdateThingShadowRequest updateThingShadowRequest = UpdateThingShadowRequest.builder()
+            .thingName(thingName)
+            .shadowName(shadowName)
+            .payload(SdkBytes.fromUtf8String(messagePayload.toString()))
+            .build();
+
+        try {
+            iotDataPlaneClient.updateThingShadow(updateThingShadowRequest);
+        } catch (IotDataPlaneException e) {
             System.out.println(e);
         }
     }
