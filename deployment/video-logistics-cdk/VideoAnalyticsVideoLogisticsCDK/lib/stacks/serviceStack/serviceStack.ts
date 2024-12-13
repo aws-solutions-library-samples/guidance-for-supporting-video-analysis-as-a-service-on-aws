@@ -475,7 +475,7 @@ export class ServiceStack extends Stack {
       memorySize: 512,
       timeout: Duration.minutes(5),
       environment: {
-          AWS_ACCOUNT_ID: this.account
+        ACCOUNT_ID: this.account
       },
       role: listDetailedVideoTimelineRole,
       logGroup: new LogGroup(this, "ListDetailedVideoTimelineActivityLogGroup", {
@@ -491,7 +491,7 @@ export class ServiceStack extends Stack {
       memorySize: 512,
       timeout: Duration.minutes(5),
       environment: {
-        AWS_ACCOUNT_ID: this.account
+        ACCOUNT_ID: this.account
       },
       role: listVideoTimelinesRole,
       logGroup: new LogGroup(this, "ListVideoTimelinesActivityLogGroup", {
@@ -507,7 +507,7 @@ export class ServiceStack extends Stack {
       memorySize: 512,
       timeout: Duration.minutes(5),
       environment: {
-        AWS_ACCOUNT_ID: this.account
+        ACCOUNT_ID: this.account
       },
       role: putVideoTimelineRole,
       logGroup: new LogGroup(this, "PutVideoTimelineActivityLogGroup", {

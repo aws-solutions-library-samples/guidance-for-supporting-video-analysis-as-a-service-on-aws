@@ -975,7 +975,7 @@ exports[`TimelineStack Snapshot test 1`] = `
         "Description": Any<String>,
         "Environment": {
           "Variables": {
-            "AWS_ACCOUNT_ID": "123456789012",
+            "ACCOUNT_ID": "123456789012",
           },
         },
         "Handler": "com.amazonaws.videoanalytics.videologistics.timeline.VideoTimelineS3ExportLambda::handleRequest",
