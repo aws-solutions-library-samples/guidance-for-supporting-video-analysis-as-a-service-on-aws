@@ -26,8 +26,6 @@ import {
 } from './serviceConstructs/const';
 import { createGSI, createTable } from './serviceConstructs';
 
-
-
 export abstract class VideoAnalyticsAsyncWorkflowResource extends Construct {
   protected name: string;
   getName(): string {

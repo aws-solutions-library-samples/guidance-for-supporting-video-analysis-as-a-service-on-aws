@@ -2,7 +2,7 @@ import { App } from "aws-cdk-lib";
 import { ServiceStack } from "./stacks/serviceStack/serviceStack";
 import { WorkflowStack } from "./stacks/workflowStacks/workflowStack";
 import { AWSRegion } from "video_analytics_common_construct";
-import { DeviceManagementBootstrapStack } from "./stacks/bootstrapStack/deviceManagementBootstrapStack";
+import { BootstrapStack } from "./stacks/bootstrapStack/bootstrapStack";
 
 const app = new App();
 
@@ -16,7 +16,7 @@ const region = (process.env.CDK_DEPLOY_REGION ||
   "us-east-1") as AWSRegion;
 
 
-const bootstrapStack = new DeviceManagementBootstrapStack(app, "DeviceManagementBootstrapStack", {
+const bootstrapStack = new BootstrapStack(app, "DeviceManagementBootstrapStack", {
   env: {
     account: account,
     region: region,
