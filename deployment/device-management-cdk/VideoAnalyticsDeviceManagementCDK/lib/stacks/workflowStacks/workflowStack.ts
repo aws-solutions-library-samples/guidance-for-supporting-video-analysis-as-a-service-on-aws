@@ -7,12 +7,7 @@ import {
   VideoAnalyticsAsyncWorkflowResource,
   AWSRegion,
 } from "video_analytics_common_construct";
-import { StartCreateNotificationRule } from "./startCreateNotificationRule";
-import { StartCreateDeviceNotification } from "./startCreateDeviceNotification";
-import { StartDeleteDeviceNotification } from "./startDeleteDeviceNotification";
-import { StartUpdateNotificationRule } from "./startUpdateNotificationRule";
 import { StartCreateDevice } from "./startCreateDevice";
-import { StartGetDeviceCapabilities } from "./startGetDeviceCapabilities";
 
 export interface WorkflowStackProps extends StackProps {
   resources: VideoAnalyticsAsyncWorkflowResource[];
@@ -38,7 +33,7 @@ export class WorkflowStack extends cdk.Stack {
     this.workflowLambdaFunctions = [];
 
     const resources =
-      props.resources.length > 0
+      props.resources != undefined && props.resources.length > 0
         ? props.resources
         : getWorkflowResources(this, props);
     console.log("Resources:", resources);

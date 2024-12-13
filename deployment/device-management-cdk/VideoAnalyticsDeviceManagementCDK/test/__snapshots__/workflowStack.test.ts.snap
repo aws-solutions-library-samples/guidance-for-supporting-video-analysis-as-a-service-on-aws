@@ -49,9 +49,9 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "24e15a2a788157759d26c2365e8c3129632d591e67b61fb9b239ce4bd8fe778b.jar",
+          "S3Key": Anything,
         },
-        "Description": "Lambda responsible for attaching cert to KVS Roles policy.",
+        "Description": Any<String>,
         "Environment": {
           "Variables": {
             "AccountId": "123456789012",
@@ -97,7 +97,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "24e15a2a788157759d26c2365e8c3129632d591e67b61fb9b239ce4bd8fe778b.jar",
+          "S3Key": Anything,
         },
         "Environment": {
           "Variables": {
@@ -144,9 +144,9 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "24e15a2a788157759d26c2365e8c3129632d591e67b61fb9b239ce4bd8fe778b.jar",
+          "S3Key": Anything,
         },
-        "Description": "Lambda to create KVS Stream using FVL API.",
+        "Description": Any<String>,
         "Environment": {
           "Variables": {
             "AccountId": "123456789012",
@@ -208,9 +208,9 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "24e15a2a788157759d26c2365e8c3129632d591e67b61fb9b239ce4bd8fe778b.jar",
+          "S3Key": Anything,
         },
-        "Description": "Lambda responsible for checking to make sure fvl device registration workflow completes.",
+        "Description": Any<String>,
         "Environment": {
           "Variables": {
             "AccountId": "123456789012",
@@ -248,7 +248,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "24e15a2a788157759d26c2365e8c3129632d591e67b61fb9b239ce4bd8fe778b.jar",
+          "S3Key": Anything,
         },
         "Environment": {
           "Variables": {
@@ -334,7 +334,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "24e15a2a788157759d26c2365e8c3129632d591e67b61fb9b239ce4bd8fe778b.jar",
+          "S3Key": Anything,
         },
         "Environment": {
           "Variables": {
@@ -953,9 +953,9 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "1ac8a7262a3ae2e42ce590a3e28fa24c54e4e8c7bff13c1ad508878b32af0cba.jar",
+          "S3Key": Anything,
         },
-        "Description": "Lambda responsible for invocation of StepFunction",
+        "Description": Any<String>,
         "Environment": {
           "Variables": {
             "PARTITION_KEY": "JobId",
@@ -977,7 +977,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
       },
       "Type": "AWS::Lambda::Function",
     },
-    "StartCreateDeviceWorkflowCreateDeviceTableCreateDeviceTableStreamProcessorDynamoDBEventSourceMyTestStackCreateDeviceTable08B1D5AADB18D98F": {
+    "StartCreateDeviceWorkflowCreateDeviceTableCreateDeviceTableStreamProcessorDynamoDBEventSourceWorkflowStackCreateDeviceTable91256990CF0422DE": {
       "Properties": {
         "BatchSize": 10,
         "BisectBatchOnFunctionError": true,

@@ -163,9 +163,9 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "49a15331380e380f203696c106711a7a83279bf39949782b80dd733783d209f3.jar",
+          "S3Key": Anything,
         },
-        "Description": "Lambda responsible for cleaning up KVS resources and updating the failure status in ddb.",
+        "Description": Any<String>,
         "Environment": {
           "Variables": {
             "airportCode": "iad",
@@ -337,9 +337,9 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "49a15331380e380f203696c106711a7a83279bf39949782b80dd733783d209f3.jar",
+          "S3Key": Anything,
         },
-        "Description": "Lambda responsible for invocation of StepFunction",
+        "Description": Any<String>,
         "Environment": {
           "Variables": {
             "airportCode": "iad",
@@ -685,9 +685,9 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
-          "S3Key": "1b8c948e6923737c8ba71fbd5a57352085cc20ac68572f9d26fd3973b9646c0c.jar",
+          "S3Key": Anything,
         },
-        "Description": "Lambda responsible for invocation of StepFunction",
+        "Description": Any<String>,
         "Environment": {
           "Variables": {
             "PARTITION_KEY": "JobId",

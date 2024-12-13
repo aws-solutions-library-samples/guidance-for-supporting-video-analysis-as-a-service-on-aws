@@ -19,7 +19,7 @@ import {
 } from "aws-cdk-lib/custom-resources";
 import { LogGroup, RetentionDays } from "aws-cdk-lib/aws-logs";
 
-export interface DeviceManagementBootstrapStackProps extends StackProps {
+export interface BootstrapStackProps extends StackProps {
   readonly region: AWSRegion;
   readonly account: string;
 }
@@ -27,15 +27,15 @@ export interface DeviceManagementBootstrapStackProps extends StackProps {
 /**
  * Provisions the Device management resources
  */
-export class DeviceManagementBootstrapStack extends Stack {
+export class BootstrapStack extends Stack {
   constructor(
     scope: Construct,
     id: string,
-    props: DeviceManagementBootstrapStackProps
+    props: BootstrapStackProps
   ) {
     super(scope, id, props);
 
-    console.log("DeviceManagementBootstrapStack constructor called");
+    console.log("BootstrapStack constructor called");
     console.log("Props:", JSON.stringify(props));
 
     const iotCustomResourceRole = new Role(this, "IotCustomResourceRole", {

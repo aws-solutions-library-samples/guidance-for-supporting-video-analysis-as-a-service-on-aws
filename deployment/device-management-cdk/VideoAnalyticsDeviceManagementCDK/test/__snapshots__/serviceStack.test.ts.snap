@@ -1,0 +1,718 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ServiceStack Snapshot test 1`] = `
+{
+  "Outputs": {
+    "VideoAnalyticsDeviceManagementAPIGatewayEndpointB930DEDA": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "https://",
+            {
+              "Ref": "VideoAnalyticsDeviceManagementAPIGateway32FB38FB",
+            },
+            ".execute-api.us-east-1.",
+            {
+              "Ref": "AWS::URLSuffix",
+            },
+            "/",
+            {
+              "Ref": "VideoAnalyticsDeviceManagementAPIGatewayDeploymentStageprod50AD8B34",
+            },
+            "/",
+          ],
+        ],
+      },
+    },
+  },
+  "Parameters": {
+    "BootstrapVersion": {
+      "Default": "/cdk-bootstrap/hnb659fds/version",
+      "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]",
+      "Type": "AWS::SSM::Parameter::Value<String>",
+    },
+  },
+  "Resources": {
+    "GetCreateDeviceStatusActivity": {
+      "DependsOn": [
+        "GetCreateDeviceStatusRoleE1D1C525",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
+          "S3Key": Anything,
+        },
+        "Environment": {
+          "Variables": {
+            "ACCOUNT_ID": "123456789012",
+            "LAMBDA_ROLE_ARN": {
+              "Fn::GetAtt": [
+                "GetCreateDeviceStatusRoleE1D1C525",
+                "Arn",
+              ],
+            },
+          },
+        },
+        "Handler": "com.amazonaws.videoanalytics.devicemanagement.activity.GetCreateDeviceStatusActivity::handleRequest",
+        "LoggingConfig": {
+          "LogGroup": {
+            "Ref": "GetCreateDeviceStatusActivityLogGroupFD49CF66",
+          },
+        },
+        "MemorySize": 512,
+        "Role": {
+          "Fn::GetAtt": [
+            "GetCreateDeviceStatusRoleE1D1C525",
+            "Arn",
+          ],
+        },
+        "Runtime": "java17",
+        "Timeout": 300,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "GetCreateDeviceStatusActivityLogGroupFD49CF66": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/GetCreateDeviceStatusActivity",
+        "RetentionInDays": 3653,
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "GetCreateDeviceStatusRoleE1D1C525": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": "dynamodb:GetItem",
+                  "Effect": "Allow",
+                  "Resource": "arn:aws:dynamodb:us-east-1:123456789012:table/CreateDeviceTable",
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": "AccessPolicy",
+          },
+        ],
+        "RoleName": "GetCreateDeviceStatusRole",
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "GetDeviceActivity": {
+      "DependsOn": [
+        "GetDeviceRole3D35518F",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
+          "S3Key": Anything,
+        },
+        "Environment": {
+          "Variables": {
+            "ACCOUNT_ID": "123456789012",
+            "LAMBDA_ROLE_ARN": {
+              "Fn::GetAtt": [
+                "GetDeviceRole3D35518F",
+                "Arn",
+              ],
+            },
+          },
+        },
+        "Handler": "com.amazonaws.videoanalytics.devicemanagement.activity.GetDeviceActivity::handleRequest",
+        "LoggingConfig": {
+          "LogGroup": {
+            "Ref": "GetDeviceActivityLogGroup98183E5F",
+          },
+        },
+        "MemorySize": 512,
+        "Role": {
+          "Fn::GetAtt": [
+            "GetDeviceRole3D35518F",
+            "Arn",
+          ],
+        },
+        "Runtime": "java17",
+        "Timeout": 300,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "GetDeviceActivityLogGroup98183E5F": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/GetDeviceActivity",
+        "RetentionInDays": 3653,
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "GetDeviceRole3D35518F": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
+                    "iot:DescribeThing",
+                    "iot:ListThingGroupsForThing",
+                    "iot:GetThingShadow",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": "arn:aws:iot:us-east-1:123456789012:thing/*",
+                },
+                {
+                  "Action": "iot:SearchIndex",
+                  "Effect": "Allow",
+                  "Resource": "arn:aws:iot:us-east-1:123456789012:index/AWS_Things",
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": "AccessPolicy",
+          },
+        ],
+        "RoleName": "GetDeviceRole",
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "GetDeviceShadowActivity": {
+      "DependsOn": [
+        "GetDeviceShadowRoleFEE71BE8",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
+          "S3Key": Anything,
+        },
+        "Environment": {
+          "Variables": {
+            "ACCOUNT_ID": "123456789012",
+            "LAMBDA_ROLE_ARN": {
+              "Fn::GetAtt": [
+                "GetDeviceShadowRoleFEE71BE8",
+                "Arn",
+              ],
+            },
+          },
+        },
+        "Handler": "com.amazonaws.videoanalytics.devicemanagement.activity.GetDeviceShadowActivity::handleRequest",
+        "LoggingConfig": {
+          "LogGroup": {
+            "Ref": "GetDeviceShadowActivityLogGroup0CE17383",
+          },
+        },
+        "MemorySize": 512,
+        "Role": {
+          "Fn::GetAtt": [
+            "GetDeviceShadowRoleFEE71BE8",
+            "Arn",
+          ],
+        },
+        "Runtime": "java17",
+        "Timeout": 300,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "GetDeviceShadowActivityLogGroup0CE17383": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/GetDeviceShadowActivity",
+        "RetentionInDays": 3653,
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "GetDeviceShadowRoleFEE71BE8": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": "iot:GetThingShadow",
+                  "Effect": "Allow",
+                  "Resource": "arn:aws:iot:us-east-1:123456789012:thing/*",
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": "AccessPolicy",
+          },
+        ],
+        "RoleName": "GetDeviceShadowRole",
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "StartCreateDeviceActivity": {
+      "DependsOn": [
+        "StartCreateDeviceSyncPathRoleDD129E47",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
+          "S3Key": Anything,
+        },
+        "Environment": {
+          "Variables": {
+            "ACCOUNT_ID": "123456789012",
+            "LAMBDA_ROLE_ARN": {
+              "Fn::GetAtt": [
+                "StartCreateDeviceSyncPathRoleDD129E47",
+                "Arn",
+              ],
+            },
+          },
+        },
+        "Handler": "com.amazonaws.videoanalytics.devicemanagement.activity.StartCreateDeviceActivity::handleRequest",
+        "LoggingConfig": {
+          "LogGroup": {
+            "Ref": "StartCreateDeviceActivityLogGroup69FC7375",
+          },
+        },
+        "MemorySize": 512,
+        "Role": {
+          "Fn::GetAtt": [
+            "StartCreateDeviceSyncPathRoleDD129E47",
+            "Arn",
+          ],
+        },
+        "Runtime": "java17",
+        "Timeout": 300,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "StartCreateDeviceActivityLogGroup69FC7375": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/StartCreateDeviceActivity",
+        "RetentionInDays": 3653,
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "StartCreateDeviceSyncPathRoleDD129E47": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
+                    "iot:DescribeThing",
+                    "iot:DescribeCertificate",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": [
+                    "arn:aws:iot:us-east-1:123456789012:thing/*",
+                    "arn:aws:iot:us-east-1:123456789012:cert/*",
+                  ],
+                },
+                {
+                  "Action": "dynamodb:PutItem",
+                  "Effect": "Allow",
+                  "Resource": "arn:aws:dynamodb:us-east-1:123456789012:table/CreateDeviceTable",
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": "AccessPolicy",
+          },
+        ],
+        "RoleName": "StartCreateDeviceSyncPathRole",
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "UpdateDeviceShadowActivity": {
+      "DependsOn": [
+        "UpdateDeviceShadowRoleFF04B5D0",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
+          "S3Key": Anything,
+        },
+        "Environment": {
+          "Variables": {
+            "ACCOUNT_ID": "123456789012",
+            "LAMBDA_ROLE_ARN": {
+              "Fn::GetAtt": [
+                "UpdateDeviceShadowRoleFF04B5D0",
+                "Arn",
+              ],
+            },
+          },
+        },
+        "Handler": "com.amazonaws.videoanalytics.devicemanagement.activity.UpdateDeviceShadowActivity::handleRequest",
+        "LoggingConfig": {
+          "LogGroup": {
+            "Ref": "UpdateDeviceShadowActivityLogGroup5900FAE3",
+          },
+        },
+        "MemorySize": 512,
+        "Role": {
+          "Fn::GetAtt": [
+            "UpdateDeviceShadowRoleFF04B5D0",
+            "Arn",
+          ],
+        },
+        "Runtime": "java17",
+        "Timeout": 300,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "UpdateDeviceShadowActivityLogGroup5900FAE3": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/UpdateDeviceShadowActivity",
+        "RetentionInDays": 3653,
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "UpdateDeviceShadowRoleFF04B5D0": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": "iot:UpdateThingShadow",
+                  "Effect": "Allow",
+                  "Resource": "arn:aws:iot:us-east-1:123456789012:thing/*",
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": "AccessPolicy",
+          },
+        ],
+        "RoleName": "UpdateDeviceShadowRole",
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "VideoAnalyticsDeviceManagementAPIGateway32FB38FB": {
+      "Properties": {
+        "Body": {
+          "Fn::Transform": {
+            "Name": "AWS::Include",
+            "Parameters": {
+              "Location": "s3://cdk-hnb659fds-assets-123456789012-us-east-1/fd850dc1a197574d7940a7d902049cfe323b11d570214a27d751e8378f0e3af2.json",
+            },
+          },
+        },
+        "Name": "VideoAnalyticsDeviceManagementAPIGateway",
+        "Policy": {
+          "Statement": [
+            {
+              "Action": "execute-api:Invoke",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": "*",
+              },
+              "Resource": "arn:aws:execute-api:us-east-1:123456789012:*/*/POST/*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::ApiGateway::RestApi",
+    },
+    "VideoAnalyticsDeviceManagementAPIGatewayAccountA40169AB": {
+      "DeletionPolicy": "Retain",
+      "DependsOn": [
+        "VideoAnalyticsDeviceManagementAPIGateway32FB38FB",
+      ],
+      "Properties": {
+        "CloudWatchRoleArn": {
+          "Fn::GetAtt": [
+            "VideoAnalyticsDeviceManagementAPIGatewayCloudWatchRoleEDCABD23",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "AWS::ApiGateway::Account",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "VideoAnalyticsDeviceManagementAPIGatewayCloudWatchRoleEDCABD23": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "apigateway.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "VideoAnalyticsDeviceManagementAPIGatewayDeploymentDECA25902a4ddf1c3350f9314b771af305e6070e": {
+      "Properties": {
+        "Description": "Automatically created by the RestApi construct",
+        "RestApiId": {
+          "Ref": "VideoAnalyticsDeviceManagementAPIGateway32FB38FB",
+        },
+      },
+      "Type": "AWS::ApiGateway::Deployment",
+    },
+    "VideoAnalyticsDeviceManagementAPIGatewayDeploymentStageprod50AD8B34": {
+      "DependsOn": [
+        "VideoAnalyticsDeviceManagementAPIGatewayAccountA40169AB",
+      ],
+      "Properties": {
+        "DeploymentId": {
+          "Ref": "VideoAnalyticsDeviceManagementAPIGatewayDeploymentDECA25902a4ddf1c3350f9314b771af305e6070e",
+        },
+        "MethodSettings": [
+          {
+            "DataTraceEnabled": false,
+            "HttpMethod": "*",
+            "LoggingLevel": "OFF",
+            "ResourcePath": "/*",
+          },
+        ],
+        "RestApiId": {
+          "Ref": "VideoAnalyticsDeviceManagementAPIGateway32FB38FB",
+        },
+        "StageName": "prod",
+        "TracingEnabled": true,
+      },
+      "Type": "AWS::ApiGateway::Stage",
+    },
+    "apiGatewayRoleDefaultPolicyE59959A8": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "apiGatewayRoleDefaultPolicyE59959A8",
+        "Roles": [
+          {
+            "Ref": "apiGatewayRoleF7B60DA1",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "apiGatewayRoleF7B60DA1": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "apigateway.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs",
+              ],
+            ],
+          },
+        ],
+        "RoleName": "DeviceManagementApiGatewayRole",
+      },
+      "Type": "AWS::IAM::Role",
+    },
+  },
+  "Rules": {
+    "CheckBootstrapVersion": {
+      "Assertions": [
+        {
+          "Assert": {
+            "Fn::Not": [
+              {
+                "Fn::Contains": [
+                  [
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5",
+                  ],
+                  {
+                    "Ref": "BootstrapVersion",
+                  },
+                ],
+              },
+            ],
+          },
+          "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI.",
+        },
+      ],
+    },
+  },
+}
+`;
