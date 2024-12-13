@@ -56,7 +56,9 @@ import com.amazonaws.videoanalytics.videologistics.activity.PutVideoTimelineActi
 import com.amazonaws.videoanalytics.videologistics.activity.ListVideoTimelinesActivity;
 import com.amazonaws.videoanalytics.videologistics.activity.ListDetailedVideoTimelineActivity;
 import com.amazonaws.videoanalytics.videologistics.timeline.DetailedVideoTimelineGenerator;
-
+import com.amazonaws.videoanalytics.videologistics.timeline.VideoTimelineS3ExportLambda;
+import com.amazonaws.videoanalytics.videologistics.timeline.VideoDensityUpdateLambda;
+import com.amazonaws.videoanalytics.videologistics.timeline.TimelineForwarderLambda;
 @Component(
         modules = {
                 AWSModule.class,
@@ -78,6 +80,9 @@ public interface AWSVideoAnalyticsVLControlPlaneComponent {
     void inject(PutVideoTimelineActivity lambda);
     void inject(ListVideoTimelinesActivity lambda);
     void inject(ListDetailedVideoTimelineActivity lambda);
+    void inject(VideoTimelineS3ExportLambda lambda);
+    void inject(VideoDensityUpdateLambda lambda);
+    void inject(TimelineForwarderLambda lambda);
     KvsService getKvsService();
     DeviceValidator getDeviceValidator();
     GuidanceUUIDGenerator getGuidanceUUIDGenerator();

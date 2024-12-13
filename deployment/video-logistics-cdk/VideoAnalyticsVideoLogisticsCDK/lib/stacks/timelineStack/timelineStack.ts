@@ -384,7 +384,7 @@ function createExportLambda(stack: Stack, role: Role, props: TimelineStackProps)
         memorySize: 2048,
         role: role,
         environment: {
-            AWS_ACCOUNT: stack.account
+            ACCOUNT_ID: stack.account
         },
         timeout: Duration.minutes(12),
         logGroup: new LogGroup(stack, 'VideoTimelineS3ExportLambdaLogGroup', {

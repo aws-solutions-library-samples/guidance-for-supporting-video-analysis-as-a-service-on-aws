@@ -34,11 +34,11 @@ import com.amazonaws.videoanalytics.videologistics.timeline.VideoTimelineAggrega
 import com.amazonaws.videoanalytics.videologistics.dao.videotimeline.VideoTimelineDAO;
 import com.amazonaws.videoanalytics.videologistics.timeline.TimelineKDSMetadataSerDe;
 import com.amazonaws.videoanalytics.videologistics.timeline.DetailedVideoTimelineGenerator;
+import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.ACCOUNT_ID;
 
 @Module
 public class AWSVideoAnalyticsVLControlPlaneModule {
 
-    private static final String ACCOUNT_ID = "accountId";
 
     @Provides
     @Singleton
@@ -132,13 +132,6 @@ public class AWSVideoAnalyticsVLControlPlaneModule {
     @Singleton
     public BatchTimelineMapper provideBatchTimelineMapper(final ObjectMapper objectMapper) {
         return new BatchTimelineMapper(objectMapper);
-    }
-
-    @Provides
-    @Singleton
-    @Named(ACCOUNT_ID)
-    public String provideAccountId() {
-        return System.getenv("AWS_ACCOUNT_ID");
     }
 
     @Provides

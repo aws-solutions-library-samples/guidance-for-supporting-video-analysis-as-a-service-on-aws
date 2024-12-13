@@ -9,10 +9,11 @@ import {
   CfnRole,
 } from "aws-cdk-lib/aws-iam";
 import { CfnAlias, Key } from "aws-cdk-lib/aws-kms";
-import { BlockPublicAccess, Bucket, ObjectOwnership } from "aws-cdk-lib/aws-s3";
+import { BlockPublicAccess, Bucket, BucketEncryption, ObjectOwnership } from "aws-cdk-lib/aws-s3";
 import { CfnTopicRule } from "aws-cdk-lib/aws-iot";
 import { CfnFunction, CfnPermission } from "aws-cdk-lib/aws-lambda";
 import { Queue, QueueEncryption } from "aws-cdk-lib/aws-sqs";
+import { TIMELINE_BUCKET_NAME } from "../const";
 
 export interface VideoLogisticsBootstrapStackProps extends StackProps {
   readonly region: AWSRegion;

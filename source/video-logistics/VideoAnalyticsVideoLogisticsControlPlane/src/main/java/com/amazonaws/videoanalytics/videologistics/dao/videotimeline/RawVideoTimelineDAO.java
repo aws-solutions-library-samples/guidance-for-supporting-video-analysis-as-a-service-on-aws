@@ -46,38 +46,44 @@ public class RawVideoTimelineDAO {
     public void save(final String deviceId, final TimestampInfo timestampInfo, final String location) {
         logger.log(String.format("Starting save for raw timeline for deviceId=%s, timestamp=%d, location=%s",
                 deviceId, timestampInfo.getTimestamp(), location));
+        logger.log(String.format("Timestamp duration: %d ms", timestampInfo.getDuration()));
 
         Long timestampToBeStored = timestampInfo.getTimestamp();
         Date currentTime = new Date();
+        
+        String partitionKey = videoTimelineUtils.generateRawPartitionKey(deviceId);
+        
+        logger.log(String.format("Creating RawVideoTimeline with timestamp=%d, currentTime=%s", 
+                timestampToBeStored, currentTime));
 
         RawVideoTimeline rawTimeline = RawVideoTimeline.builder()
                 .timestamp(timestampToBeStored)
-                .deviceId(deviceId)
+                .deviceId(partitionKey)
                 .createdAt(currentTime)
                 .lastUpdated(currentTime)
                 .expirationTimestamp(timestampToBeStored / 1000L + KVS_TTL_DURATION)
                 .durationInMillis(timestampInfo.getDuration())
                 .location(VideoDensityLocation.valueOf(location))
                 .build();
+                
+        logger.log(String.format("Built RawVideoTimeline object: %s", rawTimeline.toString()));
 
         if (VideoDensityLocation.DEVICE.equals(rawTimeline.getLocation())) {
             try {
-                logger.log("Location DEVICE, checking to see if there exists same raw video timeline on CLOUD...");
+                logger.log("Location is DEVICE, checking for existing raw video timeline on CLOUD...");
                 this.videoTimelineTable.putItem(PutItemEnhancedRequest.builder(RawVideoTimeline.class)
                         .item(rawTimeline)
                         .conditionExpression(createSaveExpressionForDeviceStorage())
                         .build());
+                logger.log("Successfully saved RawVideoTimeline for DEVICE location");
             } catch (ConditionalCheckFailedException e){
-                // We don't throw an exception here as MQTT does not guarantee order of delivery of information
-                // which means if catchup thread has already consumed a video, and sent information of video timeline
-                // over the MQTT topic, we might still receive the same information from the thread querying timestamp
-                // information on device if the two messages were sent simultaneously before the timestamps were cleaned
-                // up in SQLite DB. In this case we simply log this information for posterity and ignore this request.
-                logger.log("There already exists video for the provided timestamp on the CLOUD, " +
-                        "cannot save for DEVICE. Ignoring this save request.");
+                logger.log(String.format("Conditional check failed: There already exists video for timestamp=%d on CLOUD. " +
+                        "Ignoring this save request.", timestampToBeStored));
             }
         } else {
+            logger.log(String.format("Saving RawVideoTimeline with location=%s", rawTimeline.getLocation()));
             this.videoTimelineTable.putItem(rawTimeline);
+            logger.log("Successfully saved RawVideoTimeline");
         }
     }
 

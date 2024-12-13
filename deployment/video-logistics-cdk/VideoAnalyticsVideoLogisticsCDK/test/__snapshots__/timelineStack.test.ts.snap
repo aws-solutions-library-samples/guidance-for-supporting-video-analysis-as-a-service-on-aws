@@ -15,7 +15,7 @@ exports[`TimelineStack Snapshot test 1`] = `
       "Properties": {
         "AttributeDefinitions": [
           {
-            "AttributeName": "CustomerId_DeviceId",
+            "AttributeName": "DeviceId",
             "AttributeType": "S",
           },
           {
@@ -27,7 +27,7 @@ exports[`TimelineStack Snapshot test 1`] = `
         "DeletionProtectionEnabled": true,
         "KeySchema": [
           {
-            "AttributeName": "CustomerId_DeviceId",
+            "AttributeName": "DeviceId",
             "KeyType": "HASH",
           },
           {
@@ -369,7 +369,7 @@ exports[`TimelineStack Snapshot test 1`] = `
         "Description": Any<String>,
         "Environment": {
           "Variables": {
-            "rawPartitionKey": "CustomerId_DeviceId",
+            "rawPartitionKey": "DeviceId",
             "rawSortKey": "Timestamp",
             "table": "RawVideoTimelineTable",
           },
@@ -738,12 +738,12 @@ exports[`TimelineStack Snapshot test 1`] = `
         "Description": Any<String>,
         "Environment": {
           "Variables": {
-            "rawPartitionKey": "CustomerId_DeviceId",
+            "rawPartitionKey": "DeviceId",
             "rawSortKey": "Timestamp",
             "table": "RawVideoTimelineTable",
           },
         },
-        "Handler": "com.amazon.awsvideoanalyticsvlcontrolplane.timeline.VideoDensityUpdateLambda::handleRequest",
+        "Handler": "com.amazonaws.videoanalytics.videologistics.timeline.VideoDensityUpdateLambda::handleRequest",
         "LoggingConfig": {
           "LogGroup": {
             "Ref": "VideoTimelineLambdaLogGroup59268093",
@@ -975,10 +975,10 @@ exports[`TimelineStack Snapshot test 1`] = `
         "Description": Any<String>,
         "Environment": {
           "Variables": {
-            "AWS_ACCOUNT": "123456789012",
+            "ACCOUNT_ID": "123456789012",
           },
         },
-        "Handler": "com.amazon.awsvideoanalyticsvlcontrolplane.timeline.VideoTimelineS3ExportLambda::handleRequest",
+        "Handler": "com.amazonaws.videoanalytics.videologistics.timeline.VideoTimelineS3ExportLambda::handleRequest",
         "LoggingConfig": {
           "LogGroup": {
             "Ref": "VideoTimelineS3ExportLambdaLogGroup72F201EA",
@@ -1010,7 +1010,7 @@ exports[`TimelineStack Snapshot test 1`] = `
       "Properties": {
         "AttributeDefinitions": [
           {
-            "AttributeName": "CustomerId_DeviceId_TimeUnit",
+            "AttributeName": "DeviceId_TimeUnit",
             "AttributeType": "S",
           },
           {
@@ -1022,7 +1022,7 @@ exports[`TimelineStack Snapshot test 1`] = `
         "DeletionProtectionEnabled": true,
         "KeySchema": [
           {
-            "AttributeName": "CustomerId_DeviceId_TimeUnit",
+            "AttributeName": "DeviceId_TimeUnit",
             "KeyType": "HASH",
           },
           {

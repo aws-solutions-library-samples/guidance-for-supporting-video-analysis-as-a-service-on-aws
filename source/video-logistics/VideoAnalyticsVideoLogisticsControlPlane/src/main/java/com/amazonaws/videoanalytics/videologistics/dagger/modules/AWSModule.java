@@ -50,9 +50,9 @@ public class AWSModule {
 
     @Provides
     @Singleton
-    public S3Presigner providesS3Presigner(Region region) {
+    public S3Presigner providesS3Presigner(@Named(REGION_NAME) final String region) {
         return S3Presigner.builder()
-                .region(region)
+                .region(Region.of(region))
                 .build();
     }
 
@@ -65,10 +65,12 @@ public class AWSModule {
     @Provides
     @Singleton
     public DynamoDbClient providesDynamoDbClient(@Named(HTTP_CLIENT) final SdkHttpClient sdkHttpClient,
-                                                 final Region region) {
+                                                 @Named(CREDENTIALS_PROVIDER) final AwsCredentialsProvider credentialsProvider,
+                                                 @Named(REGION_NAME) final String region) {
         return DynamoDbClient.builder()
-                .region(region)
+                .region(Region.of(region))
                 .httpClient(sdkHttpClient)
+                .credentialsProvider(credentialsProvider)
                 .overrideConfiguration(ClientOverrideConfiguration.builder()
                         .retryPolicy(RetryMode.ADAPTIVE)
                         .build())
@@ -87,10 +89,10 @@ public class AWSModule {
     @Singleton
     public KinesisVideoClient providesKinesisVideoClient(@Named(CREDENTIALS_PROVIDER) final AwsCredentialsProvider credentialsProvider,
                                                          @Named(HTTP_CLIENT) final SdkHttpClient sdkHttpClient,
-                                                         final Region region) {
+                                                         @Named(REGION_NAME) final String region) {
         return KinesisVideoClient.builder()
                 .credentialsProvider(credentialsProvider)
-                .region(region)
+                .region(Region.of(region))
                 .httpClient(sdkHttpClient)
                 .overrideConfiguration(ClientOverrideConfiguration.builder()
                         .retryPolicy(RetryMode.ADAPTIVE)
@@ -103,11 +105,11 @@ public class AWSModule {
     public KinesisClient getKinesisClient(
         @Named(CREDENTIALS_PROVIDER) final AwsCredentialsProvider credentialsProvider,
         @Named(HTTP_CLIENT) final SdkHttpClient sdkHttpClient,
-        final Region region) {
+        @Named(REGION_NAME) final String region) {
 
         return KinesisClient.builder()
             .httpClient(sdkHttpClient)
-            .region(region)
+            .region(Region.of(region))
             .credentialsProvider(credentialsProvider)
             .overrideConfiguration(ClientOverrideConfiguration.builder()
                     .retryPolicy(RetryMode.ADAPTIVE)
@@ -147,11 +149,11 @@ public class AWSModule {
     @Singleton
     public S3Client providesS3Client(@Named(HTTP_CLIENT) final SdkHttpClient sdkHttpClient,
                                     @Named(CREDENTIALS_PROVIDER) final AwsCredentialsProvider credentialsProvider,
-                                    final Region region) {
+                                    @Named(REGION_NAME) final String region) {
         return S3Client.builder()
                 .httpClient(sdkHttpClient)
                 .credentialsProvider(credentialsProvider)
-                .region(region)
+                .region(Region.of(region))
                 .overrideConfiguration(ClientOverrideConfiguration.builder()
                         .retryPolicy(RetryMode.ADAPTIVE)
                         .build())

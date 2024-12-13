@@ -18,6 +18,7 @@ import { Construct } from "constructs";
 import { CfnTopicRule } from "aws-cdk-lib/aws-iot";
 import { Queue, QueueEncryption } from "aws-cdk-lib/aws-sqs";
 import { AWSRegion, createApiGateway, createLambdaRole, DEVICE_MANAGEMENT_API_NAME, VIDEO_LOGISTICS_API_NAME } from "video_analytics_common_construct";
+import { TIMELINE_BUCKET_NAME, VIDEO_TIMELINE_TABLE_NAME, RAW_VIDEO_TIMELINE_TABLE_NAME } from "../const";
 
 import {
     VL_ACTIVITY_JAVA_PATH_PREFIX,
@@ -426,6 +427,96 @@ export class ServiceStack extends Stack {
       actions: ['lambda:InvokeFunction']
     }));
 
+    const videoTimelineBaseRole = [
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        actions: ['s3:GetObject', 's3:PutObject', 's3:DeleteObject', 's3:List*'],
+        resources: [
+          `arn:aws:s3:::${TIMELINE_BUCKET_NAME}-${props.region}-${props.account}`,
+          `arn:aws:s3:::${TIMELINE_BUCKET_NAME}-${props.region}-${props.account}/*`
+        ]
+      }),
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        actions: [
+          "kms:GenerateDataKey",
+          "kms:Decrypt"
+        ],
+        resources: ["*"]  
+      }),
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        actions: [
+          "dynamodb:Scan",
+          "dynamodb:GetItem", 
+          "dynamodb:UpdateItem",
+          "dynamodb:Query",
+          "dynamodb:BatchGetItem",
+          "dynamodb:PutItem",
+          "dynamodb:DescribeTable"
+        ],
+        resources: [
+          `arn:aws:dynamodb:${props.region}:${props.account}:table/${VIDEO_TIMELINE_TABLE_NAME}`,
+          `arn:aws:dynamodb:${props.region}:${props.account}:table/${RAW_VIDEO_TIMELINE_TABLE_NAME}`,
+          `arn:aws:dynamodb:${props.region}:${props.account}:table/${VIDEO_TIMELINE_TABLE_NAME}/*`,
+          `arn:aws:dynamodb:${props.region}:${props.account}:table/${RAW_VIDEO_TIMELINE_TABLE_NAME}/*`
+        ],
+      })
+    ];
+
+    const listDetailedVideoTimelineRole = createLambdaRole(this, "ListDetailedVideoTimelineRole", videoTimelineBaseRole);
+    const listVideoTimelinesRole = createLambdaRole(this, "ListVideoTimelinesRole", videoTimelineBaseRole);
+    const putVideoTimelineRole = createLambdaRole(this, "PutVideoTimelineRole", videoTimelineBaseRole);
+
+    const listDetailedVideoTimelineLambda = new Function(this, "ListDetailedVideoTimelineActivity", {
+      runtime: Runtime.JAVA_17,
+      handler: `${VL_ACTIVITY_JAVA_PATH_PREFIX}.ListDetailedVideoTimelineActivity::handleRequest`,
+      code: Code.fromAsset(LAMBDA_ASSET_PATH),
+      memorySize: 512,
+      timeout: Duration.minutes(5),
+      environment: {
+        ACCOUNT_ID: this.account
+      },
+      role: listDetailedVideoTimelineRole,
+      logGroup: new LogGroup(this, "ListDetailedVideoTimelineActivityLogGroup", {
+          retention: RetentionDays.TEN_YEARS,
+          logGroupName: "/aws/lambda/ListDetailedVideoTimelineActivity",
+      }),
+    });
+
+    const listVideoTimelinesLambda = new Function(this, "ListVideoTimelinesActivity", {
+      runtime: Runtime.JAVA_17,
+      handler: `${VL_ACTIVITY_JAVA_PATH_PREFIX}.ListVideoTimelinesActivity::handleRequest`,
+      code: Code.fromAsset(LAMBDA_ASSET_PATH),
+      memorySize: 512,
+      timeout: Duration.minutes(5),
+      environment: {
+        ACCOUNT_ID: this.account
+      },
+      role: listVideoTimelinesRole,
+      logGroup: new LogGroup(this, "ListVideoTimelinesActivityLogGroup", {
+          retention: RetentionDays.TEN_YEARS,
+          logGroupName: "/aws/lambda/ListVideoTimelinesActivity",
+      }),
+    });
+
+    const putVideoTimelineLambda = new Function(this, "PutVideoTimelineActivity", {
+      runtime: Runtime.JAVA_17,
+      handler: `${VL_ACTIVITY_JAVA_PATH_PREFIX}.PutVideoTimelineActivity::handleRequest`,
+      code: Code.fromAsset(LAMBDA_ASSET_PATH),
+      memorySize: 512,
+      timeout: Duration.minutes(5),
+      environment: {
+        ACCOUNT_ID: this.account
+      },
+      role: putVideoTimelineRole,
+      logGroup: new LogGroup(this, "PutVideoTimelineActivityLogGroup", {
+          retention: RetentionDays.TEN_YEARS,
+          logGroupName: "/aws/lambda/PutVideoTimelineActivity",
+      }),
+    });
+
+    // Add the CFN logical ID overrides
     // Overriding CFN logical IDs for OpenAPI spec transformation
     // This must match the variables defined in the Smithy model
     const createLivestreamSessionCfnLambda = createLivestreamSessionLambda.node.defaultChild as CfnFunction;
@@ -440,6 +531,12 @@ export class ServiceStack extends Stack {
     getVLRegisterDeviceStatusCfnLambda.overrideLogicalId("GetVLRegisterDeviceStatusActivity");
     const importMediaObjectCfnLambda = importMediaObjectLambda.node.defaultChild as CfnFunction;
     importMediaObjectCfnLambda.overrideLogicalId("ImportMediaObjectActivity");
+    const listDetailedVideoTimelineCfnLambda = listDetailedVideoTimelineLambda.node.defaultChild as CfnFunction;
+    listDetailedVideoTimelineCfnLambda.overrideLogicalId("ListDetailedVideoTimelineActivity");
+    const listVideoTimelinesCfnLambda = listVideoTimelinesLambda.node.defaultChild as CfnFunction;
+    listVideoTimelinesCfnLambda.overrideLogicalId("ListVideoTimelinesActivity");
+    const putVideoTimelineCfnLambda = putVideoTimelineLambda.node.defaultChild as CfnFunction;
+    putVideoTimelineCfnLambda.overrideLogicalId("PutVideoTimelineActivity");
 
     // Upload spec to S3
     const originalSpec = new Asset(this, "openApiFile", {
