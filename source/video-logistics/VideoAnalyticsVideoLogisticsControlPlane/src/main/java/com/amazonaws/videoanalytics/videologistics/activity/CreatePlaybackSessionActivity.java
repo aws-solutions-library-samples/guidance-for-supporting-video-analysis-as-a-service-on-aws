@@ -1,36 +1,37 @@
 package com.amazonaws.videoanalytics.videologistics.activity;
 
+import static com.amazonaws.videoanalytics.videologistics.exceptions.VideoAnalyticsExceptionMessage.END_TIME_WITHIN_A_DAY;
+import static com.amazonaws.videoanalytics.videologistics.exceptions.VideoAnalyticsExceptionMessage.INVALID_INPUT_EXCEPTION;
+import static com.amazonaws.videoanalytics.videologistics.exceptions.VideoAnalyticsExceptionMessage.RESOURCE_NOT_FOUND;
+import static com.amazonaws.videoanalytics.videologistics.exceptions.VideoAnalyticsExceptionMessage.START_TIME_GREATER_THAN_OR_EQUAL_TO_END_TIME;
+import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.MILLIS_TO_HOURS;
+import static com.amazonaws.videoanalytics.videologistics.utils.LambdaProxyUtils.parseBody;
+import static com.amazonaws.videoanalytics.videologistics.utils.LambdaProxyUtils.serializeResponse;
+import static com.amazonaws.videoanalytics.videologistics.utils.ResourceNameConversionUtils.getPlaybackStreamNameFromDeviceId;
+
 import java.util.Arrays;
+import java.util.Date;
+import java.util.Map;
+import java.util.Objects;
+
+import javax.inject.Inject;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.videoanalytics.videologistics.CreatePlaybackSessionRequestContent;
 import com.amazonaws.videoanalytics.videologistics.CreatePlaybackSessionResponseContent;
+import com.amazonaws.videoanalytics.videologistics.ResourceNotFoundExceptionResponseContent;
 import com.amazonaws.videoanalytics.videologistics.StreamSource;
 import com.amazonaws.videoanalytics.videologistics.ValidationExceptionResponseContent;
 import com.amazonaws.videoanalytics.videologistics.dagger.AWSVideoAnalyticsVLControlPlaneComponent;
+import com.amazonaws.videoanalytics.videologistics.dagger.DaggerAWSVideoAnalyticsVLControlPlaneComponent;
 import com.amazonaws.videoanalytics.videologistics.dependency.kvs.KvsService;
 import com.amazonaws.videoanalytics.videologistics.exceptions.ExceptionTranslator;
 import com.amazonaws.videoanalytics.videologistics.utils.annotations.ExcludeFromJacocoGeneratedReport;
 import com.amazonaws.videoanalytics.videologistics.validator.DeviceValidator;
+
 import software.amazon.awssdk.awscore.exception.AwsServiceException;
-
-import com.amazonaws.videoanalytics.videologistics.dagger.DaggerAWSVideoAnalyticsVLControlPlaneComponent;
-
-import javax.inject.Inject;
-
-import java.util.Date;
-import java.util.Map;
-import java.util.Objects;
-
-import static com.amazonaws.videoanalytics.videologistics.exceptions.VideoAnalyticsExceptionMessage.END_TIME_WITHIN_A_DAY;
-import static com.amazonaws.videoanalytics.videologistics.exceptions.VideoAnalyticsExceptionMessage.INVALID_INPUT_EXCEPTION;
-import static com.amazonaws.videoanalytics.videologistics.exceptions.VideoAnalyticsExceptionMessage.START_TIME_GREATER_THAN_OR_EQUAL_TO_END_TIME;
-import static com.amazonaws.videoanalytics.videologistics.utils.ResourceNameConversionUtils.getPlaybackStreamNameFromDeviceId;
-import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.MILLIS_TO_HOURS;
-import static com.amazonaws.videoanalytics.videologistics.utils.LambdaProxyUtils.parseBody;
-import static com.amazonaws.videoanalytics.videologistics.utils.LambdaProxyUtils.serializeResponse;
 
 /**
  * Class for handling the request for CreatePlaybackSession API.
@@ -87,7 +88,12 @@ public class CreatePlaybackSessionActivity implements RequestHandler<Map<String,
             return serializeResponse(400, exception.toJson());
         }
 
-        deviceValidator.validateDeviceExists(deviceId);
+        if (!deviceValidator.validateDeviceExists(deviceId, logger)) {
+            ResourceNotFoundExceptionResponseContent resourceNotFoundException = ResourceNotFoundExceptionResponseContent.builder()
+                .message(RESOURCE_NOT_FOUND)
+                .build();
+            return serializeResponse(404, resourceNotFoundException.toJson());
+        }
 
         if (startTime.after(endTime) || startTime.equals(endTime)) {
             exception = ValidationExceptionResponseContent.builder()

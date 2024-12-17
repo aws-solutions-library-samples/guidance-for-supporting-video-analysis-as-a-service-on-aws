@@ -1,5 +1,30 @@
 package com.amazonaws.videoanalytics.videologistics.activity;
 
+import static com.amazonaws.videoanalytics.videologistics.exceptions.VideoAnalyticsExceptionMessage.DEVICE_NOT_REGISTERED;
+import static com.amazonaws.videoanalytics.videologistics.exceptions.VideoAnalyticsExceptionMessage.INVALID_INPUT_EXCEPTION;
+import static com.amazonaws.videoanalytics.videologistics.exceptions.VideoAnalyticsExceptionMessage.RESOURCE_NOT_FOUND;
+import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.PROXY_LAMBDA_BODY_KEY;
+import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.PROXY_LAMBDA_RESPONSE_STATUS_CODE_KEY;
+import static com.amazonaws.videoanalytics.videologistics.utils.LambdaProxyUtils.parseBody;
+import static com.amazonaws.videoanalytics.videologistics.utils.TestConstants.CLIENT_ID;
+import static com.amazonaws.videoanalytics.videologistics.utils.TestConstants.DEVICE_ID;
+import static java.util.Map.entry;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.videoanalytics.videologistics.CreateLivestreamSessionResponseContent;
@@ -11,35 +36,6 @@ import com.amazonaws.videoanalytics.videologistics.utils.KVSWebRTCUtils;
 import com.amazonaws.videoanalytics.videologistics.validator.DeviceValidator;
 
 import software.amazon.awssdk.services.kinesisvideo.model.ResourceNotFoundException;
-
-import org.junit.contrib.java.lang.system.EnvironmentVariables;
-import org.junit.jupiter.api.BeforeEach;
-
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
-import static com.amazonaws.videoanalytics.videologistics.exceptions.VideoAnalyticsExceptionMessage.DEVICE_NOT_REGISTERED;
-import static com.amazonaws.videoanalytics.videologistics.exceptions.VideoAnalyticsExceptionMessage.INVALID_INPUT_EXCEPTION;
-import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.PROXY_LAMBDA_BODY_KEY;
-import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.PROXY_LAMBDA_RESPONSE_STATUS_CODE_KEY;
-import static com.amazonaws.videoanalytics.videologistics.utils.LambdaProxyUtils.parseBody;
-import static com.amazonaws.videoanalytics.videologistics.utils.TestConstants.MOCK_AWS_REGION;
-import static com.amazonaws.videoanalytics.videologistics.utils.TestConstants.DEVICE_ID;
-import static com.amazonaws.videoanalytics.videologistics.utils.TestConstants.CLIENT_ID;
-import static java.util.Map.entry;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.doNothing;
 
 public class CreateLivestreamSessionActivityTest {
     @Mock
@@ -66,7 +62,7 @@ public class CreateLivestreamSessionActivityTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
         when(context.getLogger()).thenReturn(logger);
-        doNothing().when(deviceValidator).validateDeviceExists(DEVICE_ID);
+        when(deviceValidator.validateDeviceExists(eq(DEVICE_ID), any())).thenReturn(true);
     }
 
     @Test
@@ -105,6 +101,15 @@ public class CreateLivestreamSessionActivityTest {
         assertEquals(responseMap.get(PROXY_LAMBDA_RESPONSE_STATUS_CODE_KEY), 404);
         ResourceNotFoundExceptionResponseContent exception = ResourceNotFoundExceptionResponseContent.fromJson(parseBody(responseMap));
         assertEquals(exception.getMessage(), DEVICE_NOT_REGISTERED);
+    }
+
+    @Test
+    public void handleRequest_WhenDeviceDoesNotExist_ThrowsResourceNotFoundException() throws IOException {
+        when(deviceValidator.validateDeviceExists(eq(DEVICE_ID), any())).thenReturn(false);
+        Map<String, Object> responseMap = createLivestreamSessionActivity.handleRequest(lambdaProxyRequest, context);
+        assertEquals(responseMap.get(PROXY_LAMBDA_RESPONSE_STATUS_CODE_KEY), 404);
+        ResourceNotFoundExceptionResponseContent exception = ResourceNotFoundExceptionResponseContent.fromJson(parseBody(responseMap));
+        assertEquals(exception.getMessage(), RESOURCE_NOT_FOUND);
     }
 
     // @Test

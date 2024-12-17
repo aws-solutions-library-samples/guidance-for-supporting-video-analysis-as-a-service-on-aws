@@ -6,8 +6,6 @@ import { LogGroup, RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { Arn, Duration, Stack, StackProps } from 'aws-cdk-lib';
 import { LambdaInvoke } from 'aws-cdk-lib/aws-stepfunctions-tasks';
 import {
-  Choice,
-  Condition,
   Fail,
   Succeed,
   JsonPath,
@@ -17,11 +15,8 @@ import {
 import {
   ERROR_MESSAGE_PATH,
   PARTITION_KEY_PATH,
-  PLAYBACK_SESSION_STATUS,
   RESULT_PATH,
   RESULT_PATH_ERROR,
-  SHOULD_STREAM_FROM_DEVICE_PATH,
-  SORT_KEY_PATH,
   LAMBDA_ASSET_PATH
 } from '../const';
 import {

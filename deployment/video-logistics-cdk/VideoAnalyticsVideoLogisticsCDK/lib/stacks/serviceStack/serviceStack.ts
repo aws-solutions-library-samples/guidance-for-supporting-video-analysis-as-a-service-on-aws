@@ -1,7 +1,7 @@
 import { Duration, Fn, Stack, StackProps } from "aws-cdk-lib";
 import { MethodLoggingLevel, SpecRestApi } from 'aws-cdk-lib/aws-apigateway';
 import { CfnFunction } from "aws-cdk-lib/aws-cloudfront";
-import { 
+import {
   ArnPrincipal,
   CfnRole,
   Effect,
@@ -10,21 +10,21 @@ import {
   Role,
   ServicePrincipal
 } from "aws-cdk-lib/aws-iam";
-import { CfnAlias, Key } from "aws-cdk-lib/aws-kms";
-import { Function, Runtime, Code, CfnPermission } from "aws-cdk-lib/aws-lambda";
-import { LogGroup, RetentionDays } from "aws-cdk-lib/aws-logs";
-import { Asset } from 'aws-cdk-lib/aws-s3-assets'
-import { Construct } from "constructs";
 import { CfnTopicRule } from "aws-cdk-lib/aws-iot";
+import { CfnAlias, Key } from "aws-cdk-lib/aws-kms";
+import { CfnPermission, Code, Function, Runtime } from "aws-cdk-lib/aws-lambda";
+import { LogGroup, RetentionDays } from "aws-cdk-lib/aws-logs";
+import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import { Queue, QueueEncryption } from "aws-cdk-lib/aws-sqs";
+import { Construct } from "constructs";
 import { AWSRegion, createApiGateway, createLambdaRole, DEVICE_MANAGEMENT_API_NAME, VIDEO_LOGISTICS_API_NAME } from "video_analytics_common_construct";
-import { TIMELINE_BUCKET_NAME, VIDEO_TIMELINE_TABLE_NAME, RAW_VIDEO_TIMELINE_TABLE_NAME } from "../const";
+import { RAW_VIDEO_TIMELINE_TABLE_NAME, TIMELINE_BUCKET_NAME, VIDEO_TIMELINE_TABLE_NAME } from "../const";
 
 import {
-    VL_ACTIVITY_JAVA_PATH_PREFIX,
-    LAMBDA_ASSET_PATH,
-    OPEN_API_SPEC_PATH,
-  } from "../const";
+  LAMBDA_ASSET_PATH,
+  OPEN_API_SPEC_PATH,
+  VL_ACTIVITY_JAVA_PATH_PREFIX,
+} from "../const";
 
 export interface ServiceStackProps extends StackProps {
   region: AWSRegion;
@@ -60,6 +60,19 @@ export class ServiceStack extends Stack {
         resources: [
           `arn:aws:kinesisvideo:${props.region}:${props.account}:channel/*`,
         ],
+      }),
+      // permission to validate device exists
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        actions: [
+          'apigateway:GET',
+          'execute-api:Invoke'
+        ],
+        resources: [
+          `arn:aws:apigateway:${this.region}::/restapis`,
+          `arn:aws:apigateway:${this.region}::/restapis/*`,
+          `arn:aws:execute-api:${this.region}:${this.account}:*/*/*/*`
+        ]
       })
     ]);
 
@@ -71,7 +84,8 @@ export class ServiceStack extends Stack {
       memorySize: 512,
       timeout: Duration.minutes(5),
       environment: {
-          ACCOUNT_ID: this.account
+          ACCOUNT_ID: this.account,
+          DEVICE_MANAGEMENT_API_NAME: DEVICE_MANAGEMENT_API_NAME
       },
       role: createLivestreamSessionRole,
       logGroup: new LogGroup(this, "CreateLivestreamSessionActivityLogGroup", {
@@ -90,6 +104,19 @@ export class ServiceStack extends Stack {
         resources: [
           `arn:aws:kinesisvideo:${props.region}:${props.account}:stream/*`,
         ],
+      }),
+      // permission to validate device exists
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        actions: [
+          'apigateway:GET',
+          'execute-api:Invoke'
+        ],
+        resources: [
+          `arn:aws:apigateway:${this.region}::/restapis`,
+          `arn:aws:apigateway:${this.region}::/restapis/*`,
+          `arn:aws:execute-api:${this.region}:${this.account}:*/*/*/*`
+        ]
       })
     ]);
 
@@ -101,7 +128,8 @@ export class ServiceStack extends Stack {
       memorySize: 512,
       timeout: Duration.minutes(5),
       environment: {
-          ACCOUNT_ID: this.account
+          ACCOUNT_ID: this.account,
+          DEVICE_MANAGEMENT_API_NAME: DEVICE_MANAGEMENT_API_NAME
       },
       role: createPlaybackSessionRole,
       logGroup: new LogGroup(this, "CreatePlaybackSessionActivityLogGroup", {
@@ -374,6 +402,19 @@ export class ServiceStack extends Stack {
         resources: [
           `arn:aws:dynamodb:${props.region}:${props.account}:table/VLRegisterDeviceJobTable`
         ],
+      }),
+      // permission to validate device exists
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        actions: [
+          'apigateway:GET',
+          'execute-api:Invoke'
+        ],
+        resources: [
+          `arn:aws:apigateway:${this.region}::/restapis`,
+          `arn:aws:apigateway:${this.region}::/restapis/*`,
+          `arn:aws:execute-api:${this.region}:${this.account}:*/*/*/*`
+        ]
       })
     ]);
 
@@ -384,7 +425,8 @@ export class ServiceStack extends Stack {
       memorySize: 512,
       timeout: Duration.minutes(5),
       environment: {
-          ACCOUNT_ID: this.account
+          ACCOUNT_ID: this.account,
+          DEVICE_MANAGEMENT_API_NAME: DEVICE_MANAGEMENT_API_NAME
       },
       role: startVLRegisterDeviceRole,
       logGroup: new LogGroup(this, "StartVLRegisterDeviceActivityLogGroup", {

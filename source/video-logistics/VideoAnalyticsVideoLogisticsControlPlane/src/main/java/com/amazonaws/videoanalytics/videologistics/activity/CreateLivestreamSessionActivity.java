@@ -1,5 +1,21 @@
 package com.amazonaws.videoanalytics.videologistics.activity;
 
+import static com.amazonaws.videoanalytics.videologistics.exceptions.VideoAnalyticsExceptionMessage.INTERNAL_SERVER_EXCEPTION;
+import static com.amazonaws.videoanalytics.videologistics.exceptions.VideoAnalyticsExceptionMessage.INVALID_INPUT_EXCEPTION;
+import static com.amazonaws.videoanalytics.videologistics.exceptions.VideoAnalyticsExceptionMessage.RESOURCE_NOT_FOUND;
+import static com.amazonaws.videoanalytics.videologistics.utils.LambdaProxyUtils.parseBody;
+import static com.amazonaws.videoanalytics.videologistics.utils.LambdaProxyUtils.serializeResponse;
+import static com.amazonaws.videoanalytics.videologistics.utils.ResourceNameConversionUtils.getLivestreamSignalingChannelNameFromDeviceId;
+import static software.amazon.awssdk.services.kinesisvideo.model.ChannelProtocol.HTTPS;
+import static software.amazon.awssdk.services.kinesisvideo.model.ChannelProtocol.WSS;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+import javax.inject.Inject;
+
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
@@ -7,37 +23,21 @@ import com.amazonaws.videoanalytics.videologistics.CreateLivestreamSessionReques
 import com.amazonaws.videoanalytics.videologistics.CreateLivestreamSessionResponseContent;
 import com.amazonaws.videoanalytics.videologistics.IceServer;
 import com.amazonaws.videoanalytics.videologistics.InternalServerExceptionResponseContent;
+import com.amazonaws.videoanalytics.videologistics.ResourceNotFoundExceptionResponseContent;
 import com.amazonaws.videoanalytics.videologistics.ValidationExceptionReason;
 import com.amazonaws.videoanalytics.videologistics.ValidationExceptionResponseContent;
 import com.amazonaws.videoanalytics.videologistics.dagger.AWSVideoAnalyticsVLControlPlaneComponent;
+import com.amazonaws.videoanalytics.videologistics.dagger.DaggerAWSVideoAnalyticsVLControlPlaneComponent;
 import com.amazonaws.videoanalytics.videologistics.dependency.kvs.KvsService;
 import com.amazonaws.videoanalytics.videologistics.exceptions.ExceptionTranslator;
-import com.amazonaws.videoanalytics.videologistics.utils.annotations.ExcludeFromJacocoGeneratedReport;
 import com.amazonaws.videoanalytics.videologistics.utils.KVSWebRTCUtils;
+import com.amazonaws.videoanalytics.videologistics.utils.annotations.ExcludeFromJacocoGeneratedReport;
 import com.amazonaws.videoanalytics.videologistics.validator.DeviceValidator;
 
 import software.amazon.awssdk.services.kinesisvideo.model.ChannelRole;
 import software.amazon.awssdk.services.kinesisvideo.model.KinesisVideoException;
 import software.amazon.awssdk.services.kinesisvideo.model.SingleMasterChannelEndpointConfiguration;
 import software.amazon.awssdk.services.kinesisvideosignaling.model.KinesisVideoSignalingException;
-
-import com.amazonaws.videoanalytics.videologistics.dagger.DaggerAWSVideoAnalyticsVLControlPlaneComponent;
-
-import javax.inject.Inject;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
-import static com.amazonaws.videoanalytics.videologistics.exceptions.VideoAnalyticsExceptionMessage.INTERNAL_SERVER_EXCEPTION;
-import static com.amazonaws.videoanalytics.videologistics.exceptions.VideoAnalyticsExceptionMessage.INVALID_INPUT_EXCEPTION;
-import static com.amazonaws.videoanalytics.videologistics.utils.ResourceNameConversionUtils.getLivestreamSignalingChannelNameFromDeviceId;
-import static com.amazonaws.videoanalytics.videologistics.utils.LambdaProxyUtils.parseBody;
-import static com.amazonaws.videoanalytics.videologistics.utils.LambdaProxyUtils.serializeResponse;
-
-import static software.amazon.awssdk.services.kinesisvideo.model.ChannelProtocol.HTTPS;
-import static software.amazon.awssdk.services.kinesisvideo.model.ChannelProtocol.WSS;
 
 /**
  * Class for handling the request for CreateLivestreamSession API.
@@ -97,7 +97,12 @@ public class CreateLivestreamSessionActivity implements RequestHandler<Map<Strin
             return serializeResponse(400, exception.toJson());
         }
 
-        deviceValidator.validateDeviceExists(deviceId);
+        if (!deviceValidator.validateDeviceExists(deviceId, logger)) {
+            ResourceNotFoundExceptionResponseContent resourceNotFoundException = ResourceNotFoundExceptionResponseContent.builder()
+                .message(RESOURCE_NOT_FOUND)
+                .build();
+            return serializeResponse(404, resourceNotFoundException.toJson());
+        }
 
         // Fetch signaling channel endpoint for viewer
         final SingleMasterChannelEndpointConfiguration singleMasterChannelEndpointConfigurationAsViewer =
