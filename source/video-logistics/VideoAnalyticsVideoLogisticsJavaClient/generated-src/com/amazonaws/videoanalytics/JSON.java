@@ -58,6 +58,7 @@ public class JSON {
         GsonFireBuilder fireBuilder = new GsonFireBuilder()
         ;
         GsonBuilder builder = fireBuilder.createGsonBuilder();
+        builder.disableHtmlEscaping();
         return builder;
     }
 

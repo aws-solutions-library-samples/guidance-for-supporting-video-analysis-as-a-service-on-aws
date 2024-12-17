@@ -16,7 +16,8 @@ openApiGenerate {
     configOptions = [
         "additionalModelTypeAnnotations": "@lombok.Builder;@lombok.AllArgsConstructor",
         "dateLibrary": "legacy",
-        "hideGenerationTimestamp": "true"
+        "hideGenerationTimestamp": "true",
+        "disableHtmlEscaping": "true"
     ]
 
     copy {
