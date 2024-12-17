@@ -2,6 +2,7 @@ use crate::constants;
 use anyhow::anyhow;
 use async_trait::async_trait;
 use device_traits::channel_utils::traits::IoTServiceSender;
+use device_traits::connections::QoS;
 use device_traits::{
     connections::{PubSubMessage, PubSubMessageBuilder, ShadowManager},
     merge::Merge,
@@ -28,6 +29,8 @@ pub struct IotShadowManager {
     pub(crate) reported_state: Value,
     // Holds the desired state and is updated by cloud messages.
     pub(crate) desired_state: Value,
+    // Quality of service of MQTT messages + subscriptions.
+    pub(crate) quality_of_service: QoS,
     // Holds message builder for sending messages to publish.
     pub_sub_message_builder: Box<dyn PubSubMessageBuilder + Send + Sync>,
     /// Path to configuration directory, state information is saved here.
@@ -88,6 +91,29 @@ impl ShadowManager for IotShadowManager {
 
         Ok(())
     }
+
+    /// Temporary solution to clear out shadows for P2P livestream
+    #[instrument]
+    async fn update_desired_state_from_device(&mut self, update_doc: Value) -> anyhow::Result<()> {
+        self.desired_state.merge(&update_doc);
+        debug!("New desired state added to shadow: {}", self.desired_state);
+
+        let pub_sub_message =
+            self.build_message_for_desired_shadow_update(self.desired_state.to_owned())?;
+        self.iot_channel.send_iot_message(pub_sub_message).await?;
+        Ok(())
+    }
+
+    /// Get the list of topics the MQTT client must subscribe to receive shadow messages from the cloud.
+    fn get_shadow_topics(&self) -> Vec<(String, QoS)> {
+        let mut output = Vec::new();
+        let prefix = self.get_shadow_topic_prefix();
+
+        for topic_suffix in constants::SHADOW_TOPICS_TO_SUBSCRIBE {
+            output.push((format!("{prefix}/{topic_suffix}"), self.quality_of_service))
+        }
+        output
+    }
 }
 
 impl IotShadowManager {
@@ -103,6 +129,7 @@ impl IotShadowManager {
         IotShadowManager {
             thing_name: thing_name.to_string(),
             shadow_name,
+            quality_of_service: constants::QUALITY_OF_SERVICE,
             iot_channel,
             reported_state: Value::default(),
             desired_state: Value::default(),
@@ -207,6 +234,22 @@ impl IotShadowManager {
             return Err(anyhow!("Shadow's storage file is too large to load into system memory."));
         }
         Ok(())
+    }
+    /// Generate shadow update json structure.
+    /// Temporary solution to clear out shadows for P2P livestream
+    fn build_message_for_desired_shadow_update(
+        &mut self,
+        update: serde_json::Value,
+    ) -> anyhow::Result<Box<dyn PubSubMessage + Send + Sync>> {
+        let topic =
+            format!("{}/{}", self.get_shadow_topic_prefix(), constants::UPDATE_SHADOW_TOPIC_SUFFIX);
+
+        let mut update_shadow_payload = json!({"state":{"desired":{}}});
+        update_shadow_payload["state"]["desired"] = update;
+        let payload: String = update_shadow_payload.to_string();
+
+        //Create a message.  Will be passed through a channel to be published by connections layer.
+        Ok(self.build_pub_sub_message(&topic, payload))
     }
 }
 

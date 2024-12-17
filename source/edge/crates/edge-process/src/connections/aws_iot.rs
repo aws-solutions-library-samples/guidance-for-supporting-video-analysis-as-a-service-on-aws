@@ -61,6 +61,7 @@ pub async fn setup_and_start_iot_event_loop(
     mut pub_sub_client_manager: Box<dyn IotClientManager + Send + Sync>,
     mut iot_client: AsyncPubSubClient,
     command_tx: Sender<Value>,
+    livestreaming_request_tx: Sender<String>,
 ) -> anyhow::Result<JoinHandle<()>> {
     // Connections startup sequence.
     ServiceCommunicationManager::create_global_device_information(&config.get_config())
@@ -139,8 +140,14 @@ pub async fn setup_and_start_iot_event_loop(
 
                         }
 
+                        if let Some(message) = pub_sub_client_manager.received_livestream_shadow_message(msg_in.as_ref()) {
+                            info!("Streaming message received {:?}", message);
+                            let _ = livestreaming_request_tx.send(message).await;
+                        };
+
                         info!("received message :{}", msg_in.get_payload());
                     }
+
 
                 }
             }

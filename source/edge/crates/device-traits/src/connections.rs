@@ -32,6 +32,10 @@ pub trait ShadowManager {
     /// Turn on local storage of Shadow's desired state set by the cloud.  This is used to
     /// restore a device to the last instructed state in the event of a restart while disconnected from the cloud.
     async fn enable_storage(&mut self) -> anyhow::Result<()>;
+    /// Temporary solution to clear out shadows for P2P livestream
+    async fn update_desired_state_from_device(&mut self, update_doc: Value) -> anyhow::Result<()>;
+    /// Get the list of topics the MQTT client must subscribe to receive shadow messages from the cloud.
+    fn get_shadow_topics(&self) -> Vec<(String, QoS)>;
 }
 
 /// Trait to manage IoT connections for edge process
@@ -63,6 +67,11 @@ pub trait IotClientManager {
         &self,
         msg: &(dyn PubSubMessage + Send + Sync),
     ) -> Option<Value>;
+    /// Received live streaming message from cloud
+    fn received_livestream_shadow_message(
+        &self,
+        msg: &(dyn PubSubMessage + Send + Sync),
+    ) -> Option<String>;
     /// Attempt to update IoT jobs status.  
     async fn update_command_status(
         &mut self,

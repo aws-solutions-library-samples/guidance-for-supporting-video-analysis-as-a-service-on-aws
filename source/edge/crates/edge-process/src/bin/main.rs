@@ -1,4 +1,4 @@
-use device_traits::connections::PubSubClient;
+use device_traits::connections::{PubSubClient, ShadowManager};
 use device_traits::state::{State, StateManager};
 use edge_process::config::get_media_config;
 use edge_process::constants::{
@@ -25,6 +25,7 @@ use edge_process::connections::aws_iot::{
 use edge_process::device_state::get_device_model;
 use futures_util::stream::StreamExt;
 use iot_connections::client::IotMqttClientManager;
+use kvs_client::client::KinesisVideoStreamClient;
 use once_cell::sync::Lazy;
 use reqwest::{Client, Proxy};
 use serde_json::{json, Value};
@@ -42,6 +43,9 @@ use tokio::time::{sleep, Instant};
 use tokio::{select, try_join};
 use tracing::{debug, error, info, warn};
 use ws_discovery_client::client::ws_discovery_client::DiscoveryBuilder;
+use webrtc_client::constants::{CLIENT_ID, STATE};
+use webrtc_client::signaling_client::WebrtcSignalingClient;
+use webrtc_client::state_machine::WebrtcStateMachine;
 
 #[tokio::main]
 async fn main() -> Result<ExitCode, Box<dyn Error>> {
@@ -211,6 +215,86 @@ async fn main() -> Result<ExitCode, Box<dyn Error>> {
             config_media_path.onvif_password.clone(),
         )
         .await?;
+    
+    // Livestream
+    let (streaming_signal_tx, mut streaming_signal_rx) = channel::<String>(BUFFER_SIZE);
+    let mut webrtc_state_machine = WebrtcStateMachine::new(
+        streaming_signal_tx.clone(),
+        stream_uri_config.rtsp_uri.clone(),
+        config_media_path.onvif_account_name.clone(),
+        config_media_path.onvif_password.clone(),
+        config_media_path.aws_region.clone(),
+    )
+    .expect("Unable to create webrtc state machine");
+
+    // This is used by P2P to send and receive P2P connection state with cloud.
+    // using unnamed classic shadow to communicate P2P connections from cloud to edge
+    let mut iot_classic_shadow_client: Box<dyn ShadowManager + Send + Sync> =
+        new_iot_shadow_manager(settings.get_client_id(), None, dir.to_owned()).await;
+
+    let (peer_connection_tx, mut peer_connection_rx) = channel::<String>(1000);
+
+    let _peer_streaming_join_handle = tokio::spawn(async move {
+        clear_peer_to_peer_content_from_shadow_blocking(iot_classic_shadow_client.as_mut()).await;
+        loop {
+            // Guard to prevent new peer-to-peer streaming unless device is enabled.
+            if !is_device_state_create_or_enable() {
+                sleep(Duration::from_millis(250)).await;
+                continue;
+            }
+            select! {
+                // Handle connection from the cloud
+                Some(message) = peer_connection_rx.recv() => {
+                    let Ok(message) = serde_json::from_str(&message) else {
+                        error!("Error in converting peer connection from string to json");
+                        return;
+                    };
+
+                    debug!("received connection signal from the cloud");
+                    let _res = webrtc_state_machine
+                        .handle_state_update(message).await;
+                }
+
+                // Temporary solution for clearing out shadows
+                Some(msg_in) = streaming_signal_rx.recv() => {
+
+                    info!("received message");
+                    // Re instantiate box inside of move
+                    let mut iot_classic_shadow_client = new_iot_shadow_manager(
+                        settings.get_client_id(),
+                        None,
+                        dir.to_owned(),
+                    )
+                    .await;
+
+                    let Ok(message) = serde_json::from_str::<Value>(&msg_in) else {
+                        error!("Error in converting streaming signal message from string to json");
+                        return;
+                    };
+                    let client_id = &message[CLIENT_ID];
+                    let status = &message[STATE];
+                    if status == "Failed" || status == "Disconnected" {
+                        let Ok(clear_streaming_peer_connections_shadow_entry)  = serde_json::from_str::<Value>(&format!(
+                            "{{
+                                \"StreamingPeerConnections\": {{
+                                    {client_id}: null
+                                }}
+                            }}"
+                        )) else {
+                            error!("Error in converting peer connection from string to json");
+                            return;
+                        };
+                        info!("Clearing state");
+                        let _res = iot_classic_shadow_client.update_desired_state_from_device(clear_streaming_peer_connections_shadow_entry.clone()).await;
+
+                        let res = iot_classic_shadow_client.update_reported_state(clear_streaming_peer_connections_shadow_entry.clone()).await;
+                        let _res = webrtc_state_machine.handle_state_update(message.clone()).await;
+                    }
+                }
+            }
+        }
+    });
+    let peer_connection_tx_clone = peer_connection_tx.clone();
 
     let (video_config_tx, mut video_config_rx) = channel::<Value>(BUFFER_SIZE);
     let (logger_config_tx, mut logger_config_rx) = channel::<String>(BUFFER_SIZE);
@@ -379,6 +463,7 @@ async fn main() -> Result<ExitCode, Box<dyn Error>> {
         pub_sub_client_manager,
         iot_client,
         command_tx_clone,
+        peer_connection_tx_clone,
     )
     .await?;
 
@@ -401,6 +486,20 @@ async fn main() -> Result<ExitCode, Box<dyn Error>> {
     let (motion_based_streaming_tx, motion_based_streaming_rx) = sync_channel(5);
     let uri_config = stream_uri_config.clone();
     let mut streaming_service = create_streaming_service(uri_config);
+
+    // Livestream
+    // ServiceCommunicationManager is established in setup_and_start_iot_event_loop().
+    // Therefore, KinesisVideoStreamClient that depends on ServiceCommunicationManager can't be instantiated prior to that function
+    let kvs_client = KinesisVideoStreamClient::from_conf().await?;
+
+    let _webrtc_signaling_client = WebrtcSignalingClient::new(
+        kvs_client.ice_server_configs.to_owned(),
+        stream_uri_config.rtsp_uri.clone(),
+        config_media_path.aws_region.clone(),
+        config_media_path.onvif_account_name.clone(),
+        config_media_path.onvif_password.clone(),
+    )
+    .await?;
 
     let _gstreamer_pipeline_handle = tokio::spawn(async move {
         // Start pipeline when device is in the correct state.
@@ -444,4 +543,26 @@ async fn setup_device_model(
     // bootstrap the model layer before retrieving any information from the device
     model.bootstrap(config_path.as_str(), ip_address).await?;
     Ok(model)
+}
+
+async fn clear_peer_to_peer_content_from_shadow_blocking(
+    peer_to_peer_shadow_manager: &mut (dyn ShadowManager + Send + Sync),
+) {
+    let clear_streaming_peer_connections_shadow_entry = json!({ "StreamingPeerConnections": null });
+    // IoT service can take a little while to start up so retry until successful.
+    while let Err(_e) = peer_to_peer_shadow_manager
+        .update_reported_state(clear_streaming_peer_connections_shadow_entry.to_owned())
+        .await
+    {
+        debug!("Iot classic shadow failed to update, retrying.");
+        sleep(Duration::from_millis(100)).await;
+    }
+
+    while let Err(_e) = peer_to_peer_shadow_manager
+        .update_desired_state_from_device(clear_streaming_peer_connections_shadow_entry.to_owned())
+        .await
+    {
+        debug!("Iot classic shadow failed to update, retrying.");
+        sleep(Duration::from_millis(100)).await;
+    }
 }

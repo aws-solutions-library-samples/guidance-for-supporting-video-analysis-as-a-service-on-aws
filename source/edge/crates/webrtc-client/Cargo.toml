@@ -1,0 +1,50 @@
+[package]
+name = "webrtc-client"
+version.workspace = true
+edition.workspace = true
+
+# This should be set to true if this crate is split up to another repo.
+publish = false
+
+[dependencies]
+# P2P Dependencies
+signal = "0.7.0"
+base64 = "0.21.0"
+tokio-tungstenite = { version = "0.20.0", features = ["rustls-tls-webpki-roots"] }
+futures-util = "0.3.28"
+futures-channel = "0.3.28"
+bytes = "^1.4.0"
+h264-reader = "0.6.0"
+hex = "0.4.3"
+chrono = "0.4.24"
+once_cell = "1.17.1"
+retina = "0.4.5"
+url = "2.2.1"
+aws-sdk-kinesisvideosignaling = { version = "1.0", features = ["behavior-version-latest"] }
+
+# used for calculating onvif password hash
+md5 = "0.7.0"
+
+serde_json.workspace = true
+reqwest.workspace = true
+serde.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+tokio.workspace = true
+tokio-util.workspace = true
+async-trait.workspace = true
+anyhow.workspace = true
+clap.workspace = true
+webrtc.workspace = true
+mockall.workspace = true
+
+# Internal dependencies
+device-traits.workspace = true
+#aws-client.workspace = true
+kvs-client.workspace = true
+
+[dev-dependencies]
+rumqttd = "0.15.0"
+portpicker = "0.1"
+serial_test = "1"
+config = "0.13"
