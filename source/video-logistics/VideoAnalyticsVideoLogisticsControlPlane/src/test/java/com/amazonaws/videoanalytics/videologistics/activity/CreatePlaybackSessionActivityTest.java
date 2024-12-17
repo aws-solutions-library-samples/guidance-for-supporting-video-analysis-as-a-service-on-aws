@@ -1,30 +1,9 @@
 package com.amazonaws.videoanalytics.videologistics.activity;
 
-import com.amazonaws.services.lambda.runtime.Context;
-import com.amazonaws.services.lambda.runtime.LambdaLogger;
-import com.amazonaws.videoanalytics.videologistics.CreatePlaybackSessionResponseContent;
-import com.amazonaws.videoanalytics.videologistics.SourceInfo;
-import com.amazonaws.videoanalytics.videologistics.SourceType;
-import com.amazonaws.videoanalytics.videologistics.StreamSource;
-import com.amazonaws.videoanalytics.videologistics.ValidationExceptionResponseContent;
-import com.amazonaws.videoanalytics.videologistics.dependency.kvs.KvsService;
-import com.amazonaws.videoanalytics.videologistics.validator.DeviceValidator;
-import software.amazon.awssdk.services.kinesisvideoarchivedmedia.model.NoDataRetentionException;
-
-import org.junit.contrib.java.lang.system.EnvironmentVariables;
-import org.junit.jupiter.api.BeforeEach;
-
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-
-import java.io.IOException;
-import java.util.Map;
-
 import static com.amazonaws.videoanalytics.videologistics.exceptions.VideoAnalyticsExceptionMessage.END_TIME_WITHIN_A_DAY;
 import static com.amazonaws.videoanalytics.videologistics.exceptions.VideoAnalyticsExceptionMessage.INVALID_INPUT_EXCEPTION;
 import static com.amazonaws.videoanalytics.videologistics.exceptions.VideoAnalyticsExceptionMessage.NO_DATA_RETENTION;
+import static com.amazonaws.videoanalytics.videologistics.exceptions.VideoAnalyticsExceptionMessage.RESOURCE_NOT_FOUND;
 import static com.amazonaws.videoanalytics.videologistics.exceptions.VideoAnalyticsExceptionMessage.START_TIME_GREATER_THAN_OR_EQUAL_TO_END_TIME;
 import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.PROXY_LAMBDA_BODY_KEY;
 import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.PROXY_LAMBDA_RESPONSE_STATUS_CODE_KEY;
@@ -32,15 +11,34 @@ import static com.amazonaws.videoanalytics.videologistics.utils.LambdaProxyUtils
 import static com.amazonaws.videoanalytics.videologistics.utils.TestConstants.DEVICE_ID;
 import static com.amazonaws.videoanalytics.videologistics.utils.TestConstants.END_TIMESTAMP;
 import static com.amazonaws.videoanalytics.videologistics.utils.TestConstants.HLS_STREAMING_URL;
-import static com.amazonaws.videoanalytics.videologistics.utils.TestConstants.MOCK_AWS_REGION;
 import static com.amazonaws.videoanalytics.videologistics.utils.TestConstants.START_TIMESTAMP;
-
 import static java.util.Map.entry;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.doNothing;
+
+import java.io.IOException;
+import java.util.Map;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import com.amazonaws.services.lambda.runtime.Context;
+import com.amazonaws.services.lambda.runtime.LambdaLogger;
+import com.amazonaws.videoanalytics.videologistics.CreatePlaybackSessionResponseContent;
+import com.amazonaws.videoanalytics.videologistics.ResourceNotFoundExceptionResponseContent;
+import com.amazonaws.videoanalytics.videologistics.SourceInfo;
+import com.amazonaws.videoanalytics.videologistics.SourceType;
+import com.amazonaws.videoanalytics.videologistics.StreamSource;
+import com.amazonaws.videoanalytics.videologistics.ValidationExceptionResponseContent;
+import com.amazonaws.videoanalytics.videologistics.dependency.kvs.KvsService;
+import com.amazonaws.videoanalytics.videologistics.validator.DeviceValidator;
+
+import software.amazon.awssdk.services.kinesisvideoarchivedmedia.model.NoDataRetentionException;
 
 public class CreatePlaybackSessionActivityTest {
     @Mock
@@ -63,7 +61,7 @@ public class CreatePlaybackSessionActivityTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
         when(context.getLogger()).thenReturn(logger);
-        doNothing().when(deviceValidator).validateDeviceExists(DEVICE_ID);
+        when(deviceValidator.validateDeviceExists(eq(DEVICE_ID), any())).thenReturn(true);
     }
 
     @Test
@@ -135,6 +133,15 @@ public class CreatePlaybackSessionActivityTest {
         assertEquals(response.get(PROXY_LAMBDA_RESPONSE_STATUS_CODE_KEY), 400);
         ValidationExceptionResponseContent exception = ValidationExceptionResponseContent.fromJson(parseBody(response));
         assertEquals(exception.getMessage(), NO_DATA_RETENTION);
+    }
+
+    @Test
+    public void handleRequest_WhenDeviceDoesNotExist_ThrowsResourceNotFoundException() throws IOException {
+        when(deviceValidator.validateDeviceExists(eq(DEVICE_ID), any())).thenReturn(false);
+        Map<String, Object> responseMap = createPlaybackSessionActivity.handleRequest(lambdaProxyRequest, context);
+        assertEquals(responseMap.get(PROXY_LAMBDA_RESPONSE_STATUS_CODE_KEY), 404);
+        ResourceNotFoundExceptionResponseContent exception = ResourceNotFoundExceptionResponseContent.fromJson(parseBody(responseMap));
+        assertEquals(exception.getMessage(), RESOURCE_NOT_FOUND);
     }
 
     // @Test

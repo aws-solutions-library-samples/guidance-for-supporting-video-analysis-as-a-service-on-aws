@@ -1,29 +1,33 @@
 package com.amazonaws.videoanalytics.videologistics.activity;
 
-import com.amazonaws.services.lambda.runtime.Context;
-import com.amazonaws.services.lambda.runtime.LambdaLogger;
-import com.amazonaws.services.lambda.runtime.RequestHandler;
-import com.amazonaws.videoanalytics.videologistics.StartVLRegisterDeviceResponseContent;
-import com.amazonaws.videoanalytics.videologistics.ValidationExceptionResponseContent;
-import com.amazonaws.videoanalytics.videologistics.dagger.AWSVideoAnalyticsVLControlPlaneComponent;
-import com.amazonaws.videoanalytics.videologistics.dagger.DaggerAWSVideoAnalyticsVLControlPlaneComponent;
-import com.amazonaws.videoanalytics.videologistics.exceptions.ExceptionTranslator;
-import com.amazonaws.videoanalytics.videologistics.utils.annotations.ExcludeFromJacocoGeneratedReport;
-import com.amazonaws.videoanalytics.videologistics.validator.DeviceValidator;
-import com.amazonaws.videoanalytics.videologistics.dao.VLRegisterDeviceJobDAO;
-import com.amazonaws.videoanalytics.videologistics.schema.VLRegisterDeviceJob;
-import software.amazon.awssdk.awscore.exception.AwsServiceException;
+import static com.amazonaws.videoanalytics.videologistics.exceptions.VideoAnalyticsExceptionMessage.INVALID_INPUT_EXCEPTION;
+import static com.amazonaws.videoanalytics.videologistics.exceptions.VideoAnalyticsExceptionMessage.RESOURCE_NOT_FOUND;
+import static com.amazonaws.videoanalytics.videologistics.utils.LambdaProxyUtils.serializeResponse;
 
-import javax.inject.Inject;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+
+import javax.inject.Inject;
+
+import com.amazonaws.services.lambda.runtime.Context;
+import com.amazonaws.services.lambda.runtime.LambdaLogger;
+import com.amazonaws.services.lambda.runtime.RequestHandler;
+import com.amazonaws.videoanalytics.videologistics.ResourceNotFoundExceptionResponseContent;
+import com.amazonaws.videoanalytics.videologistics.StartVLRegisterDeviceResponseContent;
 import com.amazonaws.videoanalytics.videologistics.Status;
-import static com.amazonaws.videoanalytics.videologistics.exceptions.VideoAnalyticsExceptionMessage.INVALID_INPUT_EXCEPTION;
-import static com.amazonaws.videoanalytics.videologistics.utils.LambdaProxyUtils.parseBody;
-import static com.amazonaws.videoanalytics.videologistics.utils.LambdaProxyUtils.serializeResponse;
-import java.util.Arrays;
+import com.amazonaws.videoanalytics.videologistics.ValidationExceptionResponseContent;
+import com.amazonaws.videoanalytics.videologistics.dagger.AWSVideoAnalyticsVLControlPlaneComponent;
+import com.amazonaws.videoanalytics.videologistics.dagger.DaggerAWSVideoAnalyticsVLControlPlaneComponent;
+import com.amazonaws.videoanalytics.videologistics.dao.VLRegisterDeviceJobDAO;
+import com.amazonaws.videoanalytics.videologistics.exceptions.ExceptionTranslator;
+import com.amazonaws.videoanalytics.videologistics.schema.VLRegisterDeviceJob;
+import com.amazonaws.videoanalytics.videologistics.utils.annotations.ExcludeFromJacocoGeneratedReport;
+import com.amazonaws.videoanalytics.videologistics.validator.DeviceValidator;
+
+import software.amazon.awssdk.awscore.exception.AwsServiceException;
 
 /**
  * Class for handling the request for StartVLRegisterDevice API.
@@ -70,7 +74,12 @@ public class StartVLRegisterDeviceActivity implements RequestHandler<Map<String,
             String deviceId = pathParameters.get("deviceId");
             logger.log("Processing request for deviceId: " + deviceId);
             
-            deviceValidator.validateDeviceExists(deviceId);
+            if (!deviceValidator.validateDeviceExists(deviceId, logger)) {
+                ResourceNotFoundExceptionResponseContent resourceNotFoundException = ResourceNotFoundExceptionResponseContent.builder()
+                    .message(RESOURCE_NOT_FOUND)
+                    .build();
+                return serializeResponse(404, resourceNotFoundException.toJson());
+            }
             logger.log("Device validation successful for deviceId: " + deviceId);
 
             String jobId = UUID.randomUUID().toString();

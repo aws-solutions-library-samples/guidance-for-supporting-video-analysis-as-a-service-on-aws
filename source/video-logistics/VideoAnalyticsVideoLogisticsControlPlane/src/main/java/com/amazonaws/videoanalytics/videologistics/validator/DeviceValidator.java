@@ -1,34 +1,40 @@
 package com.amazonaws.videoanalytics.videologistics.validator;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import static software.amazon.awssdk.utils.StringUtils.isBlank;
 
 import javax.inject.Inject;
 
-import static software.amazon.awssdk.utils.StringUtils.isBlank;
+import com.amazonaws.services.lambda.runtime.LambdaLogger;
+import com.amazonaws.videoanalytics.videologistics.dependency.apig.ApigService;
+
+import software.amazon.awssdk.http.HttpExecuteResponse;
 
 public class DeviceValidator {
-    private static final Logger LOG = LogManager.getLogger(DeviceValidator.class);
+    private final ApigService apigService;
 
     @Inject
-    public DeviceValidator() {
+    public DeviceValidator(ApigService apigService) {
+        this.apigService = apigService;
     }
 
-    public void validateDeviceExists(final String deviceId) {
-        LOG.info("Received request to validate if device {} exists.", deviceId);
-        // TODO: This class relies on GetDeviceInternal which is deprecated for Guidance Solution.
-        // TODO: Complete the method once we have GetDevice API ready and client ready for DM side.
-//        if (isBlank(deviceId)) {
-//            throw new ValidationException(INVALID_VALIDATION_INPUT);
-//        }
-//        final GetDeviceInternalRequest deviceInternalRequest = GetDeviceInternalRequest
-//                .builder()
-//                .deviceId(deviceId)
-//                .build();
-//        try {
-//            guidanceClient.getDeviceInternal(deviceInternalRequest);
-//        } catch (ResourceNotFoundException e){
-//            throw new com.amazonaws.videoanalytics.videologisticsResourceNotFoundException(RESOURCE_NOT_FOUND);
-//        }
+    public boolean validateDeviceExists(final String deviceId, LambdaLogger logger) {
+        logger.log(String.format("Received request to validate if device %s exists.", deviceId));
+        if (isBlank(deviceId)) {
+            return false;
+        }
+        try {
+            // Invoke get-device to check if device exists
+            HttpExecuteResponse response = apigService.invokeGetDevice(
+                deviceId,
+                null,  // headers 
+                null   // body 
+            );
+            
+            return response.httpResponse().isSuccessful();
+        }
+        catch (Exception e) {
+            logger.log(e.getMessage());
+            return false;
+        }
     }
 }

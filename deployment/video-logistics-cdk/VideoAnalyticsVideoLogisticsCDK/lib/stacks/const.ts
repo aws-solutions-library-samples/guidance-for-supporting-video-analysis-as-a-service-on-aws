@@ -34,16 +34,11 @@ export const WAIT_TIME_BETWEEN_LOOP = "$.exportResult.Payload.waitTime";
 export const FAILED_DYNAMIC_CAUSE = "$.Cause";
 // used for when execution Lambda failed cause forwarding after statusUpdate
 export const FAILED_FORWARD_CAUSE = "$.Payload.Cause";
-export const SHOULD_STREAM_FROM_DEVICE_PATH = "$.shouldStreamFromDevice";
 export const PARTITION_KEY_PATH = "$.partitionKey";
 export const SORT_KEY_PATH = "$.sortKey";
 export const RESULT_PATH_ERROR = "$.error";
 export const ERROR_MESSAGE_PATH = "$.error.Cause";
 export const RESULT_PATH = "$.output";
-export const enum PLAYBACK_SESSION_STATUS {
-  FAILED = "FAILED",
-  COMPLETED = "COMPLETED",
-}
 export const RAW_VIDEO_TIMELINE_TABLE_NAME = "RawVideoTimelineTable";
 export const VIDEO_TIMELINE_TABLE_NAME = "VideoTimelineTable";
 export const RAW_VIDEO_TIMELINE_PK_NAME = "DeviceId";

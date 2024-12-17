@@ -1,5 +1,19 @@
 package com.amazonaws.videoanalytics.videologistics.dependency.apig;
 
+import java.io.ByteArrayInputStream;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.HTTP_CLIENT;
+
 import software.amazon.awssdk.http.HttpExecuteRequest;
 import software.amazon.awssdk.http.HttpExecuteResponse;
 import software.amazon.awssdk.http.SdkHttpClient;
@@ -8,19 +22,6 @@ import software.amazon.awssdk.http.SdkHttpRequest;
 import software.amazon.awssdk.services.apigateway.ApiGatewayClient;
 import software.amazon.awssdk.services.apigateway.model.GetRestApisRequest;
 import software.amazon.awssdk.services.apigateway.model.RestApi;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
-import java.io.ByteArrayInputStream;
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
-import java.util.Map;
-
-import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.HTTP_CLIENT;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Singleton
 public class ApigService {
@@ -128,7 +129,7 @@ public class ApigService {
     /**
      * Invokes the update-device-shadow API endpoint for the given device ID.
      *
-     * @param deviceId The ID of the device to register
+     * @param deviceId The ID of the device to update the shadow of
      * @param headers The HTTP headers to include in the request
      * @param body The request body
      * @return The HTTP response from the API
@@ -149,6 +150,34 @@ public class ApigService {
             return response;
         } catch (Exception e) {
             log.error("Failed to update shadow - deviceId: {}", deviceId, e);
+            throw e;
+        }
+    }
+
+    /**
+     * Invokes the get-device API endpoint for the given device ID.
+     *
+     * @param deviceId The ID of the device to get
+     * @param headers The HTTP headers to include in the request
+     * @param body The request body
+     * @return The HTTP response from the API
+     * @throws Exception if the API call fails
+     */
+    public HttpExecuteResponse invokeGetDevice(
+            String deviceId,
+            Map<String, String> headers,
+            String body) throws Exception {
+        log.info("Getting device for deviceId: {}", deviceId);
+        
+        String baseUrl = getDmApiEndpoint();
+        String url = String.format("%s/get-device/%s", baseUrl, deviceId);
+        try {
+            HttpExecuteResponse response = invokePost(url, headers, body);
+            log.info("Get device initiated - deviceId: {}, status: {}", 
+                    deviceId, response.httpResponse().statusCode());
+            return response;
+        } catch (Exception e) {
+            log.error("Failed to get device - deviceId: {}", deviceId, e);
             throw e;
         }
     }
