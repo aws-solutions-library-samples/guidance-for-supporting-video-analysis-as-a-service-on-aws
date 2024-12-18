@@ -96,7 +96,7 @@ impl StateMachineWebrtcClient for WebrtcStateMachine {
             .connect_peer(self.signal_tx.clone(), self.region.clone())
             .await
             .expect("Unable to connect to peer");
-        
+
         webrtc_client
             .stream_from_rtsp(self.rtsp_url.clone(), self.username.clone(), self.password.clone())
             .await

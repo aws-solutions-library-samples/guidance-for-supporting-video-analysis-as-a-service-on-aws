@@ -7,7 +7,7 @@ use device_traits::channel_utils::ServiceCommunicationManager;
 use device_traits::state::{State, StateManager};
 use std::collections::VecDeque;
 use std::error::Error;
-use std::sync::mpsc::{SyncSender, TrySendError};
+use std::sync::mpsc::{Receiver, SyncSender, TrySendError};
 use std::sync::{Arc, Condvar, Mutex};
 use std::thread::JoinHandle as ThreadJoinHandle;
 use std::time::Duration;
@@ -20,9 +20,11 @@ use video_analytics_client::video_analytics_client::VideoAnalyticsClient;
 /// Create streaming service.
 pub fn create_streaming_service(
     stream_uri_configuration: StreamUriConfiguration,
+    motion_based_streaming_rx: Receiver<String>,
 ) -> HybridStreamingService {
     let configs = get_pipeline_config(stream_uri_configuration).unwrap();
-    HybridStreamingService::new(configs).expect("Failed to create streaming service.")
+    HybridStreamingService::new(configs, motion_based_streaming_rx)
+        .expect("Failed to create streaming service.")
 }
 
 // Get iot info from the global messaging service and

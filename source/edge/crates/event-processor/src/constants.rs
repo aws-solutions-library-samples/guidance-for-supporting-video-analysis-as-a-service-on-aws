@@ -62,5 +62,3 @@ pub const EMPTY_STRING: &str = "";
 pub const EXTENSION_KEY: &str = "Extension";
 /// Images Key
 pub const IMAGE_KEY: &str = "Image";
-/// Motion based streaming env var
-pub const MOTION_BASED_STREAMING: &str = "MOTION_BASED_STREAMING";

@@ -1,15 +1,9 @@
-use crate::client::topics::TopicHelper;
-use device_traits::connections::{PubSubClient, PubSubMessage};
+use device_traits::connections::PubSubMessage;
 use serde_json::Value;
-use std::path::PathBuf;
 
 ///Helper class to aid in device state management.
 #[derive(Debug)]
-pub struct RegistrationHelper {
-    mqtt_client: Box<dyn PubSubClient + Send + Sync>,
-    dir_path: PathBuf,
-    topic_helper: TopicHelper,
-}
+pub struct RegistrationHelper {}
 
 impl RegistrationHelper {
     pub fn received_expected_shadow_message(

@@ -42,7 +42,6 @@ pub struct IotMqttClientManager {
     pub(crate) ca_cert_path: PathBuf,
     pub(crate) pem_cert_path: PathBuf,
     pub(crate) key_path: PathBuf,
-    pub(crate) dir_path: PathBuf,
     /// The unique id for the current async client
     pub(crate) client_id: String,
     /// The endpoint for the communication with AWS IoT
@@ -539,7 +538,6 @@ mod tests {
             ca_cert_path: path.to_owned(),
             pem_cert_path: path.to_owned(),
             key_path: path.to_owned(),
-            dir_path: path,
             client_id: CLIENT_ID.to_string(),
             aws_iot_endpoint: CLIENT_ID.to_string(),
             last_will,

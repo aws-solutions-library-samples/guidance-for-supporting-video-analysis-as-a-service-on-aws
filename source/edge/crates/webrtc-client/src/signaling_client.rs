@@ -148,7 +148,7 @@ impl WebrtcPeerConnectionsHandler {
         .await
         {
             Ok(sess) => sess,
-            Err(e) => {
+            Err(_e) => {
                 return Err(WebrtcClientError::RtspError(
                     "Unable to connect to RTSP url".to_string(),
                 ))
@@ -387,7 +387,7 @@ impl WebrtcPeerConnectionsHandler {
             // If a new SDP offer is received, overwrite existing connection
             if peer_connections_lock.contains_key(&sender_client_id_as_str) {
                 // Unwrap safe since we checked if key exists
-                let mut existing_peer_connection =
+                let existing_peer_connection =
                     match peer_connections_lock.get(&sender_client_id_as_str) {
                         None => return Ok(()),
                         Some(peer) => peer.peer_connection.clone(),
@@ -422,7 +422,7 @@ impl WebrtcPeerConnectionsHandler {
             peer_connections_lock.insert(sender_client_id_as_str.to_string(), new_peer_connection);
 
             // Unwrap is safe here since we are adding new entry above
-            let mut peer_connection = match peer_connections_lock.get(&sender_client_id_as_str) {
+            let peer_connection = match peer_connections_lock.get(&sender_client_id_as_str) {
                 None => return Ok(()),
                 Some(peer) => peer.peer_connection.clone(),
             }
@@ -440,7 +440,7 @@ impl WebrtcPeerConnectionsHandler {
             ));
 
             let client_id = sender_client_id_as_str.clone();
-            let (peer_connection_tx, mut peer_connection_rx) = channel::<String>(1000);
+            let (peer_connection_tx, peer_connection_rx) = channel::<String>(1000);
 
             let peer_connections = self.peer_connections.clone();
 
@@ -490,7 +490,7 @@ impl WebrtcPeerConnectionsHandler {
             }
 
             // Unwrap is safe here since we are checking if entry exists in line above
-            let mut peer_connection = match peer_connections_lock.get(&sender_client_id_as_str) {
+            let peer_connection = match peer_connections_lock.get(&sender_client_id_as_str) {
                 None => return Ok(()),
                 Some(peer) => peer.peer_connection.clone(),
             }
@@ -515,7 +515,7 @@ impl WebrtcPeerConnectionsHandler {
     }
 
     async fn handle_peer_connection_state_changes(
-        mut peer_connections: Arc<Mutex<HashMap<String, WebrtcSession>>>,
+        peer_connections: Arc<Mutex<HashMap<String, WebrtcSession>>>,
         mut peer_connection_rx: Receiver<String>,
     ) -> JoinHandle<()> {
         tokio::spawn(async move {
@@ -524,7 +524,7 @@ impl WebrtcPeerConnectionsHandler {
                 return;
             };
             let mut peer_connections_lock = peer_connections.lock().await;
-            let mut peer_connection = match peer_connections_lock.get(&client_id) {
+            let peer_connection = match peer_connections_lock.get(&client_id) {
                 None => {
                     error!("Unable to find peer connection");
                     return;
@@ -627,10 +627,10 @@ impl WebrtcSignalingClient {
     ) -> Result<Self> {
         // Channel used to communicate with WebSocket reader/writer tasks
 
-        let (tx, mut rx) = channel::<String>(1000);
+        let (tx, rx) = channel::<String>(1000);
         let tx_clone = tx.clone();
 
-        let mut message_handler = WebrtcPeerConnectionsHandler::new(
+        let message_handler = WebrtcPeerConnectionsHandler::new(
             ice_server_configs,
             tx_clone,
             rtsp_url,
@@ -648,8 +648,8 @@ impl WebrtcSignalingClient {
     }
 
     async fn start_reconnection_task(
-        mut rx: Receiver<String>,
-        mut message_handler: Arc<Mutex<WebrtcPeerConnectionsHandler>>,
+        rx: Receiver<String>,
+        message_handler: Arc<Mutex<WebrtcPeerConnectionsHandler>>,
     ) -> Result<JoinHandle<()>, WebrtcClientError> {
         let rx = Arc::new(Mutex::new(rx));
 
@@ -674,7 +674,7 @@ impl WebrtcSignalingClient {
 
                 let (mut ws_tx, mut ws_rx) = match Self::async_open(&connect_as_master_url).await {
                     Ok(s) => s,
-                    Err(e) => {
+                    Err(_e) => {
                         error!("Websocket connection failed");
                         tokio::time::sleep(Duration::from_secs(20)).await;
                         continue;
