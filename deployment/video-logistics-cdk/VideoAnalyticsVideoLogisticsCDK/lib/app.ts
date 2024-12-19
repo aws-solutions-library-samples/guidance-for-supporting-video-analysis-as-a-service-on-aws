@@ -3,7 +3,6 @@ import {
     // ForwardingRulesStack,
     ServiceStack,
     TimelineStack,
-    VideoExportStack,
     WorkflowStack,
  } from "./stacks";
 import { AWSRegion } from "video_analytics_common_construct";
@@ -36,8 +35,9 @@ const bootstrapStack = new VideoLogisticsBootstrapStack(app, 'VideoLogisticsBoot
 
 // Create all other stacks
 new TimelineStack(app, 'VideoLogisticsTimelineStack', envConfig);
-let opensearchStack = new OpenSearchStack(app, 'VideoLogisticsOpensearchStack', envConfig);
-new BulkInferenceStack(app, 'VideoLogisticsBulkInferenceStack', {...envConfig, opensearchEndpoint: opensearchStack.opensearchEndpoint});
+const opensearchStack = new OpenSearchStack(app, 'VideoLogisticsOpensearchStack', envConfig);
+const bulkInferenceStack = new BulkInferenceStack(app, 'VideoLogisticsBulkInferenceStack', {...envConfig, 
+  opensearchEndpoint: opensearchStack.opensearchEndpoint});
 new WorkflowStack(app, 'VideoLogisticsWorkflowStack', envConfig);
 new ServiceStack(app, 'VideoLogisticsServiceStack', envConfig);
 

@@ -33,52 +33,28 @@ import {
    */
   export class BulkInferenceStack extends Stack {
     region: AWSRegion;
-    deadLetter: Queue;
-    kmsPolicy: PolicyStatement;
-    openSearchPolicy: PolicyStatement;
-    encryptionKey: Key;
-    lambdaRole: Role;
     public readonly bulkInferenceLambda: IFunction;
   
     constructor(scope: Construct, id: string, props: BulkInferenceStackProps) {
       super(scope, id, props);
   
-      this.encryptionKey = new Key(this, 'BulkInferenceKey', {
+      const encryptionKey = new Key(this, 'BulkInferenceKey', {
         enableKeyRotation: true,
         admins: [new AccountRootPrincipal()]
         // No need to add policy as setting the Lambda event source below
         // will add the required permissions to the Lambda role
       });
-  
-      this.openSearchPolicy = new PolicyStatement({
-        effect: Effect.ALLOW,
-        resources: ['*'],
-        actions: ['es:ESHttpPost', 'es:ESHttpPut', 'es:ESHttpGet', 'es:ESHttpHead']
-      });
-  
-      this.kmsPolicy = new PolicyStatement({
-        effect: Effect.ALLOW,
-        resources: ['*'],
-        actions: ['kms:Decrypt', 'kms:Encrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*']
-      });
-  
+
       const bulkInferenceKDS = new Stream(this, 'BulkInferenceKDS', {
         streamName: 'BulkInferenceKDS',
         streamMode: StreamMode.ON_DEMAND,
         encryption: StreamEncryption.KMS,
-        encryptionKey: this.encryptionKey,
+        encryptionKey: encryptionKey,
         retentionPeriod: Duration.days(7)
       });
-  
-      this.lambdaRole = new Role(this, 'BulkInferenceLambdaRole', {
-        roleName: 'BulkInferenceLambdaRole',
-        assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
-        description: 'Allows lambda to make a bulk request to open search'
-      });
-  
-      this.lambdaRole.addManagedPolicy(
-        ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole')
-      );
+
+      const bulkInferenceLambdaRoleArn = Fn.importValue('BulkInferenceLambdaRoleArn');
+      const lambdaRole = Role.fromRoleArn(this, 'ImportedBulkInferenceLambdaRole', bulkInferenceLambdaRoleArn);
   
       this.bulkInferenceLambda = new Function(this, 'BulkInferenceLambda', {
         code: Code.fromAsset(LAMBDA_ASSET_PATH),
@@ -86,7 +62,7 @@ import {
         runtime: Runtime.JAVA_17,
         handler: `${VL_INFERENCE_JAVA_PATH_PREFIX}.BulkInferenceLambda::handleRequest`,
         memorySize: 2048,
-        role: this.lambdaRole,
+        role: lambdaRole,
         environment: {
           AWSRegion: props.region,
           ACCOUNT_ID: this.account,
@@ -99,12 +75,9 @@ import {
         })
       });
   
-      this.lambdaRole.addToPolicy(this.openSearchPolicy);
-      this.lambdaRole.addToPolicy(this.kmsPolicy);
-  
-      this.deadLetter = new Queue(this, 'BulkInferenceDLQ', {
+      const deadLetter = new Queue(this, 'BulkInferenceDLQ', {
         encryption: QueueEncryption.KMS,
-        encryptionMasterKey: this.encryptionKey
+        encryptionMasterKey: encryptionKey
       });
   
       this.bulkInferenceLambda.addEventSource(
@@ -116,7 +89,7 @@ import {
           enabled: true,
           bisectBatchOnError: false,
           reportBatchItemFailures: true,
-          onFailure: new SqsDlq(this.deadLetter),
+          onFailure: new SqsDlq(deadLetter),
           retryAttempts: 1,
           startingPosition: StartingPosition.TRIM_HORIZON
         })
