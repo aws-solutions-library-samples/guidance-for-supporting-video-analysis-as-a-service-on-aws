@@ -70,7 +70,7 @@ impl PeerConnection for WebrtcSession {
             ..Default::default()
         };
 
-        let mut turn_servers: Vec<RTCIceServer> = self
+        let turn_servers: Vec<RTCIceServer> = self
             .ice_server_configs
             .clone()
             .iter()
@@ -89,7 +89,7 @@ impl PeerConnection for WebrtcSession {
 
         // Create a MediaEngine object to configure the supported codec
         let mut media = MediaEngine::default();
-        media.register_default_codecs();
+        let _ = media.register_default_codecs();
 
         let mut registry = Registry::new();
 

@@ -42,10 +42,10 @@ use tokio::sync::mpsc::channel;
 use tokio::time::{sleep, Instant};
 use tokio::{select, try_join};
 use tracing::{debug, error, info, warn};
-use ws_discovery_client::client::ws_discovery_client::DiscoveryBuilder;
 use webrtc_client::constants::{CLIENT_ID, STATE};
 use webrtc_client::signaling_client::WebrtcSignalingClient;
 use webrtc_client::state_machine::WebrtcStateMachine;
+use ws_discovery_client::client::ws_discovery_client::DiscoveryBuilder;
 
 #[tokio::main]
 async fn main() -> Result<ExitCode, Box<dyn Error>> {
@@ -215,7 +215,7 @@ async fn main() -> Result<ExitCode, Box<dyn Error>> {
             config_media_path.onvif_password.clone(),
         )
         .await?;
-    
+
     // Livestream
     let (streaming_signal_tx, mut streaming_signal_rx) = channel::<String>(BUFFER_SIZE);
     let mut webrtc_state_machine = WebrtcStateMachine::new(
@@ -287,7 +287,7 @@ async fn main() -> Result<ExitCode, Box<dyn Error>> {
                         info!("Clearing state");
                         let _res = iot_classic_shadow_client.update_desired_state_from_device(clear_streaming_peer_connections_shadow_entry.clone()).await;
 
-                        let res = iot_classic_shadow_client.update_reported_state(clear_streaming_peer_connections_shadow_entry.clone()).await;
+                        let _res = iot_classic_shadow_client.update_reported_state(clear_streaming_peer_connections_shadow_entry.clone()).await;
                         let _res = webrtc_state_machine.handle_state_update(message.clone()).await;
                     }
                 }
@@ -485,7 +485,7 @@ async fn main() -> Result<ExitCode, Box<dyn Error>> {
 
     let (motion_based_streaming_tx, motion_based_streaming_rx) = sync_channel(5);
     let uri_config = stream_uri_config.clone();
-    let mut streaming_service = create_streaming_service(uri_config);
+    let mut streaming_service = create_streaming_service(uri_config, motion_based_streaming_rx);
 
     // Livestream
     // ServiceCommunicationManager is established in setup_and_start_iot_event_loop().

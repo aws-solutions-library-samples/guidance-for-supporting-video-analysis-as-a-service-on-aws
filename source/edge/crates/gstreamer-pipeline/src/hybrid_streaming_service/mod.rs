@@ -5,7 +5,7 @@ use crate::constants::FRAME_BUFFER_SIZE;
 use crate::hybrid_streaming_service::forwarding_service::ForwardingService;
 use crate::hybrid_streaming_service::real_time_cloud_ingestion::RealtimeIngestionPipeline;
 use crate::hybrid_streaming_service::rtsp_pipeline::RTSPVideoPipeline;
-use std::sync::mpsc::sync_channel;
+use std::sync::mpsc::{sync_channel, Receiver};
 use streaming_traits::error::VideoStreamingError;
 use streaming_traits::StreamingServiceConfigurations;
 
@@ -29,6 +29,7 @@ impl HybridStreamingService {
     /// Create a new streaming service, created in stopped state
     pub fn new(
         streaming_configs: StreamingServiceConfigurations,
+        motion_based_streaming_rx: Receiver<String>,
     ) -> Result<Self, VideoStreamingError> {
         // Define channels for communication between components in the streaming service.
         let (rtsp_tx, rtsp_rx) = sync_channel(FRAME_BUFFER_SIZE);
@@ -39,7 +40,8 @@ impl HybridStreamingService {
             RTSPVideoPipeline::new(rtsp_tx.clone(), streaming_configs.clone())?;
         let realtime_ingestion_pipeline =
             RealtimeIngestionPipeline::new(streaming_configs.clone(), realtime_rx)?;
-        let _forwarding_service = ForwardingService::new(rtsp_rx, realtime_tx);
+        let _forwarding_service =
+            ForwardingService::new(rtsp_rx, realtime_tx, motion_based_streaming_rx);
 
         Ok(HybridStreamingService {
             rtsp_video_pipeline,

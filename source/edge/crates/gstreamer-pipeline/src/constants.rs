@@ -25,9 +25,13 @@ pub(crate) const DEFAULT_KVS_PLUGIN_BUFFER_SIZE: u32 = 10_u32;
 pub(crate) const DEFAULT_KVS_PLUGIN_EXPECTED_BANDWIDTH: u32 = 125000_u32;
 /// Max fragments in memory, used for forwarding service.
 pub(crate) const MAX_FRAGMENTS: u64 = 5;
-/// Max fragments in memory
+/// Max fragments in memory when motion is not detected
 pub(crate) const MAX_FRAGMENTS_NO_MOTION: u64 = 2;
+/// Max fragments to send after motion
+pub(crate) const FRAGMENTS_AFTER_MOTION_STOP: i32 = 3;
 /// GStreamer plugin responsible to filter stream based on caps.
 pub const CAPSFILTER: &str = "capsfilter";
 /// Start tag of onvif metadata stream.
 pub const METADATA_STREAM_START_TAG: &str = "MetadataStream";
+/// Motion based streaming env var
+pub const MOTION_BASED_STREAMING: &str = "MOTION_BASED_STREAMING";

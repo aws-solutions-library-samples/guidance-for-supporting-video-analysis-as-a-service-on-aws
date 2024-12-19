@@ -73,6 +73,10 @@ The Cargo.toml in edge root directory is configured to cross compile for armv7. 
 
 By default, edge process will use the API GW with the name "VideoAnalyticsVideoLogisticsAPIGateway" (should match VIDEO_LOGISTICS_API_NAME in common-constructs). To override this, set API_GW_ENDPOINT environment variable to your desired API GW endpoint `export API_GW_ENDPOINT=<endpoint>`.
 
+### Motion-based Streaming
+
+By default, edge process will only stream between a motion-start and a motion-stop event received from the ONVIF event metadata stream (1 GOP before start and 3 GOP after stop). To stream continuously, set `MOTION_BASED_STREAMING` environment variable to `FALSE` (`export MOTION_BASED_STREAMING=FALSE`).
+
 ### Logging
 
 - [Async Rust Logging Documentation](https://crates.io/crates/tracing)
