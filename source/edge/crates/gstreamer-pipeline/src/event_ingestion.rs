@@ -29,6 +29,7 @@ pub fn create_streaming_service(
 
 // Get iot info from the global messaging service and
 // the stream_uri_configuration to generate PipelineConfigurations.
+#[cfg(not(feature = "sd-card-catchup"))]
 fn get_pipeline_config(
     stream_uri_configuration: StreamUriConfiguration,
 ) -> Result<StreamingServiceConfigurations, ChannelUtilError> {
@@ -48,6 +49,32 @@ fn get_pipeline_config(
         stream_name: configs.client_id.to_owned(),
         aws_region: configs.aws_region.to_owned(),
         region: configs.aws_region.to_owned(),
+    })
+}
+
+#[cfg(feature = "sd-card-catchup")]
+fn get_pipeline_config(
+    stream_uri_configuration: StreamUriConfiguration,
+) -> Result<StreamingServiceConfigurations, ChannelUtilError> {
+    // Confirm that other components can get the generated config object which is deserialized from the input config.
+    let mut get_configs = ServiceCommunicationManager::default();
+    let configs = get_configs.get_configurations()?;
+
+    Ok(StreamingServiceConfigurations {
+        rtsp_uri: stream_uri_configuration.rtsp_uri,
+        username: stream_uri_configuration.username,
+        password: stream_uri_configuration.password,
+        ca_cert_path: configs.ca_path.to_owned(),
+        iot_cert_path: configs.cert_path.to_owned(),
+        iot_endpoint: configs.credential_endpoint.to_owned(),
+        private_key_path: configs.key_path.to_owned(),
+        role_alias: configs.role_aliases.to_owned(),
+        stream_name: configs.client_id.to_owned(),
+        aws_region: configs.aws_region.to_owned(),
+        region: configs.aws_region.to_owned(),
+        local_storage_path: configs.local_storage_path.to_owned(),
+        db_path: configs.db_path.to_owned(),
+        local_storage_disk_usage: configs.local_storage_disk_usage,
     })
 }
 

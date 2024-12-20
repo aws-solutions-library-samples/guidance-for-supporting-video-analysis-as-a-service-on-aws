@@ -35,3 +35,18 @@ pub const CAPSFILTER: &str = "capsfilter";
 pub const METADATA_STREAM_START_TAG: &str = "MetadataStream";
 /// Motion based streaming env var
 pub const MOTION_BASED_STREAMING: &str = "MOTION_BASED_STREAMING";
+
+/// Catchup sleep time in seconds
+#[cfg(feature = "sd-card-catchup")]
+pub(crate) const CATCHUP_SLEEP_MS: u64 = 100;
+#[cfg(feature = "sd-card-catchup")]
+pub(crate) const CATCHUP_KVS_SLEEP_MS: u64 = 20;
+/// Override the MAX_FRAGMENTS for catchup.  
+#[cfg(feature = "sd-card-catchup")]
+pub(crate) const CATCHUP_BUFFER_SIZE: &str = "CATCHUP_BUFFER_SIZE";
+/// Developer tool. Disable streaming to cloud.  Just store data on disk.
+#[cfg(feature = "sd-card-catchup")]
+pub(crate) const ROUTE_VIDEO_SD: &str = "ROUTE_VIDEO_SD";
+/// KVS Offline Setting for plugin
+#[cfg(feature = "sd-card-catchup")]
+pub const KVS_OFFLINE: &str = "2";

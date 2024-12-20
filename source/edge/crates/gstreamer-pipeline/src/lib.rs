@@ -7,6 +7,9 @@
 #![warn(missing_docs, missing_debug_implementations, rust_2018_idioms)]
 
 mod constants;
+/// Database wrapper for this crate.
+#[cfg(feature = "sd-card-catchup")]
+pub(crate) mod data_storage;
 /// Logic to build AI ingestion pipeline.
 pub mod event_ingestion;
 mod event_processor;

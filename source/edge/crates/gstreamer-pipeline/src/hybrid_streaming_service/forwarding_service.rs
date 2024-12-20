@@ -1,4 +1,6 @@
 use crate::constants::MAX_FRAGMENTS;
+#[cfg(feature = "sd-card-catchup")]
+use crate::data_storage::video_storage::FileMetadataStorage;
 use crate::hybrid_streaming_service::fragment::FragmentManager;
 use crate::hybrid_streaming_service::frame::Frame;
 use crate::hybrid_streaming_service::kvs_callbacks::fragment_ack::{
@@ -9,6 +11,8 @@ use serde_json::Value;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::mpsc::{Receiver, RecvTimeoutError, SyncSender};
 use std::sync::Arc;
+#[cfg(feature = "sd-card-catchup")]
+use std::sync::Mutex;
 use std::thread::JoinHandle;
 use std::time::Duration;
 use tracing::{debug, error, info, warn};
@@ -28,6 +32,7 @@ pub(crate) struct ForwardingService {
 }
 
 impl ForwardingService {
+    #[cfg(not(feature = "sd-card-catchup"))]
     pub fn new(
         rtsp_buffer: Receiver<Arc<Frame>>,
         realtime_tx: SyncSender<Arc<Frame>>,
@@ -47,7 +52,47 @@ impl ForwardingService {
             cancellation_token.clone(),
             motion_based_streaming_rx,
         );
-        let _callback_loop = Self::setup_callback_loop(cancellation_token.clone(), fragment_ack_rx);
+        let _callback_loop = Self::setup_callback_loop(
+            cancellation_token.clone(),
+            fragment_manager.clone(),
+            fragment_ack_rx,
+        );
+
+        ForwardingService {
+            _event_loop,
+            _motion_detection_event_loop,
+            _callback_loop,
+            cancellation_token,
+            _fragment_manager: fragment_manager,
+        }
+    }
+
+    #[cfg(feature = "sd-card-catchup")]
+    pub fn new(
+        rtsp_buffer: Receiver<Arc<Frame>>,
+        realtime_tx: SyncSender<Arc<Frame>>,
+        motion_based_streaming_rx: Receiver<String>,
+        database_client: Arc<Mutex<FileMetadataStorage>>,
+    ) -> ForwardingService {
+        let cancellation_token = Arc::new(AtomicBool::new(false));
+        let fragment_ack_rx = get_kvs_fragment_rx_channel_for_realtime();
+        // Thread safe struct, clones are shallow copies.
+        let fragment_manager = FragmentManager::new(realtime_tx, MAX_FRAGMENTS, database_client);
+        let _event_loop = Self::setup_event_loop(
+            rtsp_buffer,
+            fragment_manager.clone(),
+            cancellation_token.clone(),
+        );
+        let _motion_detection_event_loop = Self::setup_motion_detection_event_loop(
+            fragment_manager.clone(),
+            cancellation_token.clone(),
+            motion_based_streaming_rx,
+        );
+        let _callback_loop = Self::setup_callback_loop(
+            cancellation_token.clone(),
+            fragment_manager.clone(),
+            fragment_ack_rx,
+        );
 
         ForwardingService {
             _event_loop,
@@ -121,16 +166,19 @@ impl ForwardingService {
     /// Loop checks for realtime client fragment ack callbacks.
     fn setup_callback_loop(
         cancellation_token: Arc<AtomicBool>,
+        mut fragment_manager: FragmentManager,
         fragment_ack_rx: crossbeam_channel::Receiver<KVSReceiver>,
     ) -> JoinHandle<()> {
         std::thread::spawn(move || {
             while !cancellation_token.load(Ordering::Relaxed) {
-                let ack_time_code: u64;
+                let mut streaming_status: bool = false;
+                let mut ack_time_code: u64 = 0;
 
                 // Timeout so loop will check token periodically and shutdown thread when service is dropped.
                 match fragment_ack_rx.recv_timeout(Duration::from_secs(1)) {
                     Ok(payload) => {
                         if let KVSReceiver::FrameTimeCode { .. } = payload {
+                            streaming_status = true;
                             ack_time_code = payload.into_u64();
                             debug!("Received time code to persist {:?}", ack_time_code);
                         }
@@ -146,6 +194,13 @@ impl ForwardingService {
                 };
 
                 debug!("Forwarding Service Callback received.");
+
+                if streaming_status {
+                    let Some(_fragment) = fragment_manager.remove_fragment(ack_time_code) else {
+                        info!("Fragment Ack for fragment that does not exist in manager.");
+                        continue;
+                    };
+                }
             }
         })
     }

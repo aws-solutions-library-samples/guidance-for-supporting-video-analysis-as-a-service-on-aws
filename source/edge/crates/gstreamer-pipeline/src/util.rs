@@ -1,5 +1,10 @@
 use std::time::{SystemTime, UNIX_EPOCH};
 
+// Types used for readability
+pub(crate) type FragmentTimeInNs = u64;
+#[cfg(feature = "sd-card-catchup")]
+pub(crate) type FragmentDurationInNs = u64;
+
 /// Get current time - in nanoseconds since linux epoch:
 /// https://github.com/awslabs/amazon-kinesis-video-streams-pic/blob/532178bbd4d2e6e6511fa8ffa62a15dba58c02f0/src/utils/src/Time.c#LL47C5-L47C66
 /// This method will break when ns since epoch exceeds 18_446_744_073_709_551_615 in 531 years
