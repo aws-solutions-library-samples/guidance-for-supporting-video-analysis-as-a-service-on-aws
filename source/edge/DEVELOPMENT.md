@@ -49,6 +49,19 @@ Currently, the optional features available are:
 - command (reboot command)
   - If a command is sent from the cloud when the command feature is not enabled on edge, edge process will not receive the message.
 - ip-discovery (private IP self-discovery)
+- sd-card-catchup (store fragments locally if failed to send to KVS)
+  - If this feature is enabled, extra fields must be added to config.yaml. Ex:
+  ```
+  # Where fragments are stored on device
+  local_storage_path: "/media/fragments"
+  # Local storage max for disk usage on SD card, in MB. 
+  # Optional, default will be 1000 (1 GB). This acts as a high watermark. If crossed data will be deleted until below this.
+  local_storage_disk_usage: 2000
+  # Optional: if not defined, will use local_storage_path
+  db_path: "/media/db"
+  ```
+  - If the `ROUTE_VIDEO_SD` environment variable is set to `TRUE`, then edge process will not send any data to KVS. This will simulate internet disconnection. All data will be stored on the SD card. This allows for the easy testing of the catchup feature.
+  - If the `CATCHUP_BUFFER_SIZE` is set to a positive integer, this will allow modifying the buffer size of the number of fragments that can be held in memory. Use this to tune between memory efficiency + performance. If not set it will default to the value set by the constant.
 
 To execute, enter the following command
 

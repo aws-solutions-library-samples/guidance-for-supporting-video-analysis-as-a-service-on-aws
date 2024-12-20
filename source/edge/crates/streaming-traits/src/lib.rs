@@ -24,6 +24,7 @@ pub struct StreamUriConfiguration {
 
 /// Config object for Streaming Service Configurations
 #[derive(Debug, Clone)]
+#[cfg(not(feature = "sd-card-catchup"))]
 pub struct StreamingServiceConfigurations {
     /// RTSP Stream uri.
     pub rtsp_uri: String,
@@ -47,6 +48,40 @@ pub struct StreamingServiceConfigurations {
     pub stream_name: String,
     /// region device points at
     pub aws_region: String,
+}
+
+/// Alternate struct with fields for SD card catchup
+#[derive(Debug, Clone)]
+#[cfg(feature = "sd-card-catchup")]
+pub struct StreamingServiceConfigurations {
+    /// RTSP Stream uri.
+    pub rtsp_uri: String,
+    /// Onvif username.
+    pub username: String,
+    /// Onvif password.
+    pub password: String,
+    /// IOT Credential Endpoint.
+    pub iot_endpoint: String,
+    /// X.509 Certificate Path on filesystem.
+    pub iot_cert_path: String,
+    /// Private Key Path on filesystem.
+    pub private_key_path: String,
+    /// Role Alias that will enable IoT to assume role with the certificate.
+    pub role_alias: String,
+    /// AWS Region in which resource is created in AWS Account.
+    pub region: String,
+    /// CA Certification path on filesystem.
+    pub ca_cert_path: String,
+    /// Stream name: Should be iot-thing name
+    pub stream_name: String,
+    /// region device points at
+    pub aws_region: String,
+    /// local storage path for sd card
+    pub local_storage_path: String,
+    /// optional db_path. Otherwise will just store SQLite DB in local_storage_path
+    pub db_path: Option<String>,
+    /// local storage disk usage for sd card
+    pub local_storage_disk_usage: Option<u64>,
 }
 
 /// This trait is responsible to get stream URI for video from device.

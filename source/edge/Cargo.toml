@@ -91,6 +91,8 @@ h264-reader = "0.6.0"
 signal = "0.7.0"
 tokio-tungstenite = { version = "0.20.1", features = ["rustls-tls-webpki-roots"] }
 webrtc = "^0.9.0"
+bincode = "1"
+fs_extra = "1.3.0"
 
 [workspace.metadata.cross.target.armv7-unknown-linux-gnueabihf]
 pre-build = [
