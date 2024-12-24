@@ -19,6 +19,8 @@ use streaming_traits::StreamingServiceConfigurations;
 
 #[cfg(feature = "sd-card-catchup")]
 mod catchup_video_service;
+#[cfg(feature = "sd-card-catchup")]
+mod device_timeline;
 mod forwarding_service;
 pub(crate) mod fragment;
 pub(crate) mod frame;

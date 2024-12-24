@@ -1,23 +1,25 @@
 package com.amazonaws.videoanalytics.videologistics.activity;
 
+import static com.amazonaws.videoanalytics.videologistics.exceptions.VideoAnalyticsExceptionMessage.INVALID_INPUT;
+import static com.amazonaws.videoanalytics.videologistics.utils.LambdaProxyUtils.parseBodyMap;
+import static com.amazonaws.videoanalytics.videologistics.utils.LambdaProxyUtils.serializeResponse;
+
+import java.util.Map;
+
+import javax.inject.Inject;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.amazonaws.services.lambda.runtime.Context;
+import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.videoanalytics.videologistics.PutVideoTimelineRequestContent;
 import com.amazonaws.videoanalytics.videologistics.ValidationExceptionResponseContent;
-import com.amazonaws.videoanalytics.videologistics.timeline.PutVideoTimelineHandler;
 import com.amazonaws.videoanalytics.videologistics.dagger.AWSVideoAnalyticsVLControlPlaneComponent;
 import com.amazonaws.videoanalytics.videologistics.dagger.DaggerAWSVideoAnalyticsVLControlPlaneComponent;
-import com.amazonaws.services.lambda.runtime.RequestHandler;
-import com.amazonaws.services.lambda.runtime.Context;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import com.amazonaws.videoanalytics.videologistics.timeline.PutVideoTimelineHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import javax.inject.Inject;
-import java.util.Map;
-import static com.amazonaws.videoanalytics.videologistics.utils.LambdaProxyUtils.parseBody;
-import static com.amazonaws.videoanalytics.videologistics.utils.LambdaProxyUtils.serializeResponse;
-
-import static com.amazonaws.videoanalytics.videologistics.exceptions.VideoAnalyticsExceptionMessage.INVALID_INPUT;
 
 public class PutVideoTimelineActivity implements RequestHandler<Map<String, Object>, Map<String, Object>> {
 
@@ -42,7 +44,8 @@ public class PutVideoTimelineActivity implements RequestHandler<Map<String, Obje
 
     @Override
     public Map<String, Object> handleRequest(Map<String, Object> input, Context context) {
-        LOG.info("Entered PutVideoTimeline method with input: {}", input);
+        LambdaLogger logger = context.getLogger();
+        logger.log(String.format("Entered PutVideoTimeline method with input: %s", input));
         
         ValidationExceptionResponseContent exception = ValidationExceptionResponseContent.builder()
                 .message(INVALID_INPUT)
@@ -54,17 +57,17 @@ public class PutVideoTimelineActivity implements RequestHandler<Map<String, Obje
         }
 
         try {
-            String body = parseBody(input);
-            LOG.info("Parsed request body: {}", body);
+            String body = parseBodyMap(input);
+            logger.log(String.format("Parsed request body: %s", body));
             
             PutVideoTimelineRequestContent request = PutVideoTimelineRequestContent.fromJson(body);
-            LOG.info("Parsed request content: {}", request);
+            logger.log(String.format("Parsed request content: %s", request));
             
             String timestampsJson = objectMapper.writeValueAsString(request.getTimestamps());
-            LOG.info("Timestamps JSON: {}", timestampsJson);
+            logger.log(String.format("Timestamps JSON: %s", timestampsJson));
             
             String locationString = request.getLocation().toString();
-            LOG.info("Location: {}", locationString);
+            logger.log(String.format("Location: %s", locationString));
             
             putVideoTimelineHandler.addVideoTimelines(
                 request.getDeviceId(),
@@ -72,7 +75,7 @@ public class PutVideoTimelineActivity implements RequestHandler<Map<String, Obje
                 locationString
             );
             
-            return serializeResponse(200, "{}");
+            return serializeResponse(200, "%s");
         } catch (Exception e) {
             LOG.error("Failed to process request", e);
             return serializeResponse(400, exception.toJson());

@@ -6,6 +6,8 @@ use crate::hybrid_streaming_service::frame::Frame;
 use crate::hybrid_streaming_service::kvs_callbacks::fragment_ack::{
     get_kvs_fragment_rx_channel_for_realtime, KVSReceiver,
 };
+use crate::util::IoTMessageUtil;
+use device_traits::channel_utils::error::ChannelUtilError;
 use event_processor::constants::{DATA_KEY, SIMPLE_ITEM_KEY, VALUE_KEY};
 use serde_json::Value;
 use std::sync::atomic::{AtomicBool, Ordering};
@@ -40,6 +42,7 @@ impl ForwardingService {
     ) -> ForwardingService {
         let cancellation_token = Arc::new(AtomicBool::new(false));
         let fragment_ack_rx = get_kvs_fragment_rx_channel_for_realtime();
+        let iot_message_util = IoTMessageUtil::new();
         // Thread safe struct, clones are shallow copies.
         let fragment_manager = FragmentManager::new(realtime_tx, MAX_FRAGMENTS);
         let _event_loop = Self::setup_event_loop(
@@ -56,6 +59,7 @@ impl ForwardingService {
             cancellation_token.clone(),
             fragment_manager.clone(),
             fragment_ack_rx,
+            iot_message_util,
         );
 
         ForwardingService {
@@ -76,6 +80,7 @@ impl ForwardingService {
     ) -> ForwardingService {
         let cancellation_token = Arc::new(AtomicBool::new(false));
         let fragment_ack_rx = get_kvs_fragment_rx_channel_for_realtime();
+        let iot_message_util = IoTMessageUtil::new();
         // Thread safe struct, clones are shallow copies.
         let fragment_manager = FragmentManager::new(realtime_tx, MAX_FRAGMENTS, database_client);
         let _event_loop = Self::setup_event_loop(
@@ -92,6 +97,7 @@ impl ForwardingService {
             cancellation_token.clone(),
             fragment_manager.clone(),
             fragment_ack_rx,
+            iot_message_util,
         );
 
         ForwardingService {
@@ -168,6 +174,7 @@ impl ForwardingService {
         cancellation_token: Arc<AtomicBool>,
         mut fragment_manager: FragmentManager,
         fragment_ack_rx: crossbeam_channel::Receiver<KVSReceiver>,
+        mut iot_message_util: IoTMessageUtil,
     ) -> JoinHandle<()> {
         std::thread::spawn(move || {
             while !cancellation_token.load(Ordering::Relaxed) {
@@ -196,10 +203,24 @@ impl ForwardingService {
                 debug!("Forwarding Service Callback received.");
 
                 if streaming_status {
-                    let Some(_fragment) = fragment_manager.remove_fragment(ack_time_code) else {
+                    let Some(fragment) = fragment_manager.remove_fragment(ack_time_code) else {
                         info!("Fragment Ack for fragment that does not exist in manager.");
                         continue;
                     };
+
+                    // Send message to IoT for timeline generation
+                    match iot_message_util.try_send_timeline_cloud(
+                        fragment.start_of_fragment_timestamp,
+                        fragment.duration,
+                    ) {
+                        Ok(_) => {
+                            debug!("Timeline info published from real-time.")
+                        }
+                        Err(ChannelUtilError::ChannelClosed) => {
+                            panic!("IoT Channel closed unexpectedly!")
+                        }
+                        Err(e) => error!("Error publishing timeline information. : {:?}", e),
+                    }
                 }
             }
         })
