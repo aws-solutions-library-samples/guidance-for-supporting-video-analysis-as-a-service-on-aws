@@ -6,6 +6,7 @@ import javax.inject.Inject;
 
 import com.amazonaws.videoanalytics.videologistics.exceptions.VideoAnalyticsExceptionMessage;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class TimestampListDeserializer {
