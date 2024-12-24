@@ -18,9 +18,14 @@ public class TimestampListDeserializer {
 
     public List<TimestampInfo> deserialize(final String timestampListJson) {
         try {
-            return objectMapper.readValue(timestampListJson, typeReference);
+            //parse as JsonNode to handle both direct JSON and string-encoded JSON
+            JsonNode jsonNode = objectMapper.readTree(timestampListJson);
+            if (jsonNode.isTextual()) {
+                return objectMapper.readValue(jsonNode.asText(), typeReference);
+            }
+            return objectMapper.convertValue(jsonNode, typeReference);
         } catch (Exception e) {
-            throw new RuntimeException(String.format(VideoAnalyticsExceptionMessage.TIMELINE_DESERIALIZATION_ERROR, timestampListJson));
+            throw new RuntimeException(String.format(VideoAnalyticsExceptionMessage.TIMELINE_DESERIALIZATION_ERROR, timestampListJson), e);
         }
     }
 }
