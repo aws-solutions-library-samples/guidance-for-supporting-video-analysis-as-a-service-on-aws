@@ -1,24 +1,25 @@
 package com.amazonaws.videoanalytics.videologistics.activity;
 
-import com.amazonaws.services.lambda.runtime.Context;
-import com.amazonaws.videoanalytics.videologistics.PutVideoTimelineRequestContent;
-import com.amazonaws.videoanalytics.videologistics.VideoDensityLocation;
-import com.amazonaws.videoanalytics.videologistics.timeline.PutVideoTimelineHandler;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.PROXY_LAMBDA_BODY_KEY;
+import static com.amazonaws.videoanalytics.videologistics.utils.TestConstants.DEVICE_ID;
+import static java.util.Map.entry;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.junit.Assert.assertEquals;
+import com.amazonaws.services.lambda.runtime.Context;
+import com.amazonaws.videoanalytics.videologistics.timeline.PutVideoTimelineHandler;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class PutVideoTimelineActivityTest {
 
@@ -33,6 +34,16 @@ public class PutVideoTimelineActivityTest {
 
     private PutVideoTimelineActivity activity;
 
+    String timestamps = "[{\"duration\":1938,\"timestamp\":1734981826886}]";
+    Map<String, Object> proxyLambdaBody = Map.ofEntries(
+        entry("deviceId", DEVICE_ID),
+        entry("location", "CLOUD"),
+        entry("timestamps", timestamps)
+    );
+    Map<String, Object> proxyLambdaRequest = Map.ofEntries(
+        entry(PROXY_LAMBDA_BODY_KEY, proxyLambdaBody)
+    );
+
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
@@ -41,19 +52,12 @@ public class PutVideoTimelineActivityTest {
 
     @Test
     public void handleRequest_validInput_returnsSuccess() throws Exception {
-        String deviceId = "testDevice";
-        ObjectNode timestamps = new ObjectMapper().createObjectNode();
-        timestamps.put("test", "value");
-        
-        Map<String, Object> input = new HashMap<>();
-        input.put("body", "{\"deviceId\":\"" + deviceId + "\",\"location\":\"CLOUD\",\"timestamps\":" + timestamps.toString() + "}");
+        when(objectMapper.writeValueAsString(any())).thenReturn(timestamps);
 
-        when(objectMapper.writeValueAsString(any())).thenReturn(timestamps.toString());
-
-        Map<String, Object> result = activity.handleRequest(input, context);
+        Map<String, Object> result = activity.handleRequest(proxyLambdaRequest, context);
 
         assertEquals(200, result.get("statusCode"));
-        verify(putVideoTimelineHandler).addVideoTimelines(eq(deviceId), eq(timestamps.toString()), eq("CLOUD"));
+        verify(putVideoTimelineHandler).addVideoTimelines(eq(DEVICE_ID), eq(timestamps), eq("CLOUD"));
     }
 
     @Test

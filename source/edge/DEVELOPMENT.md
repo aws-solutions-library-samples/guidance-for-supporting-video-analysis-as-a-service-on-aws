@@ -62,6 +62,7 @@ Currently, the optional features available are:
   ```
   - If the `ROUTE_VIDEO_SD` environment variable is set to `TRUE`, then edge process will not send any data to KVS. This will simulate internet disconnection. All data will be stored on the SD card. This allows for the easy testing of the catchup feature.
   - If the `CATCHUP_BUFFER_SIZE` is set to a positive integer, this will allow modifying the buffer size of the number of fragments that can be held in memory. Use this to tune between memory efficiency + performance. If not set it will default to the value set by the constant.
+  - This feature can be expanded on to support multiple types of data catchup (i.e. AI events).
 
 To execute, enter the following command
 

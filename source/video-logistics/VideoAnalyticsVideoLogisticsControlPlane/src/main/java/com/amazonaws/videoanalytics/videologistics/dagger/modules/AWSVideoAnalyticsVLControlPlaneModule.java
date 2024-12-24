@@ -1,40 +1,40 @@
 package com.amazonaws.videoanalytics.videologistics.dagger.modules;
 
-import dagger.Module;
-import dagger.Provides;
-import com.amazonaws.videoanalytics.videologistics.dao.VLRegisterDeviceJobDAO;
-import com.amazonaws.videoanalytics.videologistics.schema.VLRegisterDeviceJob;
-import com.amazonaws.videoanalytics.videologistics.schema.SchemaConst;
-import com.amazonaws.videoanalytics.videologistics.inference.SchemaRepository;
-import com.amazonaws.videoanalytics.videologistics.inference.InferenceSerializer;
-import com.amazonaws.videoanalytics.videologistics.inference.InferenceDeserializer;
-import com.amazonaws.videoanalytics.videologistics.validator.InferenceValidator;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
-import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
-import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
-import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
-import com.amazonaws.videoanalytics.videologistics.schema.VideoTimeline.AggregateVideoTimeline;
-import com.amazonaws.videoanalytics.videologistics.schema.VideoTimeline.RawVideoTimeline;
-import com.amazonaws.videoanalytics.videologistics.timeline.VideoTimelineUtils;
+import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.ACCOUNT_ID;
+
+import javax.inject.Named;
+import javax.inject.Singleton;
+
 import com.amazonaws.videoanalytics.videologistics.client.opensearch.OpenSearchClientFactory;
 import com.amazonaws.videoanalytics.videologistics.client.opensearch.OpenSearchClientProvider;
-import com.amazonaws.videoanalytics.videologistics.client.s3.ThumbnailS3PresignerFactory;
 import com.amazonaws.videoanalytics.videologistics.client.s3.ImageUploader;
-import com.amazonaws.videoanalytics.videologistics.timeline.TimestampListDeserializer;
-import com.amazonaws.videoanalytics.videologistics.timeline.BatchTimelineMapper;
-import com.amazonaws.videoanalytics.videologistics.utils.S3BucketRegionalizer;
+import com.amazonaws.videoanalytics.videologistics.client.s3.ThumbnailS3PresignerFactory;
+import com.amazonaws.videoanalytics.videologistics.dao.VLRegisterDeviceJobDAO;
 import com.amazonaws.videoanalytics.videologistics.dao.videotimeline.RawVideoTimelineDAO;
-import com.amazonaws.videoanalytics.videologistics.timeline.VideoTimelineUtils;
-import software.amazon.awssdk.regions.Region;
-import javax.inject.Named;
-
-import javax.inject.Singleton;
-import com.amazonaws.videoanalytics.videologistics.timeline.VideoTimelineAggregator;
 import com.amazonaws.videoanalytics.videologistics.dao.videotimeline.VideoTimelineDAO;
-import com.amazonaws.videoanalytics.videologistics.timeline.TimelineKDSMetadataSerDe;
+import com.amazonaws.videoanalytics.videologistics.inference.InferenceDeserializer;
+import com.amazonaws.videoanalytics.videologistics.inference.InferenceSerializer;
+import com.amazonaws.videoanalytics.videologistics.inference.SchemaRepository;
+import com.amazonaws.videoanalytics.videologistics.schema.SchemaConst;
+import com.amazonaws.videoanalytics.videologistics.schema.VLRegisterDeviceJob;
+import com.amazonaws.videoanalytics.videologistics.schema.VideoTimeline.AggregateVideoTimeline;
+import com.amazonaws.videoanalytics.videologistics.schema.VideoTimeline.RawVideoTimeline;
+import com.amazonaws.videoanalytics.videologistics.timeline.BatchTimelineMapper;
 import com.amazonaws.videoanalytics.videologistics.timeline.DetailedVideoTimelineGenerator;
-import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.ACCOUNT_ID;
+import com.amazonaws.videoanalytics.videologistics.timeline.TimelineKDSMetadataSerDe;
+import com.amazonaws.videoanalytics.videologistics.timeline.TimestampListDeserializer;
+import com.amazonaws.videoanalytics.videologistics.timeline.VideoTimelineAggregator;
+import com.amazonaws.videoanalytics.videologistics.timeline.VideoTimelineUtils;
+import com.amazonaws.videoanalytics.videologistics.utils.S3BucketRegionalizer;
+import com.amazonaws.videoanalytics.videologistics.validator.InferenceValidator;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import dagger.Module;
+import dagger.Provides;
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
+import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
+import software.amazon.awssdk.regions.Region;
 
 @Module
 public class AWSVideoAnalyticsVLControlPlaneModule {

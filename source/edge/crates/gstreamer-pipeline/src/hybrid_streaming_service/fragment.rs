@@ -397,13 +397,15 @@ mod tests {
     use super::*;
     use crate::constants::{FRAME_BUFFER_SIZE, MAX_FRAGMENTS};
     use crate::util::FragmentTimeInNs;
+    use std::env;
     use std::sync::mpsc::{sync_channel, Receiver};
 
     const DEFAULT_DURATION: u64 = 100;
     const START_OF_FRAGMENT: FragmentTimeInNs = 100;
 
     #[tokio::test]
-    async fn verify_fragment_manager() {
+    async fn verify_fragment_manager_env_var_false() {
+        env::set_var(MOTION_BASED_STREAMING, "FALSE");
         let (mut fragment_manager, realtime_rx) = create_fragment_manager();
 
         // create test_fragments
@@ -418,6 +420,25 @@ mod tests {
 
         // assert data sent to realtime channel
         assert!(realtime_rx.try_recv().is_ok());
+    }
+
+    #[tokio::test]
+    async fn verify_fragment_manager_env_var_true() {
+        env::set_var(MOTION_BASED_STREAMING, "TRUE");
+        let (mut fragment_manager, realtime_rx) = create_fragment_manager();
+
+        // create test_fragments
+        let test_fragments = create_fragments(MAX_FRAGMENTS + 1);
+
+        // add fragments
+        for fragment in test_fragments {
+            for frame in fragment.to_owned().frame_list {
+                fragment_manager.add_frame(frame);
+            }
+        }
+
+        // assert data NOT sent to realtime channel
+        assert!(realtime_rx.try_recv().is_err());
     }
 
     #[tokio::test]

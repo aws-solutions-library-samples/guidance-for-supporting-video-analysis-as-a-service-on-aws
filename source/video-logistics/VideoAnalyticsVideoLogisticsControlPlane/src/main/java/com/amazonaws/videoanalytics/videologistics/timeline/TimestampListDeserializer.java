@@ -1,18 +1,12 @@
 package com.amazonaws.videoanalytics.videologistics.timeline;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonNode;
+import java.util.List;
 
-import java.io.IOException;
+import javax.inject.Inject;
 
 import com.amazonaws.videoanalytics.videologistics.exceptions.VideoAnalyticsExceptionMessage;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import javax.inject.Inject;
-import java.util.List;
 
 public class TimestampListDeserializer {
     private final ObjectMapper objectMapper;

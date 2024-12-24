@@ -353,7 +353,7 @@ export class ServiceStack extends Stack {
         `A combination of conditions caused 'snapIoTToLambdaRule' to be undefined. Fixit.`
       );
     }
-    new CfnPermission(this, "GetSnapshotProxyLambdaFunctionPermission", {
+    new CfnPermission(this, "CreateSnapshotUploadPathLambdaFunctionPermission", {
       action: "lambda:InvokeFunction",
       functionName: createSnapshotUploadPathLambda.functionArn,
       principal: "iot.amazonaws.com",
@@ -556,6 +556,209 @@ export class ServiceStack extends Stack {
           retention: RetentionDays.TEN_YEARS,
           logGroupName: "/aws/lambda/PutVideoTimelineActivity",
       }),
+    });
+    
+    // Timeline resources
+    const videoTimelineIngestionIoTRuleDlqRole = new CfnRole(
+      this,
+      "VideoTimelineIngestionIoTRuleDLQRole",
+      {
+        assumeRolePolicyDocument: {
+          Version: "2012-10-17",
+          Statement: [
+            {
+              Action: ["sts:AssumeRole"],
+              Effect: "Allow",
+              Principal: {
+                Service: ["iot.amazonaws.com"],
+              },
+            },
+          ],
+        },
+        policies: [
+          {
+            policyName: "VideoTimelineIngestionIoTRuleDLQPolicy",
+            policyDocument: {
+              Version: "2012-10-17",
+              Statement: [
+                {
+                  Sid: "VideoTimelineIoTRuleDLQAccess",
+                  Effect: "Allow",
+                  Action: ["sqs:SendMessage"],
+                  Resource: "*",
+                },
+              ],
+            },
+          },
+        ],
+      }
+    );
+
+    const videoTimelineIngestionLambdaDlqRole = new CfnRole(
+      this,
+      "VideoTimelineIngestionLambdaDLQRole",
+      {
+        assumeRolePolicyDocument: {
+          Version: "2012-10-17",
+          Statement: [
+            {
+              Action: ["sts:AssumeRole"],
+              Effect: "Allow",
+              Principal: {
+                Service: ["iot.amazonaws.com"],
+              },
+            },
+          ],
+        },
+        policies: [
+          {
+            policyName: "VideoTimelineIngestionLambdaDLQPolicy",
+            policyDocument: {
+              Version: "2012-10-17",
+              Statement: [
+                {
+                  Sid: "VideoTimelineLambdaDLQAccess",
+                  Effect: "Allow",
+                  Action: ["sqs:SendMessage"],
+                  Resource: "*",
+                },
+              ],
+            },
+          },
+        ],
+      }
+    );
+
+    if (videoTimelineIngestionIoTRuleDlqRole == null) {
+      throw new Error(
+        `A combination of conditions caused 'videoTimelineIngestionIoTRuleDlqRole' to be undefined. Fixit.`
+      );
+    }
+    if (videoTimelineIngestionLambdaDlqRole == null) {
+      throw new Error(
+        `A combination of conditions caused 'videoTimelineIngestionLambdaDlqRole' to be undefined. Fixit.`
+      );
+    }
+    const videoTimelineIngestionDlqKmsKey = new Key(
+      this,
+      "VideoTimelineIngestionDLQKmsKey",
+      {
+        description: "Kms key for Video Timeline ingestion DLQ",
+        enableKeyRotation: true,
+        policy: new PolicyDocument({
+          statements: [
+            new PolicyStatement({
+              effect: Effect.ALLOW,
+              principals: [
+                new ArnPrincipal(
+                  `arn:${this.partition}:iam::${this.account}:root`
+                ),
+              ],
+              actions: ["kms:*"],
+              resources: ["*"],
+            }),
+            new PolicyStatement({
+              effect: Effect.ALLOW,
+              principals: [
+                new ArnPrincipal(videoTimelineIngestionLambdaDlqRole.attrArn),
+                new ArnPrincipal(videoTimelineIngestionIoTRuleDlqRole.attrArn),
+                new ArnPrincipal(putVideoTimelineLambda.role?.roleArn!),
+              ],
+              actions: [
+                "kms:Generate*",
+                "kms:DescribeKey",
+                "kms:Encrypt",
+                "kms:ReEncrypt*",
+                "kms:Decrypt",
+              ],
+              resources: ["*"],
+            }),
+          ],
+        }),
+      }
+    );
+
+    if (videoTimelineIngestionDlqKmsKey == null) {
+      throw new Error(
+        `A combination of conditions caused 'videoTimelineIngestionDlqKmsKey' to be undefined. Fixit.`
+      );
+    }
+    new CfnAlias(this, "VideoTimelineIngestionDLQKmsKeyAlias", {
+      aliasName: "alias/VideoTimelineIngestionDLQKmsKey",
+      targetKeyId: videoTimelineIngestionDlqKmsKey.keyId,
+    });
+
+    const videoTimelineIngestionIoTRuleDlq = new Queue(
+      this,
+      "VideoTimelineIngestionIoTRuleDLQ",
+      {
+        queueName: "VideoTimelineIngestionIoTRuleDLQ",
+        enforceSSL: true,
+        encryption: QueueEncryption.KMS,
+        encryptionMasterKey: videoTimelineIngestionDlqKmsKey,
+      }
+    );
+
+    const videoTimelineIngestionLambdaDlq = new Queue(
+      this,
+      "VideoTimelineIngestionLambdaDLQ",
+      {
+        queueName: "VideoTimelineIngestionLambdaDLQ",
+        enforceSSL: true,
+        encryption: QueueEncryption.KMS,
+        encryptionMasterKey: videoTimelineIngestionDlqKmsKey,
+      }
+    );
+
+    if (videoTimelineIngestionLambdaDlq == null) {
+      throw new Error(
+        `A combination of conditions caused 'videoTimelineIngestionLambdaDlq' to be undefined. Fixit.`
+      );
+    }
+    if (videoTimelineIngestionIoTRuleDlq == null) {
+      throw new Error(
+        `A combination of conditions caused 'videoTimelineIngestionIoTRuleDlq' to be undefined. Fixit.`
+      );
+    }
+
+    const videoTimelineIngestionIoTToLambdaRule = new CfnTopicRule(
+      this,
+      "VideoTimelineIngestionIoTToLambdaRule",
+      {
+        topicRulePayload: {
+          description: "Forward Video Timeline to destination.",
+          ruleDisabled: false,
+          sql: "SELECT location as body.location, timestamps as body.timestamps, topic(2) as body.deviceId FROM 'videoanalytics/+/timeline'",
+          awsIotSqlVersion: "2016-03-23",
+          actions: [
+            {
+              lambda: {
+                functionArn: putVideoTimelineLambda.functionArn,
+              },
+            },
+          ],
+          errorAction: {
+            sqs: {
+              queueUrl: videoTimelineIngestionIoTRuleDlq.queueUrl,
+              roleArn: videoTimelineIngestionIoTRuleDlqRole.attrArn,
+              useBase64: false,
+            },
+          },
+        },
+      }
+    );
+
+    if (videoTimelineIngestionIoTToLambdaRule == null) {
+      throw new Error(
+        `A combination of conditions caused 'videoTimelineIngestionIoTToLambdaRule' to be undefined. Fixit.`
+      );
+    }
+
+    new CfnPermission(this, "PutVideoTimelineLambdaFunctionPermission", {
+      action: "lambda:InvokeFunction",
+      functionName: putVideoTimelineLambda.functionArn,
+      principal: "iot.amazonaws.com",
+      sourceArn: videoTimelineIngestionIoTToLambdaRule.attrArn,
     });
 
     // Add the CFN logical ID overrides

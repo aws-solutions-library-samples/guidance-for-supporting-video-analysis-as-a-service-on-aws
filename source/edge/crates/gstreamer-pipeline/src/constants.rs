@@ -35,6 +35,8 @@ pub const CAPSFILTER: &str = "capsfilter";
 pub const METADATA_STREAM_START_TAG: &str = "MetadataStream";
 /// Motion based streaming env var
 pub const MOTION_BASED_STREAMING: &str = "MOTION_BASED_STREAMING";
+/// Destination field for timeline fragments location.
+pub(crate) const DESTINATION_FOR_TIMELINE_CLOUD: &str = "CLOUD";
 
 /// Catchup sleep time in seconds
 #[cfg(feature = "sd-card-catchup")]
@@ -50,3 +52,12 @@ pub(crate) const ROUTE_VIDEO_SD: &str = "ROUTE_VIDEO_SD";
 /// KVS Offline Setting for plugin
 #[cfg(feature = "sd-card-catchup")]
 pub const KVS_OFFLINE: &str = "2";
+/// Destination field for timeline fragments location.
+#[cfg(feature = "sd-card-catchup")]
+pub(crate) const DESTINATION_FOR_TIMELINE_DEVICE: &str = "DEVICE";
+/// Sleep time for device storage timeline generation messages.
+#[cfg(feature = "sd-card-catchup")]
+pub(crate) const TIMELINE_SLEEP_IN_SEC: u64 = 1;
+/// Max Metadata for Device Timeline Messages
+#[cfg(feature = "sd-card-catchup")]
+pub(crate) const MAX_TIMELINE_ENTRIES: u64 = 500;

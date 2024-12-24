@@ -3,20 +3,21 @@
 //! When fragments are successfully published to KVS this service will delete them.
 
 use crate::constants::MAX_FRAGMENTS;
-#[cfg(feature = "sd-card-catchup")]
 use crate::constants::{
-    CATCHUP_BUFFER_SIZE, CATCHUP_KVS_SLEEP_MS, CATCHUP_SLEEP_MS, ROUTE_VIDEO_SD,
+    CATCHUP_BUFFER_SIZE, CATCHUP_KVS_SLEEP_MS, CATCHUP_SLEEP_MS, MAX_TIMELINE_ENTRIES,
+    ROUTE_VIDEO_SD, TIMELINE_SLEEP_IN_SEC,
 };
 use crate::data_storage::constants::MAX_TIME_FOR_DB;
 use crate::data_storage::error::DatabaseError;
 use crate::data_storage::video_storage::FileMetadataStorage;
+use crate::hybrid_streaming_service::device_timeline::DeviceTimelineGenerationTool;
 use crate::hybrid_streaming_service::fragment::VideoFragmentInformation;
 use crate::hybrid_streaming_service::frame::Frame;
 use crate::hybrid_streaming_service::kvs_callbacks::fragment_ack::{
     get_kvs_fragment_rx_channel_for_offline, OfflineTimeStampMs,
 };
 use crate::hybrid_streaming_service::message_service::GST_CAPS_FOR_KVS;
-use crate::util::convert_ns_to_ms;
+use crate::util::{convert_ns_to_ms, IoTMessageUtil};
 use crossbeam_channel::{Receiver, RecvTimeoutError};
 use std::collections::{BTreeMap, VecDeque};
 use std::env;
@@ -33,8 +34,10 @@ use tracing::{debug, error, info};
 pub(crate) struct CatchupVideoService {
     // Main event loop, handle held in struct to be checked by watchdog thread.
     _event_loop: JoinHandle<()>,
-    //
+    // Callback event loop
     _callback_loop: JoinHandle<()>,
+    // Timeline event loop
+    _timeline_loop: JoinHandle<()>,
     // Database client
     _database_client: Arc<Mutex<FileMetadataStorage>>,
     // Used to cancel threads when struct is dropped.
@@ -51,9 +54,16 @@ impl CatchupVideoService {
             env::var(CATCHUP_BUFFER_SIZE).unwrap_or_default().parse().unwrap_or(MAX_FRAGMENTS);
 
         let cancellation_token = Arc::new(AtomicBool::new(false));
+        let publish_device_timeline_info = Arc::new(AtomicBool::new(false));
         let offline_fragment_ack_rx = get_kvs_fragment_rx_channel_for_offline();
         let mut _catchup_fragment_metadata_manager =
             CatchupFragmentMetadataManager::new(max_number_of_fragments_in_memory);
+        let iot_message_util = IoTMessageUtil::new();
+        let device_timeline_generation_tool = DeviceTimelineGenerationTool::new(
+            database_client.clone(),
+            IoTMessageUtil::new(),
+            MAX_TIMELINE_ENTRIES,
+        );
         let _event_loop = Self::setup_event_loop(
             offline_tx,
             database_client.clone(),
@@ -65,11 +75,19 @@ impl CatchupVideoService {
             cancellation_token.clone(),
             offline_fragment_ack_rx,
             _catchup_fragment_metadata_manager.clone(),
+            iot_message_util,
+            publish_device_timeline_info.clone(),
+        );
+        let _timeline_loop = Self::setup_timeline_for_device_loop(
+            device_timeline_generation_tool,
+            cancellation_token.clone(),
+            publish_device_timeline_info,
         );
 
         CatchupVideoService {
             _event_loop,
             _callback_loop,
+            _timeline_loop,
             cancellation_token,
             _database_client: database_client,
             _catchup_fragment_metadata_manager,
@@ -81,6 +99,8 @@ impl CatchupVideoService {
         cancellation_token: Arc<AtomicBool>,
         callback_rx: Receiver<OfflineTimeStampMs>,
         mut catchup_fragment_metadata_manager: CatchupFragmentMetadataManager,
+        mut iot_message_util: IoTMessageUtil,
+        publish_device_timeline_info: Arc<AtomicBool>,
     ) -> JoinHandle<()> {
         std::thread::spawn(move || {
             while !cancellation_token.load(Ordering::Relaxed) {
@@ -111,6 +131,13 @@ impl CatchupVideoService {
 
                 info!("Persisted fragment time in ns {}", fragment_time_in_ns);
 
+                // Publish to AWS IoT
+                if let Err(e) =
+                    iot_message_util.try_send_timeline_cloud(fragment_time_in_ns, fragment_duration)
+                {
+                    error!("Failed to send timeline message! : {:?}", e);
+                }
+
                 // Delete from database
                 if let Err(e) = Self::delete_fragment(
                     database_client.clone(),
@@ -119,6 +146,9 @@ impl CatchupVideoService {
                 ) {
                     error!("Failed to delete fragment from database! : {:?}", e);
                 }
+
+                // Activate timeline generation on device.  Callback ensures internet connection recently.
+                publish_device_timeline_info.store(true, Ordering::Relaxed);
             }
         })
     }
@@ -207,6 +237,28 @@ impl CatchupVideoService {
                         &mut catchup_fragment_metadata_manager,
                     );
                 }
+            }
+        })
+    }
+
+    fn setup_timeline_for_device_loop(
+        mut device_timeline_generation_tool: DeviceTimelineGenerationTool,
+        cancellation_token: Arc<AtomicBool>,
+        publish_device_timeline_info: Arc<AtomicBool>,
+    ) -> JoinHandle<()> {
+        std::thread::spawn(move || {
+            while !cancellation_token.load(Ordering::Relaxed) {
+                // This atomic will let us know we were recently connected to the internet and can publish the
+                // message.  Atomic is used to avoid any locks which are not needed for a boolean.
+                if !publish_device_timeline_info.load(Ordering::Relaxed) {
+                    // Thread sleep + return.  Thread sleeps can be used in OS threads.
+                    std::thread::sleep(Duration::from_secs(TIMELINE_SLEEP_IN_SEC));
+                    continue;
+                }
+                // Trigger query of database + sending off message to IoT.
+                device_timeline_generation_tool.ensure_update_timeline_in_cloud();
+                // Reset the boolean.  This will be reset in the callback loop.
+                publish_device_timeline_info.store(false, Ordering::Relaxed);
             }
         })
     }
