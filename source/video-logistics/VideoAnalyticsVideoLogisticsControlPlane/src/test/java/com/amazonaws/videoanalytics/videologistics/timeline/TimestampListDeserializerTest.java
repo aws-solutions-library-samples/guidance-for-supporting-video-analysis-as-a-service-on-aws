@@ -47,4 +47,14 @@ class TimestampListDeserializerTest {
         
         assertEquals(0, result.size());
     }
+
+    @Test
+    void deserialize_stringEncodedJson_returnsTimestampList() {
+        String stringEncodedJson = "\"[{\\\"timestamp\\\":1234567890,\\\"duration\\\":5000}]\"";
+        List<TimestampInfo> result = deserializer.deserialize(stringEncodedJson);
+        
+        assertEquals(1, result.size());
+        assertEquals(1234567890L, result.get(0).getTimestamp());
+        assertEquals(5000L, result.get(0).getDuration());
+    }
 }
