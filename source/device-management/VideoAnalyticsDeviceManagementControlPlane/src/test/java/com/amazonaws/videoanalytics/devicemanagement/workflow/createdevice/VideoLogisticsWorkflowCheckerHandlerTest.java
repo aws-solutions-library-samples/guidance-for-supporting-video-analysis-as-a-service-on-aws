@@ -149,7 +149,7 @@ public class VideoLogisticsWorkflowCheckerHandlerTest {
         when(startCreateDeviceDAO.load(JOB_ID)).thenReturn(createDevice);
         
         HttpExecuteResponse mockHttpResponse = mock(HttpExecuteResponse.class, RETURNS_DEEP_STUBS);
-        String responseJson = "{\"status\":\"IN_PROGRESS\"}";
+        String responseJson = "{\"status\":\"RUNNING\"}";
         AbortableInputStream responseStream = AbortableInputStream.create(
             new ByteArrayInputStream(responseJson.getBytes(StandardCharsets.UTF_8))
         );
@@ -162,7 +162,7 @@ public class VideoLogisticsWorkflowCheckerHandlerTest {
         )).thenReturn(mockHttpResponse);
         
         JsonNode mockJsonNode = mock(JsonNode.class);
-        when(mockJsonNode.get("status")).thenReturn(new TextNode("IN_PROGRESS"));
+        when(mockJsonNode.get("status")).thenReturn(new TextNode("RUNNING"));
         when(objectMapper.readTree(anyString())).thenReturn(mockJsonNode);
 
         assertThrows(RetryableException.class, () -> 
@@ -175,7 +175,7 @@ public class VideoLogisticsWorkflowCheckerHandlerTest {
         when(startCreateDeviceDAO.load(JOB_ID)).thenReturn(createDevice);
         
         HttpExecuteResponse mockHttpResponse = mock(HttpExecuteResponse.class, RETURNS_DEEP_STUBS);
-        String responseJson = "{\"status\":\"PENDING\"}";
+        String responseJson = "{\"status\":\"RUNNING\"}";
         AbortableInputStream responseStream = AbortableInputStream.create(
             new ByteArrayInputStream(responseJson.getBytes(StandardCharsets.UTF_8))
         );
@@ -188,7 +188,7 @@ public class VideoLogisticsWorkflowCheckerHandlerTest {
         )).thenReturn(mockHttpResponse);
         
         JsonNode mockJsonNode = mock(JsonNode.class);
-        when(mockJsonNode.get("status")).thenReturn(new TextNode("PENDING"));
+        when(mockJsonNode.get("status")).thenReturn(new TextNode("RUNNING"));
         when(objectMapper.readTree(anyString())).thenReturn(mockJsonNode);
 
         assertThrows(RetryableException.class, () -> 
