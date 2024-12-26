@@ -1,62 +1,51 @@
 package com.amazonaws.videoanalytics.videologistics.activity;
 
-import com.amazonaws.services.lambda.runtime.Context;
-import com.amazonaws.services.lambda.runtime.LambdaLogger;
-
-import com.amazonaws.videoanalytics.videologistics.CreateSnapshotUploadPathRequestContent;
-import com.amazonaws.videoanalytics.videologistics.client.s3.SnapshotS3Presigner;
-import com.amazonaws.videoanalytics.videologistics.dependency.apig.ApigService;
-
-import com.amazonaws.videoanalytics.videologistics.ValidationExceptionReason;
-import com.amazonaws.videoanalytics.videologistics.ValidationExceptionResponseContent;
-import com.amazonaws.videoanalytics.videologistics.InternalServerExceptionResponseContent;
-
 import static com.amazonaws.videoanalytics.videologistics.exceptions.VideoAnalyticsExceptionMessage.INTERNAL_SERVER_EXCEPTION;
 import static com.amazonaws.videoanalytics.videologistics.exceptions.VideoAnalyticsExceptionMessage.INVALID_INPUT_EXCEPTION;
-import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.UPLOAD_BUCKET_FORMAT;
-import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.ACCOUNT_ID;
 import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.PROXY_LAMBDA_BODY_KEY;
-import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.PROXY_LAMBDA_RESPONSE_STATUS_CODE_KEY;
 import static com.amazonaws.videoanalytics.videologistics.utils.LambdaProxyUtils.serializeResponse;
-import static com.amazonaws.videoanalytics.videologistics.utils.LambdaProxyUtils.parseBody;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
+import static java.util.Map.entry;
 
-import org.junit.contrib.java.lang.system.EnvironmentVariables;
+import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
+import java.time.Instant;
+import java.util.Map;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import software.amazon.awssdk.core.document.Document;
+import com.amazonaws.services.lambda.runtime.Context;
+import com.amazonaws.services.lambda.runtime.LambdaLogger;
+import com.amazonaws.videoanalytics.videologistics.InternalServerExceptionResponseContent;
+import com.amazonaws.videoanalytics.videologistics.ValidationExceptionReason;
+import com.amazonaws.videoanalytics.videologistics.ValidationExceptionResponseContent;
+import com.amazonaws.videoanalytics.videologistics.client.s3.SnapshotS3Presigner;
+import com.amazonaws.videoanalytics.videologistics.dependency.apig.ApigService;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+
+import software.amazon.awssdk.http.HttpExecuteRequest;
+import software.amazon.awssdk.http.HttpExecuteResponse;
 import software.amazon.awssdk.http.SdkHttpMethod;
 import software.amazon.awssdk.http.SdkHttpRequest;
+import software.amazon.awssdk.http.SdkHttpResponse;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
-
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
-import java.time.Instant;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-
-import static java.util.Map.entry;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 
 public class CreateSnapshotUploadPathActivityTest {
     private static final String S3_PRESIGNED_URL = "http://s3.amazonaws.zom/testBucket/key.jpeg?pregin-bits";
@@ -72,8 +61,6 @@ public class CreateSnapshotUploadPathActivityTest {
     SnapshotS3Presigner snapshotS3Presigner;
     @Mock
     Region region;
-    @Mock
-    URL url;
     @Mock
     private Context context;
     @Mock
@@ -93,14 +80,21 @@ public class CreateSnapshotUploadPathActivityTest {
         entry(PROXY_LAMBDA_BODY_KEY, proxyLambdaBody)
     );
 
+    SdkHttpResponse code200 = SdkHttpResponse.builder().statusCode(200).build();
+    HttpExecuteResponse successResp = HttpExecuteResponse.builder().response(code200).build();
+
+    SdkHttpResponse code500 = SdkHttpResponse.builder().statusCode(500).build();
+    HttpExecuteResponse errResp = HttpExecuteResponse.builder().response(code500).build();
+
     @BeforeEach
-    public void setup() {
+    public void setup() throws Exception {
         MockitoAnnotations.initMocks(this);
         when(context.getLogger()).thenReturn(logger);
+        when(apigService.invokeUpdateDeviceShadow(eq(DEVICE_ID), eq(null), any())).thenReturn(successResp);
     }
 
     @Test
-    public void createSnapshotUploadPathActivityTest() throws MalformedURLException {
+    public void handleRequest_WhenValidRequest_ReturnsSuccess() throws MalformedURLException {
         snapshotS3Presigner = new SnapshotS3Presigner(
                 s3Presigner,
                 SNAPSHOT_SHADOW_NAME,
@@ -118,9 +112,6 @@ public class CreateSnapshotUploadPathActivityTest {
                 .build();
         when(s3Presigner.presignPutObject(any(PutObjectPresignRequest.class))).thenReturn(presignedRequest);
         URL presignedUrl = snapshotS3Presigner.generateImageUploadURL(CHECKSUM);
-        HashMap<String, Document> message = new HashMap<>();
-        message.put("presignedUrl", Document.fromString(presignedUrl.toString()));
-
         URL expectedUrl = new URL(S3_PRESIGNED_URL); 
         assertEquals(expectedUrl, presignedUrl);
         
@@ -132,7 +123,7 @@ public class CreateSnapshotUploadPathActivityTest {
     }
 
     @Test
-    public void createSnapshotUploadPathNullInputActivityTest() {
+    public void handleRequest_WhenNullInput_ThrowsValidationException() {
         Map<String, Object> actualMessage = new CreateSnapshotUploadPathActivity(s3Presigner, region, SNAPSHOT_ACCOUNT_ID, apigService)
             .handleRequest(null, context);
 
@@ -147,11 +138,11 @@ public class CreateSnapshotUploadPathActivityTest {
 
     
     @Test
-    public void createSnapshotUploadPathBlankDeviceInputActivityTest() {
-        String blankDeviceInputProxyLambdaBody = String.format(
-            "{\"deviceId\": \"\", \"checksum\": \"%s\", \"contentLength\": \"%s\"}",  
-            CHECKSUM, 
-            CONTENT_LENGTH
+    public void handleRequest_WhenBlankDeviceId_ThrowsValidationException() {
+        Map<String, Object> blankDeviceInputProxyLambdaBody = Map.ofEntries(
+            entry("deviceId", ""),
+            entry("checksum", CHECKSUM),
+            entry("contentLength", CONTENT_LENGTH)
         );
         Map<String, Object> blankDeviceInputLambdaProxyRequest = Map.ofEntries(
             entry(PROXY_LAMBDA_BODY_KEY, blankDeviceInputProxyLambdaBody)
@@ -170,11 +161,11 @@ public class CreateSnapshotUploadPathActivityTest {
     }
 
     @Test
-    public void createSnapshotUploadPathBlankChecksumInputActivityTest() {
-        String blankChecksumProxyLambdaBody = String.format(
-            "{\"deviceId\": \"%s\", \"checksum\": \"\", \"contentLength\": \"%s\"}", 
-            DEVICE_ID, 
-            CONTENT_LENGTH
+    public void handleRequest_WhenBlankChecksum_ThrowsValidationException() {
+        Map<String, Object> blankChecksumProxyLambdaBody = Map.ofEntries(
+            entry("deviceId", DEVICE_ID),
+            entry("checksum", ""),
+            entry("contentLength", CONTENT_LENGTH)
         );
         Map<String, Object> blankChecksumLambdaProxyRequest = Map.ofEntries(
             entry(PROXY_LAMBDA_BODY_KEY, blankChecksumProxyLambdaBody)
@@ -193,14 +184,14 @@ public class CreateSnapshotUploadPathActivityTest {
     }
 
     @Test
-    public void createSnapshotUploadPathBlankContentLengthInputActivityTest() {
-        String blankChecksumProxyLambdaBody = String.format(
-            "{\"deviceId\": \"%s\", \"checksum\": \"%s\", \"contentLength\": \"\"}", 
-            DEVICE_ID, 
-            CHECKSUM
+    public void handleRequest_WhenBlankContentLength_ThrowsValidationException() {
+        Map<String, Object> blankContentLengthProxyLambdaBody = Map.ofEntries(
+            entry("deviceId", DEVICE_ID),
+            entry("checksum", CHECKSUM),
+            entry("contentLength", "")
         );
         Map<String, Object> blankChecksumLambdaProxyRequest = Map.ofEntries(
-            entry(PROXY_LAMBDA_BODY_KEY, blankChecksumProxyLambdaBody)
+            entry(PROXY_LAMBDA_BODY_KEY, blankContentLengthProxyLambdaBody)
         );
 
         Map<String, Object> actualMessage = new CreateSnapshotUploadPathActivity(s3Presigner, region, SNAPSHOT_ACCOUNT_ID, apigService)
@@ -216,7 +207,30 @@ public class CreateSnapshotUploadPathActivityTest {
     }
 
     @Test
-    public void createSnapshotUploadPathInternalExceptionThrownActivityTest() throws IOException {
+    public void handleRequest_WhenContentLengthLessThan1_ThrowsValidationException() {
+        Map<String, Object> contentLengthLessThan1ProxyLambdaBody = Map.ofEntries(
+            entry("deviceId", DEVICE_ID),
+            entry("checksum", CHECKSUM),
+            entry("contentLength", 0)
+        );
+        Map<String, Object> blankChecksumLambdaProxyRequest = Map.ofEntries(
+            entry(PROXY_LAMBDA_BODY_KEY, contentLengthLessThan1ProxyLambdaBody)
+        );
+
+        Map<String, Object> actualMessage = new CreateSnapshotUploadPathActivity(s3Presigner, region, SNAPSHOT_ACCOUNT_ID, apigService)
+            .handleRequest(blankChecksumLambdaProxyRequest, context);
+
+        final ValidationExceptionResponseContent exception = ValidationExceptionResponseContent.builder()
+                .message(INVALID_INPUT_EXCEPTION)
+                .reason(ValidationExceptionReason.FIELD_VALIDATION_FAILED)
+                .build();
+
+        Map<String, Object> expectedMessage = serializeResponse(400, exception.toJson());
+        assertEquals(actualMessage, expectedMessage);
+    }
+
+    @Test
+    public void handleRequest_WhenS3Exception_ThrowsInternalServerException() throws IOException {
         when(s3Presigner.presignPutObject(any(PutObjectPresignRequest.class)))
             .thenThrow(S3Exception.builder().message("Internal server error").build());
         
@@ -225,5 +239,35 @@ public class CreateSnapshotUploadPathActivityTest {
         });
 
         assertEquals(exception.getMessage(), INTERNAL_SERVER_EXCEPTION);
+    }
+
+    @Test
+    public void handleRequest_WhenApiGServiceException_ThrowsInternalServerException() throws Exception {
+        snapshotS3Presigner = new SnapshotS3Presigner(
+                s3Presigner,
+                SNAPSHOT_SHADOW_NAME,
+                DEVICE_ID,
+                1234L);
+        PresignedPutObjectRequest presignedRequest = PresignedPutObjectRequest
+                .builder()
+                .expiration(Instant.EPOCH)
+                .isBrowserExecutable(false)
+                .signedHeaders(ImmutableMap.of("header", ImmutableList.of("Content-Type")))
+                .httpRequest(SdkHttpRequest.builder()
+                        .uri(URI.create(S3_PRESIGNED_URL))
+                        .method(SdkHttpMethod.PUT)
+                        .build())
+                .build();
+        when(s3Presigner.presignPutObject(any(PutObjectPresignRequest.class))).thenReturn(presignedRequest);
+        when(apigService.invokeUpdateDeviceShadow(eq(DEVICE_ID), eq(null), any())).thenReturn(errResp);
+        
+        Map<String, Object> actualMessage = createSnapshotUploadPathActivity.handleRequest(lambdaProxyRequest, context);
+
+        final InternalServerExceptionResponseContent exception = InternalServerExceptionResponseContent.builder()
+                .message(INTERNAL_SERVER_EXCEPTION)
+                .build();
+
+        Map<String, Object> expectedMessage = serializeResponse(500, exception.toJson());
+        assertEquals(actualMessage, expectedMessage);
     }
 }

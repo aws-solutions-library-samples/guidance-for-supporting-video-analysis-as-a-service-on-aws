@@ -1,39 +1,39 @@
 package com.amazonaws.videoanalytics.videologistics.activity;
 
-import com.amazonaws.services.lambda.runtime.Context;
-import com.amazonaws.services.lambda.runtime.LambdaLogger;
-import com.amazonaws.services.lambda.runtime.RequestHandler;
-
-import com.amazonaws.videoanalytics.videologistics.CreateSnapshotUploadPathRequestContent;
-import com.amazonaws.videoanalytics.videologistics.client.s3.SnapshotS3Presigner;
-import com.amazonaws.videoanalytics.videologistics.InternalServerExceptionResponseContent;
-import com.amazonaws.videoanalytics.videologistics.dependency.apig.ApigService;
-import com.amazonaws.videoanalytics.videologistics.dagger.AWSVideoAnalyticsVLControlPlaneComponent;
-
-import software.amazon.awssdk.core.document.Document;
-import software.amazon.awssdk.http.HttpExecuteResponse;
-import software.amazon.awssdk.services.s3.presigner.S3Presigner;
-
-import com.amazonaws.videoanalytics.videologistics.dagger.DaggerAWSVideoAnalyticsVLControlPlaneComponent;
-
-import java.math.BigDecimal;
-import java.net.URL;
-import javax.inject.Inject;
-import javax.inject.Named;
-import software.amazon.awssdk.regions.Region;
-
-import com.amazonaws.videoanalytics.videologistics.ValidationExceptionReason;
-import com.amazonaws.videoanalytics.videologistics.ValidationExceptionResponseContent;
 import static com.amazonaws.videoanalytics.videologistics.exceptions.VideoAnalyticsExceptionMessage.INTERNAL_SERVER_EXCEPTION;
 import static com.amazonaws.videoanalytics.videologistics.exceptions.VideoAnalyticsExceptionMessage.INVALID_INPUT_EXCEPTION;
-import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.UPLOAD_BUCKET_FORMAT;
 import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.ACCOUNT_ID;
+import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.UPLOAD_BUCKET_FORMAT;
 import static com.amazonaws.videoanalytics.videologistics.utils.LambdaProxyUtils.parseBodyMap;
 import static com.amazonaws.videoanalytics.videologistics.utils.LambdaProxyUtils.serializeResponse;
 
+import java.math.BigDecimal;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import com.amazonaws.services.lambda.runtime.Context;
+import com.amazonaws.services.lambda.runtime.LambdaLogger;
+import com.amazonaws.services.lambda.runtime.RequestHandler;
+import com.amazonaws.videoanalytics.videologistics.CreateSnapshotUploadPathRequestContent;
+import com.amazonaws.videoanalytics.videologistics.InternalServerExceptionResponseContent;
+import com.amazonaws.videoanalytics.videologistics.ValidationExceptionReason;
+import com.amazonaws.videoanalytics.videologistics.ValidationExceptionResponseContent;
+import com.amazonaws.videoanalytics.videologistics.client.s3.SnapshotS3Presigner;
+import com.amazonaws.videoanalytics.videologistics.dagger.AWSVideoAnalyticsVLControlPlaneComponent;
+import com.amazonaws.videoanalytics.videologistics.dagger.DaggerAWSVideoAnalyticsVLControlPlaneComponent;
+import com.amazonaws.videoanalytics.videologistics.dependency.apig.ApigService;
+
+import software.amazon.awssdk.core.document.Document;
+import software.amazon.awssdk.http.AbortableInputStream;
+import software.amazon.awssdk.http.HttpExecuteResponse;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 
 
 /**
@@ -41,11 +41,11 @@ import java.util.Objects;
  */
 public class CreateSnapshotUploadPathActivity implements RequestHandler<Map<String, Object>, Map<String, Object>>  {
     
-    private S3Presigner s3Presigner;
+    private final S3Presigner s3Presigner;
     private SnapshotS3Presigner snapshotS3Presigner;
     private final String SNAPSHOT = "snapshot";
-    private String region;
-    private String accountId;
+    private final String region;
+    private final String accountId;
     private final ApigService apigService;
 
     @Inject
@@ -98,7 +98,7 @@ public class CreateSnapshotUploadPathActivity implements RequestHandler<Map<Stri
             return serializeResponse(400, exception.toJson());
         }
 
-        if (deviceId.isEmpty() || checkSum.isEmpty()) {
+        if (deviceId.isEmpty() || checkSum.isEmpty() || contentLength.longValue() < 1L) {
             logger.log("Invalid input, " + input);
             return serializeResponse(400, exception.toJson());
         }
@@ -135,8 +135,18 @@ public class CreateSnapshotUploadPathActivity implements RequestHandler<Map<Stri
                 updateDeviceInternalRequest   // body 
             );
 
-            // success response return
-            return serializeResponse(200, updateDeviceInternalRequest);
+            // Return appropriate response
+            if (response.httpResponse().isSuccessful()) {
+                return serializeResponse(200, updateDeviceInternalRequest);
+            } else {
+                AbortableInputStream errorStream = response.responseBody().get();
+                logger.log("DM API Error: " + new String(errorStream.delegate().readAllBytes(), StandardCharsets.UTF_8));
+                errorStream.abort();
+                InternalServerExceptionResponseContent internalServerException = InternalServerExceptionResponseContent.builder()
+                        .message(INTERNAL_SERVER_EXCEPTION)
+                        .build();
+                return serializeResponse(500, internalServerException.toJson());
+            }
         }
         catch (Exception e) {
             logger.log(e.getMessage());
