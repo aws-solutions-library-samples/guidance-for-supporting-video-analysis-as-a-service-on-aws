@@ -448,6 +448,17 @@ export class ServiceStack extends Stack {
       })
     ]);
 
+    // Set KMS permission for lambda so kinesis:PutRecord doesn't return 400
+    importMediaObjectRole.addToPolicy(
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        resources: [
+          `arn:aws:kms:${this.region}:${this.account}:key/*`
+        ],
+        actions: ['kms:Encrypt', 'kms:Decrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey']
+      })
+    );
+
     const importMediaObjectLambda = new Function(this, "ImportMediaObjectActivity", {
       runtime: Runtime.JAVA_17,
       handler: `${VL_ACTIVITY_JAVA_PATH_PREFIX}.ImportMediaObjectActivity::handleRequest`,
