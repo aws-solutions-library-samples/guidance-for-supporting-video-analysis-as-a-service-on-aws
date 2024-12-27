@@ -103,8 +103,7 @@ public class VideoLogisticsWorkflowCheckerHandler implements RequestHandler<Map<
                 case "COMPLETED":
                     logger.log("VL device registration completed successfully");
                     return null;
-                case "IN_PROGRESS":
-                case "PENDING":
+                case "RUNNING":
                     logger.log("VL device registration still in progress");
                     throw new RetryableException(WORKFLOW_IN_PROGRESS);
                 case "FAILED":
