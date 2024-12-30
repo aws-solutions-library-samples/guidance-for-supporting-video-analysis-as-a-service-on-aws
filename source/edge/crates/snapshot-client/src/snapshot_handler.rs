@@ -8,7 +8,7 @@ use serde_json::json;
 use sha256::digest;
 use snapshot_traits::SnapshotHandler;
 use std::error::Error;
-use tracing::{debug, error, info, warn};
+use tracing::{debug, error, warn};
 
 /// Struct to request snapshots
 pub struct Snapshot<T> {
@@ -106,7 +106,12 @@ where
                 self.data.clone().expect("No thumbnail data stored"),
             )
             .await?;
-        info!("response text {:?}", http_resp.text().await);
+        let resp_code = http_resp.status().as_u16();
+        let text = http_resp.text().await;
+        if resp_code != 200 {
+            error!("Failed to upload snapshot to presigned url: {:?}", text);
+        }
+        debug!("response text {:?}", text);
         Ok(())
     }
 }
