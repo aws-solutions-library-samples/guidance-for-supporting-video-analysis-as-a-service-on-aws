@@ -36,6 +36,7 @@ import com.amazonaws.videoanalytics.videologistics.dependency.apig.ApigService;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
+import software.amazon.awssdk.http.AbortableInputStream;
 import software.amazon.awssdk.http.HttpExecuteRequest;
 import software.amazon.awssdk.http.HttpExecuteResponse;
 import software.amazon.awssdk.http.SdkHttpMethod;
@@ -81,10 +82,11 @@ public class CreateSnapshotUploadPathActivityTest {
     );
 
     SdkHttpResponse code200 = SdkHttpResponse.builder().statusCode(200).build();
-    HttpExecuteResponse successResp = HttpExecuteResponse.builder().response(code200).build();
+    AbortableInputStream emptyStream = AbortableInputStream.createEmpty();
+    HttpExecuteResponse successResp = HttpExecuteResponse.builder().response(code200).responseBody(emptyStream).build();
 
     SdkHttpResponse code500 = SdkHttpResponse.builder().statusCode(500).build();
-    HttpExecuteResponse errResp = HttpExecuteResponse.builder().response(code500).build();
+    HttpExecuteResponse errResp = HttpExecuteResponse.builder().response(code500).responseBody(emptyStream).build();
 
     @BeforeEach
     public void setup() throws Exception {

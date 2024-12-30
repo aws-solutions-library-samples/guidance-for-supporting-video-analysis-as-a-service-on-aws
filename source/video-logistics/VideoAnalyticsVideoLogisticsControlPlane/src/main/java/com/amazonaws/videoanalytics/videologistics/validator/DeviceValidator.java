@@ -7,6 +7,7 @@ import javax.inject.Inject;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.videoanalytics.videologistics.dependency.apig.ApigService;
 
+import software.amazon.awssdk.http.AbortableInputStream;
 import software.amazon.awssdk.http.HttpExecuteResponse;
 
 public class DeviceValidator {
@@ -29,6 +30,11 @@ public class DeviceValidator {
                 null,  // headers 
                 null   // body 
             );
+
+            // Close response InputStream
+            AbortableInputStream abortableStream = response.responseBody().get();
+            abortableStream.delegate().close();
+            abortableStream.abort();
             
             return response.httpResponse().isSuccessful();
         }

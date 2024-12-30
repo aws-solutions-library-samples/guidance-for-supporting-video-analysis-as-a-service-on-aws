@@ -1,5 +1,7 @@
 package com.amazonaws.videoanalytics.videologistics.activity;
 
+import java.io.InputStream;
+
 import static com.amazonaws.videoanalytics.videologistics.exceptions.VideoAnalyticsExceptionMessage.INTERNAL_SERVER_EXCEPTION;
 import static com.amazonaws.videoanalytics.videologistics.exceptions.VideoAnalyticsExceptionMessage.INVALID_INPUT_EXCEPTION;
 import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.ACCOUNT_ID;
@@ -136,12 +138,17 @@ public class CreateSnapshotUploadPathActivity implements RequestHandler<Map<Stri
             );
 
             // Return appropriate response
+            AbortableInputStream abortableStream = response.responseBody().get();
             if (response.httpResponse().isSuccessful()) {
+                // Close response InputStream
+                abortableStream.delegate().close();
+                abortableStream.abort();
                 return serializeResponse(200, updateDeviceInternalRequest);
             } else {
-                AbortableInputStream errorStream = response.responseBody().get();
-                logger.log("DM API Error: " + new String(errorStream.delegate().readAllBytes(), StandardCharsets.UTF_8));
-                errorStream.abort();
+                try (InputStream errorStream = abortableStream.delegate()) {
+                    logger.log("DM API Error: " + new String(errorStream.readAllBytes(), StandardCharsets.UTF_8));
+                }
+                abortableStream.abort();
                 InternalServerExceptionResponseContent internalServerException = InternalServerExceptionResponseContent.builder()
                         .message(INTERNAL_SERVER_EXCEPTION)
                         .build();
