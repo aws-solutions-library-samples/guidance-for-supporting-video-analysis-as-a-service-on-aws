@@ -156,8 +156,33 @@ exports[`WorkflowStack Snapshot test 1`] = `
       },
       "Type": "AWS::IAM::Role",
     },
+    "RegisterDeviceWorkflowFailAndCleanupFvlRegHandlerRoleDefaultPolicyFB878B49": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "RegisterDeviceWorkflowFailAndCleanupFvlRegHandlerRoleDefaultPolicyFB878B49",
+        "Roles": [
+          {
+            "Ref": "RegisterDeviceWorkflowFailAndCleanupFvlRegHandlerRole331A94CC",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
     "RegisterDeviceWorkflowFailAndCleanupVlRegHandler41AB87C8": {
       "DependsOn": [
+        "RegisterDeviceWorkflowFailAndCleanupFvlRegHandlerRoleDefaultPolicyFB878B49",
         "RegisterDeviceWorkflowFailAndCleanupFvlRegHandlerRole331A94CC",
       ],
       "Properties": {
@@ -187,6 +212,9 @@ exports[`WorkflowStack Snapshot test 1`] = `
         },
         "Runtime": "java17",
         "Timeout": 720,
+        "TracingConfig": {
+          "Mode": "Active",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -330,8 +358,33 @@ exports[`WorkflowStack Snapshot test 1`] = `
       },
       "Type": "AWS::IAM::Role",
     },
+    "RegisterDeviceWorkflowKVSStreamCreatorLambdaRoleDefaultPolicy8D2EB656": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "RegisterDeviceWorkflowKVSStreamCreatorLambdaRoleDefaultPolicy8D2EB656",
+        "Roles": [
+          {
+            "Ref": "RegisterDeviceWorkflowKVSStreamCreatorLambdaRole92F0C304",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
     "RegisterDeviceWorkflowKvsCreateLambdaA83CDBA5": {
       "DependsOn": [
+        "RegisterDeviceWorkflowKVSStreamCreatorLambdaRoleDefaultPolicy8D2EB656",
         "RegisterDeviceWorkflowKVSStreamCreatorLambdaRole92F0C304",
       ],
       "Properties": {
@@ -361,6 +414,9 @@ exports[`WorkflowStack Snapshot test 1`] = `
         },
         "Runtime": "java17",
         "Timeout": 720,
+        "TracingConfig": {
+          "Mode": "Active",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -401,15 +457,42 @@ exports[`WorkflowStack Snapshot test 1`] = `
             ],
           ],
         },
+        "LoggingConfiguration": {
+          "Destinations": [
+            {
+              "CloudWatchLogsLogGroup": {
+                "LogGroupArn": {
+                  "Fn::GetAtt": [
+                    "RegisterDeviceWorkflowVLRegisterDeviceStateMachineLogGroupBC9AE7A4",
+                    "Arn",
+                  ],
+                },
+              },
+            },
+          ],
+          "Level": "ALL",
+        },
         "RoleArn": {
           "Fn::GetAtt": [
             "RegisterDeviceWorkflowVLRegisterDeviceStateMachineRoleE55991EF",
             "Arn",
           ],
         },
+        "TracingConfiguration": {
+          "Enabled": true,
+        },
       },
       "Type": "AWS::StepFunctions::StateMachine",
       "UpdateReplacePolicy": "Delete",
+    },
+    "RegisterDeviceWorkflowVLRegisterDeviceStateMachineLogGroupBC9AE7A4": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "LogGroupName": "VLRegisterDeviceStateMachineLogGroup",
+        "RetentionInDays": 3653,
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
     },
     "RegisterDeviceWorkflowVLRegisterDeviceStateMachineRoleDefaultPolicyF76DF5AB": {
       "Properties": {
@@ -466,6 +549,30 @@ exports[`WorkflowStack Snapshot test 1`] = `
                   ],
                 },
               ],
+            },
+            {
+              "Action": [
+                "logs:CreateLogDelivery",
+                "logs:GetLogDelivery",
+                "logs:UpdateLogDelivery",
+                "logs:DeleteLogDelivery",
+                "logs:ListLogDeliveries",
+                "logs:PutResourcePolicy",
+                "logs:DescribeResourcePolicies",
+                "logs:DescribeLogGroups",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            {
+              "Action": [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+                "xray:GetSamplingRules",
+                "xray:GetSamplingTargets",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
             },
           ],
           "Version": "2012-10-17",
@@ -537,6 +644,14 @@ exports[`WorkflowStack Snapshot test 1`] = `
               "Resource": {
                 "Ref": "RegisterDeviceWorkflowVLRegisterDeviceStateMachineA6299E55",
               },
+            },
+            {
+              "Action": [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
             },
             {
               "Action": [
@@ -706,6 +821,9 @@ exports[`WorkflowStack Snapshot test 1`] = `
           ],
         },
         "Runtime": "java17",
+        "TracingConfig": {
+          "Mode": "Active",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },

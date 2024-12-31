@@ -36,6 +36,7 @@ exports[`ServiceStack Snapshot test 1`] = `
   "Resources": {
     "CreateLivestreamSessionActivity": {
       "DependsOn": [
+        "CreateLivestreamSessionRoleDefaultPolicy04E3CFCD",
         "CreateLivestreamSessionRole4E6365C5",
       ],
       "Properties": {
@@ -64,6 +65,9 @@ exports[`ServiceStack Snapshot test 1`] = `
         },
         "Runtime": "java17",
         "Timeout": 300,
+        "TracingConfig": {
+          "Mode": "Active",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -139,8 +143,33 @@ exports[`ServiceStack Snapshot test 1`] = `
       },
       "Type": "AWS::IAM::Role",
     },
+    "CreateLivestreamSessionRoleDefaultPolicy04E3CFCD": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "CreateLivestreamSessionRoleDefaultPolicy04E3CFCD",
+        "Roles": [
+          {
+            "Ref": "CreateLivestreamSessionRole4E6365C5",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
     "CreatePlaybackSessionActivity": {
       "DependsOn": [
+        "CreatePlaybackSessionRoleDefaultPolicy4FF90827",
         "CreatePlaybackSessionRole9B55E107",
       ],
       "Properties": {
@@ -169,6 +198,9 @@ exports[`ServiceStack Snapshot test 1`] = `
         },
         "Runtime": "java17",
         "Timeout": 300,
+        "TracingConfig": {
+          "Mode": "Active",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -243,8 +275,33 @@ exports[`ServiceStack Snapshot test 1`] = `
       },
       "Type": "AWS::IAM::Role",
     },
+    "CreatePlaybackSessionRoleDefaultPolicy4FF90827": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "CreatePlaybackSessionRoleDefaultPolicy4FF90827",
+        "Roles": [
+          {
+            "Ref": "CreatePlaybackSessionRole9B55E107",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
     "CreateSnapshotUploadPathActivity": {
       "DependsOn": [
+        "CreateSnapshotUploadPathRoleDefaultPolicy3343E442",
         "CreateSnapshotUploadPathRoleE753F1EE",
       ],
       "Properties": {
@@ -273,6 +330,9 @@ exports[`ServiceStack Snapshot test 1`] = `
         },
         "Runtime": "java17",
         "Timeout": 300,
+        "TracingConfig": {
+          "Mode": "Active",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -303,6 +363,30 @@ exports[`ServiceStack Snapshot test 1`] = `
         },
       },
       "Type": "AWS::Lambda::Permission",
+    },
+    "CreateSnapshotUploadPathRoleDefaultPolicy3343E442": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "CreateSnapshotUploadPathRoleDefaultPolicy3343E442",
+        "Roles": [
+          {
+            "Ref": "CreateSnapshotUploadPathRoleE753F1EE",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
     },
     "CreateSnapshotUploadPathRoleE753F1EE": {
       "Properties": {
@@ -365,6 +449,7 @@ exports[`ServiceStack Snapshot test 1`] = `
     },
     "GetVLRegisterDeviceStatusActivity": {
       "DependsOn": [
+        "getVLRegisterDeviceStatusRoleDefaultPolicy60937742",
         "getVLRegisterDeviceStatusRole583C9D58",
       ],
       "Properties": {
@@ -392,6 +477,9 @@ exports[`ServiceStack Snapshot test 1`] = `
         },
         "Runtime": "java17",
         "Timeout": 300,
+        "TracingConfig": {
+          "Mode": "Active",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -434,6 +522,9 @@ exports[`ServiceStack Snapshot test 1`] = `
         },
         "Runtime": "java17",
         "Timeout": 300,
+        "TracingConfig": {
+          "Mode": "Active",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -507,6 +598,14 @@ exports[`ServiceStack Snapshot test 1`] = `
               "Effect": "Allow",
               "Resource": "arn:aws:kms:us-east-1:123456789012:key/*",
             },
+            {
+              "Action": [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
           ],
           "Version": "2012-10-17",
         },
@@ -521,6 +620,7 @@ exports[`ServiceStack Snapshot test 1`] = `
     },
     "ListDetailedVideoTimelineActivity": {
       "DependsOn": [
+        "ListDetailedVideoTimelineRoleDefaultPolicyDB00F35E",
         "ListDetailedVideoTimelineRole57EEC40B",
       ],
       "Properties": {
@@ -548,6 +648,9 @@ exports[`ServiceStack Snapshot test 1`] = `
         },
         "Runtime": "java17",
         "Timeout": 300,
+        "TracingConfig": {
+          "Mode": "Active",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -641,8 +744,33 @@ exports[`ServiceStack Snapshot test 1`] = `
       },
       "Type": "AWS::IAM::Role",
     },
+    "ListDetailedVideoTimelineRoleDefaultPolicyDB00F35E": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "ListDetailedVideoTimelineRoleDefaultPolicyDB00F35E",
+        "Roles": [
+          {
+            "Ref": "ListDetailedVideoTimelineRole57EEC40B",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
     "ListVideoTimelinesActivity": {
       "DependsOn": [
+        "ListVideoTimelinesRoleDefaultPolicy0E5D6392",
         "ListVideoTimelinesRole217B167D",
       ],
       "Properties": {
@@ -670,6 +798,9 @@ exports[`ServiceStack Snapshot test 1`] = `
         },
         "Runtime": "java17",
         "Timeout": 300,
+        "TracingConfig": {
+          "Mode": "Active",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -763,8 +894,33 @@ exports[`ServiceStack Snapshot test 1`] = `
       },
       "Type": "AWS::IAM::Role",
     },
+    "ListVideoTimelinesRoleDefaultPolicy0E5D6392": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "ListVideoTimelinesRoleDefaultPolicy0E5D6392",
+        "Roles": [
+          {
+            "Ref": "ListVideoTimelinesRole217B167D",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
     "PutVideoTimelineActivity": {
       "DependsOn": [
+        "PutVideoTimelineRoleDefaultPolicy9C0E6A68",
         "PutVideoTimelineRoleA6200BBF",
       ],
       "Properties": {
@@ -792,6 +948,9 @@ exports[`ServiceStack Snapshot test 1`] = `
         },
         "Runtime": "java17",
         "Timeout": 300,
+        "TracingConfig": {
+          "Mode": "Active",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -903,6 +1062,30 @@ exports[`ServiceStack Snapshot test 1`] = `
         "RoleName": "PutVideoTimelineRole",
       },
       "Type": "AWS::IAM::Role",
+    },
+    "PutVideoTimelineRoleDefaultPolicy9C0E6A68": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "PutVideoTimelineRoleDefaultPolicy9C0E6A68",
+        "Roles": [
+          {
+            "Ref": "PutVideoTimelineRoleA6200BBF",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
     },
     "SnapDLQKmsKey2BFBC897": {
       "DeletionPolicy": "Retain",
@@ -1153,6 +1336,7 @@ exports[`ServiceStack Snapshot test 1`] = `
     },
     "StartVLRegisterDeviceActivity": {
       "DependsOn": [
+        "StartVLRegisterDeviceRoleDefaultPolicyF271889A",
         "StartVLRegisterDeviceRoleEC874B45",
       ],
       "Properties": {
@@ -1181,6 +1365,9 @@ exports[`ServiceStack Snapshot test 1`] = `
         },
         "Runtime": "java17",
         "Timeout": 300,
+        "TracingConfig": {
+          "Mode": "Active",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -1192,6 +1379,30 @@ exports[`ServiceStack Snapshot test 1`] = `
       },
       "Type": "AWS::Logs::LogGroup",
       "UpdateReplacePolicy": "Retain",
+    },
+    "StartVLRegisterDeviceRoleDefaultPolicyF271889A": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "StartVLRegisterDeviceRoleDefaultPolicyF271889A",
+        "Roles": [
+          {
+            "Ref": "StartVLRegisterDeviceRoleEC874B45",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
     },
     "StartVLRegisterDeviceRoleEC874B45": {
       "Properties": {
@@ -1739,6 +1950,30 @@ exports[`ServiceStack Snapshot test 1`] = `
         "RoleName": "getVLRegisterDeviceStatusRole",
       },
       "Type": "AWS::IAM::Role",
+    },
+    "getVLRegisterDeviceStatusRoleDefaultPolicy60937742": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "getVLRegisterDeviceStatusRoleDefaultPolicy60937742",
+        "Roles": [
+          {
+            "Ref": "getVLRegisterDeviceStatusRole583C9D58",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
     },
     "snapIoTToLambdaRule": {
       "Properties": {

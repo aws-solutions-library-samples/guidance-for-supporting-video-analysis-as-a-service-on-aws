@@ -1,6 +1,6 @@
 import { EngineVersion } from 'aws-cdk-lib/aws-opensearchservice';
 import type { DomainProps } from 'aws-cdk-lib/aws-opensearchservice/lib/domain';
-import {Key} from "aws-cdk-lib/aws-kms";
+import { Key } from "aws-cdk-lib/aws-kms";
 import { EbsDeviceVolumeType } from 'aws-cdk-lib/aws-ec2';
 
 export function getVLSearchDomainProps(

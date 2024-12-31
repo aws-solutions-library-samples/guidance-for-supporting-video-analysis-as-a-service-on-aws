@@ -44,6 +44,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
     },
     "StartCreateDeviceAttachKvsAccessToCertLambda9C48ABC8": {
       "DependsOn": [
+        "StartCreateDeviceStartCreateDeviceRoleDefaultPolicy3760D3E1",
         "StartCreateDeviceStartCreateDeviceRole9FDF031A",
       ],
       "Properties": {
@@ -78,6 +79,9 @@ exports[`WorkflowStack Snapshot test 1`] = `
         },
         "Runtime": "java17",
         "Timeout": 300,
+        "TracingConfig": {
+          "Mode": "Active",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -92,6 +96,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
     },
     "StartCreateDeviceCreateDeviceLambda9980D98A": {
       "DependsOn": [
+        "StartCreateDeviceStartCreateDeviceRoleDefaultPolicy3760D3E1",
         "StartCreateDeviceStartCreateDeviceRole9FDF031A",
       ],
       "Properties": {
@@ -125,6 +130,9 @@ exports[`WorkflowStack Snapshot test 1`] = `
         },
         "Runtime": "java17",
         "Timeout": 300,
+        "TracingConfig": {
+          "Mode": "Active",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -139,6 +147,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
     },
     "StartCreateDeviceCreateKVSStreamLambdaCBD49F90": {
       "DependsOn": [
+        "StartCreateDeviceStartCreateDeviceRoleDefaultPolicy3760D3E1",
         "StartCreateDeviceStartCreateDeviceRole9FDF031A",
       ],
       "Properties": {
@@ -174,6 +183,9 @@ exports[`WorkflowStack Snapshot test 1`] = `
         },
         "Runtime": "java17",
         "Timeout": 300,
+        "TracingConfig": {
+          "Mode": "Active",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -203,6 +215,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
     },
     "StartCreateDeviceFVLWorkflowCheckerLambdaFAD86E9D": {
       "DependsOn": [
+        "StartCreateDeviceStartCreateDeviceRoleDefaultPolicy3760D3E1",
         "StartCreateDeviceStartCreateDeviceRole9FDF031A",
       ],
       "Properties": {
@@ -238,11 +251,15 @@ exports[`WorkflowStack Snapshot test 1`] = `
         },
         "Runtime": "java17",
         "Timeout": 300,
+        "TracingConfig": {
+          "Mode": "Active",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
     "StartCreateDeviceFailCreateDeviceLambda0D6A6176": {
       "DependsOn": [
+        "StartCreateDeviceStartCreateDeviceRoleDefaultPolicy3760D3E1",
         "StartCreateDeviceStartCreateDeviceRole9FDF031A",
       ],
       "Properties": {
@@ -276,6 +293,9 @@ exports[`WorkflowStack Snapshot test 1`] = `
         },
         "Runtime": "java17",
         "Timeout": 300,
+        "TracingConfig": {
+          "Mode": "Active",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -329,6 +349,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
     },
     "StartCreateDeviceSetLoggerConfigLambdaA0263FA9": {
       "DependsOn": [
+        "StartCreateDeviceSetLoggerConfigRoleDefaultPolicyF5829FEC",
         "StartCreateDeviceSetLoggerConfigRole69187543",
       ],
       "Properties": {
@@ -362,6 +383,9 @@ exports[`WorkflowStack Snapshot test 1`] = `
         },
         "Runtime": "java17",
         "Timeout": 300,
+        "TracingConfig": {
+          "Mode": "Active",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -446,6 +470,30 @@ exports[`WorkflowStack Snapshot test 1`] = `
         ],
       },
       "Type": "AWS::IAM::Role",
+    },
+    "StartCreateDeviceSetLoggerConfigRoleDefaultPolicyF5829FEC": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "StartCreateDeviceSetLoggerConfigRoleDefaultPolicyF5829FEC",
+        "Roles": [
+          {
+            "Ref": "StartCreateDeviceSetLoggerConfigRole69187543",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
     },
     "StartCreateDeviceStartCreateDeviceRole9FDF031A": {
       "Properties": {
@@ -577,6 +625,30 @@ exports[`WorkflowStack Snapshot test 1`] = `
       },
       "Type": "AWS::IAM::Role",
     },
+    "StartCreateDeviceStartCreateDeviceRoleDefaultPolicy3760D3E1": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "StartCreateDeviceStartCreateDeviceRoleDefaultPolicy3760D3E1",
+        "Roles": [
+          {
+            "Ref": "StartCreateDeviceStartCreateDeviceRole9FDF031A",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
     "StartCreateDeviceStartCreateDeviceStateMachine140D55D1": {
       "DeletionPolicy": "Delete",
       "DependsOn": [
@@ -658,15 +730,42 @@ exports[`WorkflowStack Snapshot test 1`] = `
             ],
           ],
         },
+        "LoggingConfiguration": {
+          "Destinations": [
+            {
+              "CloudWatchLogsLogGroup": {
+                "LogGroupArn": {
+                  "Fn::GetAtt": [
+                    "StartCreateDeviceStartCreateDeviceStateMachineLogGroupBA50EA42",
+                    "Arn",
+                  ],
+                },
+              },
+            },
+          ],
+          "Level": "ALL",
+        },
         "RoleArn": {
           "Fn::GetAtt": [
             "StartCreateDeviceStartCreateDeviceStateMachineRoleE4B4ECA8",
             "Arn",
           ],
         },
+        "TracingConfiguration": {
+          "Enabled": true,
+        },
       },
       "Type": "AWS::StepFunctions::StateMachine",
       "UpdateReplacePolicy": "Delete",
+    },
+    "StartCreateDeviceStartCreateDeviceStateMachineLogGroupBA50EA42": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "LogGroupName": "StartCreateDeviceStateMachineLogGroup",
+        "RetentionInDays": 3653,
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
     },
     "StartCreateDeviceStartCreateDeviceStateMachineRoleDefaultPolicyC56538DD": {
       "Properties": {
@@ -828,6 +927,30 @@ exports[`WorkflowStack Snapshot test 1`] = `
                 },
               ],
             },
+            {
+              "Action": [
+                "logs:CreateLogDelivery",
+                "logs:GetLogDelivery",
+                "logs:UpdateLogDelivery",
+                "logs:DeleteLogDelivery",
+                "logs:ListLogDeliveries",
+                "logs:PutResourcePolicy",
+                "logs:DescribeResourcePolicies",
+                "logs:DescribeLogGroups",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            {
+              "Action": [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+                "xray:GetSamplingRules",
+                "xray:GetSamplingTargets",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
           ],
           "Version": "2012-10-17",
         },
@@ -974,6 +1097,9 @@ exports[`WorkflowStack Snapshot test 1`] = `
           ],
         },
         "Runtime": "java17",
+        "TracingConfig": {
+          "Mode": "Active",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -1047,6 +1173,14 @@ exports[`WorkflowStack Snapshot test 1`] = `
               "Resource": {
                 "Ref": "StartCreateDeviceStartCreateDeviceStateMachine140D55D1",
               },
+            },
+            {
+              "Action": [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
             },
             {
               "Action": [

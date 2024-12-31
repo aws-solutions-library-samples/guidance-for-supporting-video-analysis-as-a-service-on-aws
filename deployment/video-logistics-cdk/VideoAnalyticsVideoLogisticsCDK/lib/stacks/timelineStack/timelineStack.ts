@@ -3,7 +3,7 @@ import { Duration, Fn, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
 import { BlockPublicAccess, Bucket, BucketEncryption, ObjectOwnership } from 'aws-cdk-lib/aws-s3';
 import { AttributeType, BillingMode, StreamViewType, Table } from 'aws-cdk-lib/aws-dynamodb';
 import { DynamoEventSource, KinesisEventSource, SqsDlq } from 'aws-cdk-lib/aws-lambda-event-sources';
-import { Function, Runtime, StartingPosition, IFunction, Code } from 'aws-cdk-lib/aws-lambda';
+import { Function, Runtime, StartingPosition, IFunction, Code, Tracing } from 'aws-cdk-lib/aws-lambda';
 import { LambdaFunction } from 'aws-cdk-lib/aws-events-targets';
 import { LogGroup, RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { Queue, QueueEncryption } from 'aws-cdk-lib/aws-sqs';
@@ -141,6 +141,7 @@ export class TimelineStack extends Stack {
             code: Code.fromAsset(LAMBDA_ASSET_PATH),
             description: 'Lambda responsible for forwarding lambda to KDS ',
             runtime: Runtime.JAVA_17,
+            tracing: Tracing.ACTIVE,
             handler: TIMELINE_FORWARDER_HANDLER_PATH,
             memorySize: 2048,
             role: forwarderLambdaRole,
@@ -195,6 +196,7 @@ export class TimelineStack extends Stack {
             code: Code.fromAsset(LAMBDA_ASSET_PATH),
             description: 'Lambda responsible for aggregation of video timelines',
             runtime: Runtime.JAVA_17,
+            tracing: Tracing.ACTIVE,
             handler: DENSITY_UPDATE_LAMBDA_HANDLER_PATH,
             memorySize: 2048,
             role: this.lambdaRole,
@@ -380,6 +382,7 @@ function createExportLambda(stack: Stack, role: Role, props: TimelineStackProps)
         code: Code.fromAsset(LAMBDA_ASSET_PATH),
         description: 'Lambda responsible for exporting timeline information from S3 to DDB',
         runtime: Runtime.JAVA_17,
+        tracing: Tracing.ACTIVE,
         handler: EXPORT_LAMBDA_HANDLER_PATH,
         memorySize: 2048,
         role: role,

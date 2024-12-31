@@ -1,44 +1,37 @@
-import { Role } from "aws-cdk-lib/aws-iam";
-import { 
-  ServicePrincipal, 
-  ManagedPolicy, 
-  PolicyDocument, 
-  Policy,
-  PolicyStatement,
-  Effect
+import { Duration } from "aws-cdk-lib";
+import {
+  Effect, ManagedPolicy,
+  PolicyDocument,
+  PolicyStatement, Role, ServicePrincipal
 } from "aws-cdk-lib/aws-iam";
+import * as iot from 'aws-cdk-lib/aws-iot';
+import { Code, Function, Runtime, Tracing } from "aws-cdk-lib/aws-lambda";
+import { LogGroup, RetentionDays } from "aws-cdk-lib/aws-logs";
 import {
   Fail,
   JsonPath,
+  LogLevel,
   StateMachine,
   Succeed,
-  TaskInput,
+  TaskInput
 } from "aws-cdk-lib/aws-stepfunctions";
+import { LambdaInvoke } from "aws-cdk-lib/aws-stepfunctions-tasks";
+import { Construct } from "constructs";
+import { AWSRegion, VIDEO_LOGISTICS_API_NAME } from "video_analytics_common_construct";
 import {
+  AWSRegionUtils,
   VideoAnalyticsAsyncWorkflowResource,
   createLambdaRole,
-  AWSRegionUtils,
 } from "video_analytics_common_construct/";
-import { AWSRegion, VIDEO_LOGISTICS_API_NAME } from "video_analytics_common_construct";
-import { Function, Runtime, Code } from "aws-cdk-lib/aws-lambda";
-import { LogGroup, RetentionDays } from "aws-cdk-lib/aws-logs";
-import { LambdaInvoke } from "aws-cdk-lib/aws-stepfunctions-tasks";
-import { Duration } from "aws-cdk-lib";
-import { Construct } from "constructs";
-import { WorkflowStackProps } from "./workflowStack";
 import {
+  DM_WORKFLOW_JAVA_PATH_PREFIX,
+  ERROR_MESSAGE_PATH,
+  LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT,
   PARTITION_KEY_PATH,
   RESULT_PATH,
   RESULT_PATH_ERROR,
-  ERROR_MESSAGE_PATH,
-  DM_WORKFLOW_JAVA_PATH_PREFIX,
-  LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT,
 } from "../const";
-import * as fs from 'fs';
-import * as path from 'path';
-import * as iot from 'aws-cdk-lib/aws-iot';
-import { RestApi, IRestApi } from 'aws-cdk-lib/aws-apigateway';
-import { Fn } from 'aws-cdk-lib';
+import { WorkflowStackProps } from "./workflowStack";
 
 export class StartCreateDevice extends VideoAnalyticsAsyncWorkflowResource {
   partitionKeyName = "JobId";
@@ -56,7 +49,6 @@ export class StartCreateDevice extends VideoAnalyticsAsyncWorkflowResource {
   private readonly setLoggerConfigLambda: Function;
   private readonly setLoggerConfigDynamoStatement: PolicyStatement;
   private readonly setLoggerConfigKmsStatement: PolicyStatement;
-  private readonly vlApiGateway: IRestApi;
 
   constructor(scope: Construct, id: string, props: WorkflowStackProps) {
     super(scope, id);
@@ -292,6 +284,7 @@ export class StartCreateDevice extends VideoAnalyticsAsyncWorkflowResource {
     // Create the SetLoggerConfig Lambda
     this.setLoggerConfigLambda = new Function(this, "SetLoggerConfigLambda", {
       runtime: Runtime.JAVA_17,
+      tracing: Tracing.ACTIVE,
       handler: `${DM_WORKFLOW_JAVA_PATH_PREFIX}.createdevice.SetLoggerConfigHandler::handleRequest`,
       code: Code.fromAsset(`${LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT}`),
       memorySize: 512,
@@ -311,7 +304,7 @@ export class StartCreateDevice extends VideoAnalyticsAsyncWorkflowResource {
   createStepFunction(): StateMachine {
     const createDeviceLambda = new Function(this, "CreateDeviceLambda", {
       runtime: Runtime.JAVA_17,
-      //TODO: Update this if any changes are made to the lambda handler path or asset built jar location
+      tracing: Tracing.ACTIVE,
       handler: `${DM_WORKFLOW_JAVA_PATH_PREFIX}.createdevice.CreateDeviceHandler::handleRequest`,
       code: Code.fromAsset(`${LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT}`),
       memorySize: 512,
@@ -333,6 +326,7 @@ export class StartCreateDevice extends VideoAnalyticsAsyncWorkflowResource {
       code: Code.fromAsset(`${LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT}`),
       description: "Lambda to create KVS Stream using FVL API.",
       runtime: Runtime.JAVA_17,
+      tracing: Tracing.ACTIVE,
       handler: `${DM_WORKFLOW_JAVA_PATH_PREFIX}.createdevice.CreateKVSStreamHandler::handleRequest`,
       memorySize: 512,
       role: this.role,
@@ -357,6 +351,7 @@ export class StartCreateDevice extends VideoAnalyticsAsyncWorkflowResource {
         code: Code.fromAsset(`${LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT}`),
         description: "Lambda responsible for attaching cert to KVS Roles policy.",
         runtime: Runtime.JAVA_17,
+        tracing: Tracing.ACTIVE,
         handler: `${DM_WORKFLOW_JAVA_PATH_PREFIX}.createdevice.AttachKvsAccessToCertHandler::handleRequest`,
         memorySize: 512,
         role: this.role,
@@ -380,6 +375,7 @@ export class StartCreateDevice extends VideoAnalyticsAsyncWorkflowResource {
         description:
           "Lambda responsible for checking to make sure fvl device registration workflow completes.",
         runtime: Runtime.JAVA_17,
+        tracing: Tracing.ACTIVE,
         handler: `${DM_WORKFLOW_JAVA_PATH_PREFIX}.createdevice.VideoLogisticsWorkflowCheckerHandler::handleRequest`,
         memorySize: 512,
         role: this.role,
@@ -402,7 +398,7 @@ export class StartCreateDevice extends VideoAnalyticsAsyncWorkflowResource {
       "FailCreateDeviceLambda",
       {
         runtime: Runtime.JAVA_17,
-        //TODO: Update this if any changes are made to the lambda handler path or asset built jar location
+        tracing: Tracing.ACTIVE,
         handler: `${DM_WORKFLOW_JAVA_PATH_PREFIX}.createdevice.FailCreateDeviceHandler::handleRequest`,
         code: Code.fromAsset(`${LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT}`),
         memorySize: 512,
@@ -538,9 +534,18 @@ export class StartCreateDevice extends VideoAnalyticsAsyncWorkflowResource {
       this,
       "StartCreateDeviceStateMachine",
       {
+        logs: {
+          destination: new LogGroup(this, "StartCreateDeviceStateMachineLogGroup", {
+            retention: RetentionDays.TEN_YEARS,
+            logGroupName: "StartCreateDeviceStateMachineLogGroup"
+          }),
+          level: LogLevel.ALL,
+        },
         definition: createDeviceState,
+        tracingEnabled: true
       }
     );
+
     return this.stateMachine;
   }
 

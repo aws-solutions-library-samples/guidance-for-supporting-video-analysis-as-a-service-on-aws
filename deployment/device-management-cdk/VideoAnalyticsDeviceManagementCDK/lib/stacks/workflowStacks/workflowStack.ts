@@ -57,22 +57,6 @@ export function getWorkflowResources(
 ): VideoAnalyticsAsyncWorkflowResource[] {
   console.log("getWorkflowResources called");
   return [
-    // new StartCreateNotificationRule(
-    //   scope,
-    //   "StartCreateNotificationRule",
-    //   props
-    // ),
-    // new StartCreateDeviceNotification(
-    //   scope,
-    //   "StartCreateDeviceNotification",
-    //   props
-    // ),
-    // new StartDeleteDeviceNotification(
-    //   scope,
-    //   "StartDeleteDeviceNotification",
-    //   props
-    // ),
     new StartCreateDevice(scope, "StartCreateDevice", props),
-    // new StartGetDeviceCapabilities(scope, "StartGetDeviceCapabilities", props),
   ];
 }
