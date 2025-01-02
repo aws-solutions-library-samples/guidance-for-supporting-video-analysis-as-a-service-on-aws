@@ -1,14 +1,13 @@
 import { App } from "aws-cdk-lib";
-import { 
-    // ForwardingRulesStack,
-    ServiceStack,
-    TimelineStack,
-    WorkflowStack,
- } from "./stacks";
 import { AWSRegion } from "video_analytics_common_construct";
+import {
+  ServiceStack,
+  TimelineStack,
+  WorkflowStack,
+} from "./stacks";
 import { VideoLogisticsBootstrapStack } from "./stacks/bootstrapStack/videoLogisticsBootstrapStack";
+import { OpenSearchStack } from "./stacks/opensearchStack";
 import { BulkInferenceStack } from "./stacks/workflowStack/bulkInferenceStack";
-import { OpenSearchStack } from "./stacks/forwardingRulesStack";
 
 const app = new App();
 

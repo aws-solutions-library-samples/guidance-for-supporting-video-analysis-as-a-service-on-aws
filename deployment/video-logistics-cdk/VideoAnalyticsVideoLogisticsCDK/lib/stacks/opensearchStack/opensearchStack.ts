@@ -1,6 +1,6 @@
 import type { App } from 'aws-cdk-lib';
 import { Domain } from 'aws-cdk-lib/aws-opensearchservice';
-import { Duration, Fn, RemovalPolicy, Stack, StackProps, CfnOutput } from 'aws-cdk-lib';
+import { Stack, StackProps, CfnOutput } from 'aws-cdk-lib';
 import {getVLSearchDomainProps} from './utils';
 import {
   AccountRootPrincipal,

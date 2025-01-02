@@ -1,7 +1,7 @@
 import type { Role } from 'aws-cdk-lib/aws-iam';
 import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import type { Construct } from 'constructs';
-import { Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
+import { Code, Function, Runtime, Tracing } from 'aws-cdk-lib/aws-lambda';
 import { LogGroup, RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { Arn, Duration, Stack, StackProps } from 'aws-cdk-lib';
 import { LambdaInvoke } from 'aws-cdk-lib/aws-stepfunctions-tasks';
@@ -10,7 +10,8 @@ import {
   Succeed,
   JsonPath,
   StateMachine,
-  TaskInput
+  TaskInput,
+  LogLevel
 } from 'aws-cdk-lib/aws-stepfunctions';
 import {
   ERROR_MESSAGE_PATH,
@@ -25,7 +26,6 @@ import {
   VideoAnalyticsAsyncWorkflowResource,
   AWSRegionUtils
 } from 'video_analytics_common_construct';
-import { VideoExportWorkflow } from '../videoExportStack';
 
 export interface WorkflowStackProps extends StackProps {
   region: AWSRegion;
@@ -139,7 +139,7 @@ class RegisterDeviceWorkflow extends VideoAnalyticsAsyncWorkflowResource {
       code: Code.fromAsset(LAMBDA_ASSET_PATH),
       description: 'Lambda responsible for invocation of StepFunction',
       runtime: Runtime.JAVA_17,
-      // TODO: Update handler to match new lambda handler path
+      tracing: Tracing.ACTIVE,
       handler: 'com.amazonaws.videoanalytics.videologistics.workflow.KVSResourceCreateLambda::handleRequest',
       memorySize: 2048,
       role: this.kvsRole,
@@ -160,6 +160,7 @@ class RegisterDeviceWorkflow extends VideoAnalyticsAsyncWorkflowResource {
       description:
         'Lambda responsible for cleaning up KVS resources and updating the failure status in ddb.',
       runtime: Runtime.JAVA_17,
+      tracing: Tracing.ACTIVE,
       handler:
         'com.amazonaws.videoanalytics.videologistics.workflow.FailAndCleanupVLDeviceRegistrationHandler::handleRequest',
       memorySize: 2048,
@@ -211,7 +212,15 @@ class RegisterDeviceWorkflow extends VideoAnalyticsAsyncWorkflowResource {
     });
 
     this.stateMachine = new StateMachine(this, 'VLRegisterDeviceStateMachine', {
-      definition: kvsCreateState
+      logs: {
+        destination: new LogGroup(this, "VLRegisterDeviceStateMachineLogGroup", {
+          retention: RetentionDays.TEN_YEARS,
+          logGroupName: "VLRegisterDeviceStateMachineLogGroup"
+        }),
+        level: LogLevel.ALL,
+      },
+      definition: kvsCreateState,
+      tracingEnabled: true
     });
   }
 
@@ -269,7 +278,7 @@ class ModelSchema extends VideoAnalyticsAsyncWorkflowResource {
       code: Code.fromAsset(LAMBDA_ASSET_PATH),
       description: 'Lambda responsible for invocation of StepFunction',
       runtime: Runtime.JAVA_17,
-      // TODO: Update this to actual handler
+      tracing: Tracing.ACTIVE,
       handler: 'com.amazon.awsvideoanalyticsvlcontrolplane.lambda.KVSResourceCreateLambda::handleRequest',
       memorySize: 2048,
       role: this.role,
@@ -288,7 +297,8 @@ class ModelSchema extends VideoAnalyticsAsyncWorkflowResource {
     });
 
     const simpleStateMachine = new StateMachine(this, 'ModelSchemaStateMachine', {
-      definition: finalStatus
+      definition: finalStatus,
+      tracingEnabled: true
     });
     this.stateMachine = simpleStateMachine;
   }

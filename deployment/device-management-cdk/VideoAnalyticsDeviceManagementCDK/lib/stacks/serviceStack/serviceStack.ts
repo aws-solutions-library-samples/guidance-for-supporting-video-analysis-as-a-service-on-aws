@@ -2,7 +2,7 @@ import { Duration, Fn, Stack, StackProps } from "aws-cdk-lib";
 import { SpecRestApi, MethodLoggingLevel } from 'aws-cdk-lib/aws-apigateway';
 import { CfnFunction } from "aws-cdk-lib/aws-cloudfront";
 import { Effect, PolicyStatement, Role, ServicePrincipal, ManagedPolicy } from "aws-cdk-lib/aws-iam";
-import { Function, Runtime, Code } from "aws-cdk-lib/aws-lambda";
+import { Function, Runtime, Code, Tracing } from "aws-cdk-lib/aws-lambda";
 import { LogGroup, RetentionDays } from "aws-cdk-lib/aws-logs";
 import { Asset } from 'aws-cdk-lib/aws-s3-assets'
 import { Construct } from "constructs";
@@ -63,7 +63,7 @@ export class ServiceStack extends Stack {
 
     const getDeviceLambda = new Function(this, "GetDeviceActivity", {
       runtime: Runtime.JAVA_17,
-      //TODO: Update this if any changes are made to the lambda handler path or asset built jar location
+      tracing: Tracing.ACTIVE,
       handler: `${DM_ACTIVITY_JAVA_PATH_PREFIX}.GetDeviceActivity::handleRequest`,
       code: Code.fromAsset(LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT),
       memorySize: 512,
@@ -93,7 +93,7 @@ export class ServiceStack extends Stack {
 
     const getDeviceShadowLambda = new Function(this, "GetDeviceShadowActivity", {
       runtime: Runtime.JAVA_17,
-      //TODO: Update this if any changes are made to the lambda handler path or asset built jar location
+      tracing: Tracing.ACTIVE,
       handler: `${DM_ACTIVITY_JAVA_PATH_PREFIX}.GetDeviceShadowActivity::handleRequest`,
       code: Code.fromAsset(LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT),
       memorySize: 512,
@@ -123,7 +123,7 @@ export class ServiceStack extends Stack {
 
     const updateDeviceShadowLambda = new Function(this, "UpdateDeviceShadowActivity", {
       runtime: Runtime.JAVA_17,
-      //TODO: Update this if any changes are made to the lambda handler path or asset built jar location
+      tracing: Tracing.ACTIVE,
       handler: `${DM_ACTIVITY_JAVA_PATH_PREFIX}.UpdateDeviceShadowActivity::handleRequest`,
       code: Code.fromAsset(LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT),
       memorySize: 512,
@@ -171,6 +171,7 @@ export class ServiceStack extends Stack {
     // StartCreateDeviceActivity Lambda
     const startCreateDeviceLambda = new Function(this, "StartCreateDeviceActivity", {
       runtime: Runtime.JAVA_17,
+      tracing: Tracing.ACTIVE,
       handler: `${DM_ACTIVITY_JAVA_PATH_PREFIX}.StartCreateDeviceActivity::handleRequest`,
       code: Code.fromAsset(LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT),
       memorySize: 512,
@@ -189,6 +190,7 @@ export class ServiceStack extends Stack {
     // GetCreateDeviceStatusActivity Lambda
     const getCreateDeviceStatusLambda = new Function(this, "GetCreateDeviceStatusActivity", {
       runtime: Runtime.JAVA_17,
+      tracing: Tracing.ACTIVE,
       handler: `${DM_ACTIVITY_JAVA_PATH_PREFIX}.GetCreateDeviceStatusActivity::handleRequest`,
       code: Code.fromAsset(LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT),
       memorySize: 512,

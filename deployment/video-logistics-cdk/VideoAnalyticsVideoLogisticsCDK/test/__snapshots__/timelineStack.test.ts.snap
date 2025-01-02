@@ -132,6 +132,14 @@ exports[`TimelineStack Snapshot test 1`] = `
               },
             },
             {
+              "Action": [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            {
               "Action": "kms:Decrypt",
               "Effect": "Allow",
               "Resource": {
@@ -389,6 +397,9 @@ exports[`TimelineStack Snapshot test 1`] = `
         },
         "Runtime": "java17",
         "Timeout": 720,
+        "TracingConfig": {
+          "Mode": "Active",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -447,6 +458,14 @@ exports[`TimelineStack Snapshot test 1`] = `
       "Properties": {
         "PolicyDocument": {
           "Statement": [
+            {
+              "Action": [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
             {
               "Action": [
                 "sqs:SendMessage",
@@ -758,6 +777,9 @@ exports[`TimelineStack Snapshot test 1`] = `
         },
         "Runtime": "java17",
         "Timeout": 720,
+        "TracingConfig": {
+          "Mode": "Active",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -840,6 +862,14 @@ exports[`TimelineStack Snapshot test 1`] = `
       "Properties": {
         "PolicyDocument": {
           "Statement": [
+            {
+              "Action": [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
             {
               "Action": [
                 "kms:Decrypt",
@@ -993,6 +1023,9 @@ exports[`TimelineStack Snapshot test 1`] = `
         },
         "Runtime": "java17",
         "Timeout": 720,
+        "TracingConfig": {
+          "Mode": "Active",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },

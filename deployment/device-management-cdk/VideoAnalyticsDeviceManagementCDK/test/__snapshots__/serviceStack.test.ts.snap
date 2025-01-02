@@ -36,6 +36,7 @@ exports[`ServiceStack Snapshot test 1`] = `
   "Resources": {
     "GetCreateDeviceStatusActivity": {
       "DependsOn": [
+        "GetCreateDeviceStatusRoleDefaultPolicy7BBC8369",
         "GetCreateDeviceStatusRoleE1D1C525",
       ],
       "Properties": {
@@ -69,6 +70,9 @@ exports[`ServiceStack Snapshot test 1`] = `
         },
         "Runtime": "java17",
         "Timeout": 300,
+        "TracingConfig": {
+          "Mode": "Active",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -80,6 +84,30 @@ exports[`ServiceStack Snapshot test 1`] = `
       },
       "Type": "AWS::Logs::LogGroup",
       "UpdateReplacePolicy": "Retain",
+    },
+    "GetCreateDeviceStatusRoleDefaultPolicy7BBC8369": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "GetCreateDeviceStatusRoleDefaultPolicy7BBC8369",
+        "Roles": [
+          {
+            "Ref": "GetCreateDeviceStatusRoleE1D1C525",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
     },
     "GetCreateDeviceStatusRoleE1D1C525": {
       "Properties": {
@@ -130,6 +158,7 @@ exports[`ServiceStack Snapshot test 1`] = `
     },
     "GetDeviceActivity": {
       "DependsOn": [
+        "GetDeviceRoleDefaultPolicyF547CEC3",
         "GetDeviceRole3D35518F",
       ],
       "Properties": {
@@ -163,6 +192,9 @@ exports[`ServiceStack Snapshot test 1`] = `
         },
         "Runtime": "java17",
         "Timeout": 300,
+        "TracingConfig": {
+          "Mode": "Active",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -231,8 +263,33 @@ exports[`ServiceStack Snapshot test 1`] = `
       },
       "Type": "AWS::IAM::Role",
     },
+    "GetDeviceRoleDefaultPolicyF547CEC3": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "GetDeviceRoleDefaultPolicyF547CEC3",
+        "Roles": [
+          {
+            "Ref": "GetDeviceRole3D35518F",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
     "GetDeviceShadowActivity": {
       "DependsOn": [
+        "GetDeviceShadowRoleDefaultPolicy4630B68E",
         "GetDeviceShadowRoleFEE71BE8",
       ],
       "Properties": {
@@ -266,6 +323,9 @@ exports[`ServiceStack Snapshot test 1`] = `
         },
         "Runtime": "java17",
         "Timeout": 300,
+        "TracingConfig": {
+          "Mode": "Active",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -277,6 +337,30 @@ exports[`ServiceStack Snapshot test 1`] = `
       },
       "Type": "AWS::Logs::LogGroup",
       "UpdateReplacePolicy": "Retain",
+    },
+    "GetDeviceShadowRoleDefaultPolicy4630B68E": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "GetDeviceShadowRoleDefaultPolicy4630B68E",
+        "Roles": [
+          {
+            "Ref": "GetDeviceShadowRoleFEE71BE8",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
     },
     "GetDeviceShadowRoleFEE71BE8": {
       "Properties": {
@@ -327,6 +411,7 @@ exports[`ServiceStack Snapshot test 1`] = `
     },
     "StartCreateDeviceActivity": {
       "DependsOn": [
+        "StartCreateDeviceSyncPathRoleDefaultPolicyB0D2455F",
         "StartCreateDeviceSyncPathRoleDD129E47",
       ],
       "Properties": {
@@ -360,6 +445,9 @@ exports[`ServiceStack Snapshot test 1`] = `
         },
         "Runtime": "java17",
         "Timeout": 300,
+        "TracingConfig": {
+          "Mode": "Active",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -430,8 +518,33 @@ exports[`ServiceStack Snapshot test 1`] = `
       },
       "Type": "AWS::IAM::Role",
     },
+    "StartCreateDeviceSyncPathRoleDefaultPolicyB0D2455F": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "StartCreateDeviceSyncPathRoleDefaultPolicyB0D2455F",
+        "Roles": [
+          {
+            "Ref": "StartCreateDeviceSyncPathRoleDD129E47",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
     "UpdateDeviceShadowActivity": {
       "DependsOn": [
+        "UpdateDeviceShadowRoleDefaultPolicyF4BFF2DD",
         "UpdateDeviceShadowRoleFF04B5D0",
       ],
       "Properties": {
@@ -465,6 +578,9 @@ exports[`ServiceStack Snapshot test 1`] = `
         },
         "Runtime": "java17",
         "Timeout": 300,
+        "TracingConfig": {
+          "Mode": "Active",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -476,6 +592,30 @@ exports[`ServiceStack Snapshot test 1`] = `
       },
       "Type": "AWS::Logs::LogGroup",
       "UpdateReplacePolicy": "Retain",
+    },
+    "UpdateDeviceShadowRoleDefaultPolicyF4BFF2DD": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "UpdateDeviceShadowRoleDefaultPolicyF4BFF2DD",
+        "Roles": [
+          {
+            "Ref": "UpdateDeviceShadowRoleFF04B5D0",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
     },
     "UpdateDeviceShadowRoleFF04B5D0": {
       "Properties": {

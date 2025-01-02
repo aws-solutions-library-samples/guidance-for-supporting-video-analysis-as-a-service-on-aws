@@ -12,7 +12,7 @@ import {
 } from "aws-cdk-lib/aws-iam";
 import { CfnTopicRule } from "aws-cdk-lib/aws-iot";
 import { CfnAlias, Key } from "aws-cdk-lib/aws-kms";
-import { CfnPermission, Code, Function, Runtime } from "aws-cdk-lib/aws-lambda";
+import { CfnPermission, Code, Function, Runtime, Tracing } from "aws-cdk-lib/aws-lambda";
 import { LogGroup, RetentionDays } from "aws-cdk-lib/aws-logs";
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import { Queue, QueueEncryption } from "aws-cdk-lib/aws-sqs";
@@ -78,7 +78,7 @@ export class ServiceStack extends Stack {
 
     const createLivestreamSessionLambda = new Function(this, "CreateLivestreamSessionActivity", {
       runtime: Runtime.JAVA_17,
-      //TODO: Update this if any changes are made to the lambda handler path or asset built jar location
+      tracing: Tracing.ACTIVE,
       handler: `${VL_ACTIVITY_JAVA_PATH_PREFIX}.CreateLivestreamSessionActivity::handleRequest`,
       code: Code.fromAsset(LAMBDA_ASSET_PATH),
       memorySize: 512,
@@ -122,7 +122,7 @@ export class ServiceStack extends Stack {
 
     const createPlaybackSessionLambda = new Function(this, "CreatePlaybackSessionActivity", {
       runtime: Runtime.JAVA_17,
-      //TODO: Update this if any changes are made to the lambda handler path or asset built jar location
+      tracing: Tracing.ACTIVE,
       handler: `${VL_ACTIVITY_JAVA_PATH_PREFIX}.CreatePlaybackSessionActivity::handleRequest`,
       code: Code.fromAsset(LAMBDA_ASSET_PATH),
       memorySize: 512,
@@ -164,7 +164,7 @@ export class ServiceStack extends Stack {
 
     const createSnapshotUploadPathLambda = new Function(this, "CreateSnapshotUploadPathActivity", {
       runtime: Runtime.JAVA_17,
-      //TODO: Update this if any changes are made to the lambda handler path or asset built jar location
+      tracing: Tracing.ACTIVE,
       handler: `${VL_ACTIVITY_JAVA_PATH_PREFIX}.CreateSnapshotUploadPathActivity::handleRequest`,
       code: Code.fromAsset(LAMBDA_ASSET_PATH),
       memorySize: 512,
@@ -378,6 +378,7 @@ export class ServiceStack extends Stack {
 
     const getVLRegisterDeviceStatusLambda = new Function(this, "GetVLRegisterDeviceStatusActivity", {
       runtime: Runtime.JAVA_17,
+      tracing: Tracing.ACTIVE,
       handler: `${VL_ACTIVITY_JAVA_PATH_PREFIX}.GetVLRegisterDeviceStatusActivity::handleRequest`,
       code: Code.fromAsset(LAMBDA_ASSET_PATH),
       memorySize: 512,
@@ -420,6 +421,7 @@ export class ServiceStack extends Stack {
 
     const startVLRegisterDeviceLambda = new Function(this, "StartVLRegisterDeviceActivity", {
       runtime: Runtime.JAVA_17,
+      tracing: Tracing.ACTIVE,
       handler: `${VL_ACTIVITY_JAVA_PATH_PREFIX}.StartVLRegisterDeviceActivity::handleRequest`,
       code: Code.fromAsset(LAMBDA_ASSET_PATH),
       memorySize: 512,
@@ -461,6 +463,7 @@ export class ServiceStack extends Stack {
 
     const importMediaObjectLambda = new Function(this, "ImportMediaObjectActivity", {
       runtime: Runtime.JAVA_17,
+      tracing: Tracing.ACTIVE,
       handler: `${VL_ACTIVITY_JAVA_PATH_PREFIX}.ImportMediaObjectActivity::handleRequest`,
       code: Code.fromAsset(LAMBDA_ASSET_PATH),
       memorySize: 512,
@@ -523,6 +526,7 @@ export class ServiceStack extends Stack {
 
     const listDetailedVideoTimelineLambda = new Function(this, "ListDetailedVideoTimelineActivity", {
       runtime: Runtime.JAVA_17,
+      tracing: Tracing.ACTIVE,
       handler: `${VL_ACTIVITY_JAVA_PATH_PREFIX}.ListDetailedVideoTimelineActivity::handleRequest`,
       code: Code.fromAsset(LAMBDA_ASSET_PATH),
       memorySize: 512,
@@ -539,6 +543,7 @@ export class ServiceStack extends Stack {
 
     const listVideoTimelinesLambda = new Function(this, "ListVideoTimelinesActivity", {
       runtime: Runtime.JAVA_17,
+      tracing: Tracing.ACTIVE,
       handler: `${VL_ACTIVITY_JAVA_PATH_PREFIX}.ListVideoTimelinesActivity::handleRequest`,
       code: Code.fromAsset(LAMBDA_ASSET_PATH),
       memorySize: 512,
@@ -555,6 +560,7 @@ export class ServiceStack extends Stack {
 
     const putVideoTimelineLambda = new Function(this, "PutVideoTimelineActivity", {
       runtime: Runtime.JAVA_17,
+      tracing: Tracing.ACTIVE,
       handler: `${VL_ACTIVITY_JAVA_PATH_PREFIX}.PutVideoTimelineActivity::handleRequest`,
       code: Code.fromAsset(LAMBDA_ASSET_PATH),
       memorySize: 512,

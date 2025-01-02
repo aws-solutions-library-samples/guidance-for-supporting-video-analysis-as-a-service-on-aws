@@ -8,14 +8,13 @@ import {
   AccountRootPrincipal, Role, ServicePrincipal, PolicyStatement, ManagedPolicy, Effect
 } from 'aws-cdk-lib/aws-iam';
 import {
-  Function, IFunction, Runtime, StartingPosition, Code
+  Function, IFunction, Runtime, StartingPosition, Code, Tracing
 } from 'aws-cdk-lib/aws-lambda';
 import { Queue, QueueEncryption } from 'aws-cdk-lib/aws-sqs';
 import { DynamoEventSource, SqsDlq } from 'aws-cdk-lib/aws-lambda-event-sources';
 import { StateMachine } from 'aws-cdk-lib/aws-stepfunctions';
 import { Key } from 'aws-cdk-lib/aws-kms';
 import * as fs from 'fs';
-import { Bucket } from 'aws-cdk-lib/aws-s3';
 
 import {
   DEFAULT_LAMBDA_PACKAGE_NAME,
@@ -195,6 +194,7 @@ export class Workflow extends Construct {
       code: code,
       description: 'Lambda responsible for invocation of StepFunction',
       runtime: Runtime.JAVA_17,
+      tracing: Tracing.ACTIVE,
       handler: 'com.amazonaws.videoanalytics.workflow.lambda.TriggerStepFunctionLambda::handleRequest', // TODO: Update this to the correct handler
       role: this.ddbStreamProcessorLambdaRole,
       memorySize: 1028,
