@@ -522,6 +522,7 @@ exports[`BootstrapStack Snapshot test 1`] = `
                 "iot:DetachThingPrincipal",
                 "iot:AttachPrincipalPolicy",
                 "iot:DetachPrincipalPolicy",
+                "iot:UpdateIndexingConfiguration",
               ],
               "Effect": "Allow",
               "Resource": "*",
@@ -631,6 +632,24 @@ exports[`BootstrapStack Snapshot test 1`] = `
         ],
       },
       "Type": "AWS::IAM::ManagedPolicy",
+    },
+    "fleetindexingresource5CCA8F41": {
+      "DeletionPolicy": "Delete",
+      "DependsOn": [
+        "IotCustomResourceIamPolicy6D081B90",
+      ],
+      "Properties": {
+        "Create": "{"service":"@aws-sdk/client-iot","action":"UpdateIndexingConfiguration","parameters":{"thingIndexingConfiguration":{"thingIndexingMode":"REGISTRY","thingConnectivityIndexingMode":"STATUS"}},"physicalResourceId":{"id":"fleet-indexing-resource"}}",
+        "InstallLatestAwsSdk": true,
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "AWS679f53fac002430cb0da5b7982bd22872D164C4C",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "Custom::AWS",
+      "UpdateReplacePolicy": "Delete",
     },
     "iotdetachpolicycustomresourceroleB1A11ADA": {
       "Properties": {

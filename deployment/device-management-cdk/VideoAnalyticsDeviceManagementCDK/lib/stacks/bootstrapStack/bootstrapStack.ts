@@ -59,6 +59,7 @@ export class BootstrapStack extends Stack {
               "iot:DetachThingPrincipal",
               "iot:AttachPrincipalPolicy",
               "iot:DetachPrincipalPolicy",
+              "iot:UpdateIndexingConfiguration"
             ],
             resources: ["*"],
           }),
@@ -689,5 +690,24 @@ export class BootstrapStack extends Stack {
         ],
       },
     });
+
+    // Turn on IoT Fleet Indexing thingConnectivityIndexMode
+    // https://docs.aws.amazon.com/iot/latest/developerguide/managing-index.html#enable-index
+    const fleetIndexing = new AwsCustomResource(this, 'fleet-indexing-resource', {
+      onCreate: {
+        service: '@aws-sdk/client-iot',
+        action: 'UpdateIndexingConfiguration',
+        parameters: {
+          thingIndexingConfiguration: {
+            thingIndexingMode: 'REGISTRY',
+            thingConnectivityIndexingMode: 'STATUS',
+          },
+        },
+        physicalResourceId: PhysicalResourceId.of('fleet-indexing-resource'),
+      },
+      role: iotCustomResourceRole,
+      installLatestAwsSdk: true,
+    });
+    fleetIndexing.node.addDependency(iotCustomResourceIamPolicy);
   }
 }
