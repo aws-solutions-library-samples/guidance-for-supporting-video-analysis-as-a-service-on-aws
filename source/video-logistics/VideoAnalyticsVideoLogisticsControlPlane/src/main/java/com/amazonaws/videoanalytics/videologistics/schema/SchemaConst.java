@@ -107,8 +107,6 @@ public class SchemaConst {
     public static final String VIDEO_EXPORT_DEVICE_JOBS_GSI_NAME = "DeviceJobStatus-Index";
     public static final String TOTAL_SEGMENTS = "TotalSegments";
     public static final String SEGMENT_NUMBER = "SegmentNumber";
-    public static final String VIDEO_EXPORT_JOB_TABLE_NAME = "VideoExportJobTable";
-    public static final String VIDEO_EXPORT_RESULT_TABLE_NAME = "VideoExportResultTable";
     public static final String VIDEO_EXPORT_JOB_CUSTOMER_JOB_ID_GSI_NAME = "AccountIDJobID-Index";
 
 
