@@ -192,10 +192,8 @@ public class IotServiceTest {
         DeviceMetaData expectedMetaData = buildExpectedDeviceMetaData();
 
         GetDeviceResponseContent responseFromIotService = iotService.getDevice(DEVICE_ID);
-        List<String> deviceGroupIdsList = new ArrayList<>();
         assertEquals(DEVICE_ID, responseFromIotService.getDeviceId());
         assertEquals(DEVICE_TYPE_NAME, responseFromIotService.getDeviceType());
-        assertEquals(deviceGroupIdsList, responseFromIotService.getDeviceGroupIds());
         assertEquals(expectedMetaData, responseFromIotService.getDeviceMetaData());
         assertEquals(expectedDeviceCapabilities, responseFromIotService.getDeviceCapabilities());
         assertEquals(EXPECTED_DEVICE_SETTINGS_STRING, responseFromIotService.getDeviceSettings().toString());
@@ -268,10 +266,8 @@ public class IotServiceTest {
                 .build();
 
         GetDeviceResponseContent responseFromIotService = iotService.getDevice(DEVICE_ID);
-        List<String> deviceGroupIdsList = new ArrayList<>();
         assertEquals(DEVICE_ID, responseFromIotService.getDeviceId());
         assertEquals(DEVICE_TYPE_NAME, responseFromIotService.getDeviceType());
-        assertEquals(deviceGroupIdsList, responseFromIotService.getDeviceGroupIds());
         assertEquals(expectedMetaData, responseFromIotService.getDeviceMetaData());
         assertEquals(expectedMetaData.getDeviceStatus().getStorage().get(0).getTotalCapacity(), "0");
         assertEquals(expectedMetaData.getDeviceStatus().getStorage().get(0).getUsedCapacity(), "0");
@@ -385,10 +381,8 @@ public class IotServiceTest {
                 .build();
 
         GetDeviceResponseContent responseFromIotService = iotService.getDevice(DEVICE_ID);
-        List<String> deviceGroupIdsList = new ArrayList<>();
         assertEquals(DEVICE_ID, responseFromIotService.getDeviceId());
         assertEquals(DEVICE_TYPE_NAME, responseFromIotService.getDeviceType());
-        assertEquals(deviceGroupIdsList, responseFromIotService.getDeviceGroupIds());
         assertEquals(expectedMetaData, responseFromIotService.getDeviceMetaData());
         assertEquals(expectedDeviceCapabilities, responseFromIotService.getDeviceCapabilities());
         assertEquals(EXPECTED_DEVICE_SETTINGS_STRING, responseFromIotService.getDeviceSettings().toString());

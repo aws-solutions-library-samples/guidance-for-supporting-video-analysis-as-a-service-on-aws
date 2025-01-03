@@ -8,7 +8,6 @@ public final class TestConstants {
     public static final String AI_SDK_VERSION_VALUE = "0.1.0";
     public static final String DEVICE_ID = "11111111111";
     public static final String DEVICE_TYPE_NAME = "TestThingTypeName";
-    public static final String DEVICE_GROUP_ID = "4321dcba-8765-dcba-4321dcba8765";
     public static final String FIRMWARE_VERSION_VALUE = "20230331 1.0.1";
     public static final String MAC_VALUE = "11::22::33::44::55::66";
     public static final String MANUFACTURER_VALUE = "TestManufacturer";
