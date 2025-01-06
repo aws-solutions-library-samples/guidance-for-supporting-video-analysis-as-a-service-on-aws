@@ -254,7 +254,7 @@ impl WebrtcPeerConnectionsHandler {
                         error!("No data frame {:?}", e);
                     }
                     None => {
-                        info!("Process 1 no data frame from packet");
+                        info!("Device no data frame from packet");
                     }
                 }
             }

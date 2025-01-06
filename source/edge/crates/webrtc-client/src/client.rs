@@ -432,10 +432,10 @@ impl PeerStreaming for WebrtcClient {
                         info!("No data frame");
                     }
                     Some(Err(e)) => {
-                        return Err(anyhow!(e).context("Process 1 failure"));
+                        return Err(anyhow!(e).context("Device failure"));
                     }
                     None => {
-                        info!("Process 1 no data from packet");
+                        info!("Device no data from packet");
                         return Ok(());
                     }
                 }

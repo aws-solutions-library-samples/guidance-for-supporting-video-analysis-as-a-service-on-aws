@@ -141,7 +141,7 @@ async fn main() -> Result<ExitCode, Box<dyn Error>> {
         let mut device_model =
             setup_device_model(http_client.clone(), config_path.clone(), ip_address.clone())
                 .await?;
-        // Get video settings from Process 1
+        // Get video settings from ONVIF server
         let video_settings =
             device_model.get_video_encoder_configurations().await.unwrap_or(json!({}));
         pub_sub_client_manager
@@ -522,7 +522,7 @@ async fn main() -> Result<ExitCode, Box<dyn Error>> {
     let (_thread_ai_event_handle, _task_ai_pipeline_control_handle) =
         initiate_event_ingestion(stream_uri_config.clone(), motion_based_streaming_tx).await?;
 
-    // This will keep process 2 alive until connections task stops.
+    // This will keep edge biary alive until connections task stops.
     try_join!(_iot_loop_handle)?;
 
     Ok(ExitCode::SUCCESS)

@@ -73,7 +73,7 @@ where
     #[instrument]
     fn get_service_uri(&self, service: OnvifServiceName) -> Result<String, OnvifClientError> {
         let service_uri = self.service_paths.get(&service).ok_or({
-            warn!("service uri for {:?} does not exist in process 2", service);
+            warn!("service uri for {:?} does not exist on edge binary", service);
             OnvifClientError::OnvifGetServicesError
         })?;
 
@@ -345,7 +345,7 @@ where
         let system_reboot_resp: SystemRebootResponse =
             soap::deserialize(onvif_response_str.as_str())?;
 
-        info!("System reboot ONVIF request was sent to process 1 successfully. Response from process 1: {:?}", system_reboot_resp.message);
+        info!("System reboot ONVIF request was sent to ONVIF server successfully. Response from ONVIF server: {:?}", system_reboot_resp.message);
         Ok(())
     }
 
@@ -602,7 +602,7 @@ where
         */
 
         let res = self.set_video_encoder_configuration_media20(reference_token, vec_settings).await;
-        // If SetVideoEncoderConfiguration fails, we do not want to block process 2.
+        // If SetVideoEncoderConfiguration fails, we do not want to block edge binary.
         // It can try again when it receives the shadow delta again.
         if res.is_err() {
             warn!("Failed to set video encoder configuration: {:?}", res)
@@ -917,7 +917,7 @@ mod tests {
         assert_eq!(device_info_struct, get_device_information_response());
     }
 
-    /// when process 2 has valid digest parameter, onvif server returns 200 and the onvif response in http body
+    /// when edge binary has valid digest parameter, onvif server returns 200 and the onvif response in http body
     #[tokio::test]
     async fn verify_sign_onvif_request_with_digest_and_send_valid_digest_params_returns_onvif_response(
     ) {
@@ -959,8 +959,8 @@ mod tests {
         assert_eq!(device_info_struct, get_device_information_response());
     }
 
-    /// when the onvif request is sent without digest parameters (because the parameters doesn't exist yet on process 2),
-    /// onvif server returns 401 along with digest information. Process 2 uses that info
+    /// when the onvif request is sent without digest parameters (because the parameters doesn't exist yet on edge binary),
+    /// onvif server returns 401 along with digest information. Edge binary uses that info
     /// to craft a http request with digest parameters and make the request again
     #[tokio::test]
     async fn verify_sign_onvif_request_with_digest_and_send_no_digest_params_returns_onvif_response(
@@ -1006,8 +1006,8 @@ mod tests {
         assert_eq!(device_info_struct, get_device_information_response());
     }
 
-    /// when the existing digest parameters on process 2 have expired, onvif server returns 401 along with digest information
-    /// process 2 uses that info to update its digest parameters and make the call again
+    /// when the existing digest parameters on edge binary have expired, onvif server returns 401 along with digest information
+    /// edge binary uses that info to update its digest parameters and make the call again
     #[tokio::test]
     async fn verify_sign_onvif_request_with_digest_and_send_expire_digest_params_return_onvif_response(
     ) {
@@ -1072,7 +1072,7 @@ mod tests {
         assert_eq!(device_info_struct, get_device_information_response());
     }
 
-    /// when onvif server returns 500, nothing process 2 can do, process 2 should panic
+    /// when onvif server returns 500, nothing edge binary can do, edge binary should panic
     #[tokio::test]
     #[should_panic]
     async fn sign_onvif_request_with_digest_and_send_server_error_panic() {
@@ -1104,7 +1104,7 @@ mod tests {
     }
 
     /// when onvif server returns http status other than 200, 401, or 500
-    /// it is unexpected, process 2 should panic
+    /// it is unexpected, edge binary should panic
     #[tokio::test]
     #[should_panic]
     async fn sign_onvif_request_with_digest_and_send_unexpected_http_status_panic() {
@@ -1193,7 +1193,7 @@ mod tests {
         );
     }
 
-    /// when trying to insert a service_name that already existed on process 2, return error
+    /// when trying to insert a service_name that already existed on edge binary, return error
     #[tokio::test]
     async fn get_services_duplicate_service_error() {
         // Arrange

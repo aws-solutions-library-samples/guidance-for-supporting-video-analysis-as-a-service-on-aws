@@ -255,7 +255,6 @@ public class IotService {
                 RECORDING
             ));
 
-            // not supported by process 2 yet, expecting empty strings
             ipAddress.setPublicIpAddress(shadowProvisionReported.optString(PUBLIC_IP_KEY));
             deviceMetaData.setAiChipset(shadowProvisionReported.optString(AI_CHIP_SET_KEY));
             deviceMetaData.setSdkVersion(shadowProvisionReported.optString(SDK_VERSION_KEY));
