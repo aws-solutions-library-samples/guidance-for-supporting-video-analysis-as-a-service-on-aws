@@ -62,7 +62,6 @@ public class VideoAnalyticsExceptionMessage {
     public static final String EMPTY_INCLUSIVE_PROPERTIES = "inclusiveProperties can not be empty!";
     public static final String INVALID_PROPERTY_IN_AGGREGATION = "Invalid property in aggregation: %s!";
     public static final String INVALID_MAX_INFERENCES_PER_BUCKET = "maxInferencesPerBucket must be positive and not larger than %d!";
-    public static final String INVALID_REQUEST_EXPORT_JOB = "Invalid null input for VideoExportJob Request";
     public static final String JOB_ID_NOT_FOUND_MESSAGE = "Job not found for id: %s";
     public static final String NO_VALID_SAMPLE = "No sample found in ACTIVE state for %s. Sample %s is in %s state";
     public static final String NO_VALID_DATASTORE = "No datastore found in ACTIVE state for %s";

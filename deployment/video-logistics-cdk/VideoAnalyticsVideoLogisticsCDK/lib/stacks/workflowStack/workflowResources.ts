@@ -317,8 +317,5 @@ export function getWorkflowResources(
 ): VideoAnalyticsAsyncWorkflowResource[] {
   return [
     new RegisterDeviceWorkflow(scope, 'RegisterDeviceWorkflow', props),
-    // TODO: Uncomment once addtional resources are implemented
-    // new ModelSchema(scope, 'ModelSchema', props),
-    // new VideoExportWorkflow(scope, 'VideoExport', props)
   ];
 }

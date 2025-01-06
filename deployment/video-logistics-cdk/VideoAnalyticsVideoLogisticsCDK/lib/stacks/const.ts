@@ -1,6 +1,3 @@
-export const VIDEO_EXPORT_JOB_TABLE_NAME = "VideoExportJobTable";
-export const VIDEO_EXPORT_JOB_RESULT_TABLE_NAME = "VideoExportResultTable";
-export const VIDEO_EXPORT_SFN_STATE_MACHINE_NAME = "VideoExportStateMachine";
 export const VIDEO_EXPORT_JOB_GSI_NAME = "DeviceJobStatus-Index";
 export const VIDEO_EXPORT_JOB_GSI_PK = "CustomerAccountId_DeviceId";
 export const VIDEO_EXPORT_JOB_GSI_SK = "JobStatus";
