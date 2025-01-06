@@ -12,11 +12,6 @@ public final class AWSVideoAnalyticsServiceLambdaConstants {
     public static final String PROXY_LAMBDA_REQUEST_DEVICE_ID_PATH_PARAMETER_KEY = "deviceId";
     public static final String PROXY_LAMBDA_RESPONSE_STATUS_CODE_KEY = "statusCode";
 
-    public static final String DEV = "Dev";
-    public static final String ALPHA = "Alpha";
-    public static final String BETA = "Beta";
-    public static final String GAMMA = "Gamma";
-    public static final String PROD = "Prod";
     public static final String DEVICE_CAP_KEY = "deviceCapabilities";
     public static final String DEVICE_STATE_KEY = "deviceState";
     public static final String DEVICE_METADATA_KEY = "deviceMetadata";
