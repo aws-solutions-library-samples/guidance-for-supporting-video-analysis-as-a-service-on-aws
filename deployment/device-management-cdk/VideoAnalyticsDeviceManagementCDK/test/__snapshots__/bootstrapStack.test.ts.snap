@@ -164,15 +164,6 @@ exports[`BootstrapStack Snapshot test 1`] = `
                 },
                 {
                   "Action": [
-                    "execute-api:Invoke",
-                  ],
-                  "Effect": "Allow",
-                  "Resource": [
-                    "arn:aws:execute-api:us-east-1:123456789012:*/*/POST/import-media-object",
-                  ],
-                },
-                {
-                  "Action": [
                     "apigateway:GET",
                   ],
                   "Effect": "Allow",
@@ -196,60 +187,6 @@ exports[`BootstrapStack Snapshot test 1`] = `
         "RoleArn": {
           "Fn::GetAtt": [
             "DeviceKVSRole",
-            "Arn",
-          ],
-        },
-      },
-      "Type": "AWS::IoT::RoleAlias",
-    },
-    "DeviceS3Role": {
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": [
-                "sts:AssumeRole",
-              ],
-              "Effect": "Allow",
-              "Principal": {
-                "Service": [
-                  "credentials.iot.amazonaws.com",
-                ],
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "MaxSessionDuration": 43200,
-        "Policies": [
-          {
-            "PolicyDocument": {
-              "Statement": [
-                {
-                  "Action": [
-                    "s3:GetObject",
-                  ],
-                  "Effect": "Allow",
-                  "Resource": [
-                    "arn:aws:s3:::video-analytics-firmware-bucket-123456789012-us-east-1/*",
-                  ],
-                },
-              ],
-              "Version": "2012-10-17",
-            },
-            "PolicyName": "DeviceS3Access",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Role",
-    },
-    "DeviceS3RoleAlias": {
-      "Properties": {
-        "CredentialDurationSeconds": 43200,
-        "RoleAlias": "s3DeviceIotRoleAlias",
-        "RoleArn": {
-          "Fn::GetAtt": [
-            "DeviceS3Role",
             "Arn",
           ],
         },
@@ -359,22 +296,6 @@ exports[`BootstrapStack Snapshot test 1`] = `
                     "RoleAliasArn",
                   ],
                 },
-                {
-                  "Fn::GetAtt": [
-                    "DeviceS3RoleAlias",
-                    "RoleAliasArn",
-                  ],
-                },
-              ],
-            },
-            {
-              "Action": [
-                "iot:Publish",
-              ],
-              "Effect": "Allow",
-              "Resource": [
-                "arn:aws:iot:us-east-1:123456789012:topic/video-analytics/\${iot:Connection.Thing.ThingName}/timeline",
-                "arn:aws:iot:us-east-1:123456789012:topic/video-analytics/\${iot:Connection.Thing.ThingName}/snapshot",
               ],
             },
           ],
@@ -429,7 +350,6 @@ exports[`BootstrapStack Snapshot test 1`] = `
               "Effect": "Allow",
               "Resource": [
                 "arn:aws:iot:us-east-1:123456789012:topic/videoanalytics/\${iot:Connection.Thing.ThingName}/timeline",
-                "arn:aws:iot:us-east-1:123456789012:topic/videoanalytics/\${iot:Connection.Thing.ThingName}/ai-metadata",
                 "arn:aws:iot:us-east-1:123456789012:topic/videoanalytics/\${iot:Connection.Thing.ThingName}/snapshot",
               ],
             },
@@ -668,78 +588,6 @@ exports[`BootstrapStack Snapshot test 1`] = `
         "RoleName": "iot-detach-policy-custom-resource-role",
       },
       "Type": "AWS::IAM::Role",
-    },
-    "videoAnalyticsFirmwareBucket4BB02818": {
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "AccessControl": "LogDeliveryWrite",
-        "BucketName": "video-analytics-firmware-bucket-123456789012-us-east-1",
-        "LoggingConfiguration": {
-          "LogFilePrefix": "access-logs/",
-        },
-        "OwnershipControls": {
-          "Rules": [
-            {
-              "ObjectOwnership": "ObjectWriter",
-            },
-          ],
-        },
-        "PublicAccessBlockConfiguration": {
-          "BlockPublicAcls": true,
-          "BlockPublicPolicy": true,
-          "IgnorePublicAcls": true,
-          "RestrictPublicBuckets": true,
-        },
-      },
-      "Type": "AWS::S3::Bucket",
-      "UpdateReplacePolicy": "Retain",
-    },
-    "videoAnalyticsFirmwareBucketPolicy134B296D": {
-      "Properties": {
-        "Bucket": {
-          "Ref": "videoAnalyticsFirmwareBucket4BB02818",
-        },
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": "s3:*",
-              "Condition": {
-                "Bool": {
-                  "aws:SecureTransport": "false",
-                },
-              },
-              "Effect": "Deny",
-              "Principal": {
-                "AWS": "*",
-              },
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "videoAnalyticsFirmwareBucket4BB02818",
-                    "Arn",
-                  ],
-                },
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      {
-                        "Fn::GetAtt": [
-                          "videoAnalyticsFirmwareBucket4BB02818",
-                          "Arn",
-                        ],
-                      },
-                      "/*",
-                    ],
-                  ],
-                },
-              ],
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-      },
-      "Type": "AWS::S3::BucketPolicy",
     },
   },
   "Rules": {

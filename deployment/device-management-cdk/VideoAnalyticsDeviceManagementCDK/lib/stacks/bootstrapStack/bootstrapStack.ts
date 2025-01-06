@@ -11,7 +11,6 @@ import {
   PolicyDocument,
   Effect,
 } from "aws-cdk-lib/aws-iam";
-import { BlockPublicAccess, Bucket, ObjectOwnership } from "aws-cdk-lib/aws-s3";
 import * as iot from "aws-cdk-lib/aws-iot";
 import {
   AwsCustomResource,
@@ -126,13 +125,6 @@ export class BootstrapStack extends Stack {
               },
               {
                 Effect: "Allow",
-                Action: ["execute-api:Invoke"],
-                Resource: [
-                  `arn:aws:execute-api:${this.region}:${this.account}:*/*/POST/import-media-object`
-                ],
-              },
-              {
-                Effect: "Allow",
                 Action: ["apigateway:GET"],
                 Resource: [
                   `arn:aws:apigateway:${this.region}::/restapis`
@@ -160,69 +152,9 @@ export class BootstrapStack extends Stack {
       }
     );
 
-    const deviceS3Role = new CfnRole(this, "DeviceS3Role", {
-      assumeRolePolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Principal: {
-              Service: ["credentials.iot.amazonaws.com"],
-            },
-            Action: ["sts:AssumeRole"],
-          },
-        ],
-      },
-      policies: [
-        {
-          policyName: "DeviceS3Access",
-          policyDocument: {
-            Version: "2012-10-17",
-            Statement: [
-              {
-                Effect: "Allow",
-                Action: ["s3:GetObject"],
-                Resource: [
-                  `arn:aws:s3:::video-analytics-firmware-bucket-${this.account}-${this.region}/*`,
-                ],
-              },
-            ],
-          },
-        },
-      ],
-      maxSessionDuration: 43200,
-    });
-
-    if (deviceS3Role == null) {
-      throw new Error(
-        `A combination of conditions caused 'deviceS3Role' to be undefined. Fixit.`
-      );
-    }
-
-    const deviceS3RoleAlias = new iot.CfnRoleAlias(this, "DeviceS3RoleAlias", {
-      roleAlias: "s3DeviceIotRoleAlias",
-      roleArn: deviceS3Role.attrArn,
-      credentialDurationSeconds: 43200,
-    });
-
-    new Bucket(this, "videoAnalyticsFirmwareBucket", {
-      bucketName: `video-analytics-firmware-bucket-${this.account}-${this.region}`,
-      publicReadAccess: false,
-      blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
-      removalPolicy: RemovalPolicy.RETAIN,
-      objectOwnership: ObjectOwnership.OBJECT_WRITER,
-      enforceSSL: true,
-      serverAccessLogsPrefix: "access-logs/",
-    });
-
     if (deviceKvsRoleAlias == null) {
       throw new Error(
         `A combination of conditions caused 'deviceKvsRoleAlias' to be undefined. Fixit.`
-      );
-    }
-    if (deviceS3RoleAlias == null) {
-      throw new Error(
-        `A combination of conditions caused 'deviceS3RoleAlias' to be undefined. Fixit.`
       );
     }
 
@@ -234,16 +166,7 @@ export class BootstrapStack extends Stack {
             Effect: "Allow",
             Action: ["iot:Connect", "iot:AssumeRoleWithCertificate"],
             Resource: [
-              deviceKvsRoleAlias.attrRoleAliasArn,
-              deviceS3RoleAlias.attrRoleAliasArn,
-            ],
-          },
-          {
-            Effect: "Allow",
-            Action: ["iot:Publish"],
-            Resource: [
-              `arn:aws:iot:${this.region}:${this.account}:topic/video-analytics/${IOT_CONNECTED_THING_NAME}/timeline`,
-              `arn:aws:iot:${this.region}:${this.account}:topic/video-analytics/${IOT_CONNECTED_THING_NAME}/snapshot`,
+              deviceKvsRoleAlias.attrRoleAliasArn
             ],
           },
         ],
@@ -368,7 +291,6 @@ export class BootstrapStack extends Stack {
               Action: ["iot:Publish"],
               Resource: [
                 `arn:aws:iot:${this.region}:${this.account}:topic/videoanalytics/${IOT_CONNECTED_THING_NAME}/timeline`,
-                `arn:aws:iot:${this.region}:${this.account}:topic/videoanalytics/${IOT_CONNECTED_THING_NAME}/ai-metadata`,
                 `arn:aws:iot:${this.region}:${this.account}:topic/videoanalytics/${IOT_CONNECTED_THING_NAME}/snapshot`,
               ],
             },

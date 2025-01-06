@@ -87,12 +87,10 @@ public class SchemaConst {
     public static final long SECONDS_BUCKET_DURATION_MILLIS = SECONDS_BUCKET_DURATION * 1000L;
     public static final long MILLIS_CONVERSION_UNIT = 1000L;
     public static final String OPEN_SEARCH_PIT_TABLE_NAME = "OpenSearchPitTable";
-    public static final String FORWARDING_RULES_TABLE_NAME = "ForwardingRulesTable";
     public static final String OPEN_SEARCH_PIT_PARTITION_KEY = "CustomerAccountIdModelName";
     public static final String OPEN_SEARCH_PIT_SORT_KEY = "Endpoint";
     public static final String OPEN_SEARCH_PIT_ID = "PitId";
     public static final String LAMBDA_SCHEDULED_TIME = "LambdaScheduledTime";
-    public static final String FORWARDING_RULES_NAME = "ForwardingRulesName";
     public static final String FORWARDED_DATA_TYPES = "ForwardedDataTypes";
     public static final String SELECTORS = "Selectors";
     public static final String DESTINATIONS = "Destinations";

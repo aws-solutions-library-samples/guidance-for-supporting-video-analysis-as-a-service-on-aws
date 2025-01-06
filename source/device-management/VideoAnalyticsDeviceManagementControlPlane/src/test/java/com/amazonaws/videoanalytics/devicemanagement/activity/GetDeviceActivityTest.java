@@ -46,7 +46,6 @@ import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyt
 import static com.amazonaws.videoanalytics.devicemanagement.utils.LambdaProxyUtils.parseBody;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.TestConstants.DATE;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.TestConstants.DEVICE_ID;
-import static com.amazonaws.videoanalytics.devicemanagement.utils.TestConstants.DEVICE_GROUP_ID;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.TestConstants.DEVICE_TYPE_NAME;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.TestConstants.MOCK_AWS_REGION;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -83,12 +82,9 @@ public class GetDeviceActivityTest {
         deviceCapabilities.put("videoCapabilities","{\"codec\":\"H264\"}");
 
         DeviceMetaData deviceMetaData = buildExpectedDeviceMetaData();
-        List<String> deviceGroupIdsList = new ArrayList<>();
-        deviceGroupIdsList.add(DEVICE_GROUP_ID);
         GetDeviceResponseContent responseFromIotService = GetDeviceResponseContent
                 .builder()
                 .deviceId(DEVICE_ID)
-                .deviceGroupIds(deviceGroupIdsList)
                 .deviceType(DEVICE_TYPE_NAME)
                 .deviceSettings(deviceSettings)
                 .deviceCapabilities(deviceCapabilities)
@@ -99,7 +95,6 @@ public class GetDeviceActivityTest {
         Map<String, Object> responseMap = getDeviceActivity.handleRequest(lambdaProxyRequest, context);
         GetDeviceResponseContent getDeviceResponse = GetDeviceResponseContent.fromJson(parseBody(responseMap));
         assertEquals(DEVICE_ID, getDeviceResponse.getDeviceId());
-        assertEquals(DEVICE_GROUP_ID, getDeviceResponse.getDeviceGroupIds().get(0));
         assertEquals(DEVICE_TYPE_NAME, getDeviceResponse.getDeviceType());
         assertEquals(deviceMetaData, getDeviceResponse.getDeviceMetaData());
         assertEquals(deviceCapabilities, getDeviceResponse.getDeviceCapabilities());

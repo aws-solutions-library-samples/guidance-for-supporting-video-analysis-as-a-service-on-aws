@@ -187,7 +187,6 @@ public class IotService {
         return GetDeviceResponseContent.builder()
                 .deviceId(describeThingResponse.thingName())
                 .deviceType(describeThingResponse.thingTypeName())
-                .deviceGroupIds(deviceGroupId)
                 .deviceMetaData(deviceMetaData)
                 .deviceCapabilities(deviceCapabilities)
                 .deviceSettings(deviceSettings)
