@@ -68,71 +68,230 @@ The following table provides a sample cost breakdown for deploying this Guidance
 
 ### Operating System (required)
 
-- Talk about the base Operating System (OS) and environment that can be used to run or deploy this Guidance, such as *Mac, Linux, or Windows*. Include all installable packages or modules required for the deployment. 
-- By default, assume Amazon Linux 2/Amazon Linux 2023 AMI as the base environment. All packages that are not available by default in AMI must be listed out.  Include the specific version number of the package or module.
+This deployment has been tested on macOS and Linux operating systems. The following prerequisites are required:
 
-**Example:**
-“These deployment instructions are optimized to best work on **<Amazon Linux 2 AMI>**.  Deployment in another OS may require additional steps.”
+1. **Development Tools**
+   - Java 17 or higher
+     ```bash
+     # For Ubuntu/Debian
+     sudo apt update
+     sudo apt install openjdk-17-jdk
+     
+     # For Amazon Linux/RHEL/CentOS
+     sudo yum install java-17-amazon-corretto
+     
+     # Verify installation
+     java -version
+     ```
+   
+   - Node.js and npm
+     ```bash
+     # For Ubuntu/Debian
+     curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+     sudo apt install nodejs
+     
+     # For Amazon Linux/RHEL/CentOS
+     curl -fsSL https://rpm.nodesource.com/setup_18.x | sudo bash -
+     sudo yum install nodejs
+     
+     # Verify installation
+     node --version
+     npm --version
+     ```
+   
+   - Rust toolchain
+     ```bash
+     # Install Rust using rustup
+     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+     source $HOME/.cargo/env
+     
+     # Verify installation
+     rustc --version
+     cargo --version
+     ```
+   
+   - Gradle 8.10 (included via Gradle Wrapper)
+     ```bash
+     # No manual installation needed as we use Gradle Wrapper
+     # Verify wrapper works
+     ./gradlew --version
+     ```
+   
+   - Git
+     ```bash
+     # For Ubuntu/Debian
+     sudo apt install git
+     
+     # For Amazon Linux/RHEL/CentOS
+     sudo yum install git
+     
+     # Verify installation
+     git --version
+     ```
 
-- Include install commands for packages, if applicable.
+   - Smithy CLI
+     ```bash
+     # Install Smithy CLI using npm
+     npm install -g @smithy/cli
+     
+     # Verify installation
+     smithy --version
+     
+     # Alternative: If using the JAR directly
+     # Download the latest smithy-cli jar from Maven Central
+     wget https://repo1.maven.org/maven2/software/amazon/smithy/smithy-cli/1.41.0/smithy-cli-1.41.0.jar
+     
+     # Create an alias for easy use
+     echo 'alias smithy="java -jar /path/to/smithy-cli-1.41.0.jar"' >> ~/.bashrc
+     source ~/.bashrc
+     ```
 
+2. **AWS Tools**
+   - AWS CLI
+     ```bash
+     # For Ubuntu/Debian
+     curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+     sudo apt install unzip
+     unzip awscliv2.zip
+     sudo ./aws/install
+     
+     # For Amazon Linux/RHEL/CentOS
+     curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+     sudo yum install unzip
+     unzip awscliv2.zip
+     sudo ./aws/install
+     
+     # Verify installation
+     aws --version
+     
+     # Configure AWS CLI
+     aws configure
+     ```
+   
+   - AWS CDK CLI (install using: `npm install -g aws-cdk`)
+     ```bash
+     # Install AWS CDK CLI
+     npm install -g aws-cdk
+     
+     # Verify installation
+     cdk --version
+     ```
+   
+   - AWS Systems Manager (SSM) access if testing with cameras connected via SSM
 
-### Third-party tools (If applicable)
+### AWS CDK Bootstrap
 
-*List any installable third-party tools required for deployment.*
-
-
-### AWS account requirements (If applicable)
-
-*List out pre-requisites required on the AWS account if applicable, this includes enabling AWS regions, requiring ACM certificate.*
-
-**Example:** “This deployment requires you have public ACM certificate available in your AWS account”
-
-**Example resources:**
-- ACM certificate 
-- DNS record
-- S3 bucket
-- VPC
-- IAM role with specific permissions
-- Enabling a Region or service etc.
-
-
-### aws cdk bootstrap (if sample code has aws-cdk)
-
-<If using aws-cdk, include steps for account bootstrap for new cdk users.>
-
-**Example blurb:** “This Guidance uses aws-cdk. If you are using aws-cdk for first time, please perform the below bootstrapping....”
-
-### Service limits  (if applicable)
-
-<Talk about any critical service limits that affect the regular functioning of the Guidance. If the Guidance requires service limit increase, include the service name, limit name and link to the service quotas page.>
-
-### Supported Regions (if applicable)
-
-<If the Guidance is built for specific AWS Regions, or if the services used in the Guidance do not support all Regions, please specify the Region this Guidance is best suited for>
-
+If you haven't used AWS CDK before in your account, run the following command:
+```bash
+cdk bootstrap aws://ACCOUNT-NUMBER/REGION
+```
 
 ## Deployment Steps (required)
 
-Deployment steps must be numbered, comprehensive, and usable to customers at any level of AWS expertise. The steps must include the precise commands to run, and describe the action it performs.
+Follow these steps in sequence to deploy the solution:
 
-* All steps must be numbered.
-* If the step requires manual actions from the AWS console, include a screenshot if possible.
-* The steps must start with the following command to clone the repo. ```git clone xxxxxxx```
-* If applicable, provide instructions to create the Python virtual environment, and installing the packages using ```requirement.txt```.
-* If applicable, provide instructions to capture the deployed resource ARN or ID using the CLI command (recommended), or console action.
+1. **Clone the repository**:
+   ```bash
+   git clone <repository-url>
+   cd guidance-for-video-analytics-infrastructure-on-aws
+   ```
 
- 
-**Example:**
+2. **Build Edge Process (Rust)**:
+   ```bash
+   cd source/edge
+   # For local architecture
+   cargo build --release
+   
+   # For ARM devices:
+   cargo install cross --git https://github.com/cross-rs/cross
+   cross build --target armv7-unknown-linux-gnueabihf --release
+   cd ../..
+   ```
 
-1. Clone the repo using command ```git clone xxxxxxxxxx```
-2. cd to the repo folder ```cd <repo-name>```
-3. Install packages in requirements using command ```pip install requirement.txt```
-4. Edit content of **file-name** and replace **s3-bucket** with the bucket name in your account.
-5. Run this command to deploy the stack ```cdk deploy``` 
-6. Capture the domain name created by running this CLI command ```aws apigateway ............```
+3. **Build Model and Generate API Specifications**:
+   ```bash
+   # Build Smithy Model
+   cd source/video-logistics/VideoAnalyticsVideoLogisticsModel
+   smithy build
+   cd ../../..
+   
+   # Generate Java Client Code
+   cd source/video-logistics/VideoAnalyticsVideoLogisticsJavaClient
+   ./gradlew openApiGenerate
+   cd ../../..
+   ```
 
+4. **Build Control Plane (Java)**:
+   ```bash
+   cd source/video-logistics/VideoAnalyticsVideoLogisticsControlPlane
+   ./gradlew clean build
+   # This will automatically copy the Lambda resource JAR to assets/lambda-built/video-logistics-assets/
+   cd ../../..
+   ```
 
+5. **Set up CDK Development Environment**:
+   ```bash
+   cd deployment
+   
+   # Install dependencies for all workspaces
+   npm install
+   
+   # Build all CDK packages
+   npm run build --workspaces
+   ```
+
+6. **Configure Deployment Environment**:
+   ```bash
+   # Set your AWS account and region
+   export CDK_DEPLOY_ACCOUNT=your_aws_account_id
+   export CDK_DEPLOY_REGION=your_aws_region
+   
+   # Ensure you have valid AWS credentials
+   aws sts get-caller-identity
+   ```
+
+7. **Deploy CDK Stacks**:
+   ```bash
+   cd video-logistics-cdk/VideoAnalyticsVideoLogisticsCDK
+   
+   # First, synthesize the CloudFormation template to verify
+   cdk synth
+   
+   # Run tests and update snapshots if needed
+   npm test
+   # If you made intentional changes to the infrastructure:
+   npm run test:update
+   
+   # Deploy all stacks
+   cdk deploy --all
+   
+   # Or deploy specific stacks
+   cdk deploy VideoLogisticsWorkflowStack
+   ```
+
+The deployment will create the following resources:
+- API Gateway endpoints for video logistics
+- Lambda functions for control plane operations
+- Required IAM roles and policies
+- Necessary S3 buckets and DynamoDB tables
+- Video Analytics infrastructure components
+
+### Deployment Validation
+
+After deployment, verify the following:
+
+1. Check the AWS CloudFormation console to ensure all stacks are deployed successfully
+2. Verify the API Gateway endpoints are created and accessible
+3. Confirm Lambda functions are properly deployed with the correct runtime
+4. Check that all IAM roles and policies are created with appropriate permissions
+
+### Cleanup
+
+To remove all deployed resources, take video logistics for example:
+```bash
+cd deployment/video-logistics-cdk/VideoAnalyticsVideoLogisticsCDK
+cdk destroy --all
+```
 
 ## Deployment Validation  (required)
 
