@@ -2,7 +2,6 @@ package com.amazonaws.videoanalytics.devicemanagement.utils;
 
 public class WorkflowConstants {
     public static final String DEVICE_ID = "deviceId";
-    public static final String DEVICE_TYPE = "deviceType";
     public static final String JOB_ID = "jobId";
     public static final String MESSAGE_FIELD = "messageField";
     public static final String PROVISIONING_SHADOW_NAME = "provision";

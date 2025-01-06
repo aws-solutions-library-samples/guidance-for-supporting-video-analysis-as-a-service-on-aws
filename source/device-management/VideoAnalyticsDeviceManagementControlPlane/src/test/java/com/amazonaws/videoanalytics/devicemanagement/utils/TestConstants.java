@@ -18,7 +18,6 @@ public final class TestConstants {
     public static final String SHADOW_NAME = "testShadowName";
     public static final String TEST_ATTRIBUTE_KEY = "testKey";
     public static final String TEST_ATTRIBUTE_VALUE = "testValue";
-    public static final String TEST_DEVICE_CAP_KEY = "deviceCapabilities";
     public static final String TEST_DEVICE_CAP_VAL = "{\"videoCapabilities\":{\"bitRate\":{\"CBR\":\"10,20,30\",\"VBR\":\"1,2,3\"}}}";
     public static final String THING_ARN = "arn:aws:iot:us-west-2:123456781234:thing/TestThing";
     public static final String THING_ID = "12345678-abcd-8765-dcba-1234abcd5678";

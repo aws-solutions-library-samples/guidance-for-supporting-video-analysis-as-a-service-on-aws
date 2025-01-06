@@ -79,39 +79,3 @@ enum StorageState {
     FULL
     NORMAL
 }
-
-list Devices {
-    member: DeviceInfo
-}
-
-structure DeviceInfo {
-    deviceName: String,
-    deviceId: DeviceId,
-    deviceGroupId: DeviceGroupId,
-    deviceType: String,
-    deviceMetaData: DeviceMetaData,
-    deviceCapabilities: KeyValueMap,
-    deviceSettings: KeyValueMap,
-    @timestampFormat("date-time")
-    createdAt: Timestamp
-}
-
-list DeviceOperation {
-    member: DeviceOperationInfo
-}
-
-structure DeviceOperationInfo {
-    deviceOperationId: String,
-    deviceOperationName: String,
-    deviceOperationStatus: String,
-    callerAccount: String,
-    sourceIPAddress: String,
-    @timestampFormat("date-time")
-    createdAt: Timestamp,
-    @timestampFormat("date-time")
-    updatedAt: Timestamp,
-    requestParameters: String,
-    contents: String,
-    errorCode: String,
-    errorMessage: String
-}

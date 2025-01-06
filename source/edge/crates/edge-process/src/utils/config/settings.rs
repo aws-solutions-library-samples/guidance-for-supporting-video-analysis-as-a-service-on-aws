@@ -51,11 +51,6 @@ impl Settings {
     pub fn new(dir_path: PathBuf, config_path: PathBuf, client_id: String) -> Settings {
         Settings { dir_path, config_path, client_id }
     }
-
-    /// Get correct topic for publishing device capabilities to the cloud.
-    pub fn get_device_capabilities_topic(&self) -> String {
-        format!("management/{}/dev_info_cap", self.client_id)
-    }
 }
 
 #[cfg(test)]
