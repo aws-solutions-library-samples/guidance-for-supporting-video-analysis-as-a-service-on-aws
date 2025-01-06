@@ -72,20 +72,112 @@ This deployment has been tested on macOS and Linux operating systems. The follow
 
 1. **Development Tools**
    - Java 17 or higher
+     ```bash
+     # For Ubuntu/Debian
+     sudo apt update
+     sudo apt install openjdk-17-jdk
+     
+     # For Amazon Linux/RHEL/CentOS
+     sudo yum install java-17-amazon-corretto
+     
+     # Verify installation
+     java -version
+     ```
+   
    - Node.js and npm
+     ```bash
+     # For Ubuntu/Debian
+     curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+     sudo apt install nodejs
+     
+     # For Amazon Linux/RHEL/CentOS
+     curl -fsSL https://rpm.nodesource.com/setup_18.x | sudo bash -
+     sudo yum install nodejs
+     
+     # Verify installation
+     node --version
+     npm --version
+     ```
+   
    - Rust toolchain
+     ```bash
+     # Install Rust using rustup
+     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+     source $HOME/.cargo/env
+     
+     # Verify installation
+     rustc --version
+     cargo --version
+     ```
+   
    - Gradle 8.10 (included via Gradle Wrapper)
+     ```bash
+     # No manual installation needed as we use Gradle Wrapper
+     # Verify wrapper works
+     ./gradlew --version
+     ```
+   
    - Git
+     ```bash
+     # For Ubuntu/Debian
+     sudo apt install git
+     
+     # For Amazon Linux/RHEL/CentOS
+     sudo yum install git
+     
+     # Verify installation
+     git --version
+     ```
+
+   - Smithy CLI
+     ```bash
+     # Install Smithy CLI using npm
+     npm install -g @smithy/cli
+     
+     # Verify installation
+     smithy --version
+     
+     # Alternative: If using the JAR directly
+     # Download the latest smithy-cli jar from Maven Central
+     wget https://repo1.maven.org/maven2/software/amazon/smithy/smithy-cli/1.41.0/smithy-cli-1.41.0.jar
+     
+     # Create an alias for easy use
+     echo 'alias smithy="java -jar /path/to/smithy-cli-1.41.0.jar"' >> ~/.bashrc
+     source ~/.bashrc
+     ```
 
 2. **AWS Tools**
-   - AWS CLI configured with appropriate credentials
+   - AWS CLI
+     ```bash
+     # For Ubuntu/Debian
+     curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+     sudo apt install unzip
+     unzip awscliv2.zip
+     sudo ./aws/install
+     
+     # For Amazon Linux/RHEL/CentOS
+     curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+     sudo yum install unzip
+     unzip awscliv2.zip
+     sudo ./aws/install
+     
+     # Verify installation
+     aws --version
+     
+     # Configure AWS CLI
+     aws configure
+     ```
+   
    - AWS CDK CLI (install using: `npm install -g aws-cdk`)
+     ```bash
+     # Install AWS CDK CLI
+     npm install -g aws-cdk
+     
+     # Verify installation
+     cdk --version
+     ```
+   
    - AWS Systems Manager (SSM) access if testing with cameras connected via SSM
-
-3. **For Edge Development**
-   - SSM plugin (if using SSM-connected cameras)
-   - Cross-compilation tools for ARM (if building for ARM devices)
-   - Port forwarding capability for local testing
 
 ### AWS CDK Bootstrap
 
