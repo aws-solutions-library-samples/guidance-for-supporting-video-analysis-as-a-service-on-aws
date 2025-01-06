@@ -17,7 +17,6 @@ import java.util.Objects;
 import com.amazonaws.videoanalytics.devicemanagement.CloudVideoStreamingElement;
 import com.amazonaws.videoanalytics.devicemanagement.DeviceConnection;
 import com.amazonaws.videoanalytics.devicemanagement.DeviceState;
-import com.amazonaws.videoanalytics.devicemanagement.StorageElement;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
@@ -69,10 +68,6 @@ public class DeviceStatus {
   public static final String SERIALIZED_NAME_CLOUD_VIDEO_STREAMING = "cloudVideoStreaming";
   @SerializedName(SERIALIZED_NAME_CLOUD_VIDEO_STREAMING)
   private List<CloudVideoStreamingElement> cloudVideoStreaming = new ArrayList<>();
-
-  public static final String SERIALIZED_NAME_STORAGE = "storage";
-  @SerializedName(SERIALIZED_NAME_STORAGE)
-  private List<StorageElement> storage = new ArrayList<>();
 
   public DeviceStatus() {
   }
@@ -142,33 +137,6 @@ public class DeviceStatus {
   }
 
 
-  public DeviceStatus storage(List<StorageElement> storage) {
-    this.storage = storage;
-    return this;
-  }
-
-  public DeviceStatus addStorageItem(StorageElement storageItem) {
-    if (this.storage == null) {
-      this.storage = new ArrayList<>();
-    }
-    this.storage.add(storageItem);
-    return this;
-  }
-
-  /**
-   * Get storage
-   * @return storage
-   */
-  @javax.annotation.Nullable
-  public List<StorageElement> getStorage() {
-    return storage;
-  }
-
-  public void setStorage(List<StorageElement> storage) {
-    this.storage = storage;
-  }
-
-
 
   @Override
   public boolean equals(Object o) {
@@ -181,13 +149,12 @@ public class DeviceStatus {
     DeviceStatus deviceStatus = (DeviceStatus) o;
     return Objects.equals(this.deviceState, deviceStatus.deviceState) &&
         Objects.equals(this.deviceConnection, deviceStatus.deviceConnection) &&
-        Objects.equals(this.cloudVideoStreaming, deviceStatus.cloudVideoStreaming) &&
-        Objects.equals(this.storage, deviceStatus.storage);
+        Objects.equals(this.cloudVideoStreaming, deviceStatus.cloudVideoStreaming);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(deviceState, deviceConnection, cloudVideoStreaming, storage);
+    return Objects.hash(deviceState, deviceConnection, cloudVideoStreaming);
   }
 
   @Override
@@ -197,7 +164,6 @@ public class DeviceStatus {
     sb.append("    deviceState: ").append(toIndentedString(deviceState)).append("\n");
     sb.append("    deviceConnection: ").append(toIndentedString(deviceConnection)).append("\n");
     sb.append("    cloudVideoStreaming: ").append(toIndentedString(cloudVideoStreaming)).append("\n");
-    sb.append("    storage: ").append(toIndentedString(storage)).append("\n");
     sb.append("}");
     return sb.toString();
   }
@@ -223,7 +189,6 @@ public class DeviceStatus {
     openapiFields.add("deviceState");
     openapiFields.add("deviceConnection");
     openapiFields.add("cloudVideoStreaming");
-    openapiFields.add("storage");
 
     // a set of required properties/fields (JSON key names)
     openapiRequiredFields = new HashSet<String>();
@@ -269,20 +234,6 @@ public class DeviceStatus {
           // validate the optional field `cloudVideoStreaming` (array)
           for (int i = 0; i < jsonArraycloudVideoStreaming.size(); i++) {
             CloudVideoStreamingElement.validateJsonElement(jsonArraycloudVideoStreaming.get(i));
-          };
-        }
-      }
-      if (jsonObj.get("storage") != null && !jsonObj.get("storage").isJsonNull()) {
-        JsonArray jsonArraystorage = jsonObj.getAsJsonArray("storage");
-        if (jsonArraystorage != null) {
-          // ensure the json data is an array
-          if (!jsonObj.get("storage").isJsonArray()) {
-            throw new IllegalArgumentException(String.format("Expected the field `storage` to be an array in the JSON string but got `%s`", jsonObj.get("storage").toString()));
-          }
-
-          // validate the optional field `storage` (array)
-          for (int i = 0; i < jsonArraystorage.size(); i++) {
-            StorageElement.validateJsonElement(jsonArraystorage.get(i));
           };
         }
       }
