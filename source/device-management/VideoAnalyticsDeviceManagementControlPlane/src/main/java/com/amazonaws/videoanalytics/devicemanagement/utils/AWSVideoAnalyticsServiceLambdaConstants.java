@@ -12,7 +12,6 @@ public final class AWSVideoAnalyticsServiceLambdaConstants {
     public static final String PROXY_LAMBDA_REQUEST_DEVICE_ID_PATH_PARAMETER_KEY = "deviceId";
     public static final String PROXY_LAMBDA_RESPONSE_STATUS_CODE_KEY = "statusCode";
 
-    public static final String DEVICE_CAP_KEY = "deviceCapabilities";
     public static final String DEVICE_STATE_KEY = "deviceState";
     public static final String DEVICE_METADATA_KEY = "deviceMetadata";
     public static final String SD_CARD_KEY = "sdCard";

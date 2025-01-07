@@ -32,8 +32,7 @@ structure IpAddress {
 structure DeviceStatus {
     deviceState: DeviceState,
     deviceConnection: DeviceConnection,
-    cloudVideoStreaming: CloudVideoStreamingList,
-    storage: StorageList,
+    cloudVideoStreaming: CloudVideoStreamingList
 }
 
 structure DeviceConnection {
@@ -56,28 +55,6 @@ structure CloudVideoStreamingElement {
 enum VideoStreamingState {
     CONNECTED
     DISCONNECTED
-}
-
-list StorageList {
-    member:StorageElement
-}
-
-structure StorageElement {
-    status: StorageState,
-    totalCapacity: String,
-    usedCapacity: String,
-    @timestampFormat("date-time")
-    updatedAt: Timestamp,
-    id: String
-}
-
-enum StorageState {
-    NO_CARD
-    ERROR
-    NOT_FORMATTED
-    UNMOUNTED
-    FULL
-    NORMAL
 }
 
 list Devices {

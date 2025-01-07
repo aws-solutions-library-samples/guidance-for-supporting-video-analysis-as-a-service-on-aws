@@ -14,16 +14,12 @@ public final class TestConstants {
     public static final String MODEL_VALUE = "IPC-DM2A1-W";
     public static final String PRIVATE_IP_VALUE = "192.168.6.10";
     public static final String PUBLIC_IP_VALUE  = "10.15.1.100";
-    public static final String SD_CARD_ID = "sc1";
     public static final String SHADOW_NAME = "testShadowName";
     public static final String TEST_ATTRIBUTE_KEY = "testKey";
     public static final String TEST_ATTRIBUTE_VALUE = "testValue";
-    public static final String TEST_DEVICE_CAP_KEY = "deviceCapabilities";
     public static final String TEST_DEVICE_CAP_VAL = "{\"videoCapabilities\":{\"bitRate\":{\"CBR\":\"10,20,30\",\"VBR\":\"1,2,3\"}}}";
     public static final String THING_ARN = "arn:aws:iot:us-west-2:123456781234:thing/TestThing";
     public static final String THING_ID = "12345678-abcd-8765-dcba-1234abcd5678";
-    public static final long SD_CARD_TOTAL_CAPACITY = 14887;
-    public static final long SD_CARD_USED_CAPACITY = 40;
     public static final long TIMESTAMP = 1675268761;
     public static final String CERTIFICATE_ID = "fakeCertificateID";
     public static final String DATE = "Wed Feb 01 16:26:01 UTC 2023";

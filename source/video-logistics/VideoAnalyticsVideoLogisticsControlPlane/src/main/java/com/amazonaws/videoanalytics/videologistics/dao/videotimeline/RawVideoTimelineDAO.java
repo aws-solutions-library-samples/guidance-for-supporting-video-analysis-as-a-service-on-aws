@@ -31,7 +31,8 @@ import java.util.Map;
 import static com.amazonaws.services.lambda.runtime.LambdaRuntime.getLogger;
 
 public class RawVideoTimelineDAO {
-    private static final long KVS_TTL_DURATION = 7 * 24 * 60 * 60; // 7 days in seconds
+    // Hardcoded placeholder for TTL duration for video on KVS in seconds = 3 months in seconds
+    public static final Long KVS_TTL_DURATION = 3L * 30 * 24 * 60 * 60;
     private static final String RAW_VIDEO_TYPE = "RAW";
     private final LambdaLogger logger = getLogger();
     private final DynamoDbTable<RawVideoTimeline> videoTimelineTable;

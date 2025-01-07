@@ -10,8 +10,6 @@ import com.amazonaws.videoanalytics.devicemanagement.DeviceStatus;
 import com.amazonaws.videoanalytics.devicemanagement.GetDeviceResponseContent;
 import com.amazonaws.videoanalytics.devicemanagement.InternalServerExceptionResponseContent;
 import com.amazonaws.videoanalytics.devicemanagement.IpAddress;
-import com.amazonaws.videoanalytics.devicemanagement.StorageElement;
-import com.amazonaws.videoanalytics.devicemanagement.StorageState;
 import com.amazonaws.videoanalytics.devicemanagement.ValidationExceptionResponseContent;
 import com.amazonaws.videoanalytics.devicemanagement.dependency.iot.IotService;
 import com.amazonaws.services.lambda.runtime.Context;
@@ -78,16 +76,11 @@ public class GetDeviceActivityTest {
         Map<String, String> deviceSettings = new HashMap<>();
         deviceSettings.put("videoSettings", "{\"profile1\":{\"codec\":\"H264\"}}");
 
-        Map<String, String> deviceCapabilities = new HashMap<>();
-        deviceCapabilities.put("videoCapabilities","{\"codec\":\"H264\"}");
-
         DeviceMetaData deviceMetaData = buildExpectedDeviceMetaData();
         GetDeviceResponseContent responseFromIotService = GetDeviceResponseContent
                 .builder()
                 .deviceId(DEVICE_ID)
-                .deviceType(DEVICE_TYPE_NAME)
                 .deviceSettings(deviceSettings)
-                .deviceCapabilities(deviceCapabilities)
                 .deviceMetaData(deviceMetaData)
                 .build();
 
@@ -95,9 +88,7 @@ public class GetDeviceActivityTest {
         Map<String, Object> responseMap = getDeviceActivity.handleRequest(lambdaProxyRequest, context);
         GetDeviceResponseContent getDeviceResponse = GetDeviceResponseContent.fromJson(parseBody(responseMap));
         assertEquals(DEVICE_ID, getDeviceResponse.getDeviceId());
-        assertEquals(DEVICE_TYPE_NAME, getDeviceResponse.getDeviceType());
         assertEquals(deviceMetaData, getDeviceResponse.getDeviceMetaData());
-        assertEquals(deviceCapabilities, getDeviceResponse.getDeviceCapabilities());
         assertEquals(deviceSettings, getDeviceResponse.getDeviceSettings());
     }
 
@@ -171,24 +162,12 @@ public class GetDeviceActivityTest {
                 .updatedAt(new Date(DATE))
                 .build();
 
-        StorageElement storageState = StorageElement
-                .builder()
-                .status(StorageState.FULL)
-                .totalCapacity(Strings.EMPTY)
-                .usedCapacity(Strings.EMPTY)
-                .updatedAt(new Date(DATE))
-                .build();
-
-        List<StorageElement> storageList = new ArrayList<>();
-        storageList.add(storageState);
-
         List<CloudVideoStreamingElement> videoStreamingStateList = new ArrayList<>();
 
         DeviceStatus deviceStatus = DeviceStatus
                 .builder()
                 .deviceState(DeviceState.ENABLED)
                 .deviceConnection(deviceConnection)
-                .storage(storageList)
                 .cloudVideoStreaming(videoStreamingStateList)
                 .build();
 

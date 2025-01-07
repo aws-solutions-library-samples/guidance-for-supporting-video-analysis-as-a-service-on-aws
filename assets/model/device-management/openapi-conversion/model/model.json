@@ -1435,6 +1435,14 @@
                 "smithy.api#pattern": "^[a-z0-9\\-]+$"
             }
         },
+        "com.amazonaws.videoanalytics#KVSStreamARNs": {
+            "type": "structure",
+            "members": {
+                "kvsStreamARNForPlayback": {
+                    "target": "smithy.api#String"
+                }
+            }
+        },
         "com.amazonaws.videoanalytics#KeyPair": {
             "type": "structure",
             "members": {
@@ -1654,67 +1662,6 @@
                 "target": "com.amazonaws.videoanalytics.devicemanagement#CloudVideoStreamingElement"
             }
         },
-        "com.amazonaws.videoanalytics.devicemanagement#Command": {
-            "type": "enum",
-            "members": {
-                "REBOOT": {
-                    "target": "smithy.api#Unit",
-                    "traits": {
-                        "smithy.api#enumValue": "REBOOT"
-                    }
-                },
-                "FACTORY_RESET": {
-                    "target": "smithy.api#Unit",
-                    "traits": {
-                        "smithy.api#enumValue": "FACTORY_RESET"
-                    }
-                },
-                "SD_CARD_FORMAT": {
-                    "target": "smithy.api#Unit",
-                    "traits": {
-                        "smithy.api#enumValue": "SD_CARD_FORMAT"
-                    }
-                },
-                "UPDATE": {
-                    "target": "smithy.api#Unit",
-                    "traits": {
-                        "smithy.api#enumValue": "UPDATE"
-                    }
-                }
-            }
-        },
-        "com.amazonaws.videoanalytics.devicemanagement#CommandPayload": {
-            "type": "structure",
-            "members": {
-                "command": {
-                    "target": "com.amazonaws.videoanalytics.devicemanagement#Command",
-                    "traits": {
-                        "smithy.api#required": {}
-                    }
-                },
-                "retries": {
-                    "target": "smithy.api#Integer",
-                    "traits": {
-                        "smithy.api#range": {
-                            "min": 0,
-                            "max": 10
-                        }
-                    }
-                },
-                "timeout": {
-                    "target": "smithy.api#Integer",
-                    "traits": {
-                        "smithy.api#range": {
-                            "min": 1,
-                            "max": 10080
-                        }
-                    }
-                },
-                "s3Uri": {
-                    "target": "com.amazonaws.videoanalytics#S3Path"
-                }
-            }
-        },
         "com.amazonaws.videoanalytics.devicemanagement#Device": {
             "type": "resource",
             "operations": [
@@ -1733,107 +1680,6 @@
                     "target": "smithy.api#Boolean"
                 },
                 "updatedAt": {
-                    "target": "smithy.api#Timestamp",
-                    "traits": {
-                        "smithy.api#timestampFormat": "date-time"
-                    }
-                }
-            }
-        },
-        "com.amazonaws.videoanalytics.devicemanagement#DeviceGroupAttributePayload": {
-            "type": "structure",
-            "members": {
-                "attributes": {
-                    "target": "com.amazonaws.videoanalytics#KeyValueMap"
-                },
-                "merge": {
-                    "target": "smithy.api#Boolean"
-                }
-            }
-        },
-        "com.amazonaws.videoanalytics.devicemanagement#DeviceGroupId": {
-            "type": "string",
-            "traits": {
-                "smithy.api#length": {
-                    "min": 1,
-                    "max": 128
-                },
-                "smithy.api#pattern": "^[a-zA-Z0-9:_\\-]+$"
-            }
-        },
-        "com.amazonaws.videoanalytics.devicemanagement#DeviceGroupIdList": {
-            "type": "list",
-            "member": {
-                "target": "com.amazonaws.videoanalytics.devicemanagement#DeviceGroupId"
-            }
-        },
-        "com.amazonaws.videoanalytics.devicemanagement#DeviceGroupMetaData": {
-            "type": "structure",
-            "members": {
-                "creationDate": {
-                    "target": "smithy.api#Timestamp",
-                    "traits": {
-                        "smithy.api#timestampFormat": "date-time"
-                    }
-                },
-                "parentGroupId": {
-                    "target": "com.amazonaws.videoanalytics.devicemanagement#DeviceGroupId"
-                },
-                "rootToParentDeviceGroups": {
-                    "target": "com.amazonaws.videoanalytics.devicemanagement#DeviceGroupsList"
-                }
-            }
-        },
-        "com.amazonaws.videoanalytics.devicemanagement#DeviceGroupPayload": {
-            "type": "structure",
-            "members": {
-                "deviceGroupIdList": {
-                    "target": "com.amazonaws.videoanalytics.devicemanagement#DeviceGroupIdList"
-                },
-                "remove": {
-                    "target": "smithy.api#Boolean"
-                }
-            }
-        },
-        "com.amazonaws.videoanalytics.devicemanagement#DeviceGroups": {
-            "type": "structure",
-            "members": {
-                "deviceGroupId": {
-                    "target": "com.amazonaws.videoanalytics.devicemanagement#DeviceGroupId"
-                }
-            }
-        },
-        "com.amazonaws.videoanalytics.devicemanagement#DeviceGroupsList": {
-            "type": "list",
-            "member": {
-                "target": "com.amazonaws.videoanalytics.devicemanagement#DeviceGroups"
-            }
-        },
-        "com.amazonaws.videoanalytics.devicemanagement#DeviceInfo": {
-            "type": "structure",
-            "members": {
-                "deviceName": {
-                    "target": "smithy.api#String"
-                },
-                "deviceId": {
-                    "target": "com.amazonaws.videoanalytics#DeviceId"
-                },
-                "deviceGroupId": {
-                    "target": "com.amazonaws.videoanalytics.devicemanagement#DeviceGroupId"
-                },
-                "deviceType": {
-                    "target": "smithy.api#String"
-                },
-                "deviceMetaData": {
-                    "target": "com.amazonaws.videoanalytics.devicemanagement#DeviceMetaData"
-                },
-                "deviceCapabilities": {
-                    "target": "com.amazonaws.videoanalytics#KeyValueMap"
-                },
-                "deviceSettings": {
-                    "target": "com.amazonaws.videoanalytics#KeyValueMap"
-                },
-                "createdAt": {
                     "target": "smithy.api#Timestamp",
                     "traits": {
                         "smithy.api#timestampFormat": "date-time"
@@ -1873,56 +1719,6 @@
                 },
                 "deviceStatus": {
                     "target": "com.amazonaws.videoanalytics.devicemanagement#DeviceStatus"
-                }
-            }
-        },
-        "com.amazonaws.videoanalytics.devicemanagement#DeviceOperation": {
-            "type": "list",
-            "member": {
-                "target": "com.amazonaws.videoanalytics.devicemanagement#DeviceOperationInfo"
-            }
-        },
-        "com.amazonaws.videoanalytics.devicemanagement#DeviceOperationInfo": {
-            "type": "structure",
-            "members": {
-                "deviceOperationId": {
-                    "target": "smithy.api#String"
-                },
-                "deviceOperationName": {
-                    "target": "smithy.api#String"
-                },
-                "deviceOperationStatus": {
-                    "target": "smithy.api#String"
-                },
-                "callerAccount": {
-                    "target": "smithy.api#String"
-                },
-                "sourceIPAddress": {
-                    "target": "smithy.api#String"
-                },
-                "createdAt": {
-                    "target": "smithy.api#Timestamp",
-                    "traits": {
-                        "smithy.api#timestampFormat": "date-time"
-                    }
-                },
-                "updatedAt": {
-                    "target": "smithy.api#Timestamp",
-                    "traits": {
-                        "smithy.api#timestampFormat": "date-time"
-                    }
-                },
-                "requestParameters": {
-                    "target": "smithy.api#String"
-                },
-                "contents": {
-                    "target": "smithy.api#String"
-                },
-                "errorCode": {
-                    "target": "smithy.api#String"
-                },
-                "errorMessage": {
-                    "target": "smithy.api#String"
                 }
             }
         },
@@ -1974,37 +1770,7 @@
                 },
                 "cloudVideoStreaming": {
                     "target": "com.amazonaws.videoanalytics.devicemanagement#CloudVideoStreamingList"
-                },
-                "storage": {
-                    "target": "com.amazonaws.videoanalytics.devicemanagement#StorageList"
                 }
-            }
-        },
-        "com.amazonaws.videoanalytics.devicemanagement#DeviceTypeId": {
-            "type": "string",
-            "traits": {
-                "smithy.api#length": {
-                    "min": 1,
-                    "max": 128
-                },
-                "smithy.api#pattern": "^[a-zA-Z0-9:_\\-]+$"
-            }
-        },
-        "com.amazonaws.videoanalytics.devicemanagement#DeviceTypePayload": {
-            "type": "structure",
-            "members": {
-                "deviceTypeId": {
-                    "target": "com.amazonaws.videoanalytics.devicemanagement#DeviceTypeId"
-                },
-                "removeDeviceType": {
-                    "target": "smithy.api#Boolean"
-                }
-            }
-        },
-        "com.amazonaws.videoanalytics.devicemanagement#Devices": {
-            "type": "list",
-            "member": {
-                "target": "com.amazonaws.videoanalytics.devicemanagement#DeviceInfo"
             }
         },
         "com.amazonaws.videoanalytics.devicemanagement#GetCreateDeviceStatus": {
@@ -2143,17 +1909,8 @@
                 "deviceId": {
                     "target": "com.amazonaws.videoanalytics#DeviceId"
                 },
-                "deviceGroupIds": {
-                    "target": "com.amazonaws.videoanalytics.devicemanagement#DeviceGroupIdList"
-                },
-                "deviceType": {
-                    "target": "smithy.api#String"
-                },
                 "deviceMetaData": {
                     "target": "com.amazonaws.videoanalytics.devicemanagement#DeviceMetaData"
-                },
-                "deviceCapabilities": {
-                    "target": "com.amazonaws.videoanalytics#KeyValueMap"
                 },
                 "deviceSettings": {
                     "target": "com.amazonaws.videoanalytics#KeyValueMap"
@@ -2333,76 +2090,6 @@
             },
             "traits": {
                 "smithy.api#output": {}
-            }
-        },
-        "com.amazonaws.videoanalytics.devicemanagement#StorageElement": {
-            "type": "structure",
-            "members": {
-                "status": {
-                    "target": "com.amazonaws.videoanalytics.devicemanagement#StorageState"
-                },
-                "totalCapacity": {
-                    "target": "smithy.api#String"
-                },
-                "usedCapacity": {
-                    "target": "smithy.api#String"
-                },
-                "updatedAt": {
-                    "target": "smithy.api#Timestamp",
-                    "traits": {
-                        "smithy.api#timestampFormat": "date-time"
-                    }
-                },
-                "id": {
-                    "target": "smithy.api#String"
-                }
-            }
-        },
-        "com.amazonaws.videoanalytics.devicemanagement#StorageList": {
-            "type": "list",
-            "member": {
-                "target": "com.amazonaws.videoanalytics.devicemanagement#StorageElement"
-            }
-        },
-        "com.amazonaws.videoanalytics.devicemanagement#StorageState": {
-            "type": "enum",
-            "members": {
-                "NO_CARD": {
-                    "target": "smithy.api#Unit",
-                    "traits": {
-                        "smithy.api#enumValue": "NO_CARD"
-                    }
-                },
-                "ERROR": {
-                    "target": "smithy.api#Unit",
-                    "traits": {
-                        "smithy.api#enumValue": "ERROR"
-                    }
-                },
-                "NOT_FORMATTED": {
-                    "target": "smithy.api#Unit",
-                    "traits": {
-                        "smithy.api#enumValue": "NOT_FORMATTED"
-                    }
-                },
-                "UNMOUNTED": {
-                    "target": "smithy.api#Unit",
-                    "traits": {
-                        "smithy.api#enumValue": "UNMOUNTED"
-                    }
-                },
-                "FULL": {
-                    "target": "smithy.api#Unit",
-                    "traits": {
-                        "smithy.api#enumValue": "FULL"
-                    }
-                },
-                "NORMAL": {
-                    "target": "smithy.api#Unit",
-                    "traits": {
-                        "smithy.api#enumValue": "NORMAL"
-                    }
-                }
             }
         },
         "com.amazonaws.videoanalytics.devicemanagement#UpdateDeviceShadow": {
