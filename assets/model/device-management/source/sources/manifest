@@ -1,11 +1,11 @@
-types/Device.smithy
-types/DeviceOperation.smithy
 types/DeviceGroup.smithy
-resources/Device.smithy
+types/DeviceOperation.smithy
+types/Device.smithy
 resources/DeviceOperation.smithy
+resources/Device.smithy
 operations/Device/StartCreateDevice.smithy
 operations/Device/GetCreateDeviceStatus.smithy
+operations/DeviceOperations/GetDevice.smithy
 operations/DeviceOperations/UpdateDeviceShadow.smithy
 operations/DeviceOperations/GetDeviceShadow.smithy
-operations/DeviceOperations/GetDevice.smithy
 video-analytic.smithy

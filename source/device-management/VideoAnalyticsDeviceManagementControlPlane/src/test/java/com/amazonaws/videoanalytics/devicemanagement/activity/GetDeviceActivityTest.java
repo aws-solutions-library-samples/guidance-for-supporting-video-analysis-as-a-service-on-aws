@@ -10,8 +10,6 @@ import com.amazonaws.videoanalytics.devicemanagement.DeviceStatus;
 import com.amazonaws.videoanalytics.devicemanagement.GetDeviceResponseContent;
 import com.amazonaws.videoanalytics.devicemanagement.InternalServerExceptionResponseContent;
 import com.amazonaws.videoanalytics.devicemanagement.IpAddress;
-import com.amazonaws.videoanalytics.devicemanagement.StorageElement;
-import com.amazonaws.videoanalytics.devicemanagement.StorageState;
 import com.amazonaws.videoanalytics.devicemanagement.ValidationExceptionResponseContent;
 import com.amazonaws.videoanalytics.devicemanagement.dependency.iot.IotService;
 import com.amazonaws.services.lambda.runtime.Context;
@@ -171,24 +169,12 @@ public class GetDeviceActivityTest {
                 .updatedAt(new Date(DATE))
                 .build();
 
-        StorageElement storageState = StorageElement
-                .builder()
-                .status(StorageState.FULL)
-                .totalCapacity(Strings.EMPTY)
-                .usedCapacity(Strings.EMPTY)
-                .updatedAt(new Date(DATE))
-                .build();
-
-        List<StorageElement> storageList = new ArrayList<>();
-        storageList.add(storageState);
-
         List<CloudVideoStreamingElement> videoStreamingStateList = new ArrayList<>();
 
         DeviceStatus deviceStatus = DeviceStatus
                 .builder()
                 .deviceState(DeviceState.ENABLED)
                 .deviceConnection(deviceConnection)
-                .storage(storageList)
                 .cloudVideoStreaming(videoStreamingStateList)
                 .build();
 

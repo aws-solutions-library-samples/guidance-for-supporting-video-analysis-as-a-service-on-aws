@@ -105,7 +105,6 @@ public class JSON {
         gsonBuilder.registerTypeAdapterFactory(new com.amazonaws.videoanalytics.devicemanagement.ShadowMap.CustomTypeAdapterFactory());
         gsonBuilder.registerTypeAdapterFactory(new com.amazonaws.videoanalytics.devicemanagement.StartCreateDeviceRequestContent.CustomTypeAdapterFactory());
         gsonBuilder.registerTypeAdapterFactory(new com.amazonaws.videoanalytics.devicemanagement.StartCreateDeviceResponseContent.CustomTypeAdapterFactory());
-        gsonBuilder.registerTypeAdapterFactory(new com.amazonaws.videoanalytics.devicemanagement.StorageElement.CustomTypeAdapterFactory());
         gsonBuilder.registerTypeAdapterFactory(new com.amazonaws.videoanalytics.devicemanagement.UpdateDeviceShadowRequestContent.CustomTypeAdapterFactory());
         gsonBuilder.registerTypeAdapterFactory(new com.amazonaws.videoanalytics.devicemanagement.UpdateDeviceShadowResponseContent.CustomTypeAdapterFactory());
         gsonBuilder.registerTypeAdapterFactory(new com.amazonaws.videoanalytics.devicemanagement.ValidationExceptionField.CustomTypeAdapterFactory());
