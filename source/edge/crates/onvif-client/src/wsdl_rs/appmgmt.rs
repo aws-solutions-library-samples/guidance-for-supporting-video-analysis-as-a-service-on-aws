@@ -55,12 +55,12 @@ pub struct AppInfo {
     #[yaserde(prefix = "ans", rename = "Privileges")]
     pub privileges: Vec<String>,
 
-    // Currently process 1 returns 1970-01-01T00:00:00Z for the field.
+    // Currently ONVIF server returns 1970-01-01T00:00:00Z for the field.
     // Date and time when the application has been installed.
     // #[yaserde(prefix = "ans", rename = "InstallationDate")]
     // pub installation_date: xs::DateTime,
 
-    // Currently process 1 returns 1970-01-01T00:00:00Z for the field.
+    // Currently ONVIF server returns 1970-01-01T00:00:00Z for the field.
     // Time of last update to this app, i.e. the time when this particular
     // version was installed.
     // #[yaserde(prefix = "ans", rename = "LastUpdate")]

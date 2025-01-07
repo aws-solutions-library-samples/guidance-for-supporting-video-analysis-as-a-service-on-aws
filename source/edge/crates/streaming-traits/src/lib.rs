@@ -106,7 +106,7 @@ pub trait VideoStreamConsumer {
         -> Result<(), Box<dyn Error>>;
 }
 
-/// This trait is responsible to create streaming pipeline to get streamed information from Process 1 source and
+/// This trait is responsible to create streaming pipeline to get streamed information from device source and
 /// send it to correct sink in required format. This trait is also responsible to start and
 /// stop streaming pipeline.
 #[automock]
