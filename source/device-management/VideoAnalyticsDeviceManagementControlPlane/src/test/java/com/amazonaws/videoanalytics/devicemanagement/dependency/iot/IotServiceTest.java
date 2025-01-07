@@ -9,8 +9,6 @@ import com.amazonaws.videoanalytics.devicemanagement.GetDeviceResponseContent;
 import com.amazonaws.videoanalytics.devicemanagement.GetDeviceShadowResponseContent;
 import com.amazonaws.videoanalytics.devicemanagement.IpAddress;
 import com.amazonaws.videoanalytics.devicemanagement.ShadowMap;
-import com.amazonaws.videoanalytics.devicemanagement.StorageElement;
-import com.amazonaws.videoanalytics.devicemanagement.StorageState;
 import com.amazonaws.videoanalytics.devicemanagement.UpdateDeviceShadowResponseContent;
 import com.amazonaws.videoanalytics.devicemanagement.VideoStreamingState;
 import com.amazonaws.videoanalytics.devicemanagement.utils.UpdateDeviceUtils;
@@ -90,9 +88,6 @@ import static com.amazonaws.videoanalytics.devicemanagement.utils.TestConstants.
 import static com.amazonaws.videoanalytics.devicemanagement.utils.TestConstants.MODEL_VALUE;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.TestConstants.PRIVATE_IP_VALUE;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.TestConstants.PUBLIC_IP_VALUE;
-import static com.amazonaws.videoanalytics.devicemanagement.utils.TestConstants.SD_CARD_ID;
-import static com.amazonaws.videoanalytics.devicemanagement.utils.TestConstants.SD_CARD_TOTAL_CAPACITY;
-import static com.amazonaws.videoanalytics.devicemanagement.utils.TestConstants.SD_CARD_USED_CAPACITY;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.TestConstants.SHADOW_NAME;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.TestConstants.TEST_ATTRIBUTE_KEY;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.TestConstants.TEST_ATTRIBUTE_VALUE;
@@ -179,7 +174,7 @@ public class IotServiceTest {
 
     @Test
     public void getDevice_validRequest_returnsResponse() throws ParseException, JsonProcessingException {
-        setupDeviceHappyCase(StorageState.NORMAL.toString());
+        setupDeviceHappyCase();
         when(iotClient.listThingGroupsForThing(any(ListThingGroupsForThingRequest.class)))
                 .thenReturn(ListThingGroupsForThingResponse.builder()
                         .thingGroups(ImmutableList.of(GroupNameAndArn.builder()
@@ -191,78 +186,6 @@ public class IotServiceTest {
         GetDeviceResponseContent responseFromIotService = iotService.getDevice(DEVICE_ID);
         assertEquals(DEVICE_ID, responseFromIotService.getDeviceId());
         assertEquals(expectedMetaData, responseFromIotService.getDeviceMetaData());
-        assertEquals(EXPECTED_DEVICE_SETTINGS_STRING, responseFromIotService.getDeviceSettings().toString());
-    }
-
-    @Test
-    public void getDevice_noSdCard_returnsResponse() throws ParseException, JsonProcessingException {
-        setupDeviceHappyCase(StorageState.NO_CARD.toString());
-        when(iotClient.listThingGroupsForThing(any(ListThingGroupsForThingRequest.class)))
-                .thenReturn(ListThingGroupsForThingResponse.builder()
-                        .thingGroups(ImmutableList.of(GroupNameAndArn.builder()
-                                .groupName(UpdateDeviceUtils.VideoAnalyticsManagedDeviceGroupId.SpecialGroup_EnabledState.name())
-                                .build()))
-                        .build());
-        IpAddress expectedIpAddress = IpAddress
-                .builder()
-                .privateIpAddress(PRIVATE_IP_VALUE)
-                .publicIpAddress("")
-                .build();
-
-        DeviceConnection expectedDeviceConnection = DeviceConnection
-                .builder()
-                .status(true)
-                .updatedAt(new Date(DATE))
-                .build();
-
-        StorageElement expectedStorageState = StorageElement
-                .builder()
-                .status(StorageState.NO_CARD)
-                .id(SD_CARD_ID)
-                .totalCapacity("0")
-                .usedCapacity("0")
-                .updatedAt(new Date(DATE))
-                .build();
-
-        List<StorageElement> storageList = new ArrayList<>();
-        storageList.add(expectedStorageState);
-
-        CloudVideoStreamingElement expectedVideoStreamingState = CloudVideoStreamingElement
-                .builder()
-                .id(DEVICE_ID)
-                .status(VideoStreamingState.CONNECTED)
-                .updatedAt(new Date(DATE))
-                .build();
-        List<CloudVideoStreamingElement> videoStreamingStateList = new ArrayList<>();
-        videoStreamingStateList.add(expectedVideoStreamingState);
-
-        DeviceStatus expectedDeviceStatus = DeviceStatus
-                .builder()
-                .deviceState(DeviceState.ENABLED)
-                .deviceConnection(expectedDeviceConnection)
-                .storage(storageList)
-                .cloudVideoStreaming(videoStreamingStateList)
-                .build();
-
-        DeviceMetaData expectedMetaData = DeviceMetaData
-                .builder()
-                .aiChipset("")
-                .aiModelVersion(AI_MODEL_VERSION_VALUE)
-                .aiSdkVersion(AI_SDK_VERSION_VALUE)
-                .mac(MAC_VALUE)
-                .firmwareVersion(FIRMWARE_VERSION_VALUE)
-                .sdkVersion("")
-                .manufacturer(MANUFACTURER_VALUE)
-                .model(MODEL_VALUE)
-                .ipAddress(expectedIpAddress)
-                .deviceStatus(expectedDeviceStatus)
-                .build();
-
-        GetDeviceResponseContent responseFromIotService = iotService.getDevice(DEVICE_ID);
-        assertEquals(DEVICE_ID, responseFromIotService.getDeviceId());
-        assertEquals(expectedMetaData, responseFromIotService.getDeviceMetaData());
-        assertEquals(expectedMetaData.getDeviceStatus().getStorage().get(0).getTotalCapacity(), "0");
-        assertEquals(expectedMetaData.getDeviceStatus().getStorage().get(0).getUsedCapacity(), "0");
         assertEquals(EXPECTED_DEVICE_SETTINGS_STRING, responseFromIotService.getDeviceSettings().toString());
     }
 
@@ -292,7 +215,7 @@ public class IotServiceTest {
                 .build();
         GetThingShadowResponse getThingShadowResponseProvision = GetThingShadowResponse
                 .builder()
-                .payload(SdkBytes.fromUtf8String(buildProvisionShadowPayload(StorageState.NORMAL.toString())))
+                .payload(SdkBytes.fromUtf8String(buildProvisionShadowPayload()))
                 .build();
         when(iotDataPlaneClient.getThingShadow(getThingShadowRequestProvision)).thenReturn(getThingShadowResponseProvision);
 
@@ -324,20 +247,6 @@ public class IotServiceTest {
                 .updatedAt(new Date(DATE_LONG))
                 .build();
 
-        StorageElement expectedStorageState = StorageElement
-                .builder()
-                .status(StorageState.NORMAL)
-                .id(SD_CARD_ID)
-                .totalCapacity(String.valueOf(SD_CARD_TOTAL_CAPACITY))
-                .usedCapacity(String.valueOf(SD_CARD_USED_CAPACITY))
-                // this field is pulled from onvif shadow, for this test onvif shadow has timestamps,
-                // the UpdatedAt field is set
-                .updatedAt(new Date(DATE))
-                .build();
-
-        List<StorageElement> storageList = new ArrayList<>();
-        storageList.add(expectedStorageState);
-
         CloudVideoStreamingElement expectedVideoStreamingState = CloudVideoStreamingElement
                 .builder()
                 .id(DEVICE_ID)
@@ -351,7 +260,6 @@ public class IotServiceTest {
                 .builder()
                 .deviceState(DeviceState.ENABLED)
                 .deviceConnection(expectedDeviceConnection)
-                .storage(storageList)
                 .cloudVideoStreaming(videoStreamingStateList)
                 .build();
 
@@ -489,15 +397,8 @@ public class IotServiceTest {
         });
     }
 
-    private String buildProvisionShadowPayload(String sdCardStatus) {
+    private String buildProvisionShadowPayload() {
         JSONObject provisionShadow = new JSONObject();
-
-        JSONObject sdCardObject = new JSONObject();
-        sdCardObject.put("status", sdCardStatus);
-        sdCardObject.put("totalCapacity", SD_CARD_TOTAL_CAPACITY);
-        sdCardObject.put("usedCapacity", SD_CARD_USED_CAPACITY);
-        sdCardObject.put("updatedAt", DATE_LONG_IN_MILLIS);
-        sdCardObject.put("id", SD_CARD_ID);
         
         // provision shadow's state.reported
         JSONObject capabilitiesObject = new JSONObject();
@@ -506,7 +407,6 @@ public class IotServiceTest {
         capabilitiesObject.put(AI_SDK_VERSION_KEY, AI_SDK_VERSION_VALUE);
 
         JSONObject reportedStateObject = new JSONObject();
-        reportedStateObject.put("sdCard", sdCardObject);
         reportedStateObject.put("capabilities", capabilitiesObject);
         reportedStateObject.put(MAC_KEY, MAC_VALUE);
         reportedStateObject.put(AI_MODEL_VERSION_KEY, AI_MODEL_VERSION_VALUE);
@@ -602,7 +502,7 @@ public class IotServiceTest {
         return emptyReported.toString();
     }
 
-    private void setupDeviceHappyCase(String sdCardStatus) {
+    private void setupDeviceHappyCase() {
         Map<String, String> iotAttribute = new HashMap<>();
         DescribeThingResponse describeThingResponse = DescribeThingResponse
                 .builder()
@@ -637,7 +537,7 @@ public class IotServiceTest {
                 .build();
         GetThingShadowResponse getThingShadowResponseProvision = GetThingShadowResponse
                 .builder()
-                .payload(SdkBytes.fromUtf8String(buildProvisionShadowPayload(sdCardStatus)))
+                .payload(SdkBytes.fromUtf8String(buildProvisionShadowPayload()))
                 .build();
         when(iotDataPlaneClient.getThingShadow(getThingShadowRequestProvision)).thenReturn(getThingShadowResponseProvision);
 
@@ -667,18 +567,6 @@ public class IotServiceTest {
                 .updatedAt(new Date(DATE))
                 .build();
 
-        StorageElement expectedStorageState = StorageElement
-                .builder()
-                .status(StorageState.NORMAL)
-                .id(SD_CARD_ID)
-                .totalCapacity(String.valueOf(SD_CARD_TOTAL_CAPACITY))
-                .usedCapacity(String.valueOf(SD_CARD_USED_CAPACITY))
-                .updatedAt(new Date(DATE))
-                .build();
-
-        List<StorageElement> storageList = new ArrayList<>();
-        storageList.add(expectedStorageState);
-
         CloudVideoStreamingElement expectedVideoStreamingState = CloudVideoStreamingElement
                 .builder()
                 .id(DEVICE_ID)
@@ -692,7 +580,6 @@ public class IotServiceTest {
                 .builder()
                 .deviceState(DeviceState.ENABLED)
                 .deviceConnection(expectedDeviceConnection)
-                .storage(storageList)
                 .cloudVideoStreaming(videoStreamingStateList)
                 .build();
 

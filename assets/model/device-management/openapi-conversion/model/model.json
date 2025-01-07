@@ -1770,9 +1770,6 @@
                 },
                 "cloudVideoStreaming": {
                     "target": "com.amazonaws.videoanalytics.devicemanagement#CloudVideoStreamingList"
-                },
-                "storage": {
-                    "target": "com.amazonaws.videoanalytics.devicemanagement#StorageList"
                 }
             }
         },
@@ -2093,76 +2090,6 @@
             },
             "traits": {
                 "smithy.api#output": {}
-            }
-        },
-        "com.amazonaws.videoanalytics.devicemanagement#StorageElement": {
-            "type": "structure",
-            "members": {
-                "status": {
-                    "target": "com.amazonaws.videoanalytics.devicemanagement#StorageState"
-                },
-                "totalCapacity": {
-                    "target": "smithy.api#String"
-                },
-                "usedCapacity": {
-                    "target": "smithy.api#String"
-                },
-                "updatedAt": {
-                    "target": "smithy.api#Timestamp",
-                    "traits": {
-                        "smithy.api#timestampFormat": "date-time"
-                    }
-                },
-                "id": {
-                    "target": "smithy.api#String"
-                }
-            }
-        },
-        "com.amazonaws.videoanalytics.devicemanagement#StorageList": {
-            "type": "list",
-            "member": {
-                "target": "com.amazonaws.videoanalytics.devicemanagement#StorageElement"
-            }
-        },
-        "com.amazonaws.videoanalytics.devicemanagement#StorageState": {
-            "type": "enum",
-            "members": {
-                "NO_CARD": {
-                    "target": "smithy.api#Unit",
-                    "traits": {
-                        "smithy.api#enumValue": "NO_CARD"
-                    }
-                },
-                "ERROR": {
-                    "target": "smithy.api#Unit",
-                    "traits": {
-                        "smithy.api#enumValue": "ERROR"
-                    }
-                },
-                "NOT_FORMATTED": {
-                    "target": "smithy.api#Unit",
-                    "traits": {
-                        "smithy.api#enumValue": "NOT_FORMATTED"
-                    }
-                },
-                "UNMOUNTED": {
-                    "target": "smithy.api#Unit",
-                    "traits": {
-                        "smithy.api#enumValue": "UNMOUNTED"
-                    }
-                },
-                "FULL": {
-                    "target": "smithy.api#Unit",
-                    "traits": {
-                        "smithy.api#enumValue": "FULL"
-                    }
-                },
-                "NORMAL": {
-                    "target": "smithy.api#Unit",
-                    "traits": {
-                        "smithy.api#enumValue": "NORMAL"
-                    }
-                }
             }
         },
         "com.amazonaws.videoanalytics.devicemanagement#UpdateDeviceShadow": {

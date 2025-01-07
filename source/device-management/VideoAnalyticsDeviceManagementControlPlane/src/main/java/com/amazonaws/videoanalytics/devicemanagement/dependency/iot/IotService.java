@@ -9,8 +9,6 @@ import com.amazonaws.videoanalytics.devicemanagement.GetDeviceResponseContent;
 import com.amazonaws.videoanalytics.devicemanagement.GetDeviceShadowResponseContent;
 import com.amazonaws.videoanalytics.devicemanagement.IpAddress;
 import com.amazonaws.videoanalytics.devicemanagement.ShadowMap;
-import com.amazonaws.videoanalytics.devicemanagement.StorageElement;
-import com.amazonaws.videoanalytics.devicemanagement.StorageState;
 import com.amazonaws.videoanalytics.devicemanagement.UpdateDeviceShadowResponseContent;
 import com.amazonaws.videoanalytics.devicemanagement.VideoStreamingState;
 import com.amazonaws.videoanalytics.devicemanagement.utils.ShadowMapUtils;
@@ -201,7 +199,6 @@ public class IotService {
 
         DeviceMetaData deviceMetaData = DeviceMetaData.builder().build();
         IpAddress ipAddress = IpAddress.builder().build();
-        StorageElement storageState = StorageElement.builder().build();
         DeviceConnection deviceConnection = generateDeviceConnection(describeThingResponse);
         DeviceStatus deviceStatus = DeviceStatus.builder().build();
         CloudVideoStreamingElement cloudVideoStreamingElement = CloudVideoStreamingElement.builder().build();
@@ -252,49 +249,15 @@ public class IotService {
                 RECORDING
             ));
 
-            // not supported by process 2 yet, expecting empty strings
             ipAddress.setPublicIpAddress(shadowProvisionReported.optString(PUBLIC_IP_KEY));
             deviceMetaData.setAiChipset(shadowProvisionReported.optString(AI_CHIP_SET_KEY));
             deviceMetaData.setSdkVersion(shadowProvisionReported.optString(SDK_VERSION_KEY));
-            JSONObject storageStatusJSON;
-            LOG.info("Configuring storageState");
-            String storageStatus = shadowProvisionReported.optString(SD_CARD_KEY);
-            try {
-                storageStatusJSON = new JSONObject(storageStatus);
-                // setting state 
-                String state = storageStatusJSON.getString("status");
-                storageState.setStatus(Arrays.stream(StorageState.values())
-                    .filter(s -> s.toString().equals(state))
-                    .findAny()
-                    .orElse(null)
-                );
-                // setting capacity
-                if (state.equals(StorageState.NO_CARD.toString())){
-                    storageState.setTotalCapacity("0");
-                    storageState.setUsedCapacity("0");
-                } else {
-                    storageState.setTotalCapacity(storageStatusJSON.optString("totalCapacity"));
-                    storageState.setUsedCapacity(storageStatusJSON.optString("usedCapacity"));
-                }
-                // setting updatedAt and id
-                long epochTime = storageStatusJSON.optLong("updatedAt", 0);
-                Date updatedAt = new Date(epochTime * 1000);
-                storageState.setUpdatedAt(updatedAt);
-                storageState.setId(storageStatusJSON.optString("id"));
-                LOG.info("StorageStatusJSON: " + storageStatusJSON);
-            } catch (JSONException e) {
-                LOG.info("Exception when translating SD card shadow payload to json." + e);
-            }
-            LOG.info("storage state: " + storageState);
         }
 
         List<CloudVideoStreamingElement> videoStreamingStateList = new ArrayList<>();
         videoStreamingStateList.add(cloudVideoStreamingElement);
-        List<StorageElement> storageList = new ArrayList<>();
-        storageList.add(storageState);
         deviceStatus.setDeviceConnection(deviceConnection);
         deviceStatus.setCloudVideoStreaming(videoStreamingStateList);
-        deviceStatus.setStorage(storageList);
         deviceMetaData.setIpAddress(ipAddress);
         deviceMetaData.setDeviceStatus(deviceStatus);
 

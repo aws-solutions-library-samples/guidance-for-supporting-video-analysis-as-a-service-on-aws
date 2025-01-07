@@ -160,7 +160,7 @@ fn get_box_iot_sender() -> Box<dyn IoTServiceSender + Send + Sync> {
     Box::<ServiceCommunicationManager>::default()
 }
 
-/// Publish an empty message to provision and videoEncoder so the delta is returned to Process 2.
+/// Publish an empty message to provision and videoEncoder so the delta is returned to edge binary.
 fn trigger_shadows() {
     let mut iot_sender = Box::<ServiceCommunicationManager>::default();
 
