@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import com.google.gson.Gson;
@@ -63,11 +64,11 @@ public class ListVideoTimelinesResponseContent {
 
   public static final String SERIALIZED_NAME_START_TIME = "startTime";
   @SerializedName(SERIALIZED_NAME_START_TIME)
-  private Double startTime;
+  private Date startTime;
 
   public static final String SERIALIZED_NAME_END_TIME = "endTime";
   @SerializedName(SERIALIZED_NAME_END_TIME)
-  private Double endTime;
+  private Date endTime;
 
   public static final String SERIALIZED_NAME_TIME_INCREMENT = "timeIncrement";
   @SerializedName(SERIALIZED_NAME_TIME_INCREMENT)
@@ -107,7 +108,7 @@ public class ListVideoTimelinesResponseContent {
   }
 
 
-  public ListVideoTimelinesResponseContent startTime(Double startTime) {
+  public ListVideoTimelinesResponseContent startTime(Date startTime) {
     this.startTime = startTime;
     return this;
   }
@@ -117,16 +118,16 @@ public class ListVideoTimelinesResponseContent {
    * @return startTime
    */
   @javax.annotation.Nullable
-  public Double getStartTime() {
+  public Date getStartTime() {
     return startTime;
   }
 
-  public void setStartTime(Double startTime) {
+  public void setStartTime(Date startTime) {
     this.startTime = startTime;
   }
 
 
-  public ListVideoTimelinesResponseContent endTime(Double endTime) {
+  public ListVideoTimelinesResponseContent endTime(Date endTime) {
     this.endTime = endTime;
     return this;
   }
@@ -136,11 +137,11 @@ public class ListVideoTimelinesResponseContent {
    * @return endTime
    */
   @javax.annotation.Nullable
-  public Double getEndTime() {
+  public Date getEndTime() {
     return endTime;
   }
 
-  public void setEndTime(Double endTime) {
+  public void setEndTime(Date endTime) {
     this.endTime = endTime;
   }
 

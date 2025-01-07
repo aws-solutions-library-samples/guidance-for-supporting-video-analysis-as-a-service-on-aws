@@ -15,6 +15,7 @@ import org.apache.logging.log4j.Logger;
 import javax.inject.Inject;
 import java.util.Map;
 import java.time.Duration;
+import java.util.Date;
 import static com.amazonaws.videoanalytics.videologistics.utils.LambdaProxyUtils.parseRequestBody;
 import static com.amazonaws.videoanalytics.videologistics.utils.LambdaProxyUtils.serializeResponse;
 import static com.amazonaws.videoanalytics.videologistics.exceptions.VideoAnalyticsExceptionMessage.INVALID_INPUT;
@@ -56,15 +57,18 @@ public class ListVideoTimelinesActivity implements RequestHandler<Map<String, Ob
         return serializeResponse(400, exception.toJson());
     }
 
-    private Map<String, Object> validateTime(TimeIncrementUnits timeIncrementUnits, Long startTime, Long endTime) {
-        if(endTime <= startTime) {
+    private Map<String, Object> validateTime(TimeIncrementUnits timeIncrementUnits, Date startTime, Date endTime) {
+        if (endTime.compareTo(startTime) <= 0) {
             return createErrorResponse(TIME_CHRONOLOGY_MISMATCH);
         }
-
-        if(!(videoTimelineUtils.getUnitTime(timeIncrementUnits, startTime).equals(startTime) &&
-                videoTimelineUtils.getUnitTime(timeIncrementUnits, endTime).equals(endTime))) {
+    
+        Long startTimeMillis = startTime.getTime();
+        Long endTimeMillis = endTime.getTime();
+    
+        if (!(videoTimelineUtils.getUnitTime(timeIncrementUnits, startTimeMillis).equals(startTimeMillis) &&
+                videoTimelineUtils.getUnitTime(timeIncrementUnits, endTimeMillis).equals(endTimeMillis))) {
             String validationError = String.format(TIME_UNIT_ERROR, timeIncrementUnits.name().toLowerCase());
-            if(timeIncrementUnits.equals(TimeIncrementUnits.SECONDS)) {
+            if (timeIncrementUnits.equals(TimeIncrementUnits.SECONDS)) {
                 validationError = SECONDS_UNIT_ERROR;
             }
             return createErrorResponse(validationError);
@@ -83,8 +87,8 @@ public class ListVideoTimelinesActivity implements RequestHandler<Map<String, Ob
         try {
             ListVideoTimelinesRequestContent request = parseRequestBody(input, ListVideoTimelinesRequestContent.class);
 
-            Long startTimeInMillis = request.getStartTime().longValue();
-            Long endTimeInMillis = request.getEndTime().longValue();
+            Date startTimeInMillis = request.getStartTime();
+            Date endTimeInMillis = request.getEndTime();
             String deviceId = request.getDeviceId();
             TimeIncrementUnits timeIncrementUnits = TimeIncrementUnits.valueOf(request.getTimeIncrementUnits().name());
             Integer timeIncrement = request.getTimeIncrement().intValue();

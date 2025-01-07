@@ -23,6 +23,7 @@ import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.Date;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -60,11 +61,11 @@ public class ListVideoTimelinesRequestContent {
 
   public static final String SERIALIZED_NAME_START_TIME = "startTime";
   @SerializedName(SERIALIZED_NAME_START_TIME)
-  private Double startTime;
+  private Date startTime;
 
   public static final String SERIALIZED_NAME_END_TIME = "endTime";
   @SerializedName(SERIALIZED_NAME_END_TIME)
-  private Double endTime;
+  private Date endTime;
 
   public static final String SERIALIZED_NAME_TIME_INCREMENT = "timeIncrement";
   @SerializedName(SERIALIZED_NAME_TIME_INCREMENT)
@@ -100,7 +101,7 @@ public class ListVideoTimelinesRequestContent {
   }
 
 
-  public ListVideoTimelinesRequestContent startTime(Double startTime) {
+  public ListVideoTimelinesRequestContent startTime(Date startTime) {
     this.startTime = startTime;
     return this;
   }
@@ -110,16 +111,16 @@ public class ListVideoTimelinesRequestContent {
    * @return startTime
    */
   @javax.annotation.Nonnull
-  public Double getStartTime() {
+  public Date getStartTime() {
     return startTime;
   }
 
-  public void setStartTime(Double startTime) {
+  public void setStartTime(Date startTime) {
     this.startTime = startTime;
   }
 
 
-  public ListVideoTimelinesRequestContent endTime(Double endTime) {
+  public ListVideoTimelinesRequestContent endTime(Date endTime) {
     this.endTime = endTime;
     return this;
   }
@@ -129,11 +130,11 @@ public class ListVideoTimelinesRequestContent {
    * @return endTime
    */
   @javax.annotation.Nonnull
-  public Double getEndTime() {
+  public Date getEndTime() {
     return endTime;
   }
 
-  public void setEndTime(Double endTime) {
+  public void setEndTime(Date endTime) {
     this.endTime = endTime;
   }
 

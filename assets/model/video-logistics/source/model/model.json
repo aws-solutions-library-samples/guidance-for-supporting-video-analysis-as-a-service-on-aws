@@ -2202,10 +2202,16 @@
                     "target": "com.amazonaws.videoanalytics#DeviceId"
                 },
                 "startTime": {
-                    "target": "smithy.api#Timestamp"
+                    "target": "smithy.api#Timestamp",
+                    "traits": {
+                        "smithy.api#timestampFormat": "date-time"
+                    }
                 },
                 "endTime": {
-                    "target": "smithy.api#Timestamp"
+                    "target": "smithy.api#Timestamp",
+                    "traits": {
+                        "smithy.api#timestampFormat": "date-time"
+                    }
                 },
                 "timeIncrement": {
                     "target": "smithy.api#Integer"

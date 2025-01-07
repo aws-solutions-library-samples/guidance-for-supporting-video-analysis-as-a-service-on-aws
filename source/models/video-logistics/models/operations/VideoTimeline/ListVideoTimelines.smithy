@@ -44,7 +44,9 @@ structure ListVideoTimelinesRequest {
 @output
 structure ListVideoTimelinesResponse {
     deviceId: DeviceId,
+    @timestampFormat("date-time")
     startTime: Timestamp,
+    @timestampFormat("date-time")
     endTime: Timestamp,
     timeIncrement: Integer,
     timeIncrementUnits: TimeIncrementUnits,

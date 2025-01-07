@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Date;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -41,8 +42,8 @@ public class ListVideoTimelinesActivityTest {
     void handleRequest_ValidInput_ReturnsSuccess() {
         ListVideoTimelinesRequestContent request = ListVideoTimelinesRequestContent.builder()
             .deviceId("testDevice")
-            .startTime(Double.valueOf(1000L))
-            .endTime(Double.valueOf(2000L))
+            .startTime(new Date(1000L))
+            .endTime(new Date(2000L))
             .timeIncrement(BigDecimal.valueOf(5))
             .timeIncrementUnits(TimeIncrementUnits.SECONDS)
             .build();
@@ -75,8 +76,8 @@ public class ListVideoTimelinesActivityTest {
     void handleRequest_InvalidTimeChronology_ReturnsBadRequest() {
         ListVideoTimelinesRequestContent request = ListVideoTimelinesRequestContent.builder()
             .deviceId("testDevice")
-            .startTime(Double.valueOf(2000L))
-            .endTime(Double.valueOf(1000L))
+            .startTime(new Date(2000L))
+            .endTime(new Date(1000L))
             .timeIncrement(BigDecimal.valueOf(5))
             .timeIncrementUnits(TimeIncrementUnits.SECONDS)
             .build();
@@ -93,8 +94,8 @@ public class ListVideoTimelinesActivityTest {
     void handleRequest_InvalidSecondsIncrement_ReturnsBadRequest() {
         ListVideoTimelinesRequestContent request = ListVideoTimelinesRequestContent.builder()
             .deviceId("testDevice")
-            .startTime(Double.valueOf(1000L))
-            .endTime(Double.valueOf(2000L))
+            .startTime(new Date(1000L))
+            .endTime(new Date(2000L))
             .timeIncrement(BigDecimal.valueOf(3))
             .timeIncrementUnits(TimeIncrementUnits.SECONDS)
             .build();
