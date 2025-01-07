@@ -1,17 +1,16 @@
 types/Playback.smithy
 types/VideoTimeline.smithy
-types/ExportVideo.smithy
 types/Inference.smithy
 types/Livestream.smithy
+types/build/smithy/source/model/model.json
+types/build/smithy/source/build-info/smithy-build-info.json
 resources/Snapshot.smithy
 resources/PlaybackSession.smithy
 resources/RegisterDevice.smithy
 resources/VideoTimeline.smithy
-resources/ExportVideo.smithy
 resources/LivestreamSession.smithy
 resources/Inference.smithy
 operations/Inference/ImportMediaObject.smithy
-operations/ExportVideo/StartExportVideos.smithy
 operations/LivestreamSession/CreateLivestreamSession.smithy
 operations/Snapshot/CreateSnapshotUploadPath.smithy
 operations/RegisterDevice/GetVLRegisterDeviceStatus.smithy
@@ -21,3 +20,5 @@ operations/VideoTimeline/ListDetailedVideoTimeline.smithy
 operations/VideoTimeline/PutVideoTimeline.smithy
 operations/PlaybackSession/CreatePlaybackSession.smithy
 video-analytic.smithy
+build/smithy/source/model/model.json
+build/smithy/source/build-info/smithy-build-info.json

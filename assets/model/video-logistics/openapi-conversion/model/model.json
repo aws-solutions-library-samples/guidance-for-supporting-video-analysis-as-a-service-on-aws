@@ -1849,9 +1849,6 @@
                 "smithy.api#input": {}
             }
         },
-        "com.amazonaws.videoanalytics.videologistics#DetailedFailureReason": {
-            "type": "document"
-        },
         "com.amazonaws.videoanalytics.videologistics#DetailedVideoTimeline": {
             "type": "structure",
             "members": {
@@ -1860,88 +1857,6 @@
                 },
                 "device": {
                     "target": "com.amazonaws.videoanalytics.videologistics#Timelines"
-                }
-            }
-        },
-        "com.amazonaws.videoanalytics.videologistics#ExportVideo": {
-            "type": "resource",
-            "operations": [
-                {
-                    "target": "com.amazonaws.videoanalytics.videologistics#StartExportVideos"
-                }
-            ]
-        },
-        "com.amazonaws.videoanalytics.videologistics#ExportVideoJobElement": {
-            "type": "structure",
-            "members": {
-                "creationTime": {
-                    "target": "smithy.api#Timestamp",
-                    "traits": {
-                        "smithy.api#timestampFormat": "date-time"
-                    }
-                },
-                "exportVideoJobStatus": {
-                    "target": "smithy.api#String"
-                },
-                "exportVideoJobId": {
-                    "target": "com.amazonaws.videoanalytics#JobId"
-                },
-                "failureReason": {
-                    "target": "smithy.api#String"
-                }
-            }
-        },
-        "com.amazonaws.videoanalytics.videologistics#ExportVideoJobLists": {
-            "type": "list",
-            "member": {
-                "target": "com.amazonaws.videoanalytics.videologistics#ExportVideoJobElement"
-            }
-        },
-        "com.amazonaws.videoanalytics.videologistics#ExportVideosResult": {
-            "type": "structure",
-            "members": {
-                "status": {
-                    "target": "com.amazonaws.videoanalytics#Status",
-                    "traits": {
-                        "smithy.api#required": {}
-                    }
-                },
-                "failureReason": {
-                    "target": "com.amazonaws.videoanalytics.videologistics#FailureReason"
-                },
-                "videoExportedPath": {
-                    "target": "smithy.api#String",
-                    "traits": {
-                        "smithy.api#required": {}
-                    }
-                },
-                "startTime": {
-                    "target": "smithy.api#Timestamp",
-                    "traits": {
-                        "smithy.api#required": {},
-                        "smithy.api#timestampFormat": "date-time"
-                    }
-                },
-                "endTime": {
-                    "target": "smithy.api#Timestamp",
-                    "traits": {
-                        "smithy.api#timestampFormat": "date-time"
-                    }
-                }
-            }
-        },
-        "com.amazonaws.videoanalytics.videologistics#ExportVideosResults": {
-            "type": "list",
-            "member": {
-                "target": "com.amazonaws.videoanalytics.videologistics#ExportVideosResult"
-            }
-        },
-        "com.amazonaws.videoanalytics.videologistics#FailureReason": {
-            "type": "string",
-            "traits": {
-                "smithy.api#length": {
-                    "min": 1,
-                    "max": 1024
                 }
             }
         },
@@ -2111,9 +2026,6 @@
                 }
             ]
         },
-        "com.amazonaws.videoanalytics.videologistics#JobRunTimeInMinutes": {
-            "type": "double"
-        },
         "com.amazonaws.videoanalytics.videologistics#ListDetailedVideoTimeline": {
             "type": "operation",
             "input": {
@@ -2252,13 +2164,15 @@
                 "startTime": {
                     "target": "smithy.api#Timestamp",
                     "traits": {
-                        "smithy.api#required": {}
+                        "smithy.api#required": {},
+                        "smithy.api#timestampFormat": "date-time"
                     }
                 },
                 "endTime": {
                     "target": "smithy.api#Timestamp",
                     "traits": {
-                        "smithy.api#required": {}
+                        "smithy.api#required": {},
+                        "smithy.api#timestampFormat": "date-time"
                     }
                 },
                 "timeIncrement": {
@@ -2496,80 +2410,6 @@
                         "smithy.api#enumValue": "WEBRTC"
                     }
                 }
-            }
-        },
-        "com.amazonaws.videoanalytics.videologistics#StartExportVideos": {
-            "type": "operation",
-            "input": {
-                "target": "com.amazonaws.videoanalytics.videologistics#StartExportVideosRequest"
-            },
-            "output": {
-                "target": "com.amazonaws.videoanalytics.videologistics#StartExportVideosResponse"
-            },
-            "errors": [
-                {
-                    "target": "com.amazonaws.videoanalytics#InternalServerException"
-                },
-                {
-                    "target": "com.amazonaws.videoanalytics#ResourceNotFoundException"
-                },
-                {
-                    "target": "com.amazonaws.videoanalytics#ValidationException"
-                }
-            ],
-            "traits": {
-                "smithy.api#http": {
-                    "code": 200,
-                    "method": "PUT",
-                    "uri": "/start-export-videos"
-                },
-                "smithy.api#idempotent": {},
-                "smithy.api#tags": [
-                    "Facade:VideoLogisticsRoute"
-                ]
-            }
-        },
-        "com.amazonaws.videoanalytics.videologistics#StartExportVideosRequest": {
-            "type": "structure",
-            "members": {
-                "startTime": {
-                    "target": "smithy.api#Timestamp",
-                    "traits": {
-                        "smithy.api#required": {}
-                    }
-                },
-                "endTime": {
-                    "target": "smithy.api#Timestamp",
-                    "traits": {
-                        "smithy.api#required": {}
-                    }
-                },
-                "device": {
-                    "target": "com.amazonaws.videoanalytics#DeviceId",
-                    "traits": {
-                        "smithy.api#required": {}
-                    }
-                },
-                "exportS3Path": {
-                    "target": "com.amazonaws.videoanalytics#S3Path",
-                    "traits": {
-                        "smithy.api#required": {}
-                    }
-                }
-            },
-            "traits": {
-                "smithy.api#input": {}
-            }
-        },
-        "com.amazonaws.videoanalytics.videologistics#StartExportVideosResponse": {
-            "type": "structure",
-            "members": {
-                "jobId": {
-                    "target": "com.amazonaws.videoanalytics#JobId"
-                }
-            },
-            "traits": {
-                "smithy.api#output": {}
             }
         },
         "com.amazonaws.videoanalytics.videologistics#StartVLRegisterDevice": {

@@ -29,8 +29,10 @@ structure ListVideoTimelinesRequest {
     @required
     deviceId: DeviceId,
     @required
+    @timestampFormat("date-time")
     startTime: Timestamp,
     @required
+    @timestampFormat("date-time")
     endTime: Timestamp,
     @required
     timeIncrement: Integer,
