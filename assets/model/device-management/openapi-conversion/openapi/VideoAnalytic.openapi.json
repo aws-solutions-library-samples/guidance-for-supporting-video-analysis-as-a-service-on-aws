@@ -502,12 +502,6 @@
                         "items": {
                             "$ref": "#/components/schemas/CloudVideoStreamingElement"
                         }
-                    },
-                    "storage": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/StorageElement"
-                        }
                     }
                 }
             },
@@ -686,38 +680,6 @@
                     "COMPLETED",
                     "FAILED",
                     "CANCELLED"
-                ]
-            },
-            "StorageElement": {
-                "type": "object",
-                "properties": {
-                    "status": {
-                        "$ref": "#/components/schemas/StorageState"
-                    },
-                    "totalCapacity": {
-                        "type": "string"
-                    },
-                    "usedCapacity": {
-                        "type": "string"
-                    },
-                    "updatedAt": {
-                        "type": "string",
-                        "format": "date-time"
-                    },
-                    "id": {
-                        "type": "string"
-                    }
-                }
-            },
-            "StorageState": {
-                "type": "string",
-                "enum": [
-                    "NO_CARD",
-                    "ERROR",
-                    "NOT_FORMATTED",
-                    "UNMOUNTED",
-                    "FULL",
-                    "NORMAL"
                 ]
             },
             "UpdateDeviceShadowRequestContent": {
