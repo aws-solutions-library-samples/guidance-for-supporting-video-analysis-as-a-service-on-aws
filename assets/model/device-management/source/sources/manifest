@@ -1,4 +1,3 @@
-types/DeviceGroup.smithy
 types/DeviceOperation.smithy
 types/Device.smithy
 resources/DeviceOperation.smithy

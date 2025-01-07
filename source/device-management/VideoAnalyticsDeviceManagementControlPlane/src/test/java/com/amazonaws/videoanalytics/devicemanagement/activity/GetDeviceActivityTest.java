@@ -76,16 +76,11 @@ public class GetDeviceActivityTest {
         Map<String, String> deviceSettings = new HashMap<>();
         deviceSettings.put("videoSettings", "{\"profile1\":{\"codec\":\"H264\"}}");
 
-        Map<String, String> deviceCapabilities = new HashMap<>();
-        deviceCapabilities.put("videoCapabilities","{\"codec\":\"H264\"}");
-
         DeviceMetaData deviceMetaData = buildExpectedDeviceMetaData();
         GetDeviceResponseContent responseFromIotService = GetDeviceResponseContent
                 .builder()
                 .deviceId(DEVICE_ID)
-                .deviceType(DEVICE_TYPE_NAME)
                 .deviceSettings(deviceSettings)
-                .deviceCapabilities(deviceCapabilities)
                 .deviceMetaData(deviceMetaData)
                 .build();
 
@@ -93,9 +88,7 @@ public class GetDeviceActivityTest {
         Map<String, Object> responseMap = getDeviceActivity.handleRequest(lambdaProxyRequest, context);
         GetDeviceResponseContent getDeviceResponse = GetDeviceResponseContent.fromJson(parseBody(responseMap));
         assertEquals(DEVICE_ID, getDeviceResponse.getDeviceId());
-        assertEquals(DEVICE_TYPE_NAME, getDeviceResponse.getDeviceType());
         assertEquals(deviceMetaData, getDeviceResponse.getDeviceMetaData());
-        assertEquals(deviceCapabilities, getDeviceResponse.getDeviceCapabilities());
         assertEquals(deviceSettings, getDeviceResponse.getDeviceSettings());
     }
 

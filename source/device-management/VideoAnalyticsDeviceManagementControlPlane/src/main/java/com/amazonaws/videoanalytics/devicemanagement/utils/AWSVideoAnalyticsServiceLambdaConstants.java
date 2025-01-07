@@ -17,7 +17,6 @@ public final class AWSVideoAnalyticsServiceLambdaConstants {
     public static final String BETA = "Beta";
     public static final String GAMMA = "Gamma";
     public static final String PROD = "Prod";
-    public static final String DEVICE_CAP_KEY = "deviceCapabilities";
     public static final String DEVICE_STATE_KEY = "deviceState";
     public static final String DEVICE_METADATA_KEY = "deviceMetadata";
     public static final String SD_CARD_KEY = "sdCard";

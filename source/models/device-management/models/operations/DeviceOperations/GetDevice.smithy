@@ -34,9 +34,7 @@ structure GetDeviceRequest {
 structure GetDeviceResponse {
     deviceName: String,
     deviceId: DeviceId,
-    deviceType: String,
     deviceMetaData: DeviceMetaData,
-    deviceCapabilities: KeyValueMap,
     deviceSettings: KeyValueMap,
     @timestampFormat("date-time")
     createdAt: Timestamp

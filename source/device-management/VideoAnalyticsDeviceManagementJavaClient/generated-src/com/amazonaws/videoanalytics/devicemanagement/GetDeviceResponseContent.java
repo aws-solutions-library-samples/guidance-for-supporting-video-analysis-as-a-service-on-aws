@@ -21,11 +21,9 @@ import com.google.gson.annotations.SerializedName;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.google.gson.Gson;
@@ -66,21 +64,9 @@ public class GetDeviceResponseContent {
   @SerializedName(SERIALIZED_NAME_DEVICE_ID)
   private String deviceId;
 
-  public static final String SERIALIZED_NAME_DEVICE_GROUP_IDS = "deviceGroupIds";
-  @SerializedName(SERIALIZED_NAME_DEVICE_GROUP_IDS)
-  private List<String> deviceGroupIds = new ArrayList<>();
-
-  public static final String SERIALIZED_NAME_DEVICE_TYPE = "deviceType";
-  @SerializedName(SERIALIZED_NAME_DEVICE_TYPE)
-  private String deviceType;
-
   public static final String SERIALIZED_NAME_DEVICE_META_DATA = "deviceMetaData";
   @SerializedName(SERIALIZED_NAME_DEVICE_META_DATA)
   private DeviceMetaData deviceMetaData;
-
-  public static final String SERIALIZED_NAME_DEVICE_CAPABILITIES = "deviceCapabilities";
-  @SerializedName(SERIALIZED_NAME_DEVICE_CAPABILITIES)
-  private Map<String, String> deviceCapabilities = new HashMap<>();
 
   public static final String SERIALIZED_NAME_DEVICE_SETTINGS = "deviceSettings";
   @SerializedName(SERIALIZED_NAME_DEVICE_SETTINGS)
@@ -131,52 +117,6 @@ public class GetDeviceResponseContent {
   }
 
 
-  public GetDeviceResponseContent deviceGroupIds(List<String> deviceGroupIds) {
-    this.deviceGroupIds = deviceGroupIds;
-    return this;
-  }
-
-  public GetDeviceResponseContent addDeviceGroupIdsItem(String deviceGroupIdsItem) {
-    if (this.deviceGroupIds == null) {
-      this.deviceGroupIds = new ArrayList<>();
-    }
-    this.deviceGroupIds.add(deviceGroupIdsItem);
-    return this;
-  }
-
-  /**
-   * Get deviceGroupIds
-   * @return deviceGroupIds
-   */
-  @javax.annotation.Nullable
-  public List<String> getDeviceGroupIds() {
-    return deviceGroupIds;
-  }
-
-  public void setDeviceGroupIds(List<String> deviceGroupIds) {
-    this.deviceGroupIds = deviceGroupIds;
-  }
-
-
-  public GetDeviceResponseContent deviceType(String deviceType) {
-    this.deviceType = deviceType;
-    return this;
-  }
-
-  /**
-   * Get deviceType
-   * @return deviceType
-   */
-  @javax.annotation.Nullable
-  public String getDeviceType() {
-    return deviceType;
-  }
-
-  public void setDeviceType(String deviceType) {
-    this.deviceType = deviceType;
-  }
-
-
   public GetDeviceResponseContent deviceMetaData(DeviceMetaData deviceMetaData) {
     this.deviceMetaData = deviceMetaData;
     return this;
@@ -193,33 +133,6 @@ public class GetDeviceResponseContent {
 
   public void setDeviceMetaData(DeviceMetaData deviceMetaData) {
     this.deviceMetaData = deviceMetaData;
-  }
-
-
-  public GetDeviceResponseContent deviceCapabilities(Map<String, String> deviceCapabilities) {
-    this.deviceCapabilities = deviceCapabilities;
-    return this;
-  }
-
-  public GetDeviceResponseContent putDeviceCapabilitiesItem(String key, String deviceCapabilitiesItem) {
-    if (this.deviceCapabilities == null) {
-      this.deviceCapabilities = new HashMap<>();
-    }
-    this.deviceCapabilities.put(key, deviceCapabilitiesItem);
-    return this;
-  }
-
-  /**
-   * Get deviceCapabilities
-   * @return deviceCapabilities
-   */
-  @javax.annotation.Nullable
-  public Map<String, String> getDeviceCapabilities() {
-    return deviceCapabilities;
-  }
-
-  public void setDeviceCapabilities(Map<String, String> deviceCapabilities) {
-    this.deviceCapabilities = deviceCapabilities;
   }
 
 
@@ -281,17 +194,14 @@ public class GetDeviceResponseContent {
     GetDeviceResponseContent getDeviceResponseContent = (GetDeviceResponseContent) o;
     return Objects.equals(this.deviceName, getDeviceResponseContent.deviceName) &&
         Objects.equals(this.deviceId, getDeviceResponseContent.deviceId) &&
-        Objects.equals(this.deviceGroupIds, getDeviceResponseContent.deviceGroupIds) &&
-        Objects.equals(this.deviceType, getDeviceResponseContent.deviceType) &&
         Objects.equals(this.deviceMetaData, getDeviceResponseContent.deviceMetaData) &&
-        Objects.equals(this.deviceCapabilities, getDeviceResponseContent.deviceCapabilities) &&
         Objects.equals(this.deviceSettings, getDeviceResponseContent.deviceSettings) &&
         Objects.equals(this.createdAt, getDeviceResponseContent.createdAt);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(deviceName, deviceId, deviceGroupIds, deviceType, deviceMetaData, deviceCapabilities, deviceSettings, createdAt);
+    return Objects.hash(deviceName, deviceId, deviceMetaData, deviceSettings, createdAt);
   }
 
   @Override
@@ -300,10 +210,7 @@ public class GetDeviceResponseContent {
     sb.append("class GetDeviceResponseContent {\n");
     sb.append("    deviceName: ").append(toIndentedString(deviceName)).append("\n");
     sb.append("    deviceId: ").append(toIndentedString(deviceId)).append("\n");
-    sb.append("    deviceGroupIds: ").append(toIndentedString(deviceGroupIds)).append("\n");
-    sb.append("    deviceType: ").append(toIndentedString(deviceType)).append("\n");
     sb.append("    deviceMetaData: ").append(toIndentedString(deviceMetaData)).append("\n");
-    sb.append("    deviceCapabilities: ").append(toIndentedString(deviceCapabilities)).append("\n");
     sb.append("    deviceSettings: ").append(toIndentedString(deviceSettings)).append("\n");
     sb.append("    createdAt: ").append(toIndentedString(createdAt)).append("\n");
     sb.append("}");
@@ -330,10 +237,7 @@ public class GetDeviceResponseContent {
     openapiFields = new HashSet<String>();
     openapiFields.add("deviceName");
     openapiFields.add("deviceId");
-    openapiFields.add("deviceGroupIds");
-    openapiFields.add("deviceType");
     openapiFields.add("deviceMetaData");
-    openapiFields.add("deviceCapabilities");
     openapiFields.add("deviceSettings");
     openapiFields.add("createdAt");
 
@@ -367,13 +271,6 @@ public class GetDeviceResponseContent {
       }
       if ((jsonObj.get("deviceId") != null && !jsonObj.get("deviceId").isJsonNull()) && !jsonObj.get("deviceId").isJsonPrimitive()) {
         throw new IllegalArgumentException(String.format("Expected the field `deviceId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("deviceId").toString()));
-      }
-      // ensure the optional json data is an array if present
-      if (jsonObj.get("deviceGroupIds") != null && !jsonObj.get("deviceGroupIds").isJsonNull() && !jsonObj.get("deviceGroupIds").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `deviceGroupIds` to be an array in the JSON string but got `%s`", jsonObj.get("deviceGroupIds").toString()));
-      }
-      if ((jsonObj.get("deviceType") != null && !jsonObj.get("deviceType").isJsonNull()) && !jsonObj.get("deviceType").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `deviceType` to be a primitive type in the JSON string but got `%s`", jsonObj.get("deviceType").toString()));
       }
       // validate the optional field `deviceMetaData`
       if (jsonObj.get("deviceMetaData") != null && !jsonObj.get("deviceMetaData").isJsonNull()) {

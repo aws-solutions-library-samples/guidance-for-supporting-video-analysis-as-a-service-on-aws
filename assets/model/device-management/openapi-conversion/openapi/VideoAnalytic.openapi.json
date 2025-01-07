@@ -548,23 +548,8 @@
                         "minLength": 1,
                         "pattern": "^[a-zA-Z0-9:_\\-]+$"
                     },
-                    "deviceGroupIds": {
-                        "type": "array",
-                        "items": {
-                            "type": "string",
-                            "maxLength": 128,
-                            "minLength": 1,
-                            "pattern": "^[a-zA-Z0-9:_\\-]+$"
-                        }
-                    },
-                    "deviceType": {
-                        "type": "string"
-                    },
                     "deviceMetaData": {
                         "$ref": "#/components/schemas/DeviceMetaData"
-                    },
-                    "deviceCapabilities": {
-                        "$ref": "#/components/schemas/KeyValueMap"
                     },
                     "deviceSettings": {
                         "$ref": "#/components/schemas/KeyValueMap"

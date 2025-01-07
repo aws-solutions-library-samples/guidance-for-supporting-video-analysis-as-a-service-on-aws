@@ -154,7 +154,6 @@ public class IotService {
                 thingGroups
         );
 
-        Map<String, String> deviceCapabilities = new HashMap<>();   
         Map<String, String> deviceSettings = new HashMap<>();
 
         // Retrieving videoSettings in videoEncoder iot shadow.
@@ -184,9 +183,7 @@ public class IotService {
 
         return GetDeviceResponseContent.builder()
                 .deviceId(describeThingResponse.thingName())
-                .deviceType(describeThingResponse.thingTypeName())
                 .deviceMetaData(deviceMetaData)
-                .deviceCapabilities(deviceCapabilities)
                 .deviceSettings(deviceSettings)
                 .build();
     }

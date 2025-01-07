@@ -91,8 +91,6 @@ import static com.amazonaws.videoanalytics.devicemanagement.utils.TestConstants.
 import static com.amazonaws.videoanalytics.devicemanagement.utils.TestConstants.SHADOW_NAME;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.TestConstants.TEST_ATTRIBUTE_KEY;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.TestConstants.TEST_ATTRIBUTE_VALUE;
-import static com.amazonaws.videoanalytics.devicemanagement.utils.TestConstants.TEST_DEVICE_CAP_KEY;
-import static com.amazonaws.videoanalytics.devicemanagement.utils.TestConstants.TEST_DEVICE_CAP_VAL;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.TestConstants.THING_ARN;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.TestConstants.THING_ID;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.TestConstants.TIMESTAMP;
@@ -183,14 +181,11 @@ public class IotServiceTest {
                                 .groupName(UpdateDeviceUtils.VideoAnalyticsManagedDeviceGroupId.SpecialGroup_EnabledState.name())
                                 .build()))
                         .build());
-        Map<String, String> expectedDeviceCapabilities = new HashMap<>();
         DeviceMetaData expectedMetaData = buildExpectedDeviceMetaData();
 
         GetDeviceResponseContent responseFromIotService = iotService.getDevice(DEVICE_ID);
         assertEquals(DEVICE_ID, responseFromIotService.getDeviceId());
-        assertEquals(DEVICE_TYPE_NAME, responseFromIotService.getDeviceType());
         assertEquals(expectedMetaData, responseFromIotService.getDeviceMetaData());
-        assertEquals(expectedDeviceCapabilities, responseFromIotService.getDeviceCapabilities());
         assertEquals(EXPECTED_DEVICE_SETTINGS_STRING, responseFromIotService.getDeviceSettings().toString());
     }
 
@@ -234,9 +229,7 @@ public class IotServiceTest {
                 .payload(SdkBytes.fromUtf8String(buildVideoEncoderShadowPayload()))
                 .build();                
         when(iotDataPlaneClient.getThingShadow(getThingShadowRequestVideoEncoder)).thenReturn(getThingShadowResponseVideoEncoder);
-
-        Map<String, String> expectedDeviceCapabilities = new HashMap<>();
-
+        
         IpAddress expectedIpAddress = IpAddress
                 .builder()
                 .privateIpAddress(PRIVATE_IP_VALUE)
@@ -286,9 +279,7 @@ public class IotServiceTest {
 
         GetDeviceResponseContent responseFromIotService = iotService.getDevice(DEVICE_ID);
         assertEquals(DEVICE_ID, responseFromIotService.getDeviceId());
-        assertEquals(DEVICE_TYPE_NAME, responseFromIotService.getDeviceType());
         assertEquals(expectedMetaData, responseFromIotService.getDeviceMetaData());
-        assertEquals(expectedDeviceCapabilities, responseFromIotService.getDeviceCapabilities());
         assertEquals(EXPECTED_DEVICE_SETTINGS_STRING, responseFromIotService.getDeviceSettings().toString());
     }
 
@@ -411,7 +402,6 @@ public class IotServiceTest {
         
         // provision shadow's state.reported
         JSONObject capabilitiesObject = new JSONObject();
-        capabilitiesObject.put(TEST_DEVICE_CAP_KEY, TEST_DEVICE_CAP_VAL);
         capabilitiesObject.put(PUBLIC_IP_KEY, PUBLIC_IP_VALUE);
         capabilitiesObject.put(AI_CHIP_SET_KEY, AI_CHIP_SET_VALUE);
         capabilitiesObject.put(AI_SDK_VERSION_KEY, AI_SDK_VERSION_VALUE);
@@ -435,7 +425,6 @@ public class IotServiceTest {
         JSONObject timestamp = new JSONObject();
         timestamp.put("timestamp", TIMESTAMP);
         JSONObject reportedMetadataObject = new JSONObject();
-        reportedMetadataObject.put(TEST_DEVICE_CAP_KEY, timestamp);
         reportedMetadataObject.put(RECORDING, timestamp);
         JSONObject reportedMetadata = new JSONObject();
         reportedMetadata.put(SHADOW_REPORTED_KEY, reportedMetadataObject);
