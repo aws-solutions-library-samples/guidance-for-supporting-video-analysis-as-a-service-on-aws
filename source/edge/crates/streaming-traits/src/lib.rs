@@ -81,7 +81,7 @@ pub struct StreamingServiceConfigurations {
     /// optional db_path. Otherwise will just store SQLite DB in local_storage_path
     pub db_path: Option<String>,
     /// local storage disk usage for sd card
-    pub local_storage_disk_usage: Option<u64>,
+    pub local_storage_disk_usage: u64,
 }
 
 /// This trait is responsible to get stream URI for video from device.

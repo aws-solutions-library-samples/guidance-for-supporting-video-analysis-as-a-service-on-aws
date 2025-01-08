@@ -149,7 +149,7 @@ impl HybridStreamingService {
 
     fn create_database_client(
         local_storage_path: &str,
-        local_storage_disk_usage: Option<u64>,
+        local_storage_disk_usage: u64,
         db_path: Option<String>,
     ) -> Arc<Mutex<FileMetadataStorage>> {
         let database_client = FileMetadataStorage::new_connection(

@@ -61,3 +61,6 @@ pub(crate) const TIMELINE_SLEEP_IN_SEC: u64 = 1;
 /// Max Metadata for Device Timeline Messages
 #[cfg(feature = "sd-card-catchup")]
 pub(crate) const MAX_TIMELINE_ENTRIES: u64 = 500;
+#[cfg(feature = "sd-card-catchup")]
+/// Maximum number of media in the buffer
+pub const MAXIMUM_MEDIA_BUFFER_SIZE: usize = 5;

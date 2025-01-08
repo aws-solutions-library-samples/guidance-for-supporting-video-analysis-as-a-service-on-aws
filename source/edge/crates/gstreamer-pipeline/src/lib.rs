@@ -6,6 +6,8 @@
 //! This crate also takes care of starting and stopping video streaming pipeline.
 #![warn(missing_docs, missing_debug_implementations, rust_2018_idioms)]
 
+#[cfg(feature = "sd-card-catchup")]
+mod catchup_service;
 mod constants;
 /// Database wrapper for this crate.
 #[cfg(feature = "sd-card-catchup")]

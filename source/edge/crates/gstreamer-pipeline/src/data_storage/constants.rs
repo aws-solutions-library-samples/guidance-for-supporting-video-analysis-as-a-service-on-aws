@@ -8,3 +8,9 @@ pub(crate) const DB_FILE_NAME: &str = "frame_metadata.txt";
 pub(crate) const DB_JOURNAL_NAME: &str = "frame_metadata.txt-journal";
 /// SQLite DB file name
 pub(crate) const FRAGMENT_BASE_NAME: &str = "video-fragment";
+/// SQLite Metadata DB file name
+pub(crate) const MEDIA_DB_FILE_NAME: &str = "media_metadata.txt";
+/// SQLite Metadata DB journal file name, based on MEDIA_DB_FILE_NAME + "-journal"
+pub(crate) const MEDIA_DB_JOURNAL_NAME: &str = "media_metadata.txt-journal";
+/// SQLite DB media file name
+pub(crate) const MEDIA_FILE_NAME: &str = "media-file";
