@@ -918,12 +918,12 @@
                         "pattern": "^[a-zA-Z0-9:_\\-]+$"
                     },
                     "startTime": {
-                        "type": "number",
-                        "format": "double"
+                        "type": "string",
+                        "format": "date-time"
                     },
                     "endTime": {
-                        "type": "number",
-                        "format": "double"
+                        "type": "string",
+                        "format": "date-time"
                     },
                     "timeIncrement": {
                         "type": "number"
@@ -954,12 +954,12 @@
                         "pattern": "^[a-zA-Z0-9:_\\-]+$"
                     },
                     "startTime": {
-                        "type": "number",
-                        "format": "double"
+                        "type": "string",
+                        "format": "date-time"
                     },
                     "endTime": {
-                        "type": "number",
-                        "format": "double"
+                        "type": "string",
+                        "format": "date-time"
                     },
                     "timeIncrement": {
                         "type": "number"

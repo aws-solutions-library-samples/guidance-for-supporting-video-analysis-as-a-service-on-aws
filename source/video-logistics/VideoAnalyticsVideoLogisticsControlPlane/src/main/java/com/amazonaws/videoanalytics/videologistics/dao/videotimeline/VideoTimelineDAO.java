@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Date;
 
 import static com.amazonaws.videoanalytics.videologistics.timeline.VideoTimelineListGenerator.buildVideoTimelineList;
 import static com.amazonaws.services.lambda.runtime.LambdaRuntime.getLogger;
@@ -87,8 +88,8 @@ public class VideoTimelineDAO {
     }
 
     public PaginatedListResponse<VideoTimeline> listVideoTimelines(final String deviceId,
-                                                                   final Long startTimeInMillis,
-                                                                   final Long endTimeInMillis,
+                                                                   final Date startTime,
+                                                                   final Date endTime,
                                                                    final Long timeIncrementInMillis,
                                                                    final TimeIncrementUnits timeIncrementUnits,
                                                                    final String nextToken) {
@@ -100,6 +101,8 @@ public class VideoTimelineDAO {
         List<VideoTimeline> finalVideoTimelineList = new ArrayList<>();
         Map<String, AttributeValue> exclusiveStartKey = null;
 
+        Long startTimeInMillis = startTime.getTime();
+        Long endTimeInMillis = endTime.getTime();
         Long startPeriod = startTimeInMillis;
         if (!Strings.isNullOrEmpty(nextToken)) {
             exclusiveStartKey = GsonDDBNextTokenMarshaller.unmarshall(nextToken);
