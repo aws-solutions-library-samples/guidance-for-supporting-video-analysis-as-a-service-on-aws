@@ -670,7 +670,7 @@ exports[`ServiceStack Snapshot test 1`] = `
           "Fn::Transform": {
             "Name": "AWS::Include",
             "Parameters": {
-              "Location": "s3://cdk-hnb659fds-assets-123456789012-us-east-1/fd850dc1a197574d7940a7d902049cfe323b11d570214a27d751e8378f0e3af2.json",
+              "Location": "s3://cdk-hnb659fds-assets-123456789012-us-east-1/e72eeb337484d054a424b236f848a8a8172308e467a69c653de7d23328381265.json",
             },
           },
         },
@@ -740,7 +740,7 @@ exports[`ServiceStack Snapshot test 1`] = `
       "Type": "AWS::IAM::Role",
       "UpdateReplacePolicy": "Retain",
     },
-    "VideoAnalyticsDeviceManagementAPIGatewayDeploymentDECA25902a4ddf1c3350f9314b771af305e6070e": {
+    "VideoAnalyticsDeviceManagementAPIGatewayDeploymentDECA2590e59795d20aa4689a7e354263980ebbef": {
       "Properties": {
         "Description": "Automatically created by the RestApi construct",
         "RestApiId": {
@@ -755,7 +755,7 @@ exports[`ServiceStack Snapshot test 1`] = `
       ],
       "Properties": {
         "DeploymentId": {
-          "Ref": "VideoAnalyticsDeviceManagementAPIGatewayDeploymentDECA25902a4ddf1c3350f9314b771af305e6070e",
+          "Ref": "VideoAnalyticsDeviceManagementAPIGatewayDeploymentDECA2590e59795d20aa4689a7e354263980ebbef",
         },
         "MethodSettings": [
           {
