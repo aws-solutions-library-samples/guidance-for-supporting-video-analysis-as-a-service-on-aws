@@ -44,8 +44,8 @@ exports[`WorkflowStack Snapshot test 1`] = `
     },
     "StartCreateDeviceAttachKvsAccessToCertLambda9C48ABC8": {
       "DependsOn": [
-        "StartCreateDeviceStartCreateDeviceRoleDefaultPolicy3760D3E1",
-        "StartCreateDeviceStartCreateDeviceRole9FDF031A",
+        "StartCreateDeviceAttachKvsAccessToCertRoleDefaultPolicy0B014CA3",
+        "StartCreateDeviceAttachKvsAccessToCertRole3AF06585",
       ],
       "Properties": {
         "Code": {
@@ -58,7 +58,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
             "AccountId": "123456789012",
             "LambdaRoleArn": {
               "Fn::GetAtt": [
-                "StartCreateDeviceStartCreateDeviceRole9FDF031A",
+                "StartCreateDeviceAttachKvsAccessToCertRole3AF06585",
                 "Arn",
               ],
             },
@@ -73,7 +73,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
         "MemorySize": 512,
         "Role": {
           "Fn::GetAtt": [
-            "StartCreateDeviceStartCreateDeviceRole9FDF031A",
+            "StartCreateDeviceAttachKvsAccessToCertRole3AF06585",
             "Arn",
           ],
         },
@@ -94,10 +94,114 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Type": "AWS::Logs::LogGroup",
       "UpdateReplacePolicy": "Retain",
     },
+    "StartCreateDeviceAttachKvsAccessToCertRole3AF06585": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
+                    "iot:AttachPolicy",
+                    "iot:ListThingPrincipals",
+                    "iot:UpdateThingShadow",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": [
+                    "arn:aws:iot:us-east-1:123456789012:cert/*",
+                    "arn:aws:iot:us-east-1:123456789012:policy/*",
+                    "arn:aws:iot:us-east-1:123456789012:thing/*",
+                  ],
+                },
+                {
+                  "Action": [
+                    "dynamodb:GetItem",
+                    "dynamodb:PutItem",
+                    "dynamodb:UpdateItem",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": [
+                    "*",
+                    {
+                      "Fn::GetAtt": [
+                        "CreateDeviceTableC4C8D097",
+                        "Arn",
+                      ],
+                    },
+                  ],
+                },
+                {
+                  "Action": [
+                    "kms:Decrypt",
+                    "kms:GenerateDataKey",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": "*",
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": "AccessPolicy",
+          },
+        ],
+        "RoleName": "AttachKvsAccessToCertRole",
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "StartCreateDeviceAttachKvsAccessToCertRoleDefaultPolicy0B014CA3": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "StartCreateDeviceAttachKvsAccessToCertRoleDefaultPolicy0B014CA3",
+        "Roles": [
+          {
+            "Ref": "StartCreateDeviceAttachKvsAccessToCertRole3AF06585",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
     "StartCreateDeviceCreateDeviceLambda9980D98A": {
       "DependsOn": [
-        "StartCreateDeviceStartCreateDeviceRoleDefaultPolicy3760D3E1",
-        "StartCreateDeviceStartCreateDeviceRole9FDF031A",
+        "StartCreateDeviceCreateDeviceRoleDefaultPolicy7F1DCAAE",
+        "StartCreateDeviceCreateDeviceRole7B7353C8",
       ],
       "Properties": {
         "Code": {
@@ -109,7 +213,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
             "ACCOUNT_ID": "123456789012",
             "LAMBDA_ROLE_ARN": {
               "Fn::GetAtt": [
-                "StartCreateDeviceStartCreateDeviceRole9FDF031A",
+                "StartCreateDeviceCreateDeviceRole7B7353C8",
                 "Arn",
               ],
             },
@@ -124,7 +228,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
         "MemorySize": 512,
         "Role": {
           "Fn::GetAtt": [
-            "StartCreateDeviceStartCreateDeviceRole9FDF031A",
+            "StartCreateDeviceCreateDeviceRole7B7353C8",
             "Arn",
           ],
         },
@@ -145,10 +249,124 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Type": "AWS::Logs::LogGroup",
       "UpdateReplacePolicy": "Retain",
     },
+    "StartCreateDeviceCreateDeviceRole7B7353C8": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
+                    "iot:AddThingToThingGroup",
+                    "iot:AttachThingPrincipal",
+                    "iot:CreateThing",
+                    "iot:DescribeCertificate",
+                    "iot:DescribeThing",
+                    "iot:DescribeThingGroup",
+                    "iot:ListThingGroupsForThing",
+                    "iot:UpdateCertificate",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": [
+                    "arn:aws:iot:us-east-1:123456789012:cert/*",
+                    "arn:aws:iot:us-east-1:123456789012:thinggroup/*",
+                    "arn:aws:iot:us-east-1:123456789012:thing/*",
+                  ],
+                },
+                {
+                  "Action": "iot:RegisterThing",
+                  "Effect": "Allow",
+                  "Resource": "*",
+                },
+                {
+                  "Action": [
+                    "dynamodb:GetItem",
+                    "dynamodb:PutItem",
+                    "dynamodb:UpdateItem",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": [
+                    "*",
+                    {
+                      "Fn::GetAtt": [
+                        "CreateDeviceTableC4C8D097",
+                        "Arn",
+                      ],
+                    },
+                  ],
+                },
+                {
+                  "Action": [
+                    "kms:Decrypt",
+                    "kms:GenerateDataKey",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": "*",
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": "AccessPolicy",
+          },
+        ],
+        "RoleName": "CreateDeviceRole",
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "StartCreateDeviceCreateDeviceRoleDefaultPolicy7F1DCAAE": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "StartCreateDeviceCreateDeviceRoleDefaultPolicy7F1DCAAE",
+        "Roles": [
+          {
+            "Ref": "StartCreateDeviceCreateDeviceRole7B7353C8",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
     "StartCreateDeviceCreateKVSStreamLambdaCBD49F90": {
       "DependsOn": [
-        "StartCreateDeviceStartCreateDeviceRoleDefaultPolicy3760D3E1",
-        "StartCreateDeviceStartCreateDeviceRole9FDF031A",
+        "StartCreateDeviceCreateKvsStreamRoleDefaultPolicy5564FEE9",
+        "StartCreateDeviceCreateKvsStreamRoleD0636F2D",
       ],
       "Properties": {
         "Code": {
@@ -161,7 +379,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
             "AccountId": "123456789012",
             "LambdaRoleArn": {
               "Fn::GetAtt": [
-                "StartCreateDeviceStartCreateDeviceRole9FDF031A",
+                "StartCreateDeviceCreateKvsStreamRoleD0636F2D",
                 "Arn",
               ],
             },
@@ -177,7 +395,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
         "MemorySize": 512,
         "Role": {
           "Fn::GetAtt": [
-            "StartCreateDeviceStartCreateDeviceRole9FDF031A",
+            "StartCreateDeviceCreateKvsStreamRoleD0636F2D",
             "Arn",
           ],
         },
@@ -198,6 +416,109 @@ exports[`WorkflowStack Snapshot test 1`] = `
       "Type": "AWS::Logs::LogGroup",
       "UpdateReplacePolicy": "Retain",
     },
+    "StartCreateDeviceCreateKvsStreamRoleD0636F2D": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
+                    "apigateway:GET",
+                    "execute-api:Invoke",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": [
+                    "arn:aws:apigateway:us-east-1::/restapis",
+                    "arn:aws:apigateway:us-east-1::/restapis/*",
+                    "arn:aws:execute-api:us-east-1:123456789012:*/*/*/*",
+                  ],
+                },
+                {
+                  "Action": [
+                    "dynamodb:GetItem",
+                    "dynamodb:PutItem",
+                    "dynamodb:UpdateItem",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": [
+                    "*",
+                    {
+                      "Fn::GetAtt": [
+                        "CreateDeviceTableC4C8D097",
+                        "Arn",
+                      ],
+                    },
+                  ],
+                },
+                {
+                  "Action": [
+                    "kms:Decrypt",
+                    "kms:GenerateDataKey",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": "*",
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": "AccessPolicy",
+          },
+        ],
+        "RoleName": "CreateKvsStreamRole",
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "StartCreateDeviceCreateKvsStreamRoleDefaultPolicy5564FEE9": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "StartCreateDeviceCreateKvsStreamRoleDefaultPolicy5564FEE9",
+        "Roles": [
+          {
+            "Ref": "StartCreateDeviceCreateKvsStreamRoleD0636F2D",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
     "StartCreateDeviceDeviceProvisioningTemplate7A07037F": {
       "Properties": {
         "Description": "Template for provisioning video analytics devices",
@@ -215,8 +536,8 @@ exports[`WorkflowStack Snapshot test 1`] = `
     },
     "StartCreateDeviceFVLWorkflowCheckerLambdaFAD86E9D": {
       "DependsOn": [
-        "StartCreateDeviceStartCreateDeviceRoleDefaultPolicy3760D3E1",
-        "StartCreateDeviceStartCreateDeviceRole9FDF031A",
+        "StartCreateDeviceCreateKvsStreamRoleDefaultPolicy5564FEE9",
+        "StartCreateDeviceCreateKvsStreamRoleD0636F2D",
       ],
       "Properties": {
         "Code": {
@@ -229,7 +550,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
             "AccountId": "123456789012",
             "LambdaRoleArn": {
               "Fn::GetAtt": [
-                "StartCreateDeviceStartCreateDeviceRole9FDF031A",
+                "StartCreateDeviceCreateKvsStreamRoleD0636F2D",
                 "Arn",
               ],
             },
@@ -245,7 +566,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
         "MemorySize": 512,
         "Role": {
           "Fn::GetAtt": [
-            "StartCreateDeviceStartCreateDeviceRole9FDF031A",
+            "StartCreateDeviceCreateKvsStreamRoleD0636F2D",
             "Arn",
           ],
         },
@@ -259,8 +580,8 @@ exports[`WorkflowStack Snapshot test 1`] = `
     },
     "StartCreateDeviceFailCreateDeviceLambda0D6A6176": {
       "DependsOn": [
-        "StartCreateDeviceStartCreateDeviceRoleDefaultPolicy3760D3E1",
-        "StartCreateDeviceStartCreateDeviceRole9FDF031A",
+        "StartCreateDeviceFailCreateDeviceRoleDefaultPolicy284DAAB2",
+        "StartCreateDeviceFailCreateDeviceRoleEB90340B",
       ],
       "Properties": {
         "Code": {
@@ -272,7 +593,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
             "ACCOUNT_ID": "123456789012",
             "LAMBDA_ROLE_ARN": {
               "Fn::GetAtt": [
-                "StartCreateDeviceStartCreateDeviceRole9FDF031A",
+                "StartCreateDeviceFailCreateDeviceRoleEB90340B",
                 "Arn",
               ],
             },
@@ -287,7 +608,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
         "MemorySize": 512,
         "Role": {
           "Fn::GetAtt": [
-            "StartCreateDeviceStartCreateDeviceRole9FDF031A",
+            "StartCreateDeviceFailCreateDeviceRoleEB90340B",
             "Arn",
           ],
         },
@@ -307,6 +628,102 @@ exports[`WorkflowStack Snapshot test 1`] = `
       },
       "Type": "AWS::Logs::LogGroup",
       "UpdateReplacePolicy": "Retain",
+    },
+    "StartCreateDeviceFailCreateDeviceRoleDefaultPolicy284DAAB2": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "StartCreateDeviceFailCreateDeviceRoleDefaultPolicy284DAAB2",
+        "Roles": [
+          {
+            "Ref": "StartCreateDeviceFailCreateDeviceRoleEB90340B",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "StartCreateDeviceFailCreateDeviceRoleEB90340B": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": "iot:UpdateCertificate",
+                  "Effect": "Allow",
+                  "Resource": "arn:aws:iot:us-east-1:123456789012:cert/*",
+                },
+                {
+                  "Action": [
+                    "dynamodb:GetItem",
+                    "dynamodb:PutItem",
+                    "dynamodb:UpdateItem",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": [
+                    "*",
+                    {
+                      "Fn::GetAtt": [
+                        "CreateDeviceTableC4C8D097",
+                        "Arn",
+                      ],
+                    },
+                  ],
+                },
+                {
+                  "Action": [
+                    "kms:Decrypt",
+                    "kms:GenerateDataKey",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": "*",
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": "AccessPolicy",
+          },
+        ],
+        "RoleName": "FailCreateDeviceRole",
+      },
+      "Type": "AWS::IAM::Role",
     },
     "StartCreateDeviceIoTProvisioningRoleDAA2D849": {
       "Properties": {
@@ -412,7 +829,6 @@ exports[`WorkflowStack Snapshot test 1`] = `
           ],
           "Version": "2012-10-17",
         },
-        "Description": "Role for SetLoggerConfig Lambda function",
         "ManagedPolicyArns": [
           {
             "Fn::Join": [
@@ -432,26 +848,9 @@ exports[`WorkflowStack Snapshot test 1`] = `
             "PolicyDocument": {
               "Statement": [
                 {
-                  "Action": [
-                    "iot:UpdateThingShadow",
-                    "iot:GetThingShadow",
-                  ],
+                  "Action": "iot:UpdateThingShadow",
                   "Effect": "Allow",
                   "Resource": "arn:aws:iot:us-east-1:123456789012:thing/*",
-                },
-                {
-                  "Action": [
-                    "iotdata:GetThingShadow",
-                    "iotdata:UpdateThingShadow",
-                    "iotdata:DeleteThingShadow",
-                    "iotdata:Publish",
-                  ],
-                  "Effect": "Allow",
-                  "Resource": [
-                    "arn:aws:iot:us-east-1:123456789012:thing/*",
-                    "arn:aws:iot:us-east-1:123456789012:topic/*",
-                    "arn:aws:iot:us-east-1:123456789012:endpoint/*",
-                  ],
                 },
                 {
                   "Action": [
@@ -460,14 +859,31 @@ exports[`WorkflowStack Snapshot test 1`] = `
                     "dynamodb:UpdateItem",
                   ],
                   "Effect": "Allow",
-                  "Resource": "arn:aws:dynamodb:us-east-1:123456789012:table/CreateDeviceTable",
+                  "Resource": [
+                    "*",
+                    {
+                      "Fn::GetAtt": [
+                        "CreateDeviceTableC4C8D097",
+                        "Arn",
+                      ],
+                    },
+                  ],
+                },
+                {
+                  "Action": [
+                    "kms:Decrypt",
+                    "kms:GenerateDataKey",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": "*",
                 },
               ],
               "Version": "2012-10-17",
             },
-            "PolicyName": "SetLoggerConfigPolicy",
+            "PolicyName": "AccessPolicy",
           },
         ],
+        "RoleName": "SetLoggerConfigRole",
       },
       "Type": "AWS::IAM::Role",
     },
@@ -490,160 +906,6 @@ exports[`WorkflowStack Snapshot test 1`] = `
         "Roles": [
           {
             "Ref": "StartCreateDeviceSetLoggerConfigRole69187543",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
-    "StartCreateDeviceStartCreateDeviceRole9FDF031A": {
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "lambda.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "ManagedPolicyArns": [
-          {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition",
-                },
-                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
-              ],
-            ],
-          },
-        ],
-        "Policies": [
-          {
-            "PolicyDocument": {
-              "Statement": [
-                {
-                  "Action": [
-                    "iot:AttachPolicy",
-                    "iot:DetachPolicy",
-                    "iot:ListAttachedPolicies",
-                    "iot:ListTargetsForPolicy",
-                    "iot:DescribeCertificate",
-                    "iot:AttachThingPrincipal",
-                    "iot:UpdateCertificate",
-                  ],
-                  "Effect": "Allow",
-                  "Resource": [
-                    "arn:aws:iot:us-east-1:123456789012:policy/*",
-                    "arn:aws:iot:us-east-1:123456789012:cert/*",
-                  ],
-                },
-                {
-                  "Action": [
-                    "iot:DescribeThingGroup",
-                    "iot:AddThingToThingGroup",
-                    "iot:CreateThing",
-                    "iot:DescribeThing",
-                    "iot:ListThingGroupsForThing",
-                    "iot:ListThingPrincipals",
-                  ],
-                  "Effect": "Allow",
-                  "Resource": [
-                    "arn:aws:iot:us-east-1:123456789012:thinggroup/*",
-                    "arn:aws:iot:us-east-1:123456789012:thing/*",
-                  ],
-                },
-                {
-                  "Action": "iot:RegisterThing",
-                  "Effect": "Allow",
-                  "Resource": "*",
-                },
-                {
-                  "Action": [
-                    "dynamodb:GetRecords",
-                    "dynamodb:GetItem",
-                    "dynamodb:Query",
-                    "dynamodb:PutItem",
-                    "dynamodb:UpdateItem",
-                    "dynamodb:Scan",
-                  ],
-                  "Effect": "Allow",
-                  "Resource": [
-                    "*",
-                    {
-                      "Fn::GetAtt": [
-                        "CreateDeviceTableC4C8D097",
-                        "Arn",
-                      ],
-                    },
-                  ],
-                },
-                {
-                  "Action": [
-                    "kms:Decrypt",
-                    "kms:Encrypt",
-                    "kms:ReEncrypt*",
-                  ],
-                  "Effect": "Allow",
-                  "Resource": "*",
-                },
-                {
-                  "Action": [
-                    "iot:GetThingShadow",
-                    "iot:UpdateThingShadow",
-                  ],
-                  "Effect": "Allow",
-                  "Resource": [
-                    "arn:aws:iot:us-east-1:123456789012:thing/*",
-                    "arn:aws:iot:us-east-1:123456789012:endpoint/*",
-                  ],
-                },
-                {
-                  "Action": [
-                    "apigateway:GET",
-                    "execute-api:Invoke",
-                  ],
-                  "Effect": "Allow",
-                  "Resource": [
-                    "arn:aws:apigateway:us-east-1::/restapis",
-                    "arn:aws:apigateway:us-east-1::/restapis/*",
-                    "arn:aws:execute-api:us-east-1:123456789012:*/*/*/*",
-                  ],
-                },
-              ],
-              "Version": "2012-10-17",
-            },
-            "PolicyName": "AccessPolicy",
-          },
-        ],
-        "RoleName": "StartCreateDeviceRole",
-      },
-      "Type": "AWS::IAM::Role",
-    },
-    "StartCreateDeviceStartCreateDeviceRoleDefaultPolicy3760D3E1": {
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": [
-                "xray:PutTraceSegments",
-                "xray:PutTelemetryRecords",
-              ],
-              "Effect": "Allow",
-              "Resource": "*",
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "StartCreateDeviceStartCreateDeviceRoleDefaultPolicy3760D3E1",
-        "Roles": [
-          {
-            "Ref": "StartCreateDeviceStartCreateDeviceRole9FDF031A",
           },
         ],
       },

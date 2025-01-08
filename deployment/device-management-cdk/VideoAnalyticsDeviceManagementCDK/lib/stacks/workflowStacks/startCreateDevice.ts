@@ -1,6 +1,6 @@
 import { Duration } from "aws-cdk-lib";
 import {
-  Effect, ManagedPolicy,
+  Effect,
   PolicyDocument,
   PolicyStatement, Role, ServicePrincipal
 } from "aws-cdk-lib/aws-iam";
@@ -19,7 +19,6 @@ import { LambdaInvoke } from "aws-cdk-lib/aws-stepfunctions-tasks";
 import { Construct } from "constructs";
 import { AWSRegion, VIDEO_LOGISTICS_API_NAME } from "video_analytics_common_construct";
 import {
-  AWSRegionUtils,
   VideoAnalyticsAsyncWorkflowResource,
   createLambdaRole,
 } from "video_analytics_common_construct/";
@@ -40,93 +39,81 @@ export class StartCreateDevice extends VideoAnalyticsAsyncWorkflowResource {
   private readonly dynamoDbStatement: PolicyStatement;
   private readonly kmsStatement: PolicyStatement;
   private readonly region: AWSRegion;
-  private readonly airportCode: string;
-  private readonly role: Role;
-  private readonly account: string;
-  private dynamoDbPlaceholderArn: string;
-  private kmsPlaceholderArn: string;
+  private readonly attachKvsAccessToCertRole: Role;
+  private readonly createDeviceRole: Role;
+  private readonly createKvsStreamRole: Role;
   private readonly setLoggerConfigRole: Role;
-  private readonly setLoggerConfigLambda: Function;
-  private readonly setLoggerConfigDynamoStatement: PolicyStatement;
-  private readonly setLoggerConfigKmsStatement: PolicyStatement;
+  private readonly failCreateDeviceRole: Role;
+  private readonly account: string;
 
   constructor(scope: Construct, id: string, props: WorkflowStackProps) {
     super(scope, id);
     this.account = props.account;
     this.region = props.region;
 
-    this.airportCode = AWSRegionUtils.getAirportCode(
-      props.region
-    ).toLowerCase();
-    /// Create placeholder ARNs
-    this.dynamoDbPlaceholderArn = `arn:aws:dynamodb:${this.region}:${this.account}:table/*`;
-    this.kmsPlaceholderArn = `arn:aws:kms:${this.region}:${this.account}:key/*`;
     this.dynamoDbStatement = new PolicyStatement({
-      effect: Effect.ALLOW,
-      actions: [
-        "dynamodb:GetRecords",
-        "dynamodb:GetItem",
-        "dynamodb:Query",
-        "dynamodb:PutItem",
-        "dynamodb:UpdateItem",
-        "dynamodb:Scan",
-      ],
-      resources: ["*"], // This will be updated in postWorkflowCreationCallback
-    });
-
-    this.kmsStatement = new PolicyStatement({
-      effect: Effect.ALLOW,
-      actions: ["kms:Decrypt", "kms:Encrypt", "kms:ReEncrypt*"],
-      resources: ["*"], // This will be updated in postWorkflowCreationCallback
-    });
-
-    this.setLoggerConfigDynamoStatement = new PolicyStatement({
       effect: Effect.ALLOW,
       actions: [
         "dynamodb:GetItem",
         "dynamodb:PutItem",
         "dynamodb:UpdateItem"
       ],
-      resources: [this.dynamoDbPlaceholderArn]
+      resources: ["*"], // This will be updated in postWorkflowCreationCallback
     });
 
-    this.setLoggerConfigKmsStatement = new PolicyStatement({
+    this.kmsStatement = new PolicyStatement({
       effect: Effect.ALLOW,
-      actions: [
-        "kms:Decrypt",
-        "kms:GenerateDataKey"
-      ],
-      resources: [this.kmsPlaceholderArn]
+      actions: ["kms:Decrypt", "kms:GenerateDataKey"],
+      resources: ["*"], // This will be updated in postWorkflowCreationCallback
     });
 
-    this.role = createLambdaRole(this, "StartCreateDeviceRole", [
+    this.attachKvsAccessToCertRole = createLambdaRole(this, "AttachKvsAccessToCertRole", [
       new PolicyStatement({
         effect: Effect.ALLOW,
         actions: [
           "iot:AttachPolicy",
-          "iot:DetachPolicy",
-          "iot:ListAttachedPolicies",
-          "iot:ListTargetsForPolicy",
-          "iot:DescribeCertificate",
-          "iot:AttachThingPrincipal",
-          "iot:UpdateCertificate"
+          "iot:ListThingPrincipals",
+          "iot:UpdateThingShadow"
         ],
         resources: [
+          `arn:aws:iot:${props.region}:${props.account}:cert/*`,
           `arn:aws:iot:${props.region}:${props.account}:policy/*`,
-          `arn:aws:iot:${props.region}:${props.account}:cert/*`
+          `arn:aws:iot:${props.region}:${props.account}:thing/*`,
         ],
       }),
+      this.dynamoDbStatement,
+      this.kmsStatement,
+    ]);
+
+    this.failCreateDeviceRole = createLambdaRole(this, "FailCreateDeviceRole", [
       new PolicyStatement({
         effect: Effect.ALLOW,
         actions: [
-          "iot:DescribeThingGroup",
-          "iot:AddThingToThingGroup",
-          "iot:CreateThing",
-          "iot:DescribeThing",
-          "iot:ListThingGroupsForThing",
-          "iot:ListThingPrincipals",
+          "iot:UpdateCertificate"
         ],
         resources: [
+          `arn:aws:iot:${props.region}:${props.account}:cert/*`
+        ],
+      }),
+      this.dynamoDbStatement,
+      this.kmsStatement,
+    ]);
+
+    this.createDeviceRole = createLambdaRole(this, "CreateDeviceRole", [
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        actions: [
+          "iot:AddThingToThingGroup",
+          "iot:AttachThingPrincipal",
+          "iot:CreateThing",
+          "iot:DescribeCertificate",
+          "iot:DescribeThing",
+          "iot:DescribeThingGroup",
+          "iot:ListThingGroupsForThing",
+          "iot:UpdateCertificate"
+        ],
+        resources: [
+          `arn:aws:iot:${props.region}:${props.account}:cert/*`,
           `arn:aws:iot:${props.region}:${props.account}:thinggroup/*`,
           `arn:aws:iot:${props.region}:${props.account}:thing/*`,
         ],
@@ -140,17 +127,9 @@ export class StartCreateDevice extends VideoAnalyticsAsyncWorkflowResource {
       }),
       this.dynamoDbStatement,
       this.kmsStatement,
-      new PolicyStatement({
-        effect: Effect.ALLOW,
-        actions: [
-          "iot:GetThingShadow",
-          "iot:UpdateThingShadow"
-        ],
-        resources: [
-          `arn:aws:iot:${props.region}:${props.account}:thing/*`,
-          `arn:aws:iot:${props.region}:${props.account}:endpoint/*`
-        ],
-      }),
+    ]);
+
+    this.createKvsStreamRole = createLambdaRole(this, "CreateKvsStreamRole", [
       new PolicyStatement({
         effect: Effect.ALLOW,
         actions: [
@@ -163,6 +142,22 @@ export class StartCreateDevice extends VideoAnalyticsAsyncWorkflowResource {
           `arn:aws:execute-api:${this.region}:${this.account}:*/*/*/*`
         ]
       }),
+      this.dynamoDbStatement,
+      this.kmsStatement,
+    ]);
+
+    this.setLoggerConfigRole = createLambdaRole(this, "SetLoggerConfigRole", [
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        actions: [
+          "iot:UpdateThingShadow"
+        ],
+        resources: [
+          `arn:aws:iot:${props.region}:${props.account}:thing/*`
+        ],
+      }),
+      this.dynamoDbStatement,
+      this.kmsStatement,
     ]);
 
     // Create a role specifically for IoT provisioning
@@ -224,81 +219,6 @@ export class StartCreateDevice extends VideoAnalyticsAsyncWorkflowResource {
         }
       })
     });
-
-    // Create the role for SetLoggerConfig
-    this.setLoggerConfigRole = new Role(this, 'SetLoggerConfigRole', {
-      assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
-      description: 'Role for SetLoggerConfig Lambda function',
-      managedPolicies: [
-        ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole')
-      ],
-      inlinePolicies: {
-        'SetLoggerConfigPolicy': new PolicyDocument({
-          statements: [
-            // IoT Control Plane permissions
-            new PolicyStatement({
-              effect: Effect.ALLOW,
-              actions: [
-                "iot:UpdateThingShadow",
-                "iot:GetThingShadow"
-              ],
-              resources: [
-                `arn:aws:iot:${props.region}:${props.account}:thing/*`
-              ]
-            }),
-
-            // IoT Data Plane permissions - expanded
-            new PolicyStatement({
-              effect: Effect.ALLOW,
-              actions: [
-                "iotdata:GetThingShadow",
-                "iotdata:UpdateThingShadow",
-                "iotdata:DeleteThingShadow",
-                "iotdata:Publish"
-              ],
-              resources: [
-                // Need both thing and endpoint ARNs for data plane operations
-                `arn:aws:iot:${props.region}:${props.account}:thing/*`,
-                `arn:aws:iot:${props.region}:${props.account}:topic/*`,
-                `arn:aws:iot:${props.region}:${props.account}:endpoint/*`
-              ]
-            }),
-
-            // DynamoDB permissions
-            new PolicyStatement({
-              effect: Effect.ALLOW,
-              actions: [
-                "dynamodb:GetItem",
-                "dynamodb:PutItem",
-                "dynamodb:UpdateItem"
-              ],
-              resources: [
-                `arn:aws:dynamodb:${props.region}:${props.account}:table/CreateDeviceTable`
-              ]
-            })
-          ]
-        })
-      }
-    });
-
-    // Create the SetLoggerConfig Lambda
-    this.setLoggerConfigLambda = new Function(this, "SetLoggerConfigLambda", {
-      runtime: Runtime.JAVA_17,
-      tracing: Tracing.ACTIVE,
-      handler: `${DM_WORKFLOW_JAVA_PATH_PREFIX}.createdevice.SetLoggerConfigHandler::handleRequest`,
-      code: Code.fromAsset(`${LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT}`),
-      memorySize: 512,
-      timeout: Duration.minutes(5),
-      environment: {
-        ACCOUNT_ID: this.account,
-        LAMBDA_ROLE_ARN: this.setLoggerConfigRole.roleArn,
-      },
-      role: this.setLoggerConfigRole,
-      logGroup: new LogGroup(this, "SetLoggerConfigLambdaLogGroup", {
-        retention: RetentionDays.TEN_YEARS,
-        logGroupName: "/aws/lambda/SetLoggerConfigLambda",
-      }),
-    });
   }
 
   createStepFunction(): StateMachine {
@@ -310,11 +230,10 @@ export class StartCreateDevice extends VideoAnalyticsAsyncWorkflowResource {
       memorySize: 512,
       timeout: Duration.minutes(5),
       environment: {
-        // TODO: make a note that STAGE would not be used in the relative lambdas
         ACCOUNT_ID: this.account,
-        LAMBDA_ROLE_ARN: this.role.roleArn,
+        LAMBDA_ROLE_ARN: this.createDeviceRole.roleArn,
       },
-      role: this.role,
+      role: this.createDeviceRole,
       logGroup: new LogGroup(this, "CreateDeviceLambdaLogGroup", {
         retention: RetentionDays.TEN_YEARS,
         logGroupName: "/aws/lambda/CreateDeviceLambda",
@@ -329,10 +248,10 @@ export class StartCreateDevice extends VideoAnalyticsAsyncWorkflowResource {
       tracing: Tracing.ACTIVE,
       handler: `${DM_WORKFLOW_JAVA_PATH_PREFIX}.createdevice.CreateKVSStreamHandler::handleRequest`,
       memorySize: 512,
-      role: this.role,
+      role: this.createKvsStreamRole,
       environment: {
         AccountId: this.account.toString(),
-        LambdaRoleArn: this.role.roleArn,
+        LambdaRoleArn: this.createKvsStreamRole.roleArn,
         // this would be dynamically resolved in the Lambda for API Gateway endpoint resolving
         VIDEO_LOGISTICS_API_NAME: VIDEO_LOGISTICS_API_NAME
       },
@@ -354,10 +273,10 @@ export class StartCreateDevice extends VideoAnalyticsAsyncWorkflowResource {
         tracing: Tracing.ACTIVE,
         handler: `${DM_WORKFLOW_JAVA_PATH_PREFIX}.createdevice.AttachKvsAccessToCertHandler::handleRequest`,
         memorySize: 512,
-        role: this.role,
+        role: this.attachKvsAccessToCertRole,
         environment: {
           AccountId: this.account.toString(),
-          LambdaRoleArn: this.role.roleArn,
+          LambdaRoleArn: this.attachKvsAccessToCertRole.roleArn,
         },
         timeout: Duration.minutes(5),
         logGroup: new LogGroup(this, "AttachKvsAccessToCertLambdaLogGroup", {
@@ -378,10 +297,11 @@ export class StartCreateDevice extends VideoAnalyticsAsyncWorkflowResource {
         tracing: Tracing.ACTIVE,
         handler: `${DM_WORKFLOW_JAVA_PATH_PREFIX}.createdevice.VideoLogisticsWorkflowCheckerHandler::handleRequest`,
         memorySize: 512,
-        role: this.role,
+        // same API GW permissions as createKvsStreamLambda
+        role: this.createKvsStreamRole,
         environment: {
           AccountId: this.account.toString(),
-          LambdaRoleArn: this.role.roleArn,
+          LambdaRoleArn: this.createKvsStreamRole.roleArn,
           // this would be dynamically resolved in the Lambda for API Gateway endpoint resolving
           VIDEO_LOGISTICS_API_NAME: VIDEO_LOGISTICS_API_NAME
         },
@@ -405,12 +325,34 @@ export class StartCreateDevice extends VideoAnalyticsAsyncWorkflowResource {
         timeout: Duration.minutes(5),
         environment: {
           ACCOUNT_ID: this.account,
-          LAMBDA_ROLE_ARN: this.role.roleArn,
+          LAMBDA_ROLE_ARN: this.failCreateDeviceRole.roleArn,
         },
-        role: this.role,
+        role: this.failCreateDeviceRole,
         logGroup: new LogGroup(this, "FailCreateDeviceLambdaLogGroup", {
           retention: RetentionDays.TEN_YEARS,
           logGroupName: "/aws/lambda/FailCreateDeviceLambda",
+        }),
+      }
+    );
+
+    const setLoggerConfigLambda = new Function(
+      this, 
+      "SetLoggerConfigLambda",
+      {
+        runtime: Runtime.JAVA_17,
+        tracing: Tracing.ACTIVE,
+        handler: `${DM_WORKFLOW_JAVA_PATH_PREFIX}.createdevice.SetLoggerConfigHandler::handleRequest`,
+        code: Code.fromAsset(`${LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT}`),
+        memorySize: 512,
+        timeout: Duration.minutes(5),
+        environment: {
+          ACCOUNT_ID: this.account,
+          LAMBDA_ROLE_ARN: this.setLoggerConfigRole.roleArn,
+        },
+        role: this.setLoggerConfigRole,
+        logGroup: new LogGroup(this, "SetLoggerConfigLambdaLogGroup", {
+          retention: RetentionDays.TEN_YEARS,
+          logGroupName: "/aws/lambda/SetLoggerConfigLambda",
         }),
       }
     );
@@ -423,7 +365,7 @@ export class StartCreateDevice extends VideoAnalyticsAsyncWorkflowResource {
       resultPath: RESULT_PATH,
     });
     const setLoggerConfigState = new LambdaInvoke(this, "SetLoggerConfig", {
-      lambdaFunction: this.setLoggerConfigLambda,
+      lambdaFunction: setLoggerConfigLambda,
       payload: TaskInput.fromObject({
         jobId: JsonPath.stringAt(PARTITION_KEY_PATH),
       }),
@@ -554,13 +496,11 @@ export class StartCreateDevice extends VideoAnalyticsAsyncWorkflowResource {
     if (this.workflow && this.workflow.table) {
       // Update DynamoDB permissions
       this.dynamoDbStatement.addResources(this.workflow.table.tableArn);
-      this.setLoggerConfigDynamoStatement.addResources(this.workflow.table.tableArn);
 
       // Update KMS permissions if encryption key exists
       const encryptionKey = this.workflow.table.encryptionKey;
       if (encryptionKey) {
         this.kmsStatement.addResources(encryptionKey.keyArn);
-        this.setLoggerConfigKmsStatement.addResources(encryptionKey.keyArn);
       }
     } else {
       throw new Error("Workflow or workflow table is not defined");
