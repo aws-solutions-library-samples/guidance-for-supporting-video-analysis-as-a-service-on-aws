@@ -68,40 +68,106 @@ The following table provides a sample cost breakdown for deploying this Guidance
 
 ### Operating System (required)
 
-This deployment has been tested on macOS and Linux operating systems. The following prerequisites are required:
+This deployment has been tested on macOS and Linux operating systems. Follow these steps in order:
 
-1. **Development Tools**
-   - Java 17 or higher
+1. **AWS Account and CLI Setup**
+   - An AWS account with administrative permissions
+   - [AWS CLI version 2](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) installed and configured
+   - Configure AWS CLI with your credentials:
      ```bash
+     aws configure
+     ```
+
+2. **Development Tools**
+   - Java Development Kit (JDK) 17 or higher
+     ```bash
+     # For macOS using Homebrew
+     brew install openjdk@17
+     
      # For Ubuntu/Debian
      sudo apt update
      sudo apt install openjdk-17-jdk
      
      # For Amazon Linux/RHEL/CentOS
+     # Per: https://docs.aws.amazon.com/corretto/latest/corretto-17-ug/amazon-linux-install.html
      sudo yum install java-17-amazon-corretto
      
      # Verify installation
      java -version
      ```
    
-   - Node.js and npm
+   - Node.js (v18 or higher) and npm
      ```bash
+     # For macOS using Homebrew
+     brew install node@18
+     
      # For Ubuntu/Debian
      curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
-     sudo apt install nodejs
+     sudo apt-get install -y nodejs
      
      # For Amazon Linux/RHEL/CentOS
      curl -fsSL https://rpm.nodesource.com/setup_18.x | sudo bash -
-     sudo yum install nodejs
+     sudo yum install -y nodejs
      
      # Verify installation
      node --version
      npm --version
      ```
-   
-   - Rust toolchain
+
+3. **GStreamer Libraries**
+   GStreamer is required for running and testing the edge binary for video processing.
+
+   - For macOS:
      ```bash
-     # Install Rust using rustup
+     # Using Homebrew
+     brew install gstreamer gst-plugins-base gst-plugins-good gst-plugins-bad gst-plugins-ugly gst-libav
+     
+     # Verify installation
+     gst-launch-1.0 --version
+     ```
+
+   - For Ubuntu/Debian:
+     ```bash
+     sudo apt update
+     sudo apt install -y \
+         gstreamer1.0-tools \
+         gstreamer1.0-plugins-base \
+         gstreamer1.0-plugins-good \
+         gstreamer1.0-plugins-bad \
+         gstreamer1.0-plugins-ugly \
+         gstreamer1.0-libav
+     
+     # Verify installation
+     gst-launch-1.0 --version
+     ```
+
+   - For Amazon Linux/RHEL/CentOS:
+     ```bash
+     sudo yum install -y \
+         gstreamer1 \
+         gstreamer1-plugins-base \
+         gstreamer1-plugins-good \
+         gstreamer1-plugins-bad-free \
+         gstreamer1-plugins-ugly-free \
+         gstreamer1-libav
+     
+     # Verify installation
+     gst-launch-1.0 --version
+     ```
+
+   Note: Some GStreamer plugins might require additional dependencies or licenses depending on your use case.
+
+4. **AWS CDK CLI**
+   ```bash
+   npm install -g aws-cdk
+   
+   # Verify installation
+   cdk --version
+   ```
+
+5. **Rust Development Environment** (Required for Edge Components)
+   - Install Rust and Cargo
+     ```bash
      curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
      source $HOME/.cargo/env
      
@@ -110,15 +176,17 @@ This deployment has been tested on macOS and Linux operating systems. The follow
      cargo --version
      ```
    
-   - Gradle 8.10 (included via Gradle Wrapper)
+   - Install Cross (for cross-compilation)
      ```bash
-     # No manual installation needed as we use Gradle Wrapper
-     # Verify wrapper works
-     ./gradlew --version
+     cargo install cross --git https://github.com/cross-rs/cross
      ```
-   
+
+6. **Additional Tools**
    - Git
      ```bash
+     # For macOS using Homebrew
+     brew install git
+     
      # For Ubuntu/Debian
      sudo apt install git
      
@@ -128,183 +196,395 @@ This deployment has been tested on macOS and Linux operating systems. The follow
      # Verify installation
      git --version
      ```
-
-   - Smithy CLI
-     ```bash
-     # Install Smithy CLI using npm
-     npm install -g @smithy/cli
-     
-     # Verify installation
-     smithy --version
-     
-     # Alternative: If using the JAR directly
-     # Download the latest smithy-cli jar from Maven Central
-     wget https://repo1.maven.org/maven2/software/amazon/smithy/smithy-cli/1.41.0/smithy-cli-1.41.0.jar
-     
-     # Create an alias for easy use
-     echo 'alias smithy="java -jar /path/to/smithy-cli-1.41.0.jar"' >> ~/.bashrc
-     source ~/.bashrc
-     ```
-
-2. **AWS Tools**
-   - AWS CLI
-     ```bash
-     # For Ubuntu/Debian
-     curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-     sudo apt install unzip
-     unzip awscliv2.zip
-     sudo ./aws/install
-     
-     # For Amazon Linux/RHEL/CentOS
-     curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-     sudo yum install unzip
-     unzip awscliv2.zip
-     sudo ./aws/install
-     
-     # Verify installation
-     aws --version
-     
-     # Configure AWS CLI
-     aws configure
-     ```
    
-   - AWS CDK CLI (install using: `npm install -g aws-cdk`)
+   - AWS Systems Manager Session Manager plugin (for camera access)
      ```bash
-     # Install AWS CDK CLI
-     npm install -g aws-cdk
+     # For macOS
+     curl "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/mac/sessionmanager-bundle.zip" -o "sessionmanager-bundle.zip"
+     unzip sessionmanager-bundle.zip
+     sudo ./sessionmanager-bundle/install -i /usr/local/sessionmanagerplugin -b /usr/local/bin/session-manager-plugin
+     
+     # For Linux
+     curl "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/linux_64bit/session-manager-plugin.rpm" -o "session-manager-plugin.rpm"
+     sudo yum install -y session-manager-plugin.rpm
      
      # Verify installation
-     cdk --version
+     session-manager-plugin --version
      ```
+
+7. **Project Setup**
+   ```bash
+   # Clone the repository
+   git clone <repository-url>
+   cd guidance-for-video-analytics-infrastructure-on-aws
    
-   - AWS Systems Manager (SSM) access if testing with cameras connected via SSM
+   # Install dependencies for deployment
+   cd deployment
+   npm install
+   
+   # Build common constructs
+   cd common-constructs/VideoAnalyticsCommonConstruct
+   npm install
+   npm run build
+   
+   # Return to root directory
+   cd ../../..
+   ```
 
-### AWS CDK Bootstrap
+8. **Environment Configuration**
+   ```bash
+   # Set required environment variables
+   export AWS_REGION=<your-preferred-region>  # e.g., us-east-1
+   ```
 
-If you haven't used AWS CDK before in your account, run the following command:
-```bash
-cdk bootstrap aws://ACCOUNT-NUMBER/REGION
-```
+### Required AWS Account Permissions
+
+The deployment requires an AWS account with permissions to create and manage the following services:
+- AWS Lambda
+- Amazon API Gateway
+- Amazon S3
+- Amazon DynamoDB
+- AWS IoT Core
+- Amazon Kinesis Video Streams
+- AWS Systems Manager
+- AWS IAM (for creating roles and policies)
+
+### Network Requirements
+- Outbound internet access for downloading dependencies and accessing AWS services
+- If working with cameras:
+  - Access to port 80 (ONVIF)
+  - Access to port 554 (RTSP)
+  - Proper network configuration to allow communication between edge devices and AWS cloud services
 
 ## Deployment Steps (required)
 
-Follow these steps in sequence to deploy the solution:
+### Project Structure Overview
 
-1. **Clone the repository**:
+The deployment infrastructure is organized into two main components and follows this structure:
+
+```
+deployment/
+├── package.json
+├── package-lock.json
+├── tsconfig.json
+├── node_modules/
+│   ├── aws-cdk-lib/
+│   ├── constructs/
+│   └── ... (other shared dependencies)
+├── common-constructs/
+│   └── VideoAnalyticsCommonConstruct/
+│       ├── package.json
+│       ├── tsconfig.json
+│       ├── lib/
+│       │   └── ... (TypeScript Common constructs)
+│       ├── node_modules/
+│       │   └── ... (package-specific dependencies)
+│       └── .gitignore
+├── device-management-cdk/
+│   └── VideoAnalyticsDeviceManagementCDK/
+│       ├── package.json
+│       ├── tsconfig.json
+│       ├── lib/
+│       │   └── ... (TypeScript Device Management CDK)
+│       ├── node_modules/
+│       │   └── ... (package-specific dependencies)
+│       ├── cdk.json
+│       └── .gitignore
+└── video-logistics-cdk/
+    └── VideoAnalyticsVideoLogisticsCDK/
+        ├── package.json
+        ├── tsconfig.json
+        ├── lib/
+        │   └── ... (TypeScript Video Logistics CDK)
+        ├── node_modules/
+        │   └── ... (package-specific dependencies)
+        ├── cdk.json
+        └── .gitignore
+```
+
+1. **Device Management (deployment/device-management-cdk/)**
+   - Handles device registration, management, and monitoring
+   - Components:
+     - Bootstrap Stack: Initial setup and shared resources
+     - Workflow Stack: Device management workflows
+     - Service Stack: Core Video Analytics Async Device Management services
+
+2. **Video Logistics (deployment/video-logistics-cdk/)**
+   - Manages video processing and analytics
+   - Components:
+     - Bootstrap Stack: Initial setup
+     - Timeline Stack: Video timeline management
+     - OpenSearch Stack: Search and analytics
+     - Bulk Inference Stack: Video processing
+     - Workflow Stack: Video processing workflows
+     - Service Stack: Core Video Analytics Async Video Logistics Processing services
+
+### Environment Variables
+
+The deployment uses either explicitly set deployment variables OR falls back to default variables:
+
+```bash
+# Option 1: Set deployment-specific variables
+export CDK_DEPLOY_ACCOUNT=your_aws_account_id
+export CDK_DEPLOY_REGION=your_aws_region
+
+# OR
+
+# Option 2: Use default variables
+export CDK_DEFAULT_ACCOUNT=your_aws_account_id
+export CDK_DEFAULT_REGION=your_aws_region
+```
+
+The stack will use variables in this order:
+1. `CDK_DEPLOY_ACCOUNT/REGION` if set
+2. `CDK_DEFAULT_ACCOUNT/REGION` if set
+3. Default values:
+   - Region: us-east-1 (Device Management) or us-west-2 (Video Logistics)
+   - Account: "YOUR_DEFAULT_ACCOUNT"
+
+### Deployment Process
+
+1. **Clone the Repository**
    ```bash
    git clone <repository-url>
    cd guidance-for-video-analytics-infrastructure-on-aws
    ```
 
-2. **Build Edge Process (Rust)**:
+2. **Install Global Dependencies**
    ```bash
-   cd source/edge
-   # For local architecture
-   cargo build --release
-   
-   # For ARM devices:
-   cargo install cross --git https://github.com/cross-rs/cross
-   cross build --target armv7-unknown-linux-gnueabihf --release
-   cd ../..
+   npm install -g aws-cdk typescript
    ```
 
-3. **Build Model and Generate API Specifications**:
-   ```bash
-   # Build Smithy Model
-   cd source/video-logistics/VideoAnalyticsVideoLogisticsModel
-   smithy build
-   cd ../../..
-   
-   # Generate Java Client Code
-   cd source/video-logistics/VideoAnalyticsVideoLogisticsJavaClient
-   ./gradlew openApiGenerate
-   cd ../../..
-   ```
-
-4. **Build Control Plane (Java)**:
-   ```bash
-   cd source/video-logistics/VideoAnalyticsVideoLogisticsControlPlane
-   ./gradlew clean build
-   # This will automatically copy the Lambda resource JAR to assets/lambda-built/video-logistics-assets/
-   cd ../../..
-   ```
-
-5. **Set up CDK Development Environment**:
+3. **Install Project Dependencies**
    ```bash
    cd deployment
-   
-   # Install dependencies for all workspaces
+   npm install
+   ```
+
+4. **Build Common Constructs**
+   ```bash
+   cd common-constructs/VideoAnalyticsCommonConstruct
+   npm install
+   npm run build
+   ```
+
+5. **Deploy Device Management Infrastructure**
+   ```bash
+   cd ../../device-management-cdk/VideoAnalyticsDeviceManagementCDK
    npm install
    
-   # Build all CDK packages
-   npm run build --workspaces
-   ```
-
-6. **Configure Deployment Environment**:
-   ```bash
-   # Set your AWS account and region
-   export CDK_DEPLOY_ACCOUNT=your_aws_account_id
-   export CDK_DEPLOY_REGION=your_aws_region
+   # Update snapshot tests if needed
+   npm run test -- -u
    
-   # Ensure you have valid AWS credentials
-   aws sts get-caller-identity
-   ```
-
-7. **Deploy CDK Stacks**:
-   ```bash
-   cd video-logistics-cdk/VideoAnalyticsVideoLogisticsCDK
-   
-   # First, synthesize the CloudFormation template to verify
+   # Build and synthesize CloudFormation
+   npm run build
    cdk synth
    
-   # Run tests and update snapshots if needed
-   npm test
-   # If you made intentional changes to the infrastructure:
-   npm run test:update
-   
-   # Deploy all stacks
-   cdk deploy --all
-   
-   # Or deploy specific stacks
-   cdk deploy VideoLogisticsWorkflowStack
+   # Deploy stacks in order
+   cdk deploy DeviceManagementBootstrapStack
+   cdk deploy DeviceManagementWorkflowStack
+   cdk deploy DeviceManagementServiceStack
    ```
 
-The deployment will create the following resources:
-- API Gateway endpoints for video logistics
-- Lambda functions for control plane operations
-- Required IAM roles and policies
-- Necessary S3 buckets and DynamoDB tables
-- Video Analytics infrastructure components
+6. **Deploy Video Logistics Infrastructure**
+   ```bash
+   cd ../../video-logistics-cdk/VideoAnalyticsVideoLogisticsCDK
+   npm install
+   
+   # Update snapshot tests if needed
+   npm run test -- -u
+   
+   # Build and synthesize CloudFormation
+   npm run build
+   cdk synth
+   
+   # Deploy stacks in order
+   cdk deploy VideoLogisticsBootstrapStack
+   cdk deploy VideoLogisticsTimelineStack
+   cdk deploy VideoLogisticsOpensearchStack
+   cdk deploy VideoLogisticsBulkInferenceStack
+   cdk deploy VideoLogisticsWorkflowStack
+   cdk deploy VideoLogisticsServiceStack
+   ```
 
-### Deployment Validation
+## Deployment Validation (required)
 
-After deployment, verify the following:
+After deploying both Device Management and Video Logistics stacks, verify the deployment by checking the following resources:
 
-1. Check the AWS CloudFormation console to ensure all stacks are deployed successfully
-2. Verify the API Gateway endpoints are created and accessible
-3. Confirm Lambda functions are properly deployed with the correct runtime
-4. Check that all IAM roles and policies are created with appropriate permissions
+### 1. Device Management CloudFormation Stack Verification
 
-### Cleanup
+Verify the following CloudFormation stacks are deployed successfully:
 
-To remove all deployed resources, take video logistics for example:
 ```bash
-cd deployment/video-logistics-cdk/VideoAnalyticsVideoLogisticsCDK
-cdk destroy --all
+# Verify all Device Management stacks status
+aws cloudformation describe-stacks \
+  --query 'Stacks[?contains(StackName, `DeviceManagement`)].{Name:StackName,Status:StackStatus}' \
+  --output table
 ```
 
-## Deployment Validation  (required)
+Check for the following stacks with status "CREATE_COMPLETE":
 
-<Provide steps to validate a successful deployment, such as terminal output, verifying that the resource is created, status of the CloudFormation template, etc.>
+1. **Bootstrap Stack**
+   - Stack name: `DeviceManagementBootstrapStack`
+   ```bash
+   aws cloudformation describe-stacks \
+     --stack-name DeviceManagementBootstrapStack \
+     --query 'Stacks[0].{Name:StackName,Status:StackStatus,Outputs:Outputs}'
+   ```
 
+2. **Core Components**
+   - Stack name: `DeviceManagementServiceStack`
+   ```bash
+   aws cloudformation describe-stacks \
+     --stack-name DeviceManagementServiceStack \
+     --query 'Stacks[0].{Name:StackName,Status:StackStatus,Outputs:Outputs}'
+   ```
 
-**Examples:**
+3. **Workflow Components**
+   - Stack name: `DeviceManagementWorkflowStack`
+   ```bash
+   aws cloudformation describe-stacks \
+     --stack-name DeviceManagementWorkflowStack \
+     --query 'Stacks[0].{Name:StackName,Status:StackStatus,Outputs:Outputs}'
+   ```
 
-* Open CloudFormation console and verify the status of the template with the name starting with xxxxxx.
-* If deployment is successful, you should see an active database instance with the name starting with <xxxxx> in        the RDS console.
-*  Run the following CLI command to validate the deployment: ```aws cloudformation describe xxxxxxxxxxxxx```
+You can verify individual stack resources using:
+```bash
+# Replace STACK_NAME with the specific stack name
+aws cloudformation describe-stack-resources \
+  --stack-name STACK_NAME \
+  --query 'StackResources[].{LogicalID:LogicalResourceId,Type:ResourceType,Status:ResourceStatus}'
+```
 
+### 2. Video Logistics CloudFormation Stack Verification
 
+Verify the following CloudFormation stacks are deployed successfully:
+
+```bash
+# Verify all Video Logistics stacks status
+aws cloudformation describe-stacks \
+  --query 'Stacks[?contains(StackName, `VideoLogistics`)].{Name:StackName,Status:StackStatus}' \
+  --output table
+```
+
+Check for the following stacks with status "CREATE_COMPLETE":
+
+1. **Bootstrap Stack**
+   - Stack name: `VideoLogisticsBootstrapStack`
+   ```bash
+   aws cloudformation describe-stacks \
+     --stack-name VideoLogisticsBootstrapStack \
+     --query 'Stacks[0].{Name:StackName,Status:StackStatus,Outputs:Outputs}'
+   ```
+
+2. **Core Infrastructure**
+   - Stack name: `VideoLogisticsOpensearchStack`
+   - Stack name: `VideoLogisticsTimelineStack`
+   - Stack name: `VideoLogisticsServiceStack`
+
+3. **Processing Components**
+   - Stack name: `VideoLogisticsBulkInferenceStack`
+   - Stack name: `VideoLogisticsVideoExportStack`
+   - Stack name: `VideoLogisticsWorkflowStack`
+
+4. **Management Components**
+   - Stack name: `VideoLogisticsSchedulerStack`
+   - Stack name: `VideoLogisticsForwardingRulesStack`
+
+You can verify individual stack details using:
+```bash
+# Replace STACK_NAME with the specific stack name
+aws cloudformation describe-stack-resources \
+  --stack-name STACK_NAME \
+  --query 'StackResources[].{LogicalID:LogicalResourceId,Type:ResourceType,Status:ResourceStatus}'
+```
+
+### 3. API Gateway Endpoints Verification
+
+After deployment, you should see two API Gateway endpoints in the AWS Console:
+
+![API Gateway Endpoints](assets/images/api-gateway-endpoints.png)
+
+The endpoints should show:
+- VideoAnalyticsDeviceManagementAPIGateway (Edge-optimized REST API)
+- VideoAnalyticsVideoLogisticsAPIGateway (Edge-optimized REST API)
+
+These endpoints are used for device management and video logistics operations respectively.
+
+You can verify these endpoints using AWS CLI:
+
+#### Device Management API
+```bash
+# List API Gateway APIs and find VideoAnalyticsDeviceManagementAPIGateway
+aws apigateway get-rest-apis \
+  --query 'items[?contains(name, `VideoAnalyticsDeviceManagementAPIGateway`)].{Name:name,ID:id}'
+
+# Get the API ID from above command output and verify stages
+export DM_API_ID=<api-id-from-above>
+aws apigateway get-stages --rest-api-id $DM_API_ID
+
+# Verify API resources and methods
+aws apigateway get-resources --rest-api-id $DM_API_ID \
+  --query 'items[?contains(name, `VideoAnalyticsDeviceManagementAPIGateway`)].{Name:name,Type:type}'
+```
+
+Expected output should show:
+- API named "VideoAnalyticsDeviceManagementAPIGateway"
+- Stage "prod" deployed
+- Resources for device management operations
+
+#### Video Logistics API
+```bash
+# List API Gateway APIs and find VideoAnalyticsVideoLogisticsAPIGateway
+aws apigateway get-rest-apis \
+  --query 'items[?contains(name, `VideoAnalyticsVideoLogisticsAPIGateway`)].{Name:name,ID:id}'
+
+# Get the API ID from above command output and verify stages
+export VL_API_ID=<api-id-from-above>
+aws apigateway get-stages --rest-api-id $VL_API_ID
+
+# Verify API resources and methods
+aws apigateway get-resources --rest-api-id $VL_API_ID
+```
+
+Expected output should show:
+- API named "VideoAnalyticsVideoLogisticsAPIGateway"
+- Stage "prod" deployed
+- Resources for video processing operations
+
+### 4. Test API Endpoints
+
+After verifying the API Gateway deployments, you can test the endpoints:
+
+```bash
+# Get Device Management API endpoint
+export DM_API_ENDPOINT=$(aws apigateway get-rest-apis \
+  --query 'items[?contains(name, `VideoAnalyticsDeviceManagementAPIGateway`)].{endpoint:endpoint}' \
+  --output text)
+
+# Get Video Logistics API endpoint
+export VL_API_ENDPOINT=$(aws apigateway get-rest-apis \
+  --query 'items[?contains(name, `VideoAnalyticsVideoLogisticsAPIGateway`)].{endpoint:endpoint}' \
+  --output text)
+
+# Test Device Management health check endpoint
+curl -X GET "${DM_API_ENDPOINT}/prod/health"
+
+# Test Video Logistics health check endpoint
+curl -X GET "${VL_API_ENDPOINT}/prod/health"
+```
+
+Both health check endpoints should return a successful response indicating the APIs are properly deployed and functioning.
+
+### 5. Additional Verification Steps
+
+- Check CloudWatch Logs for any deployment errors
+- Verify IAM roles and policies are correctly created
+- Ensure all Lambda functions are deployed and configured
+- Check DynamoDB tables are created with correct schemas
+- Verify S3 buckets are created with proper permissions
+
+If any of these verification steps fail, check the CloudFormation stack events and CloudWatch logs for error details.
 
 ## Running the Guidance (required)
 
