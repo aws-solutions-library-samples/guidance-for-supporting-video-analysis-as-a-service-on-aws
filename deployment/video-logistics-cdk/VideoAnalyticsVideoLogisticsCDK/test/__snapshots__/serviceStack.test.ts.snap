@@ -1472,7 +1472,7 @@ exports[`ServiceStack Snapshot test 1`] = `
           "Fn::Transform": {
             "Name": "AWS::Include",
             "Parameters": {
-              "Location": "s3://cdk-hnb659fds-assets-123456789012-us-east-1/c74b0d79d9f0cd4033d9cf8dbde30a1e90e2dd4478c5012ad4073b58a35eec65.json",
+              "Location": "s3://cdk-hnb659fds-assets-123456789012-us-east-1/91a1706a075a4d569ccc25580c41ff695b9cc1f3355cf6adf701406c41fcb393.json",
             },
           },
         },
@@ -1542,7 +1542,7 @@ exports[`ServiceStack Snapshot test 1`] = `
       "Type": "AWS::IAM::Role",
       "UpdateReplacePolicy": "Retain",
     },
-    "VideoAnalyticsVideoLogisticsAPIGatewayDeployment6F6E8BDFa1e64f736599865d70eaa1d64adc726b": {
+    "VideoAnalyticsVideoLogisticsAPIGatewayDeployment6F6E8BDFbdba00ffb66e0dc75682e65b2a299f95": {
       "Properties": {
         "Description": "Automatically created by the RestApi construct",
         "RestApiId": {
@@ -1557,7 +1557,7 @@ exports[`ServiceStack Snapshot test 1`] = `
       ],
       "Properties": {
         "DeploymentId": {
-          "Ref": "VideoAnalyticsVideoLogisticsAPIGatewayDeployment6F6E8BDFa1e64f736599865d70eaa1d64adc726b",
+          "Ref": "VideoAnalyticsVideoLogisticsAPIGatewayDeployment6F6E8BDFbdba00ffb66e0dc75682e65b2a299f95",
         },
         "MethodSettings": [
           {
