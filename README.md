@@ -103,26 +103,69 @@ This deployment has been tested on macOS and Linux operating systems. Follow the
      
      # For Ubuntu/Debian
      curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
-     sudo apt install nodejs
+     sudo apt-get install -y nodejs
      
      # For Amazon Linux/RHEL/CentOS
      curl -fsSL https://rpm.nodesource.com/setup_18.x | sudo bash -
-     sudo yum install nodejs
+     sudo yum install -y nodejs
      
      # Verify installation
      node --version
      npm --version
      ```
 
-   - AWS CDK CLI
+3. **GStreamer Libraries**
+   GStreamer is required for running and testing the edge binary for video processing.
+
+   - For macOS:
      ```bash
-     npm install -g aws-cdk
+     # Using Homebrew
+     brew install gstreamer gst-plugins-base gst-plugins-good gst-plugins-bad gst-plugins-ugly gst-libav
      
      # Verify installation
-     cdk --version
+     gst-launch-1.0 --version
      ```
 
-3. **Rust Development Environment** (Required for Edge Components)
+   - For Ubuntu/Debian:
+     ```bash
+     sudo apt update
+     sudo apt install -y \
+         gstreamer1.0-tools \
+         gstreamer1.0-plugins-base \
+         gstreamer1.0-plugins-good \
+         gstreamer1.0-plugins-bad \
+         gstreamer1.0-plugins-ugly \
+         gstreamer1.0-libav
+     
+     # Verify installation
+     gst-launch-1.0 --version
+     ```
+
+   - For Amazon Linux/RHEL/CentOS:
+     ```bash
+     sudo yum install -y \
+         gstreamer1 \
+         gstreamer1-plugins-base \
+         gstreamer1-plugins-good \
+         gstreamer1-plugins-bad-free \
+         gstreamer1-plugins-ugly-free \
+         gstreamer1-libav
+     
+     # Verify installation
+     gst-launch-1.0 --version
+     ```
+
+   Note: Some GStreamer plugins might require additional dependencies or licenses depending on your use case.
+
+4. **AWS CDK CLI**
+   ```bash
+   npm install -g aws-cdk
+   
+   # Verify installation
+   cdk --version
+   ```
+
+5. **Rust Development Environment** (Required for Edge Components)
    - Install Rust and Cargo
      ```bash
      curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
@@ -138,7 +181,7 @@ This deployment has been tested on macOS and Linux operating systems. Follow the
      cargo install cross --git https://github.com/cross-rs/cross
      ```
 
-4. **Additional Tools**
+6. **Additional Tools**
    - Git
      ```bash
      # For macOS using Homebrew
@@ -169,7 +212,7 @@ This deployment has been tested on macOS and Linux operating systems. Follow the
      session-manager-plugin --version
      ```
 
-5. **Project Setup**
+7. **Project Setup**
    ```bash
    # Clone the repository
    git clone <repository-url>
@@ -188,7 +231,7 @@ This deployment has been tested on macOS and Linux operating systems. Follow the
    cd ../../..
    ```
 
-6. **Environment Configuration**
+8. **Environment Configuration**
    ```bash
    # Set required environment variables
    export AWS_REGION=<your-preferred-region>  # e.g., us-east-1
@@ -609,13 +652,3 @@ Include a legal disclaimer
 ## Authors (optional)
 
 Name of code contributors
-
-```bash
-# Verify API resources and methods
-aws apigateway get-resources --rest-api-id $DM_API_ID
-```
-
-Expected output should show:
-- API named "VideoAnalyticsDeviceManagementAPIGateway"
-- Stage "prod" deployed
-- Resources for device management operations
