@@ -91,6 +91,24 @@ By default, edge process will use the API GW with the name "VideoAnalyticsVideoL
 
 By default, edge process will only stream between a motion-start and a motion-stop event received from the ONVIF event metadata stream (1 GOP before start and 3 GOP after stop). To stream continuously, set `MOTION_BASED_STREAMING` environment variable to `FALSE` (`export MOTION_BASED_STREAMING=FALSE`).
 
+### Use mp4 video as RTSP stream 
+1. Follow instructions in [implementation guide]() to set up infrastructure to publish RTSP stream from mp4 videos.  
+
+2. Set environment variable `SIM_RTSP_STREAM` to `rtsp://127.0.0.1:8554/simStream0` by running `export SIM_RTSP_STREAM=rtsp://127.0.0.1:8554/simStream0`.
+
+3. set `MOTION_BASED_STREAMING` environment variable to `FALSE` by running`export MOTION_BASED_STREAMING=FALSE`.
+
+4. Build or run edge process with 
+```
+cargo build --features simulated-rtsp-stream -- -c <path to config file>
+```
+
+or
+
+```
+cargo run --features simulated-rtsp-stream -- -c <path to config file>
+```
+
 ### Logging
 
 - [Async Rust Logging Documentation](https://crates.io/crates/tracing)
@@ -115,6 +133,8 @@ See https://docs.rs/tracing/latest/tracing/struct.Level.html for more details.
 
 Set `LOG_SYNC` environment variable to `TRUE` if you want to enable the log sync feature(`export LOG_SYNC=TRUE`). The default value is `FALSE`. Also make sure `PRINT_LOGS_TO_TERMINAL` environment variable is unset. Log sync only happens for logs written to local log files - log sync will not sync logs printed to terminal. All logs from the edge process will be published to AWS CloudWatch if the value is set to `TRUE`.
 
+
+
 ### Formatter
 
 This project uses the `Rustfmt` tool to format all rust files.  IDEs can be configured to format on save or you can format all files in the project by running the `cargo fmt` command.
@@ -135,6 +155,8 @@ This crate contains all rust crates related to building the edge process client.
 - `kvs-client` is a wrapper over `aws-sdk-kinesisvideo`, `aws-sdk-kinesisvideosignaling`, and `aws-sigv4` which allows the edge process to communicate with AWS KVS.
 - `event-processor` is a wrapper over `quickxml_to_serde` which allows the edge process to process events received from Onvif metadata stream
 - `video-analytics-client` is a wrapper over `aws-sdk-apigateway`, `aws-sigv4`, and `reqwest` which allows the edge process to send AI events to the video analytics guidance cloud (API GW deployed from VideoAnalyticsVideoLogisticsCDK).
+- `webrtc-client` enables the edge process for peer to peer livestream. 
+
 
 Code Organization: TBD.
 

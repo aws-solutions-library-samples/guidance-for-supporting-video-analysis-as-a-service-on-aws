@@ -60,3 +60,4 @@ hex.workspace = true
 config = []
 command = []
 ip-discovery = []
+simulated-rtsp-stream = []
