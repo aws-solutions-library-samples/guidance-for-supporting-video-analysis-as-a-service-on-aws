@@ -18,21 +18,26 @@ The core of our asynchronous operations is implemented in `video_analytics_async
 sequenceDiagram
     participant Client
     participant API Gateway
+    participant Lambda Proxy
     participant DynamoDB
     participant DDB Stream
-    participant Lambda
+    participant Trigger Lambda
     participant Step Functions
 
     Client->>API Gateway: POST /resource
-    API Gateway->>DynamoDB: Create Item
-    Note over DynamoDB: {<br/>jobId: uuid,<br/>status: PENDING,<br/>metadata: {...},<br/>timestamp: now<br/>}
-    DynamoDB-->>API Gateway: Success
+    API Gateway->>Lambda Proxy: Forward Request
+    Lambda Proxy->>DynamoDB: Create Item
+    Note over DynamoDB: {<br/>jobId: uuid,<br/>status: PENDING,<br/>metadata: {...},<br/>timestamp: now<br/>partitionKey: value,<br/>sortKey: value<br/>}
+    DynamoDB-->>Lambda Proxy: Success
+    Lambda Proxy-->>API Gateway: Success
     API Gateway-->>Client: 200 Accepted + JobId
     
-    DynamoDB->>DDB Stream: Stream Event
-    DDB Stream->>Lambda: Invoke
-    Lambda->>Step Functions: Start Execution
-    Note over Step Functions: Using configured<br/> workflow state machine ID
+    DynamoDB->>DDB Stream: Stream Event 
+    DDB Stream->>Trigger Lambda: Invoke TriggerStepFunctionLambda
+    Note over Trigger Lambda: Processes batch of<br/>up to 10 records
+    
+    Trigger Lambda->>Step Functions: StartExecution
+    Note over Step Functions: Using configured<br/>workflow state machine:<br/>- Normal workflow<br/>- Delete workflow<br/>- Finalize workflow
     
     Step Functions->>DynamoDB: Update Status
     Note over DynamoDB: {<br/>status: IN_PROGRESS,<br/>stateMachineId: "workflow-id"<br/>}
@@ -42,9 +47,11 @@ sequenceDiagram
     Step Functions->>DynamoDB: Update Final Status
     Note over DynamoDB: {<br/>status: COMPLETED/FAILED,<br/>result: {...}<br/>}
     
-    Client->>API Gateway: GET /resource/status/{taskId}
-    API Gateway->>DynamoDB: Get Item
-    DynamoDB-->>API Gateway: Full Task State
+    Client->>API Gateway: GET /resource/status/{jobId}
+    API Gateway->>Lambda Proxy: Forward Request
+    Lambda Proxy->>DynamoDB: Get Item
+    DynamoDB-->>Lambda Proxy: Full Task State
+    Lambda Proxy-->>API Gateway: Status Response
     API Gateway-->>Client: Status + Results
 ```
 
