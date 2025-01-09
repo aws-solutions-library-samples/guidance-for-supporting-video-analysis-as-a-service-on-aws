@@ -98,6 +98,11 @@ dependencies {
     // API Gateway dependencies
     implementation 'software.amazon.awssdk:apigateway:2.20.+' // For REST API Gateway
     implementation 'software.amazon.awssdk:apigatewayv2:2.20.+' // For HTTP/WebSocket API Gateway
+
+    // X-Ray tracing
+    implementation platform('com.amazonaws:aws-xray-recorder-sdk-bom:2.18.0')
+    implementation 'com.amazonaws:aws-xray-recorder-sdk-core:2.18.0'
+    implementation 'com.amazonaws:aws-xray-recorder-sdk-aws-sdk-v2:2.18.0'
 }
 
 shadowJar {
@@ -107,6 +112,7 @@ shadowJar {
     minimize {
         exclude(dependency('commons-logging:commons-logging:1.3.4'))
         exclude(dependency('software.amazon.awssdk:dynamodb-enhanced:2.20.26'))
+        exclude(dependency('org.openapitools:jackson-databind-nullable:0.2.6'))
     }
     // Exclude dependencies that are available in the Lambda runtime
     // exclude 'org/apache/log4j/**'

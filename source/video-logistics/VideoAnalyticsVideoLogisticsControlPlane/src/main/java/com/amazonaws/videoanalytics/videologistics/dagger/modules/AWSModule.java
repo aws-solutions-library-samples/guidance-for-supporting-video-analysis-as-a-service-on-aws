@@ -1,36 +1,38 @@
 package com.amazonaws.videoanalytics.videologistics.dagger.modules;
 
+import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.CREDENTIALS_PROVIDER;
+import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.HTTP_CLIENT;
+import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.OPENSEARCH_INTERCEPTOR_NAME;
+import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.OPENSEARCH_SERVICE_NAME;
+import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.OPENSEARCH_SIGNER_NAME;
+import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.REGION_NAME;
+
+import javax.inject.Named;
+import javax.inject.Singleton;
+
+import org.apache.http.HttpRequestInterceptor;
+
+import com.amazonaws.videoanalytics.videologistics.client.s3.S3Proxy;
+import com.amazonaws.xray.interceptors.TracingInterceptor;
+
+import dagger.Module;
 import dagger.Provides;
+import io.github.acm19.aws.interceptor.http.AwsRequestSigningApacheInterceptor;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.core.client.config.ClientOverrideConfiguration;
 import software.amazon.awssdk.core.retry.RetryMode;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
-import software.amazon.awssdk.http.apache.ApacheHttpClient;
 import software.amazon.awssdk.http.SdkHttpClient;
-import software.amazon.awssdk.regions.Region;
-import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
-import software.amazon.awssdk.services.kinesisvideo.KinesisVideoClient;
-import software.amazon.awssdk.services.kinesis.KinesisClient;
-import software.amazon.awssdk.services.s3.presigner.S3Presigner;
-import software.amazon.awssdk.services.apigateway.ApiGatewayClient;
+import software.amazon.awssdk.http.apache.ApacheHttpClient;
 import software.amazon.awssdk.http.auth.aws.signer.AwsV4HttpSigner;
-import org.apache.http.HttpRequestInterceptor;
-import io.github.acm19.aws.interceptor.http.AwsRequestSigningApacheInterceptor;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.apigateway.ApiGatewayClient;
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+import software.amazon.awssdk.services.kinesis.KinesisClient;
+import software.amazon.awssdk.services.kinesisvideo.KinesisVideoClient;
 import software.amazon.awssdk.services.s3.S3Client;
-import com.amazonaws.videoanalytics.videologistics.client.s3.S3Proxy;
-
-import javax.inject.Named;
-import javax.inject.Singleton;
-
-import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.CREDENTIALS_PROVIDER;
-import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.HTTP_CLIENT;
-import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.REGION_NAME;
-import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.OPENSEARCH_INTERCEPTOR_NAME;
-import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.OPENSEARCH_SIGNER_NAME;
-import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.OPENSEARCH_SERVICE_NAME;
-
-import dagger.Module;
+import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 
 @Module
 public class AWSModule {
@@ -72,7 +74,8 @@ public class AWSModule {
                 .httpClient(sdkHttpClient)
                 .credentialsProvider(credentialsProvider)
                 .overrideConfiguration(ClientOverrideConfiguration.builder()
-                        .retryPolicy(RetryMode.ADAPTIVE)
+                        .retryStrategy(RetryMode.ADAPTIVE_V2)
+                        .addExecutionInterceptor(new TracingInterceptor())
                         .build())
                 .build();
     }
@@ -95,7 +98,7 @@ public class AWSModule {
                 .region(Region.of(region))
                 .httpClient(sdkHttpClient)
                 .overrideConfiguration(ClientOverrideConfiguration.builder()
-                        .retryPolicy(RetryMode.ADAPTIVE)
+                        .retryStrategy(RetryMode.ADAPTIVE_V2)
                         .build())
                 .build();
     }
@@ -112,7 +115,7 @@ public class AWSModule {
             .region(Region.of(region))
             .credentialsProvider(credentialsProvider)
             .overrideConfiguration(ClientOverrideConfiguration.builder()
-                    .retryPolicy(RetryMode.ADAPTIVE)
+                    .retryStrategy(RetryMode.ADAPTIVE_V2)
                     .build())
             .build();
     }
@@ -155,7 +158,7 @@ public class AWSModule {
                 .credentialsProvider(credentialsProvider)
                 .region(Region.of(region))
                 .overrideConfiguration(ClientOverrideConfiguration.builder()
-                        .retryPolicy(RetryMode.ADAPTIVE)
+                        .retryStrategy(RetryMode.ADAPTIVE_V2)
                         .build())
                 .build();
     }

@@ -6,20 +6,22 @@ import javax.inject.Singleton;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyticsServiceLambdaConstants.CREDENTIALS_PROVIDER;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyticsServiceLambdaConstants.HTTP_CLIENT;
 import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyticsServiceLambdaConstants.REGION_NAME;
+import com.amazonaws.xray.interceptors.TracingInterceptor;
 
 import dagger.Module;
 import dagger.Provides;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
+import software.amazon.awssdk.core.client.config.ClientOverrideConfiguration;
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.http.SdkHttpClient;
 import software.amazon.awssdk.http.apache.ApacheHttpClient;
 import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.apigateway.ApiGatewayClient;
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.iot.IotClient;
 import software.amazon.awssdk.services.iotdataplane.IotDataPlaneClient;
-import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
-import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.sfn.SfnClient;
-import software.amazon.awssdk.services.apigateway.ApiGatewayClient;
 
 /*
     Module to maintain singletons for AWS service dependencies
@@ -71,6 +73,10 @@ public class AWSModule {
         return DynamoDbClient.builder()
                 .httpClient(sdkHttpClient)
                 .region(Region.of(region))
+                .overrideConfiguration(ClientOverrideConfiguration.builder()
+                    .addExecutionInterceptor(new TracingInterceptor())
+                    .build()
+                )
                 .build();
     }
 
