@@ -116,6 +116,11 @@ dependencies {
     testImplementation 'org.mockito:mockito-inline:3.12.4'
 
     implementation 'javax.validation:validation-api:2.0.1.Final'
+
+    // X-Ray tracing
+    implementation platform('com.amazonaws:aws-xray-recorder-sdk-bom:2.18.0')
+    implementation 'com.amazonaws:aws-xray-recorder-sdk-core:2.18.0'
+    implementation 'com.amazonaws:aws-xray-recorder-sdk-aws-sdk-v2:2.18.0'
 }
 
 test {
@@ -198,6 +203,7 @@ shadowJar {
         exclude(dependency('org.opensearch:.*'))
         exclude(dependency('org.opensearch.client:.*'))
         exclude(dependency('org.opensearch.plugin:.*'))
+        exclude(dependency('org.openapitools:jackson-databind-nullable:0.2.6'))
     }
     outputs.upToDateWhen { false }
     dependsOn classes
