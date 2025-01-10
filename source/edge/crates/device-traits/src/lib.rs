@@ -6,6 +6,7 @@ pub mod command;
 pub mod connections;
 pub mod merge;
 
+pub(crate) mod constants;
 /// Util to track state information globally.
 pub mod state;
 

@@ -1,3 +1,9 @@
+#[cfg(feature = "sd-card-catchup")]
+use crate::catchup_service::CatchupService;
+#[cfg(feature = "sd-card-catchup")]
+use crate::constants::MAXIMUM_MEDIA_BUFFER_SIZE;
+#[cfg(feature = "sd-card-catchup")]
+use crate::data_storage::media_storage::MediaMetadataStorage;
 use crate::event_processor::get_event_processor_client;
 use crate::hybrid_streaming_service::HybridStreamingService;
 use crate::metadata_streaming_pipeline::Pipeline as EventPipeline;
@@ -14,7 +20,7 @@ use std::time::Duration;
 use streaming_traits::{StreamUriConfiguration, StreamingPipeline, StreamingServiceConfigurations};
 use tokio::task::JoinHandle as TokioJoinHandle;
 use tokio::time::sleep as tokio_sleep;
-use tracing::{debug, error};
+use tracing::{debug, error, warn};
 use video_analytics_client::video_analytics_client::VideoAnalyticsClient;
 
 /// Create streaming service.
@@ -27,9 +33,9 @@ pub fn create_streaming_service(
         .expect("Failed to create streaming service.")
 }
 
+#[cfg(not(feature = "sd-card-catchup"))]
 // Get iot info from the global messaging service and
 // the stream_uri_configuration to generate PipelineConfigurations.
-#[cfg(not(feature = "sd-card-catchup"))]
 fn get_pipeline_config(
     stream_uri_configuration: StreamUriConfiguration,
 ) -> Result<StreamingServiceConfigurations, ChannelUtilError> {
@@ -95,6 +101,7 @@ pub async fn ensure_streaming_pipeline_in_correct_state(
     }
 }
 
+#[cfg(not(feature = "sd-card-catchup"))]
 /// Setup AI Event Ingestion pipeline for edge process.  Will send messages for publish to Video Analytics Cloud.
 pub async fn initiate_event_ingestion(
     stream_uri_config: StreamUriConfiguration,
@@ -120,6 +127,7 @@ pub async fn initiate_event_ingestion(
             tokio_sleep(Duration::from_millis(250)).await;
         }
     });
+
     // Need to have this thread inside of the tokio runtime since we have a tokio async function
     let rt = tokio::runtime::Runtime::new().unwrap();
     let video_analytics_client = VideoAnalyticsClient::from_conf().await;
@@ -213,6 +221,152 @@ pub async fn initiate_event_ingestion(
     Ok((thread_join_handle, tokio_join_handle))
 }
 
+/// Setup AI Event Ingestion pipeline for edge process.  Will send messages for publish to Video Analytics Cloud.
+/// When device has no connection to cloud, store AI events on SD card if sd-card-catchup feature is enabled
+#[cfg(feature = "sd-card-catchup")]
+pub async fn initiate_event_ingestion(
+    stream_uri_config: StreamUriConfiguration,
+    motion_based_streaming_tx: SyncSender<String>,
+) -> Result<(ThreadJoinHandle<()>, TokioJoinHandle<()>), Box<dyn Error>> {
+    let shared_buffer_for_ai_events = Arc::new((Mutex::new(VecDeque::new()), Condvar::new()));
+    let buffer = shared_buffer_for_ai_events.clone();
+    let mut event_pipeline = EventPipeline::new(buffer).await?;
+
+    // Run gstreamer pipeline to consume AI events from RTSP server - metadata stream.
+    let stream_uri_config_clone = stream_uri_config.clone();
+    let tokio_join_handle = tokio::spawn(async move {
+        event_pipeline
+            .create_pipeline(stream_uri_config_clone)
+            .await
+            .expect("Metadata Streaming Pipeline creation failed!");
+        loop {
+            ensure_streaming_pipeline_in_correct_state(
+                &mut event_pipeline,
+                StateManager::get_state(),
+            )
+            .await;
+            tokio_sleep(Duration::from_millis(250)).await;
+        }
+    });
+
+    let streaming_configs = get_pipeline_config(stream_uri_config.clone()).unwrap();
+    let media_data_base_client = create_media_database_client(
+        &streaming_configs.local_storage_path,
+        streaming_configs.local_storage_disk_usage,
+        streaming_configs.db_path.to_owned(),
+    );
+
+    // Need to have this thread inside of the tokio runtime since we have a tokio async function
+    let rt = tokio::runtime::Runtime::new().unwrap();
+    let video_analytics_client = VideoAnalyticsClient::from_conf().await;
+    let mut iot_message_service = Box::<ServiceCommunicationManager>::default();
+    let mut _catchup_service = CatchupService::new(
+        media_data_base_client.clone(),
+        iot_message_service.get_client_id().expect("Unable to fetch client id"),
+    )
+    .await;
+    let thread_join_handle = std::thread::spawn(move || {
+        let event_processor_client = get_event_processor_client();
+        let rt = rt;
+        let mut video_analytics_client = video_analytics_client;
+        loop {
+            // Lock buffer to setup Condvar.  Poisoned mutexes cannot be recovered.
+            let buffer =
+                shared_buffer_for_ai_events.0.lock().expect("AI Events buffer mutex poisoned!");
+
+            // Condvar has timeout to prevent threads sleeping indefinitely
+            let mut buffer = match shared_buffer_for_ai_events
+                .1
+                .wait_timeout(buffer, Duration::from_millis(5000))
+            {
+                // If times out continue
+                Ok(guard_and_timout) if guard_and_timout.1.timed_out() => {
+                    continue;
+                }
+                // If Condvar is tripped return mutex guard
+                Ok(guard_and_timout) => guard_and_timout.0,
+                // Guard is poisoned, program should panic.
+                Err(_e) => panic!("Video router buffer mutex poisoned!"),
+            };
+
+            // Send messages for events in the buffer.
+            while let Some(data) = buffer.pop_front() {
+                let data_clone = data.clone();
+                match event_processor_client.get_motion_based_event(data_clone) {
+                    Ok(Some(event)) => {
+                        match motion_based_streaming_tx.try_send(event.to_string()) {
+                            Ok(_) => {
+                                debug!("Motion based event was sent");
+                                continue;
+                            }
+                            // If internet connection slow or disconnected this buffer can fill up
+                            // This is normal behavior in the real world.
+                            Err(TrySendError::Full(_)) => {
+                                debug!("Motion based event channel full.");
+                            }
+                            // If channel breaks it means the Stream service is being shutdown
+                            // or an unrecoverable error has occurred.
+                            Err(TrySendError::Disconnected(_)) => {
+                                error!("Motion based channel disconnected. Stopping Thread");
+                            }
+                        }
+                    }
+                    Ok(None) => {}
+                    Err(err) => {
+                        error!("Received invalid event! : {:?}", err);
+                        continue;
+                    }
+                }
+                let processed_event = match event_processor_client.post_process_event(data) {
+                    Ok(event) if !event.is_empty() => event,
+                    Ok(_event) => {
+                        debug!("Received an event which did not map to a payload!");
+                        continue;
+                    }
+                    Err(err) => {
+                        error!("Received invalid event! : {:?}", err);
+                        continue;
+                    }
+                };
+
+                // If the buffer is full, we store it on SD card
+                if buffer.len().ge(&MAXIMUM_MEDIA_BUFFER_SIZE) {
+                    warn!("Buffer is full");
+
+                    let _ =
+                        store_on_sd_card(media_data_base_client.clone(), processed_event.clone());
+                    continue;
+                }
+
+                // blocking on async to execute async code inside of a sync thread
+                rt.block_on(async {
+                    // Try and send message
+                    match try_send_ai_event_to_cloud(
+                        &mut video_analytics_client,
+                        iot_message_service.get_client_id().expect("Unable to fetch client id"),
+                        processed_event.clone(),
+                    )
+                    .await
+                    {
+                        Ok(_) => {
+                            debug!("Sent ai event to cloud.");
+                        }
+                        Err(e) => {
+                            error!("Failed to send ai event {:?}", e);
+                            let _ = store_on_sd_card(
+                                media_data_base_client.clone(),
+                                processed_event.clone(),
+                            );
+                        }
+                    }
+                });
+            }
+        }
+    });
+    // Return join handles
+    Ok((thread_join_handle, tokio_join_handle))
+}
+
 async fn try_send_ai_event_to_cloud(
     video_analytics_client: &mut VideoAnalyticsClient,
     client_id: String,
@@ -221,6 +375,35 @@ async fn try_send_ai_event_to_cloud(
     return video_analytics_client
         .import_media_object(client_id, processed_event.into_bytes())
         .await;
+}
+
+#[cfg(feature = "sd-card-catchup")]
+fn create_media_database_client(
+    local_storage_path: &str,
+    local_storage_disk_usage: u64,
+    db_path: Option<String>,
+) -> Arc<Mutex<MediaMetadataStorage>> {
+    let data_base_client =
+        MediaMetadataStorage::new_connection(local_storage_path, local_storage_disk_usage, db_path)
+            .expect("Error creating database connection.");
+    Arc::new(Mutex::new(data_base_client))
+}
+
+#[cfg(feature = "sd-card-catchup")]
+fn store_on_sd_card(
+    database_client: Arc<Mutex<MediaMetadataStorage>>,
+    processed_event: String,
+) -> () {
+    let mut database_lock = database_client.lock().expect("Database client is poisoned!");
+    match database_lock.save_media(processed_event) {
+        Ok(_) => {
+            debug!("Media stored in database.")
+        }
+        Err(e) => {
+            error!("Error storing media in database : {:?}", e);
+        }
+    }
+    ()
 }
 
 #[cfg(test)]

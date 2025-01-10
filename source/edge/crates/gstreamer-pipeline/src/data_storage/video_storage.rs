@@ -30,7 +30,7 @@ impl FileMetadataStorage {
     /// Instantiate FileMetadataStorage.  Storage path is the path to the directory where DB + fragments will be stored.
     pub(crate) fn new_connection(
         storage_path: &str,
-        local_storage_disk_usage_max_in_mb: Option<u64>,
+        local_storage_disk_usage_max_in_mb: u64,
         db_path: Option<String>,
     ) -> Result<FileMetadataStorage, DatabaseError> {
         // SQLite database can be set separately or default to the storage path.
@@ -67,8 +67,7 @@ impl FileMetadataStorage {
         let current_storage_disk_usage_bytes =
             get_size(storage_path).map_err(DatabaseError::FileSystemReadError)?;
         // Convert from MB to bytes.
-        let local_storage_disk_usage_max_bytes =
-            local_storage_disk_usage_max_in_mb.unwrap_or(1000) * 1_000_000_u64;
+        let local_storage_disk_usage_max_bytes = local_storage_disk_usage_max_in_mb * 1_000_000_u64;
 
         Ok(FileMetadataStorage {
             db_path,

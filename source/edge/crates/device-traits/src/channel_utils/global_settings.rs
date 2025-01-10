@@ -1,3 +1,4 @@
+use crate::constants::LOCAL_STORAGE_DEFAULT;
 use serde_derive::Deserialize;
 
 /// Global configuration struct which can be accessed anywhere in edge process
@@ -55,9 +56,17 @@ pub struct Configurations {
     #[serde(alias = "dir_path")]
     pub dir: String,
     /// local storage path for sd card
+    #[serde(alias = "local_storage_path")]
     pub local_storage_path: String,
-    /// optional db_path. Otherwise will just store SQLite DB in local_storage_path
+    /// db_path. Otherwise will just store SQLite DB in local_storage_path
+    #[serde(alias = "db_dir_path")]
     pub db_path: Option<String>,
-    /// option local storage disk usage for SD card
-    pub local_storage_disk_usage: Option<u64>,
+    /// local storage disk usage for SD card
+    #[serde(default = "local_storage_disk_usage_default", alias = "local_storage_disk_usage")]
+    pub local_storage_disk_usage: u64,
+}
+
+#[cfg(feature = "sd-card-catchup")]
+fn local_storage_disk_usage_default() -> u64 {
+    LOCAL_STORAGE_DEFAULT
 }
