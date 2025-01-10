@@ -10,15 +10,6 @@ exports[`WorkflowStack Snapshot test 1`] = `
     },
   },
   "Resources": {
-    "RegisterDeviceWorkflowDataForwarderLambdaLogGroup2C7FBF4F": {
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "LogGroupName": "KvsCreateLambdaLogGroup",
-        "RetentionInDays": 3653,
-      },
-      "Type": "AWS::Logs::LogGroup",
-      "UpdateReplacePolicy": "Retain",
-    },
     "RegisterDeviceWorkflowFailAndCleanupFvlRegHandlerLogGroupFB8AF6F7": {
       "DeletionPolicy": "Retain",
       "Properties": {
@@ -85,25 +76,6 @@ exports[`WorkflowStack Snapshot test 1`] = `
                         "Arn",
                       ],
                     },
-                  ],
-                },
-                {
-                  "Action": "sts:AssumeRole",
-                  "Effect": "Allow",
-                  "Resource": [
-                    {
-                      "Fn::Join": [
-                        "",
-                        [
-                          "arn:",
-                          {
-                            "Ref": "AWS::Partition",
-                          },
-                          ":iam::*:role/CrossAccountRoleForStartFVLRegisterDevice",
-                        ],
-                      ],
-                    },
-                    "arn:aws:iam::*:role/CrossAccountRoleForStartFVLRegisterDevice-iad",
                   ],
                 },
                 {
@@ -281,25 +253,6 @@ exports[`WorkflowStack Snapshot test 1`] = `
                   ],
                 },
                 {
-                  "Action": "sts:AssumeRole",
-                  "Effect": "Allow",
-                  "Resource": [
-                    {
-                      "Fn::Join": [
-                        "",
-                        [
-                          "arn:",
-                          {
-                            "Ref": "AWS::Partition",
-                          },
-                          ":iam::*:role/CrossAccountRoleForStartFVLRegisterDevice",
-                        ],
-                      ],
-                    },
-                    "arn:aws:iam::*:role/CrossAccountRoleForStartFVLRegisterDevice-iad",
-                  ],
-                },
-                {
                   "Action": [
                     "kinesisvideo:CreateStream",
                     "kinesisvideo:CreateSignalingChannel",
@@ -402,7 +355,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
         "Handler": "com.amazonaws.videoanalytics.videologistics.workflow.KVSResourceCreateLambda::handleRequest",
         "LoggingConfig": {
           "LogGroup": {
-            "Ref": "RegisterDeviceWorkflowDataForwarderLambdaLogGroup2C7FBF4F",
+            "Ref": "RegisterDeviceWorkflowKvsCreateLambdaLogGroup1A23E77D",
           },
         },
         "MemorySize": 2048,
@@ -419,6 +372,15 @@ exports[`WorkflowStack Snapshot test 1`] = `
         },
       },
       "Type": "AWS::Lambda::Function",
+    },
+    "RegisterDeviceWorkflowKvsCreateLambdaLogGroup1A23E77D": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "LogGroupName": "KvsCreateLambdaLogGroup",
+        "RetentionInDays": 3653,
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
     },
     "RegisterDeviceWorkflowVLRegisterDeviceStateMachineA6299E55": {
       "DeletionPolicy": "Delete",

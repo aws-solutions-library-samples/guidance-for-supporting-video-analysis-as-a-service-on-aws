@@ -86,11 +86,6 @@ class RegisterDeviceWorkflow extends VideoAnalyticsAsyncWorkflowResource {
     resources: ['arn:*:kms:*:*:key/*']
   });
 
-  private crossAccountAssumeRolePolicy = new PolicyStatement({
-    effect: Effect.ALLOW,
-    actions: ['sts:AssumeRole']
-  });
-
   private kvsRole: Role;
   private failureHandlerRole: Role;
   private region: AWSRegion;
@@ -99,24 +94,11 @@ class RegisterDeviceWorkflow extends VideoAnalyticsAsyncWorkflowResource {
 
   constructor(scope: Construct, id: string, props: WorkflowStackProps) {
     super(scope, id);
-    this.crossAccountAssumeRolePolicy.addResources(
-      Arn.format(
-        {
-          service: 'iam',
-          region: '',
-          account: '*',
-          resource: 'role',
-          resourceName: 'CrossAccountRoleForStartFVLRegisterDevice'
-        },
-        Stack.of(this)
-      )
-    );
     this.region = props.region;
     this.airportCode = AWSRegionUtils.getAirportCode(this.region).toLowerCase();
 
     this.kvsRole = createLambdaRole(this, 'KVSStreamCreatorLambdaRole', [
       this.fvlRegisterDeviceJobTablePolicy,
-      this.crossAccountAssumeRolePolicy,
       this.kvsResourceCreationPolicy,
       this.kmsPolicy,
       this.kmsEncryptionPolicy
@@ -124,7 +106,6 @@ class RegisterDeviceWorkflow extends VideoAnalyticsAsyncWorkflowResource {
 
     this.failureHandlerRole = createLambdaRole(this, 'FailAndCleanupFvlRegHandlerRole', [
       this.fvlRegisterDeviceJobTableCleanupPolicy,
-      this.crossAccountAssumeRolePolicy,
       this.kvsResourceDeletionPolicy,
       this.kmsPolicy
     ]);
@@ -149,7 +130,7 @@ class RegisterDeviceWorkflow extends VideoAnalyticsAsyncWorkflowResource {
         ...this.ddbClientSideEncryptionEnvironment
       },
       timeout: Duration.minutes(12),
-      logGroup: new LogGroup(this, 'DataForwarderLambdaLogGroup', {
+      logGroup: new LogGroup(this, 'KvsCreateLambdaLogGroup', {
         retention: RetentionDays.TEN_YEARS,
         logGroupName: 'KvsCreateLambdaLogGroup'
       })
@@ -237,74 +218,6 @@ class RegisterDeviceWorkflow extends VideoAnalyticsAsyncWorkflowResource {
     if (encryptionKey !== undefined) {
       this.kmsPolicy.addResources(encryptionKey.keyArn);
     }
-    this.crossAccountAssumeRolePolicy.addResources(
-      `arn:aws:iam::*:role/CrossAccountRoleForStartFVLRegisterDevice-${this.airportCode}`
-    );
-  }
-}
-
-class ModelSchema extends VideoAnalyticsAsyncWorkflowResource {
-  partitionKeyName = 'CustomerAccountId';
-  sortKeyName = 'ModelSchemaId';
-  name = 'ModelSchemaTable';
-  private statement = new PolicyStatement({
-    effect: Effect.ALLOW,
-    actions: [
-      'dynamodb:GetRecords',
-      'dynamodb:GetItem',
-      'dynamodb:Query',
-      'dynamodb:PutItem',
-      'dynamodb:UpdateItem'
-    ],
-    resources: [Arn.format({ 
-      service: 'dynamodb',
-      resource: 'table',
-      resourceName: 'ModelSchemaTable'
-    }, Stack.of(this))]
-  });
-  private role: Role;
-  private ddbClientSideEncryptionEnvironment: { [key: string]: string };
-
-  constructor(scope: Construct, id: string, props: WorkflowStackProps) {
-    super(scope, id);
-    this.role = createLambdaRole(this, 'ModelSchemaRole', [
-      this.statement
-    ]);
-  }
-
-  createStepFunction(): void {
-    const stepFunctionLambda = new Function(this, 'ModelSchemaLambda', {
-      // TODO: Update lambda asset path once code compiled jar is available
-      code: Code.fromAsset(LAMBDA_ASSET_PATH),
-      description: 'Lambda responsible for invocation of StepFunction',
-      runtime: Runtime.JAVA_17,
-      tracing: Tracing.ACTIVE,
-      handler: 'com.amazon.awsvideoanalyticsvlcontrolplane.lambda.KVSResourceCreateLambda::handleRequest',
-      memorySize: 2048,
-      role: this.role,
-      environment: {
-        tableName: this.name,
-        ...this.ddbClientSideEncryptionEnvironment
-      },
-      timeout: Duration.minutes(12),
-      logGroup: new LogGroup(this, 'ModelSchemaLambdaLogGroup', {
-        retention: RetentionDays.TEN_YEARS,
-        logGroupName: 'ModelSchemaLambdaLogGroup'
-      })
-    });
-    const finalStatus = new LambdaInvoke(this, 'ModelSchemaIndexTemplateCreate', {
-      lambdaFunction: stepFunctionLambda
-    });
-
-    const simpleStateMachine = new StateMachine(this, 'ModelSchemaStateMachine', {
-      definition: finalStatus,
-      tracingEnabled: true
-    });
-    this.stateMachine = simpleStateMachine;
-  }
-
-  postWorkflowCreationCallback() {
-    this.statement.addResources(this.workflow.table.tableArn);
   }
 }
 
