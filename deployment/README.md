@@ -47,7 +47,7 @@ sequenceDiagram
     Step Functions->>DynamoDB: Update Final Status
     Note over DynamoDB: {<br/>status: COMPLETED/FAILED,<br/>result: {...}<br/>}
     
-    Client->>API Gateway: GET /resource/status/{jobId}
+    Client->>API Gateway: POST /resource/status/{jobId}
     API Gateway->>Lambda Proxy: Forward Request
     Lambda Proxy->>DynamoDB: Get Item
     DynamoDB-->>Lambda Proxy: Full Task State
@@ -118,7 +118,6 @@ The Video Logistics component manages video processing, streaming, and analytics
 - **Workflow Stack** (`DeviceManagementWorkflowStack`)
   - Step Functions workflows for device management
   - Device registration flow
-  - Configuration update processes
 
 - **Service Stack** (`DeviceManagementServiceStack`)
   - Core API endpoints
