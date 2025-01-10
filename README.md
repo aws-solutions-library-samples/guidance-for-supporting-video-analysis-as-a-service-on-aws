@@ -114,48 +114,113 @@ This deployment has been tested on macOS and Linux operating systems. Follow the
      npm --version
      ```
 
-3. **GStreamer Libraries**
-   GStreamer is required for running and testing the edge binary for video processing.
+3. **GStreamer and KVS Plugin Setup**
+   Amazon Kinesis Video Streams (KVS) GStreamer Plugin is required for running and testing the edge binary for video processing.
+   
+   For detailed information, refer to:
+   - [KVS Gstreamer Plugin Producer SDK Documentation](https://github.com/awslabs/amazon-kinesis-video-streams-producer-sdk-cpp/blob/master/README.md)
+   - [Linux Setup Guide](https://github.com/awslabs/amazon-kinesis-video-streams-producer-sdk-cpp/blob/master/docs/linux.md)
+   - [macOS Setup Guide](https://github.com/awslabs/amazon-kinesis-video-streams-producer-sdk-cpp/blob/master/docs/macos.md)
 
-   - For macOS:
-     ```bash
-     # Using Homebrew
-     brew install gstreamer gst-plugins-base gst-plugins-good gst-plugins-bad gst-plugins-ugly gst-libav
-     
-     # Verify installation
-     gst-launch-1.0 --version
-     ```
+   1. **Install GStreamer Base Requirements**
+      - For macOS:
+        ```bash
+        brew install pkg-config openssl cmake gstreamer gst-plugins-base \
+          gst-plugins-good gst-plugins-bad gst-plugins-ugly log4cplus gst-libav
+        ```
 
-   - For Ubuntu/Debian:
-     ```bash
-     sudo apt update
-     sudo apt install -y \
-         gstreamer1.0-tools \
-         gstreamer1.0-plugins-base \
-         gstreamer1.0-plugins-good \
-         gstreamer1.0-plugins-bad \
-         gstreamer1.0-plugins-ugly \
-         gstreamer1.0-libav
-     
-     # Verify installation
-     gst-launch-1.0 --version
-     ```
+      - For Ubuntu/Debian:
+        ```bash
+        # Install build dependencies
+        sudo apt-get install -y cmake m4 git build-essential
 
-   - For Amazon Linux/RHEL/CentOS:
-     ```bash
-     sudo yum install -y \
-         gstreamer1 \
-         gstreamer1-plugins-base \
-         gstreamer1-plugins-good \
-         gstreamer1-plugins-bad-free \
-         gstreamer1-plugins-ugly-free \
-         gstreamer1-libav
-     
-     # Verify installation
-     gst-launch-1.0 --version
-     ```
+        # Install GStreamer and development dependencies
+        sudo apt-get install -y \
+          libssl-dev libcurl4-openssl-dev liblog4cplus-dev \
+          libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev \
+          gstreamer1.0-plugins-base-apps gstreamer1.0-plugins-bad \
+          gstreamer1.0-plugins-good gstreamer1.0-plugins-ugly \
+          gstreamer1.0-tools
+        ```
 
-   Note: Some GStreamer plugins might require additional dependencies or licenses depending on your use case.
+      - For RHEL/CentOS:
+        ```bash
+        # Install build dependencies
+        sudo yum install -y cmake git m4
+        sudo yum groupinstall -y 'Development Tools'
+
+        # Install GStreamer and development dependencies
+        sudo yum install -y \
+          openssl-devel libcurl-devel log4cplus-devel \
+          gstreamer1-devel gstreamer1-plugins-base-devel \
+          gstreamer1-plugins-good gstreamer1-plugins-bad-free \
+          gstreamer1-plugins-ugly-free gstreamer1-tools
+        ```
+
+   2. **Build and Install KVS GStreamer Plugin**
+      ```bash
+      # Clone the KVS Producer SDK
+      git clone https://github.com/awslabs/amazon-kinesis-video-streams-producer-sdk-cpp.git
+      cd amazon-kinesis-video-streams-producer-sdk-cpp
+
+      # Create and enter build directory
+      mkdir -p build
+      cd build
+
+      # Configure with GStreamer plugin enabled
+      cmake .. -DBUILD_GSTREAMER_PLUGIN=ON
+
+      # Build the plugin
+      make
+      ```
+
+   3. **Configure Environment**
+      Add these to your shell profile (~/.bashrc, ~/.zshrc, etc.):
+      ```bash
+      # Set AWS credentials
+      export AWS_ACCESS_KEY_ID=YourAccessKeyId
+      export AWS_SECRET_ACCESS_KEY=YourSecretAccessKey
+      # Optional: Set region and session token if needed
+      export AWS_DEFAULT_REGION=us-west-2  # Change to your desired region
+      export AWS_SESSION_TOKEN=YourSessionToken  # If using temporary credentials
+
+      # Set KVS GStreamer plugin paths
+      # Note: Replace /path/to/kvs-producer-sdk with the actual path
+      export GST_PLUGIN_PATH=/path/to/kvs-producer-sdk/build
+      export LD_LIBRARY_PATH=/path/to/kvs-producer-sdk/open-source/local/lib
+      ```
+
+   4. **Verify Installation**
+      ```bash
+      # Verify GStreamer base installation
+      gst-launch-1.0 --version
+
+      # Verify KVS plugin installation
+      gst-inspect-1.0 kvssink
+      ```
+
+      Expected output for kvssink should show:
+      ```
+      Factory Details:
+        Rank                     primary + 10 (266)
+        Long-name                KVS Sink
+        Klass                    Sink/Video/Network
+        Description              GStreamer AWS KVS plugin
+      ```
+
+      The device monitor will show available video devices:
+      ```
+      Probing devices...
+
+      Device found:
+          name  : H264 USB Camera  # Your device name may vary
+      ```
+
+   Note: If you get "No such element or plugin 'kvssink'", check that:
+   - The build completed successfully
+   - GST_PLUGIN_PATH is set correctly
+   - You're running the command from the correct directory
+   - All required dependencies were installed successfully
 
 4. **AWS CDK CLI**
    ```bash
@@ -258,49 +323,7 @@ The deployment requires an AWS account with permissions to create and manage the
 
 ## Deployment Steps (required)
 
-### Project Structure Overview
-
-The deployment infrastructure is organized into two main components and follows this structure:
-
-```
-deployment/
-├── package.json
-├── package-lock.json
-├── tsconfig.json
-├── node_modules/
-│   ├── aws-cdk-lib/
-│   ├── constructs/
-│   └── ... (other shared dependencies)
-├── common-constructs/
-│   └── VideoAnalyticsCommonConstruct/
-│       ├── package.json
-│       ├── tsconfig.json
-│       ├── lib/
-│       │   └── ... (TypeScript Common constructs)
-│       ├── node_modules/
-│       │   └── ... (package-specific dependencies)
-│       └── .gitignore
-├── device-management-cdk/
-│   └── VideoAnalyticsDeviceManagementCDK/
-│       ├── package.json
-│       ├── tsconfig.json
-│       ├── lib/
-│       │   └── ... (TypeScript Device Management CDK)
-│       ├── node_modules/
-│       │   └── ... (package-specific dependencies)
-│       ├── cdk.json
-│       └── .gitignore
-└── video-logistics-cdk/
-    └── VideoAnalyticsVideoLogisticsCDK/
-        ├── package.json
-        ├── tsconfig.json
-        ├── lib/
-        │   └── ... (TypeScript Video Logistics CDK)
-        ├── node_modules/
-        │   └── ... (package-specific dependencies)
-        ├── cdk.json
-        └── .gitignore
-```
+> For detailed deployment instructions and build steps, see the [deployment/README.md](deployment/README.md).
 
 1. **Device Management (deployment/device-management-cdk/)**
    - Handles device registration, management, and monitoring
@@ -361,7 +384,7 @@ The stack will use variables in this order:
    npm install
    ```
 
-4. **Build Common Constructs**
+4. **Build Common Constructs(Used for both Device Management and Video Logistics)**
    ```bash
    cd common-constructs/VideoAnalyticsCommonConstruct
    npm install
@@ -379,6 +402,9 @@ The stack will use variables in this order:
    # Build and synthesize CloudFormation
    npm run build
    cdk synth
+
+   # Bootstrap CDK if needed(1st time only)
+   cdk bootstrap
    
    # Deploy stacks in order
    cdk deploy DeviceManagementBootstrapStack
@@ -397,6 +423,9 @@ The stack will use variables in this order:
    # Build and synthesize CloudFormation
    npm run build
    cdk synth
+
+   # Bootstrap CDK if needed(1st time only)
+   cdk bootstrap
    
    # Deploy stacks in order
    cdk deploy VideoLogisticsBootstrapStack
@@ -476,7 +505,6 @@ Check for the following stacks with status "CREATE_COMPLETE":
      --stack-name VideoLogisticsBootstrapStack \
      --query 'Stacks[0].{Name:StackName,Status:StackStatus,Outputs:Outputs}'
    ```
-
 2. **Core Infrastructure**
    - Stack name: `VideoLogisticsOpensearchStack`
    - Stack name: `VideoLogisticsTimelineStack`

@@ -13,7 +13,7 @@ const account =
   "YOUR_DEFAULT_ACCOUNT";
 const region = (process.env.CDK_DEPLOY_REGION ||
   process.env.CDK_DEFAULT_REGION ||
-  "us-east-1") as AWSRegion;
+  "us-west-2") as AWSRegion;
 
 
 const bootstrapStack = new BootstrapStack(app, "DeviceManagementBootstrapStack", {
