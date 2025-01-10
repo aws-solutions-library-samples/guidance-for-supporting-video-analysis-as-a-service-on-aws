@@ -197,9 +197,6 @@ This deployment has been tested on macOS and Linux operating systems. Follow the
 
       # Verify KVS plugin installation
       gst-inspect-1.0 kvssink
-
-      # List available media devices
-      gst-device-monitor-1.0
       ```
 
       Expected output for kvssink should show:
