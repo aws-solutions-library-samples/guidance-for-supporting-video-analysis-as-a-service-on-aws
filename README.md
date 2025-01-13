@@ -38,7 +38,16 @@ List the top-level sections of the README template, along with a hyperlink to th
     - **What problem does this Guidance solve?**
 
 2. Include the architecture diagram image, as well as the steps explaining the high-level overview and flow of the architecture. 
-    - To add a screenshot, create an ‘assets/images’ folder in your repository and upload your screenshot to it. Then, using the relative file path, add it to your README. 
+    - To add a screenshot, create an 'assets/images' folder in your repository and upload your screenshot to it. Then, using the relative file path, add it to your README. 
+
+For detailed information about the APIs and components:
+- See [source/README.md](source/README.md) for comprehensive documentation of API actions, component overview, and build instructions
+- Prerequisites:
+  - Edge device with ONVIF-compatible camera must be set up first
+  - Device registration required before using any other operations
+- API Design:
+  - All endpoints use POST method through AWS Lambda proxy integration
+  - APIs follow an async workflow pattern with status check endpoints for operations
 
 ### Cost ( required )
 
