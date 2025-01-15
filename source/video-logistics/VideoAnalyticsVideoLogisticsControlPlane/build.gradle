@@ -71,12 +71,10 @@ dependencies {
 
     implementation 'com.google.dagger:dagger-compiler:2.48'
     implementation 'com.google.auto:auto-common:1.2.1'
-    implementation 'software.amazon.awssdk:url-connection-client:2.20.26'
 
     implementation 'com.github.wnameless.json:json-flattener:0.8.0'
     implementation 'com.github.fge:json-schema-validator:2.2.4'
     implementation 'com.networknt:json-schema-validator:1.5.4'
-
 
     implementation 'com.amazonaws:aws-encryption-sdk-java:2.4.0'
     implementation 'software.amazon.awssdk:kinesisvideo:2.29.6'

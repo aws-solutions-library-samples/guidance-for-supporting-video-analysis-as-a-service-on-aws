@@ -1,6 +1,6 @@
 import { IResolvable } from 'aws-cdk-lib';
-import { SpecRestApi, ApiDefinition, MethodLoggingLevel } from 'aws-cdk-lib/aws-apigateway';
-import { AnyPrincipal, PolicyDocument, PolicyStatement } from 'aws-cdk-lib/aws-iam';
+import { ApiDefinition, MethodLoggingLevel, SpecRestApi } from 'aws-cdk-lib/aws-apigateway';
+import { AccountPrincipal, PolicyDocument, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 
 /**
@@ -31,9 +31,7 @@ export function createApiGateway(
         resources: [
           `arn:aws:execute-api:${region}:${account}:*/*/POST/*`
         ],
-        // Tried to set to AccountPrincipal, but I was getting authorization errors
-        // Can test again and try to scope down later
-        principals: [new AnyPrincipal()],
+        principals: [new AccountPrincipal(account)],
       })],
     })
   });

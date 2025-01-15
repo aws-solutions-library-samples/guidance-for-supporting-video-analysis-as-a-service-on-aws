@@ -41,7 +41,7 @@ sourceSets {
 dependencies {
     // AWS SDK BOM
     implementation platform('software.amazon.awssdk:bom:2.20.26')
-    
+
     // AWS SDK dependencies
     implementation 'software.amazon.awssdk:sfn'
     implementation 'software.amazon.awssdk:dynamodb'
@@ -49,6 +49,8 @@ dependencies {
     implementation 'software.amazon.awssdk:iot'
     implementation 'software.amazon.awssdk:iotdataplane'
     implementation 'software.amazon.awssdk:apache-client'
+    implementation 'software.amazon.awssdk:http-auth-aws:2.25.+'
+    implementation 'software.amazon.awssdk:identity-spi:2.25.+'
     
     // OpenAPI generated java client dependencies
     implementation 'javax.annotation:javax.annotation-api:1.3.2'
@@ -66,7 +68,6 @@ dependencies {
     testImplementation 'org.mockito:mockito-inline:3.12.4'
     testImplementation 'com.github.stefanbirkner:system-rules:1.16.0'
     testImplementation 'org.hamcrest:hamcrest:3.0'
-    testImplementation 'software.amazon.awssdk:dynamodb-enhanced:2.20.26'
     testImplementation 'com.fasterxml.jackson.core:jackson-core:2.12.7'
     testImplementation 'com.fasterxml.jackson.core:jackson-databind:2.12.7.1'
 
@@ -87,7 +88,6 @@ dependencies {
     implementation 'org.json:json:20240303'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.7.1'
     implementation 'com.github.wnameless.json:json-flattener:0.8.0'
-    implementation 'com.github.fge:json-schema-validator:2.2.4'
 
     // Other dependencies
     implementation 'org.apache.commons:commons-collections4:4.4'

@@ -1,22 +1,22 @@
-import { Stack, StackProps, RemovalPolicy, ArnFormat } from "aws-cdk-lib";
-import { Construct } from "constructs";
-import { AWSRegion } from "video_analytics_common_construct";
-import { IOT_CONNECTED_THING_NAME, IOT_CREDENTIAL_THING_NAME } from "../const";
+import { RemovalPolicy, Stack, StackProps } from "aws-cdk-lib";
 import {
+  CfnRole,
+  Effect,
   ManagedPolicy,
+  PolicyDocument,
   PolicyStatement,
   Role,
   ServicePrincipal,
-  CfnRole,
-  PolicyDocument,
-  Effect,
 } from "aws-cdk-lib/aws-iam";
 import * as iot from "aws-cdk-lib/aws-iot";
+import { LogGroup, RetentionDays } from "aws-cdk-lib/aws-logs";
 import {
   AwsCustomResource,
   PhysicalResourceId,
 } from "aws-cdk-lib/custom-resources";
-import { LogGroup, RetentionDays } from "aws-cdk-lib/aws-logs";
+import { Construct } from "constructs";
+import { AWSRegion } from "video_analytics_common_construct";
+import { IOT_CONNECTED_THING_NAME, IOT_CREDENTIAL_THING_NAME } from "../const";
 
 export interface BootstrapStackProps extends StackProps {
   readonly region: AWSRegion;
@@ -125,9 +125,13 @@ export class BootstrapStack extends Stack {
               },
               {
                 Effect: "Allow",
-                Action: ["apigateway:GET"],
+                Action: [
+                  "apigateway:GET",
+                  "execute-api:Invoke"
+                ],
                 Resource: [
-                  `arn:aws:apigateway:${this.region}::/restapis`
+                  `arn:aws:apigateway:${this.region}::/restapis`,
+                  `arn:aws:execute-api:${this.region}:${this.account}:*/*/POST/import-media-object`
                 ],
               }
             ],

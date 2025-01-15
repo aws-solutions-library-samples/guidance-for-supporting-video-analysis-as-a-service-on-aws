@@ -62,6 +62,9 @@
                     "credentials": {
                         "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/DeviceManagementApiGatewayRole"
                     }
+                },
+                "x-amazon-apigateway-auth": {
+                    "type": "AWS_IAM"
                 }
             }
         },
@@ -141,6 +144,9 @@
                     "credentials": {
                         "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/DeviceManagementApiGatewayRole"
                     }
+                },
+                "x-amazon-apigateway-auth": {
+                    "type": "AWS_IAM"
                 }
             }
         },
@@ -211,6 +217,9 @@
                     "credentials": {
                         "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/DeviceManagementApiGatewayRole"
                     }
+                },
+                "x-amazon-apigateway-auth": {
+                    "type": "AWS_IAM"
                 }
             }
         },
@@ -311,6 +320,9 @@
                     "credentials": {
                         "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/DeviceManagementApiGatewayRole"
                     }
+                },
+                "x-amazon-apigateway-auth": {
+                    "type": "AWS_IAM"
                 }
             }
         },
@@ -390,6 +402,9 @@
                     "credentials": {
                         "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/DeviceManagementApiGatewayRole"
                     }
+                },
+                "x-amazon-apigateway-auth": {
+                    "type": "AWS_IAM"
                 }
             }
         }

@@ -65,4 +65,3 @@ The Device Managment Application Lambda compiled jar is expected to be located a
 ```
 guidance-for-video-analytics-infrastructure-on-aws/assets/lambda-built/device-management-assets
 ```
-

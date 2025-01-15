@@ -64,10 +64,7 @@ list Devices {
 structure DeviceInfo {
     deviceName: String,
     deviceId: DeviceId,
-    deviceGroupId: DeviceGroupId,
-    deviceType: String,
     deviceMetaData: DeviceMetaData,
-    deviceCapabilities: KeyValueMap,
     deviceSettings: KeyValueMap,
     @timestampFormat("date-time")
     createdAt: Timestamp

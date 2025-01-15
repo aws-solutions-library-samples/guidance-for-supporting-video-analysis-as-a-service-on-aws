@@ -139,7 +139,7 @@ export class StartCreateDevice extends VideoAnalyticsAsyncWorkflowResource {
         resources: [
           `arn:aws:apigateway:${this.region}::/restapis`,
           `arn:aws:apigateway:${this.region}::/restapis/*`,
-          `arn:aws:execute-api:${this.region}:${this.account}:*/*/*/*`
+          `arn:aws:execute-api:${this.region}:${this.account}:*/*/POST/*/*`
         ]
       }),
       this.dynamoDbStatement,
