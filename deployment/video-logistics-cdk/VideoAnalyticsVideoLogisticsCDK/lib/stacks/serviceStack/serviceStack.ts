@@ -17,13 +17,11 @@ import { LogGroup, RetentionDays } from "aws-cdk-lib/aws-logs";
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import { Queue, QueueEncryption } from "aws-cdk-lib/aws-sqs";
 import { Construct } from "constructs";
+import * as fs from 'fs';
 import { AWSRegion, createApiGateway, createLambdaRole, DEVICE_MANAGEMENT_API_NAME, VIDEO_LOGISTICS_API_NAME } from "video_analytics_common_construct";
-import { RAW_VIDEO_TIMELINE_TABLE_NAME, TIMELINE_BUCKET_NAME, VIDEO_TIMELINE_TABLE_NAME } from "../const";
-
 import {
   LAMBDA_ASSET_PATH,
-  OPEN_API_SPEC_PATH,
-  VL_ACTIVITY_JAVA_PATH_PREFIX,
+  OPEN_API_SPEC_PATH, RAW_VIDEO_TIMELINE_TABLE_NAME, TIMELINE_BUCKET_NAME, VIDEO_TIMELINE_TABLE_NAME, VL_ACTIVITY_JAVA_PATH_PREFIX
 } from "../const";
 
 export interface ServiceStackProps extends StackProps {
@@ -71,7 +69,7 @@ export class ServiceStack extends Stack {
         resources: [
           `arn:aws:apigateway:${this.region}::/restapis`,
           `arn:aws:apigateway:${this.region}::/restapis/*`,
-          `arn:aws:execute-api:${this.region}:${this.account}:*/*/*/*`
+          `arn:aws:execute-api:${this.region}:${this.account}:*/*/POST/get-device/*`
         ]
       })
     ]);
@@ -115,7 +113,7 @@ export class ServiceStack extends Stack {
         resources: [
           `arn:aws:apigateway:${this.region}::/restapis`,
           `arn:aws:apigateway:${this.region}::/restapis/*`,
-          `arn:aws:execute-api:${this.region}:${this.account}:*/*/*/*`
+          `arn:aws:execute-api:${this.region}:${this.account}:*/*/POST/get-device/*`
         ]
       })
     ]);
@@ -148,7 +146,7 @@ export class ServiceStack extends Stack {
         resources: [
           `arn:aws:apigateway:${this.region}::/restapis`,
           `arn:aws:apigateway:${this.region}::/restapis/*`,
-          `arn:aws:execute-api:${this.region}:${this.account}:*/*/*/*`
+          `arn:aws:execute-api:${this.region}:${this.account}:*/*/POST/update-device-shadow/*`
         ]
       }),
       new PolicyStatement({
@@ -414,7 +412,7 @@ export class ServiceStack extends Stack {
         resources: [
           `arn:aws:apigateway:${this.region}::/restapis`,
           `arn:aws:apigateway:${this.region}::/restapis/*`,
-          `arn:aws:execute-api:${this.region}:${this.account}:*/*/*/*`
+          `arn:aws:execute-api:${this.region}:${this.account}:*/*/POST/get-device/*`
         ]
       })
     ]);
@@ -800,9 +798,27 @@ export class ServiceStack extends Stack {
     const putVideoTimelineCfnLambda = putVideoTimelineLambda.node.defaultChild as CfnFunction;
     putVideoTimelineCfnLambda.overrideLogicalId("PutVideoTimelineActivity");
 
+    // configure auth type for all methods (workaround since Smithy does not support x-amazon-apigateway-auth trait)
+    // create-snapshot-upload-path and put-video-timeline are not invoked through API GW
+    const APIS = [
+      "/create-livestream-session",
+      "/create-playback-session",
+      "/get-vl-register-device-status/{jobId}",
+      "/import-media-object",
+      "/list-detailed-video-timeline",
+      "/list-video-timelines",
+      "/start-vl-register-device/{deviceId}"
+    ]
+    const data = JSON.parse(fs.readFileSync(OPEN_API_SPEC_PATH, 'utf8'));
+    for (const api of APIS) {
+      data["paths"][api]["post"]["x-amazon-apigateway-auth"] = {
+        "type": "AWS_IAM"
+      };
+    }
+    fs.writeFileSync(OPEN_API_SPEC_PATH, JSON.stringify(data, null, 4));
+
     // Upload spec to S3
     const originalSpec = new Asset(this, "openApiFile", {
-      // manually added file at this location
       path: OPEN_API_SPEC_PATH
     });
 

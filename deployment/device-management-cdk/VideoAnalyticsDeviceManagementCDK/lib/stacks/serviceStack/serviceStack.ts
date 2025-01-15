@@ -1,18 +1,18 @@
 import { Duration, Fn, Stack, StackProps } from "aws-cdk-lib";
-import { SpecRestApi, MethodLoggingLevel } from 'aws-cdk-lib/aws-apigateway';
+import { MethodLoggingLevel, SpecRestApi } from 'aws-cdk-lib/aws-apigateway';
 import { CfnFunction } from "aws-cdk-lib/aws-cloudfront";
-import { Effect, PolicyStatement, Role, ServicePrincipal, ManagedPolicy } from "aws-cdk-lib/aws-iam";
-import { Function, Runtime, Code, Tracing } from "aws-cdk-lib/aws-lambda";
+import { Effect, ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from "aws-cdk-lib/aws-iam";
+import { Code, Function, Runtime, Tracing } from "aws-cdk-lib/aws-lambda";
 import { LogGroup, RetentionDays } from "aws-cdk-lib/aws-logs";
-import { Asset } from 'aws-cdk-lib/aws-s3-assets'
+import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import { Construct } from "constructs";
+import * as fs from 'fs';
 import { AWSRegion, createApiGateway, createLambdaRole, DEVICE_MANAGEMENT_API_NAME } from "video_analytics_common_construct";
-
 import {
-    DM_ACTIVITY_JAVA_PATH_PREFIX,
-    LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT,
-    OPEN_API_SPEC_PATH,
-  } from "../const";
+  DM_ACTIVITY_JAVA_PATH_PREFIX,
+  LAMBDA_ASSET_PATH_TO_DEVICE_MANAGEMENT,
+  OPEN_API_SPEC_PATH,
+} from "../const";
 
 export interface ServiceStackProps extends StackProps {
   region: AWSRegion;
@@ -227,9 +227,24 @@ export class ServiceStack extends Stack {
     const startCreateDeviceCfnLambda = startCreateDeviceLambda.node.defaultChild as CfnFunction;
     startCreateDeviceCfnLambda.overrideLogicalId("StartCreateDeviceActivity");
 
+    // configure auth type for all methods (workaround since Smithy does not support x-amazon-apigateway-auth trait)
+    const APIS = [
+      "/get-create-device-status/{jobId}",
+      "/get-device-shadow/{deviceId}",
+      "/get-device/{deviceId}",
+      "/start-create-device/{deviceId}",
+      "/update-device-shadow/{deviceId}"
+    ]
+    const data = JSON.parse(fs.readFileSync(OPEN_API_SPEC_PATH, 'utf8'));
+    for (const api of APIS) {
+      data["paths"][api]["post"]["x-amazon-apigateway-auth"] = {
+        "type": "AWS_IAM"
+      };
+    }
+    fs.writeFileSync(OPEN_API_SPEC_PATH, JSON.stringify(data, null, 4));
+
     // Upload spec to S3
     const originalSpec = new Asset(this, "openApiFile", {
-      // manually added file at this location
       path: OPEN_API_SPEC_PATH
     });
 

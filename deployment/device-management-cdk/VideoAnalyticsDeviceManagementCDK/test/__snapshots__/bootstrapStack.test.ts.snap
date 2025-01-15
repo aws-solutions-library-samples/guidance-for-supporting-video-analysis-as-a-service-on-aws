@@ -165,10 +165,12 @@ exports[`BootstrapStack Snapshot test 1`] = `
                 {
                   "Action": [
                     "apigateway:GET",
+                    "execute-api:Invoke",
                   ],
                   "Effect": "Allow",
                   "Resource": [
                     "arn:aws:apigateway:us-east-1::/restapis",
+                    "arn:aws:execute-api:us-east-1:123456789012:*/*/POST/import-media-object",
                   ],
                 },
               ],

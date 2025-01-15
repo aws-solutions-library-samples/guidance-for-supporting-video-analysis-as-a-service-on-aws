@@ -457,7 +457,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
                   "Resource": [
                     "arn:aws:apigateway:us-east-1::/restapis",
                     "arn:aws:apigateway:us-east-1::/restapis/*",
-                    "arn:aws:execute-api:us-east-1:123456789012:*/*/*/*",
+                    "arn:aws:execute-api:us-east-1:123456789012:*/*/POST/*/*",
                   ],
                 },
                 {

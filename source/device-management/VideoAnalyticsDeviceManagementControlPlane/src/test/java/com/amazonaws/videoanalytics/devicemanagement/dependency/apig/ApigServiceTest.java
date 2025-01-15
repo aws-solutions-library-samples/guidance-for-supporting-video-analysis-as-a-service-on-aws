@@ -1,10 +1,27 @@
 package com.amazonaws.videoanalytics.devicemanagement.dependency.apig;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.AfterEach;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
+import software.amazon.awssdk.auth.credentials.AwsSessionCredentials;
+import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.http.AbortableInputStream;
 import software.amazon.awssdk.http.ExecutableHttpRequest;
 import software.amazon.awssdk.http.HttpExecuteRequest;
@@ -15,20 +32,6 @@ import software.amazon.awssdk.services.apigateway.ApiGatewayClient;
 import software.amazon.awssdk.services.apigateway.model.GetRestApisRequest;
 import software.amazon.awssdk.services.apigateway.model.GetRestApisResponse;
 import software.amazon.awssdk.services.apigateway.model.RestApi;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 public class ApigServiceTest {
     private static final String TEST_URL = "https://api.example.com/test";
@@ -44,6 +47,9 @@ public class ApigServiceTest {
     
     @Mock
     private ApiGatewayClient apiGatewayClient;
+
+    @Mock
+    private AwsCredentialsProvider credentialsProvider;
     
     private ApigService apigService;
 
@@ -52,12 +58,9 @@ public class ApigServiceTest {
         MockitoAnnotations.openMocks(this);
         
         System.clearProperty("VIDEO_LOGISTICS_API_NAME");
-        System.clearProperty("AWS_REGION");
-        
         System.setProperty("VIDEO_LOGISTICS_API_NAME", TEST_API_NAME);
-        System.setProperty("AWS_REGION", TEST_REGION);
         
-        apigService = new ApigService(httpClient, apiGatewayClient);
+        apigService = new ApigService(httpClient, credentialsProvider, TEST_REGION, apiGatewayClient);
         
         // Mock API Gateway response
         RestApi mockApi = RestApi.builder()
@@ -72,6 +75,8 @@ public class ApigServiceTest {
         when(apiGatewayClient.getRestApis(any(GetRestApisRequest.class)))
             .thenReturn(mockResponse);
 
+        when(credentialsProvider.resolveCredentials()).thenReturn(AwsSessionCredentials.create("accessKeyId", "secretAccessKey", "sessionToken"));
+
         // Mock HTTP client response for all tests
         HttpExecuteResponse mockHttpResponse = createMockResponse(200);
         try {
@@ -84,22 +89,6 @@ public class ApigServiceTest {
     @AfterEach
     void tearDown() {
         System.clearProperty("VIDEO_LOGISTICS_API_NAME");
-        System.clearProperty("AWS_REGION");
-    }
-
-    @Test
-    void testInvokeGet() throws Exception {
-        Map<String, String> headers = new HashMap<>();
-        headers.put("Content-Type", "application/json");
-        
-        HttpExecuteResponse mockResponse = createMockResponse(200);
-        mockHttpClientCall(mockResponse);
-
-        HttpExecuteResponse response = apigService.invokeGet(TEST_URL, headers);
-
-        assertNotNull(response);
-        assertEquals(200, response.httpResponse().statusCode());
-        verify(httpClient).prepareRequest(any(HttpExecuteRequest.class));
     }
 
     @Test

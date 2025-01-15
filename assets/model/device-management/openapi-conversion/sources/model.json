@@ -59,6 +59,29 @@
                 }
             }
         },
+        "com.amazonaws.videoanalytics.devicemanagement#DeviceInfo": {
+            "type": "structure",
+            "members": {
+                "deviceName": {
+                    "target": "smithy.api#String"
+                },
+                "deviceId": {
+                    "target": "com.amazonaws.videoanalytics#DeviceId"
+                },
+                "deviceMetaData": {
+                    "target": "com.amazonaws.videoanalytics.devicemanagement#DeviceMetaData"
+                },
+                "deviceSettings": {
+                    "target": "com.amazonaws.videoanalytics#KeyValueMap"
+                },
+                "createdAt": {
+                    "target": "smithy.api#Timestamp",
+                    "traits": {
+                        "smithy.api#timestampFormat": "date-time"
+                    }
+                }
+            }
+        },
         "com.amazonaws.videoanalytics.devicemanagement#DeviceMetaData": {
             "type": "structure",
             "members": {
@@ -91,6 +114,56 @@
                 },
                 "deviceStatus": {
                     "target": "com.amazonaws.videoanalytics.devicemanagement#DeviceStatus"
+                }
+            }
+        },
+        "com.amazonaws.videoanalytics.devicemanagement#DeviceOperation": {
+            "type": "list",
+            "member": {
+                "target": "com.amazonaws.videoanalytics.devicemanagement#DeviceOperationInfo"
+            }
+        },
+        "com.amazonaws.videoanalytics.devicemanagement#DeviceOperationInfo": {
+            "type": "structure",
+            "members": {
+                "deviceOperationId": {
+                    "target": "smithy.api#String"
+                },
+                "deviceOperationName": {
+                    "target": "smithy.api#String"
+                },
+                "deviceOperationStatus": {
+                    "target": "smithy.api#String"
+                },
+                "callerAccount": {
+                    "target": "smithy.api#String"
+                },
+                "sourceIPAddress": {
+                    "target": "smithy.api#String"
+                },
+                "createdAt": {
+                    "target": "smithy.api#Timestamp",
+                    "traits": {
+                        "smithy.api#timestampFormat": "date-time"
+                    }
+                },
+                "updatedAt": {
+                    "target": "smithy.api#Timestamp",
+                    "traits": {
+                        "smithy.api#timestampFormat": "date-time"
+                    }
+                },
+                "requestParameters": {
+                    "target": "smithy.api#String"
+                },
+                "contents": {
+                    "target": "smithy.api#String"
+                },
+                "errorCode": {
+                    "target": "smithy.api#String"
+                },
+                "errorMessage": {
+                    "target": "smithy.api#String"
                 }
             }
         },
@@ -143,6 +216,12 @@
                 "cloudVideoStreaming": {
                     "target": "com.amazonaws.videoanalytics.devicemanagement#CloudVideoStreamingList"
                 }
+            }
+        },
+        "com.amazonaws.videoanalytics.devicemanagement#Devices": {
+            "type": "list",
+            "member": {
+                "target": "com.amazonaws.videoanalytics.devicemanagement#DeviceInfo"
             }
         },
         "com.amazonaws.videoanalytics.devicemanagement#GetCreateDeviceStatus": {

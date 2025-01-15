@@ -1,40 +1,56 @@
 package com.amazonaws.videoanalytics.devicemanagement.dependency.apig;
 
-import software.amazon.awssdk.http.HttpExecuteRequest;
-import software.amazon.awssdk.http.HttpExecuteResponse;
-import software.amazon.awssdk.http.SdkHttpClient;
-import software.amazon.awssdk.http.SdkHttpMethod;
-import software.amazon.awssdk.http.SdkHttpRequest;
-import software.amazon.awssdk.services.apigateway.ApiGatewayClient;
-import software.amazon.awssdk.services.apigateway.model.GetRestApisRequest;
-import software.amazon.awssdk.services.apigateway.model.RestApi;
+import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyticsServiceLambdaConstants.CREDENTIALS_PROVIDER;
+import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyticsServiceLambdaConstants.HTTP_CLIENT;
+import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyticsServiceLambdaConstants.REGION_NAME;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
 import java.io.ByteArrayInputStream;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
-import static com.amazonaws.videoanalytics.devicemanagement.utils.AWSVideoAnalyticsServiceLambdaConstants.HTTP_CLIENT;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.AwsSessionCredentials;
+import software.amazon.awssdk.http.HttpExecuteRequest;
+import software.amazon.awssdk.http.HttpExecuteResponse;
+import software.amazon.awssdk.http.SdkHttpClient;
+import software.amazon.awssdk.http.SdkHttpMethod;
+import software.amazon.awssdk.http.SdkHttpRequest;
+import software.amazon.awssdk.http.auth.aws.signer.AwsV4HttpSigner;
+import software.amazon.awssdk.http.auth.spi.signer.SignRequest;
+import software.amazon.awssdk.http.auth.spi.signer.SignedRequest;
+import software.amazon.awssdk.identity.spi.AwsCredentialsIdentity;
+import software.amazon.awssdk.identity.spi.AwsSessionCredentialsIdentity;
+import software.amazon.awssdk.services.apigateway.ApiGatewayClient;
+import software.amazon.awssdk.services.apigateway.model.GetRestApisRequest;
+import software.amazon.awssdk.services.apigateway.model.RestApi;
 
 @Singleton
 public class ApigService {
     private static final Logger log = LoggerFactory.getLogger(ApigService.class);
     private static final String VL_API_NAME = System.getProperty("VIDEO_LOGISTICS_API_NAME", System.getenv("VIDEO_LOGISTICS_API_NAME"));
     private final SdkHttpClient httpClient;
+    private final AwsCredentialsProvider credentialsProvider;
+    private final String region;
     private final ApiGatewayClient apiGatewayClient;
     private String vlApiEndpoint;
 
     @Inject
     public ApigService(
             @Named(HTTP_CLIENT) final SdkHttpClient httpClient,
+            @Named(CREDENTIALS_PROVIDER) final AwsCredentialsProvider credentialsProvider,
+            @Named(REGION_NAME) final String region,
             ApiGatewayClient apiGatewayClient) {
         this.httpClient = httpClient;
+        this.credentialsProvider = credentialsProvider;
+        this.region = region;
         this.apiGatewayClient = apiGatewayClient;
     }
 
@@ -52,8 +68,7 @@ public class ApigService {
                     .map(RestApi::id)
                     .findFirst()
                     .orElseThrow(() -> new IllegalStateException("Could not find API Gateway with name: " + VL_API_NAME));
-
-                String region = System.getenv("AWS_REGION");
+                
                 String stage = "prod"; 
                 vlApiEndpoint = String.format("https://%s.execute-api.%s.amazonaws.com/%s",
                     apiId, region, stage);
@@ -89,30 +104,41 @@ public class ApigService {
                 headers.forEach(requestBuilder::putHeader);
             }
 
-            HttpExecuteRequest.Builder executeRequestBuilder = HttpExecuteRequest.builder()
-                    .request(requestBuilder.build());
+            AwsV4HttpSigner signer = AwsV4HttpSigner.create();
+            AwsSessionCredentials credentials = (AwsSessionCredentials) credentialsProvider.resolveCredentials();
+            AwsCredentialsIdentity identity = AwsSessionCredentialsIdentity.create(credentials.accessKeyId(), credentials.secretAccessKey(), credentials.sessionToken());
 
+            // Sign the request.
+            SignedRequest signedRequest;
             if (body != null && !body.isEmpty()) {
-                executeRequestBuilder.contentStreamProvider(() -> 
-                    new ByteArrayInputStream(body.getBytes(StandardCharsets.UTF_8)));
+                signedRequest = signer.sign(SignRequest.builder(identity)
+                        .request(requestBuilder.build())
+                        .payload(() -> new ByteArrayInputStream(body.getBytes(StandardCharsets.UTF_8)))
+                        .putProperty(AwsV4HttpSigner.SERVICE_SIGNING_NAME, "execute-api")
+                        .putProperty(AwsV4HttpSigner.REGION_NAME, region)
+                        .build());
+            } else {
+                signedRequest = signer.sign(SignRequest.builder(identity)
+                        .request(requestBuilder.build())
+                        .payload(null)
+                        .putProperty(AwsV4HttpSigner.SERVICE_SIGNING_NAME, "execute-api")
+                        .putProperty(AwsV4HttpSigner.REGION_NAME, region)
+                        .build());
             }
 
-            HttpExecuteResponse response = httpClient.prepareRequest(executeRequestBuilder.build()).call();
+            HttpExecuteRequest httpExecuteRequest =
+            HttpExecuteRequest.builder()
+                    .request(signedRequest.request())
+                    .contentStreamProvider(signedRequest.payload().orElse(null))
+                    .build();
+        
+            HttpExecuteResponse response = httpClient.prepareRequest(httpExecuteRequest).call();
             log.info("API call completed - status: {}", response.httpResponse().statusCode());
             return response;
         } catch (Exception e) {
             log.error("Failed to invoke API endpoint - method: {}, url: {}", httpMethod, url, e);
             throw e;
         }
-    }
-
-    /**
-     * Convenience method to invoke a GET endpoint.
-     */
-    public HttpExecuteResponse invokeGet(
-            String url,
-            Map<String, String> headers) throws Exception {
-        return invokeApiEndpoint(url, HttpMethod.GET, headers, null);
     }
 
     /**

@@ -341,3 +341,9 @@ If you encounter issues with snapshot tests:
    # Build and deploy specific stack
    npm run build && cdk deploy StackName
    ```
+
+## Development Notes
+
+### API GW IAM Auth
+Smithy does not support the API GW `x-amazon-apigateway-auth` trait, so we have to manually add it to the OpenAPI json spec file in DM and VL CDKs to configure this field.
+

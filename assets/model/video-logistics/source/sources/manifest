@@ -2,8 +2,6 @@ types/Playback.smithy
 types/VideoTimeline.smithy
 types/Inference.smithy
 types/Livestream.smithy
-types/build/smithy/source/model/model.json
-types/build/smithy/source/build-info/smithy-build-info.json
 resources/Snapshot.smithy
 resources/PlaybackSession.smithy
 resources/RegisterDevice.smithy
@@ -20,5 +18,3 @@ operations/VideoTimeline/ListDetailedVideoTimeline.smithy
 operations/VideoTimeline/PutVideoTimeline.smithy
 operations/PlaybackSession/CreatePlaybackSession.smithy
 video-analytic.smithy
-build/smithy/source/model/model.json
-build/smithy/source/build-info/smithy-build-info.json
