@@ -648,44 +648,110 @@ Provide suggestions and recommendations about how customers can modify the param
 
 
 
-## FAQ, known issues, additional considerations, and limitations (optional)
+## FAQ, Known Issues, Additional Considerations, and Limitations
 
+### FAQ
 
-**Known issues (optional)**
+1. **What AWS services does Video Analytics Solution use?**
+   - AWS IoT Core for device management and shadows
+   - Amazon API Gateway for REST APIs
+   - AWS Lambda for serverless compute
+   - Amazon DynamoDB for state management
+   - Amazon Kinesis Video Streams for video ingestion
+   - Amazon OpenSearch for video metadata search
+   - Amazon S3 for media storage
+   - AWS Step Functions for workflow orchestration
 
-<If there are common known issues, or errors that can occur during the Guidance deployment, describe the issue and resolution steps here>
+2. **How are operations handled?**
+   - Long-running operations are handled asynchronously
+   - Each operation returns a job ID for status tracking
+   - Status can be checked via dedicated endpoints
+   - See [deployment README](deployment/README.md) for the async workflow architecture
 
+3. **What are the prerequisites?**
+   - Edge device must be set up with ONVIF-compatible camera
+   - Device registration must be completed first
+   - AWS account with appropriate permissions
+   - Network connectivity for device communication
 
-**Additional considerations (if applicable)**
+### Known Issues and Limitations
 
-<Include considerations the customer must know while using the Guidance, such as anti-patterns, or billing considerations.>
+1. **Service Quotas and Limits**
+   - IoT Core limits on device connections and message size
+   - API Gateway throttling limits (default 10,000 requests per second)
+   - Lambda concurrent execution limits
+   - DynamoDB throughput based on provisioned capacity
+   - Kinesis Video Streams data retention period
 
-**Examples:**
+2. **Resource Requirements**
+   - Creates public API endpoints required for device communication
+   - Requires IAM roles with specific permissions for:
+     - API Gateway CloudWatch logging
+     - Lambda access to IoT Core, DynamoDB, and KVS
+     - Step Functions workflow execution
+   - Creates CloudWatch log groups for monitoring
 
-- “This Guidance creates a public AWS bucket required for the use-case.”
-- “This Guidance created an Amazon SageMaker notebook that is billed per hour irrespective of usage.”
-- “This Guidance creates unauthenticated public API endpoints.”
+3. **Operational Constraints**
+   - Device shadow updates may have latency
+   - Video processing times depend on file size
+   - Network ports 80 (ONVIF) and 554 (RTSP) must be accessible
+   - Real-time streaming requires stable connection
 
+### Additional Considerations
 
-Provide a link to the *GitHub issues page* for users to provide feedback.
+1. **Security**
+   - All API endpoints require AWS IAM authentication
+   - Device credentials are managed through IoT Core
+   - CloudWatch logs contain operational data
+   - Consider enabling AWS WAF for API protection
 
+2. **Cost Factors**
+   _(Pricing information as of January 16, 2025)_
+   - IoT Core charges:
+     - Connection charges: $0.08 per million minutes of connection
+     - Messaging charges: $1.00 per million messages (5KB message size)
+     - Device shadow updates: $1.25 per million operations
+     - [AWS IoT Core Pricing](https://aws.amazon.com/iot-core/pricing/)
+   - API Gateway costs:
+     - REST API calls: $3.50 per million requests
+     - Data transfer out: Varies by region and volume
+     - [Amazon API Gateway Pricing](https://aws.amazon.com/api-gateway/pricing/)
+   - Lambda costs:
+     - Invocation: $0.20 per million requests
+     - Compute time: $0.0000166667 per GB-second
+     - Consider concurrent execution limits
+     - [AWS Lambda Pricing](https://aws.amazon.com/lambda/pricing/)
+   - DynamoDB costs:
+     - On-demand capacity: Pay per request
+     - Storage: $0.25 per GB per month
+     - Backup storage: Additional charges apply
+     - [Amazon DynamoDB Pricing](https://aws.amazon.com/dynamodb/pricing/)
+   - Kinesis Video Streams:
+     - Input: $0.017 per GB
+     - Storage: $0.023 per GB per month
+     - Output: $0.017 per GB
+     - [Amazon Kinesis Video Streams Pricing](https://aws.amazon.com/kinesis/video-streams/pricing/)
+   - OpenSearch Service:
+     - Instance hours: Varies by instance type
+     - Storage: EBS volume charges apply
+     - Recommend t3.small.search for dev/test
+     - [Amazon OpenSearch Service Pricing](https://aws.amazon.com/opensearch-service/pricing/)
+   - CloudWatch:
+     - Log ingestion: $0.50 per GB
+     - Log storage: $0.03 per GB per month
+     - Set appropriate retention periods
+     - [Amazon CloudWatch Pricing](https://aws.amazon.com/cloudwatch/pricing/)
 
-**Example:** *“For any feedback, questions, or suggestions, please use the issues tab under this repo.”*
+   Cost Optimization Tips:
+   - Monitor usage patterns and adjust capacity accordingly
+   - Implement lifecycle policies for log and video retention
+   - Use appropriate instance sizes for workload
+   - Consider implementing data archival strategies
+   - Enable cost allocation tags for tracking
+   - For more cost optimization strategies, visit [AWS Cost Optimization](https://aws.amazon.com/aws-cost-management/aws-cost-optimization/)
 
-## Revisions (optional)
+For any feedback, questions, or suggestions, please use the issues tab under this repo.
 
-Document all notable changes to this project.
+## Notices
 
-Consider formatting this section based on Keep a Changelog, and adhering to Semantic Versioning.
-
-## Notices (optional)
-
-Include a legal disclaimer
-
-**Example:**
-*Customers are responsible for making their own independent assessment of the information in this Guidance. This Guidance: (a) is for informational purposes only, (b) represents AWS current product offerings and practices, which are subject to change without notice, and (c) does not create any commitments or assurances from AWS and its affiliates, suppliers or licensors. AWS products or services are provided “as is” without warranties, representations, or conditions of any kind, whether express or implied. AWS responsibilities and liabilities to its customers are controlled by AWS agreements, and this Guidance is not part of, nor does it modify, any agreement between AWS and its customers.*
-
-
-## Authors (optional)
-
-Name of code contributors
+Customers are responsible for making their own independent assessment of the information in this Guidance. This Guidance: (a) is for informational purposes only, (b) represents AWS current product offerings and practices, which are subject to change without notice, and (c) does not create any commitments or assurances from AWS and its affiliates, suppliers or licensors. AWS products or services are provided "as is" without warranties, representations, or conditions of any kind, whether express or implied. AWS responsibilities and liabilities to its customers are controlled by AWS agreements, and this Guidance is not part of, nor does it modify, any agreement between AWS and its customers.
