@@ -668,19 +668,74 @@ This section should include:
 
 
 
-## Next Steps (required)
+## Next Steps
 
-Provide suggestions and recommendations about how customers can modify the parameters and the components of the Guidance to further enhance it according to their requirements.
+You can enhance this Video Analytics Infrastructure Guidance according to your requirements in several ways:
 
+1. **Customize Video Processing Pipeline**
+   - Modify the video processing parameters in the Video Logistics component
+   - Add custom video analytics models to the inference pipeline
+   - Implement additional video processing stages
 
-## Cleanup (required)
+2. **Enhance Device Management**
+   - Add custom device authentication mechanisms
+   - Implement additional device monitoring metrics
+   - Create custom device groups and management policies
 
-- Include detailed instructions, commands, and console actions to delete the deployed Guidance.
-- If the Guidance requires manual deletion of resources, such as the content of an S3 bucket, please specify.
+3. **Extend Analytics Capabilities**
+   - Integrate additional AWS AI/ML services
+   - Implement custom analytics algorithms
+   - Add real-time analytics processing
 
+4. **Scale Infrastructure**
+   - Adjust auto-scaling parameters for various components
+   - Optimize OpenSearch domain configuration
+   - Modify DynamoDB capacity settings
 
+5. **Customize Timeline Management**
+   - Implement custom video timeline indexing
+   - Add additional metadata fields
+   - Enhance search capabilities
 
-## FAQ, Known Issues, Additional Considerations, and Limitations
+## Cleanup
+
+To delete all resources deployed by this Guidance, follow these steps:
+
+1. **Empty S3 Buckets**
+   The following S3 buckets must be emptied before stack deletion. Replace `ACCOUNT_ID` with your AWS account ID and `REGION` with your deployment region:
+   ```bash
+   # Empty the Video Analytics Timeline bucket
+   aws s3 rm s3://videoanalytics-timeline-bucket-REGION-ACCOUNT_ID --recursive
+   
+   # Empty the Timeline bucket server access logs
+   aws s3 rm s3://videoanalytics-timeline-bucket-REGION-ACCOUNT_ID--ServerAccessLogs --recursive
+   
+   # Empty the Image Upload bucket
+   aws s3 rm s3://video-analytics-image-upload-bucket-ACCOUNT_ID-REGION --recursive
+   ```
+
+2. **Delete Video Logistics Stacks**
+   ```bash
+   cd deployment/video-logistics-cdk/VideoAnalyticsVideoLogisticsCDK
+   cdk destroy VideoLogisticsServiceStack
+   cdk destroy VideoLogisticsWorkflowStack
+   cdk destroy VideoLogisticsBulkInferenceStack
+   cdk destroy VideoLogisticsOpensearchStack
+   cdk destroy VideoLogisticsTimelineStack
+   cdk destroy VideoLogisticsBootstrapStack
+   ```
+
+3. **Delete Device Management Stacks**
+   ```bash
+   cd deployment/device-management-cdk/VideoAnalyticsDeviceManagementCDK
+   cdk destroy DeviceManagementServiceStack
+   cdk destroy DeviceManagementWorkflowStack
+   cdk destroy DeviceManagementBootstrapStack
+   ```
+
+Note: The stacks must be deleted in the reverse order of their deployment to ensure proper dependency handling. If you encounter any issues during deletion, check the CloudFormation console for error messages and ensure all dependencies are properly removed.
+
+## FAQ, known issues, additional considerations, and limitations
 
 ### FAQ
 
