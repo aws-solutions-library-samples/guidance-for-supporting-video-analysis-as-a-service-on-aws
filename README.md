@@ -36,13 +36,13 @@ List the top-level sections of the README template, along with a hyperlink to th
   
   Below is a list of the default features and optional features provided by this guidance. Default features are available out-of-the-box once resources are deployed. Optional features are provided in sample code format. Customers need to integrate the sample code into the guidance for optional features to work. See [implementation guide](https://implementationguides.kits.eventoutfitters.aws.dev/vanlytcs-infra-1204/ai-ml/video-analytics-infrastructure-on-aws/index.html) for detail instructions.
   
-  ### Default features:
+  #### Default features:
   - Livestream and playback videos
   - Forward selected video and inference data from edge device to cloud
   - Provide a preview image captured by the device to display in front-end UI 
   - Provide timestamps information of video to display in front-end UI 
 
-  ### Optional features:
+  #### Optional features:
   - Query inference data stored on cloud
   - Export video stored on cloud for end users to download
   - Remote operations. Such as reboot device, firmware update, 
@@ -50,11 +50,12 @@ List the top-level sections of the README template, along with a hyperlink to th
   - Device state management
   - Resource clean up
  
-  // TODO: insert architecture diagram here
+  #### Architecture overview ####
+  ![guidance architecture](assets/images/video_analytics_infra_architecture.png)
 
   This guidance is consist of two microservices - device management (DM) and video logistics (VL). DM is responsible for managing device lifecycle and device's authorization and permission to interact with cloud. VL is responsible for transferring video/AI inference data from edge device to cloud. DM and VL features provided in the guidance are orchestrated by edge device binary and Java code deployed to Lambdas. Edge source code implemented in Rust is organized by feature. Loosely speaking, each Rust crate represents a feature in the guidance. Cloud code written in Java is organized based on the two microservices: DM and VL. For the cloud components, each microservice has its API smithy models, Java client, control plane application, and CloudFormation stacks. 
 
-For detailed information about the APIs and components, see [source/README.md](source/README.md) for comprehensive documentation of API actions, component overview, and build instructions
+  For detailed information about the APIs and components, see [source/README.md](source/README.md) for comprehensive documentation of API actions, component overview, and build instructions
 
 ### Cost 
 
