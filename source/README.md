@@ -16,7 +16,7 @@ This source code implements a scalable video analytics infrastructure with a mic
    - Processes video streams for analytics and ML inference
    - Handles video timeline management and playback
    - Supports both live streaming and historical video access
-   - Integrates with S3 for media storage and retrieval
+   - Integrates with S3, KDS, and Opensearch for media storage and retrieval
 
 The architecture follows these key design principles:
 - API-first development using Smithy for contract definition
@@ -108,6 +108,8 @@ Common workflow handling components used across services for asynchronous task p
 Edge components for video capture, processing, and streaming from edge devices to AWS services.
 
 ## API Actions
+
+All endpoints use POST method through AWS Lambda proxy integration. To follow best practices, asynchronous APIs are APIs that involve multiple mutations. While synchronous APIs are APIs that have no mutations. 
 
 ### Prerequisites
 

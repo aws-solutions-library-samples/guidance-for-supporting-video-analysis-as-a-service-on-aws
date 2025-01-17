@@ -30,24 +30,31 @@ List the top-level sections of the README template, along with a hyperlink to th
 10. [Notices](#notices-optional)
 11. [Authors](#authors-optional)
 
-## Overview (required)
+## Overview 
 
-1. Provide a brief overview explaining the what, why, or how of your Guidance. You can answer any one of the following to help you write this:
+  This guidance handles the heavy lifting of setting up [**AWS IoT Core**](https://aws.amazon.com/iot-core/) (**IoT Core**) and [**Amazon Kinesis Video Stream**](https://aws.amazon.com/kinesis/video-streams/) (**KVS**) on edge device and in the cloud to provide the infrastructure for video analytics applications. IoT Core and KVS are two required AWS services to build video analytics applications. Customer who aims to use IoT and Amazon KVS to transport video or use [**Amazon API Gateway**](https://aws.amazon.com/api-gateway/) (**API Gateway**) and [**AWS Lambda**](https://aws.amazon.com/lambda/) (**Lambda**) to send AI inference data from edge to cloud is required to invest time to implement device clients to communicate with those services. With this guidance handling the undifferentiated components of video analytics application, it frees up customers time to build applications, such as end-to-end edge to cloud computer vision operations (CVOps) systems, on top of this guidance. 
+  
+  Below is a list of the default features and optional features provided by this guidance. Default features are available out-of-the-box once resources are deployed. Optional features are provided in sample code format. Customers need to integrate the sample code into the guidance for optional features to work. See [implementation guide](https://implementationguides.kits.eventoutfitters.aws.dev/vanlytcs-infra-1204/ai-ml/video-analytics-infrastructure-on-aws/index.html) for detail instructions.
+  
+  ### Default features:
+  - Livestream and playback videos
+  - Forward selected video and inference data from edge device to cloud
+  - Provide a preview image captured by the device to display in front-end UI 
+  - Provide timestamps information of video to display in front-end UI 
 
-    - **Why did you build this Guidance?**
-    - **What problem does this Guidance solve?**
+  ### Optional features:
+  - Query inference data stored on cloud
+  - Export video stored on cloud for end users to download
+  - Remote operations. Such as reboot device, firmware update, 
+  - Remote configurations. Such as configure image settings and AI settings on device.
+  - Device state management
+  - Resource clean up
+ 
+  // TODO: insert architecture diagram here
 
-2. Include the architecture diagram image, as well as the steps explaining the high-level overview and flow of the architecture. 
-    - To add a screenshot, create an 'assets/images' folder in your repository and upload your screenshot to it. Then, using the relative file path, add it to your README. 
+  This guidance is consist of two microservices - device management (DM) and video logistics (VL). DM is responsible for managing device lifecycle and device's authorization and permission to interact with cloud. VL is responsible for transferring video/AI inference data from edge device to cloud. DM and VL features provided in the guidance are orchestrated by edge device binary and Java code deployed to Lambdas. Edge source code implemented in Rust is organized by feature. Loosely speaking, each Rust crate represents a feature in the guidance. Cloud code written in Java is organized based on the two microservices: DM and VL. For the cloud components, each microservice has its API smithy models, Java client, control plane application, and CloudFormation stacks. 
 
-For detailed information about the APIs and components:
-- See [source/README.md](source/README.md) for comprehensive documentation of API actions, component overview, and build instructions
-- Prerequisites:
-  - Edge device with ONVIF-compatible camera must be set up first
-  - Device registration required before using any other operations
-- API Design:
-  - All endpoints use POST method through AWS Lambda proxy integration
-  - APIs follow an async workflow pattern with status check endpoints for operations
+For detailed information about the APIs and components, see [source/README.md](source/README.md) for comprehensive documentation of API actions, component overview, and build instructions
 
 ### Cost ( required )
 
@@ -57,7 +64,7 @@ Start this section with the following boilerplate text:
 
 _You are responsible for the cost of the AWS services used while running this Guidance. As of <month> <year>, the cost for running this Guidance with the default settings in the <Default AWS Region (Most likely will be US East (N. Virginia)) > is approximately $<n.nn> per month for processing ( <nnnnn> records )._
 
-Replace this amount with the approximate cost for running your Guidance in the default Region. This estimate should be per month and for processing/serving resonable number of requests/entities.
+Replace this amount with the approximate cost for running your Guidance in the default Region. This estimate should be per month and for processing/serving reasonable number of requests/entities.
 
 Suggest you keep this boilerplate text:
 _We recommend creating a [Budget](https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-managing-costs.html) through [AWS Cost Explorer](https://aws.amazon.com/aws-cost-management/aws-cost-explorer/) to help manage costs. Prices are subject to change. For full details, refer to the pricing webpage for each AWS service used in this Guidance._
@@ -73,9 +80,12 @@ The following table provides a sample cost breakdown for deploying this Guidance
 | Amazon API Gateway | 1,000,000 REST API calls per month  | $ 3.50month |
 | Amazon Cognito | 1,000 active users per month without advanced security feature | $ 0.00 |
 
-## Prerequisites (required)
+## Prerequisites 
 
-### Operating System (required)
+### Hardware 
+An Open Network Video Interface Forum (ONVIF) compliant edge device must be set up to benefit from all features provided in the guidance. In the absence of ONVIF compliant cameras, simulated RTSP stream from recorded mp4 videos can be used. However, when edge process operates in simulated RTSP stream mode, not all features will be present. See [implementation guide]() on detail instructions to run the guidance in simulated RTSP stream mode. 
+
+### Operating System
 
 This deployment has been tested on macOS and Linux operating systems. Follow these steps in order:
 
@@ -330,7 +340,7 @@ The deployment requires an AWS account with permissions to create and manage the
   - Access to port 554 (RTSP)
   - Proper network configuration to allow communication between edge devices and AWS cloud services
 
-## Deployment Steps (required)
+## Deployment Steps
 
 > For detailed deployment instructions and build steps, see the [deployment/README.md](deployment/README.md).
 
@@ -445,11 +455,11 @@ The stack will use variables in this order:
    cdk deploy VideoLogisticsServiceStack
    ```
 
-## Deployment Validation (required)
+## Deployment Validation
 
 After deploying both Device Management and Video Logistics stacks, verify the deployment by checking the following resources:
 
-### 1. Device Management CloudFormation Stack Verification
+### Device Management CloudFormation Stack Verification
 
 Verify the following CloudFormation stacks are deployed successfully:
 
@@ -494,7 +504,7 @@ aws cloudformation describe-stack-resources \
   --query 'StackResources[].{LogicalID:LogicalResourceId,Type:ResourceType,Status:ResourceStatus}'
 ```
 
-### 2. Video Logistics CloudFormation Stack Verification
+### Video Logistics CloudFormation Stack Verification
 
 Verify the following CloudFormation stacks are deployed successfully:
 
@@ -536,7 +546,7 @@ aws cloudformation describe-stack-resources \
   --query 'StackResources[].{LogicalID:LogicalResourceId,Type:ResourceType,Status:ResourceStatus}'
 ```
 
-### 3. API Gateway Endpoints Verification
+### API Gateway Endpoints Verification
 
 After deployment, you should see two API Gateway endpoints in the AWS Console:
 
@@ -589,7 +599,7 @@ Expected output should show:
 - Stage "prod" deployed
 - Resources for video processing operations
 
-### 4. Test API Endpoints
+### Test API Endpoints
 
 After verifying the API Gateway deployments, you can test the endpoints:
 
@@ -613,7 +623,7 @@ curl -X GET "${VL_API_ENDPOINT}/prod/health"
 
 Both health check endpoints should return a successful response indicating the APIs are properly deployed and functioning.
 
-### 5. Additional Verification Steps
+### Additional Verification Steps
 
 - Check CloudWatch Logs for any deployment errors
 - Verify IAM roles and policies are correctly created
