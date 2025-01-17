@@ -7,7 +7,7 @@ The Guidance title should be consistent with the title established first in Alch
 This title correlates exactly to the Guidance it’s linked to, including its corresponding sample code repository. 
 
 
-## Table of Contents (required)
+## Table of Contents
 
 List the top-level sections of the README template, along with a hyperlink to the specific section.
 
@@ -56,29 +56,50 @@ List the top-level sections of the README template, along with a hyperlink to th
 
 For detailed information about the APIs and components, see [source/README.md](source/README.md) for comprehensive documentation of API actions, component overview, and build instructions
 
-### Cost ( required )
+### Cost 
 
-This section is for a high-level cost estimate. Think of a likely straightforward scenario with reasonable assumptions based on the problem the Guidance is trying to solve. Provide an in-depth cost breakdown table in this section below ( you should use AWS Pricing Calculator to generate cost breakdown ).
+You are responsible for the cost of the AWS services used while running this Guidance. As of Jan 2025, the cost for running this Guidance with the input parameters in the table below in the US East (N. Virginia) is approximately $50 per month per device. Main cost drivers are the amount of videos and AI events ingested as well as the retention period of the AI events stored. 
 
-Start this section with the following boilerplate text:
 
-_You are responsible for the cost of the AWS services used while running this Guidance. As of <month> <year>, the cost for running this Guidance with the default settings in the <Default AWS Region (Most likely will be US East (N. Virginia)) > is approximately $<n.nn> per month for processing ( <nnnnn> records )._
+| Input parameters  | Value used for cost estimation 
+| ----------- | ------------ |
+| Device up time  | 24 hrs/day |
+| Kinesis Data Stream mode | on-demand | 
+| Video bitrate | 1024 Kbps | 
+| Number of AI events | 3600 events/day | 
+| AI event thumbnail size | 150 KB | 
+| AI event retention | 7 days | 
+| KVS ingestion retention | 30 days | 
 
-Replace this amount with the approximate cost for running your Guidance in the default Region. This estimate should be per month and for processing/serving reasonable number of requests/entities.
 
-Suggest you keep this boilerplate text:
-_We recommend creating a [Budget](https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-managing-costs.html) through [AWS Cost Explorer](https://aws.amazon.com/aws-cost-management/aws-cost-explorer/) to help manage costs. Prices are subject to change. For full details, refer to the pricing webpage for each AWS service used in this Guidance._
+We recommend creating a [Budget](https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-managing-costs.html) through [AWS Cost Explorer](https://aws.amazon.com/aws-cost-management/aws-cost-explorer/) to help manage costs. Prices are subject to change. For full details, refer to the pricing webpage for each AWS service used in this Guidance.
 
-### Sample Cost Table ( required )
+#### Sample Cost Table 
 
-**Note : Once you have created a sample cost table using AWS Pricing Calculator, copy the cost breakdown to below table and upload a PDF of the cost estimation on BuilderSpace. Do not add the link to the pricing calculator in the ReadMe.**
-
-The following table provides a sample cost breakdown for deploying this Guidance with the default parameters in the US East (N. Virginia) Region for one month.
+The following table provides a sample cost breakdown of the core AWS services (KVS/KDS/IoT) used in this Guidance with the default parameters in the US East (N. Virginia) Region for one month per device.
 
 | AWS service  | Dimensions | Cost [USD] |
 | ----------- | ------------ | ------------ |
-| Amazon API Gateway | 1,000,000 REST API calls per month  | $ 3.50month |
-| Amazon Cognito | 1,000 active users per month without advanced security feature | $ 0.00 |
+| KVS ingestion and storage | ingest videos 24hrs per day, bitrate (average 1024 Kbps), video retention (7 days) | $ 4.43/month |
+| KVS livestream | livestream sessions (300 per month ), per livestream session duration (1 hour), TURN usage (100%)| $ 11.88/month |
+| KDS ingestion and storage | on-demand mode, Records (3600 per day), Record size (150KB), and data retention (7 days) | $ 30.76/month |
+| IoT MQTT messages | Number of messages (100,000 per month ) and Per message size (50 KB) | $ 1.00/month |
+| IoT shadow writes | Shadow operations (600 per month ), Payload size per shadow operations (50 KB) | $ 0.04/month |
+| API Gateway | Number of requests (1000 per month), Average size of each request (50 KB) | $0.00/month |
+| Lambda | Number of requests (1000 per month), Average size of each request (50 KB) | $0.00/month |
+| DDB | Table class (Standard), Average item size (all attributes) (1 KB), Data storage size (1 GB) | $0.25/month |
+| S3| Standard storage (1 GB per month), Average object size (50 MB), | $0.02/month |
+
+#### Call outs
+
+* None of the optional features in the guidance: device command, device configuration, video export, and query inference are included in the cost estimation provided above. 
+* Cost estimation provided for KVS/KDS only includes ingestion and storage but doesn't include the cost of reading data stored in KVS and KDS.
+* Estimation does not take into account Free Tier discounts.
+
+#### Cost saving tip
+
+* Save cost by enabling motion-based streaming following the instruction [here](https://github.com/aws-solutions-library-samples/guidance-for-video-analytics-infrastructure-on-aws/blob/develop/source/edge/DEVELOPMENT.md#motion-based-streaming). By default, motion-based Streaming is set to true. When motion-based streaming is set to true, the guidance will only ingest video and AI events data when motion is detected by the camera. 
+
 
 ## Prerequisites 
 
