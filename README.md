@@ -668,7 +668,7 @@ This section should include:
 
 
 
-## Next Steps (required)
+## Next Steps
 
 You can enhance this Video Analytics Infrastructure Guidance according to your requirements in several ways:
 
@@ -697,7 +697,7 @@ You can enhance this Video Analytics Infrastructure Guidance according to your r
    - Add additional metadata fields
    - Enhance search capabilities
 
-## Cleanup (required)
+## Cleanup
 
 To delete all resources deployed by this Guidance, follow these steps:
 
