@@ -655,18 +655,312 @@ Both health check endpoints should return a successful response indicating the A
 
 If any of these verification steps fail, check the CloudFormation stack events and CloudWatch logs for error details.
 
-## Running the Guidance (required)
+## Running the Guidance
 
-<Provide instructions to run the Guidance with the sample data or input provided, and interpret the output received.> 
+### Guidance inputs
 
-This section should include:
+Most API calls can be made within package for functional integration with your guidance project. Below are examples of API request and response bodies for all APIs included in this guidance. 
 
-* Guidance inputs
-* Commands to run
-* Expected output (provide screenshot if possible)
-* Output description
+#### Device Registration
+##### `POST /start-create-device/{deviceId}` - Start device registration process
+- API input example
+  ```json
+  {
+    "certificateId": "b2916b9d0ed02f98126789d23ce7a73ec030b68584245ed68838cf166287943a"  // required
+  }
+  ```
+- API output example
+  ```json
+  {
+    "jobId": "92fdb31b-c984-4e7d-b20e-a1f0f6724989"
+  }
+  ```
+##### `POST /get-create-device-status/{jobId}` - Get status of device registration
+- No API input body required
+- API output example
+  ```json
+  {
+    "jobId": "92fdb31b-c984-4e7d-b20e-a1f0f6724989",
+    "deviceId": "example-device-id",
+    "status": "COMPLETED",
+    "createTime":"2025-01-15T20:54:27.000Z", // ISO 8601 date-time format
+    "modifiedTime":"2025-01-15T20:54:27.000Z" // ISO 8601 date-time format
+  }
+  ```
 
+#### Device Operations
+##### `POST /get-device/{deviceId}` - Get device information
+- No API input body required
+- API output example
+  ```json
+  {
+    "deviceId": "example-device-id",
+    "deviceGroupIds": [],
+    "deviceMetaData": {
+      "ipAddress": {},
+      "deviceStatus": {
+        "deviceState": "ENABLED",
+        "deviceConnection": {
+          "status": false
+        },
+        "cloudVideoStreaming": [
+          {}
+        ],
+        "storage": [
+          {}
+        ]
+      }
+    },
+    "deviceCapabilities": {},
+    "deviceSettings": {},
+    "createdAt": "2025-01-15T20:54:27.000Z"  // ISO 8601 date-time format
+  }
+  ```
+##### `POST /get-device-shadow/{deviceId}` - Get device shadow (current state)
+- API input example
+  ```json
+  {
+    "shadowName": "provision"  
+  }
+  ```
+- API output example
+  ```json
+  {
+    "shadowPayload": {
+      "shadowName": "provision",
+      "stateDocument": {
+        "loggerSettings": {
+          "logLevel":"INFO",
+          "syncFrequency":300,
+          "isEnabled":true
+        },
+        "enabled":true
+      }
+    }
+  }
+  ```
+##### `POST /update-device-shadow/{deviceId}` - Update device shadow (desired state)
+- API input example
+  ```json
+  {
+    "shadowPayload": {
+      "shadowName": "provision",
+      "stateDocument": {
+        "loggerSettings": {
+          "logLevel":"ERROR",
+          "syncFrequency":500,
+          "isEnabled":true
+        },
+        "enabled":true
+      }
+    }
+  }
+  ```
+- API output example
+  ```json
+  {
+    "deviceId": "example-device-id"
+  }
+  ```
 
+#### Device Registration
+##### `POST /get-vl-register-device-status/{jobId}` - Get status of video logistics registration
+- No API input body required
+- API output example
+  ```json
+  {
+    "jobId": "92fdb31b-c984-4e7d-b20e-a1f0f6724989",
+    "deviceId": "example-device-id",
+    "status": "COMPLETED",
+    "createTime":"2025-01-15T22:32:05.197Z",
+    "modifiedTime":"2025-01-15T22:32:05.197Z",
+    "kvsStreamArns": ["arn:aws:kinesisvideo:us-west-2:123456789012:stream/my-stream-name/1705359125197"]
+  }
+  ```
+
+#### Livestreaming
+##### `POST /create-livestream-session` - Create a new livestream session
+- API input example
+  ```json
+  {
+    "deviceId": "example-device-id",
+    "clientId": "example-client-id"  
+  }
+  ```
+- API output example
+  ```json
+  {
+    "sessionId": "e2d2367f-d2a2-4d65-aba1-f1500b7c9aee",
+    "clientId": "example-client-id",
+    "iceServers": [
+      {
+        "password": "6cX7qPV8oWfwc42r9BN3",
+        "ttl": 300.0,
+        "uris": [
+          "turn:54.148.x.x:443?transport=udp",
+          "turns:54.148.x.x:443?transport=tcp"
+        ],
+        "username": "1705363200:kvs/teststream"
+      }
+    ],
+    "signalingChannelURL": "string"
+  }
+  ```
+
+#### Playback
+##### `POST /create-playback-session` - Create a new playback session
+- API input example
+  ```json
+  {
+    "deviceId": "example-device-id",
+    "startTime": "2025-01-15T22:00:00Z",  // ISO 8601 date-time format
+    "endTime": "2025-01-15T23:00:00Z"     // ISO 8601 date-time format
+  }
+  ```
+- API output example
+  ```json
+  {
+    "streamSources": [
+      {
+        "sourceType": "HLS",
+        "source": {
+          "hLSStreamingURL": "https://b-35e552df.kinesisvideo.us-west-2.amazonaws.com/hls/v1/getHLSMasterPlaylist.m3u8?SessionToken=CiBSZUrGzxlWR3UEqiWYo8eon66Muc6e23MwiET2QxjZfBIQ8KU4EzBzba8K1wlzIbMxkhoZxY1u5YxwBbsnqQefljlUsyVVjryz0C9b2SIgSZ2-kM9f2iKhAHK9q3Z0hM96kb2mDxVTdkqJTXhRiJw~"
+        }
+      }
+    ]
+  }
+  ```
+  
+#### Video Timeline
+##### `POST /list-video-timelines` - List available video timelines
+- API input example
+  ```json
+  {
+    "deviceId": "example-device-id",
+    "startTime": "2024-02-20T00:00:00Z", // ISO 8601 date-time format
+    "endTime": "2024-02-20T01:00:00Z", // ISO 8601 date-time format
+    "timeIncrement": 5,
+    "timeIncrementUnits": "MINUTES",       
+    "nextToken": "eyJkZXZpY2VJZCI6ImQxMjMiLCJ0aW1lc3RhbXAiOjE2OTc4Mjc5MjB9" // optional pagination token
+  }
+  ```
+- API output example
+  ```json
+  {
+    "deviceId": "example-device-id",
+    "startTime": "2024-01-16T12:00:00Z",
+    "endTime": "2024-01-16T13:00:00Z",
+    "timeIncrement": 5,
+    "timeIncrementUnits": "MINUTES",
+    "videoTimelines": [
+      {
+        "cloudDensity": 0.0,
+        "deviceDensity": 0.0
+      },
+      {
+        "cloudDensity": 0.0,
+        "deviceDensity": 0.0
+      },
+      {
+        "cloudDensity": 0.6942166686058044,
+        "deviceDensity": 0.0
+      },
+      {
+        "cloudDensity": 0.9998166561126709,
+        "deviceDensity": 0.0
+      }
+    ],
+    "nextToken": "eyJkZXZpY2VJZCI6ImQxMjMiLCJ0aW1lc3RhbXAiOjE2OTc4Mjc5MjB9"
+  }
+  ```
+##### `POST /list-detailed-video-timeline` - Get detailed video timeline information
+- API input example
+  ```json
+  {
+    "deviceId": "example-device-id",
+    "startTime": "2024-01-16T12:00:00Z",  // ISO 8601 date-time format
+    "endTime": "2024-01-16T13:00:00Z",    // ISO 8601 date-time format
+    "nextToken": "eyJkZXZpY2VJZCI6ImQxMjMiLCJ0aW1lc3RhbXAiOjE2OTc4Mjc5MjB9"                  // optional pagination token
+  }
+  ```
+- API output example
+  ```json
+  {
+    "deviceId": "example-device-id",
+    "startTime": "2024-01-16T12:00:00Z",
+    "endTime": "2024-01-16T13:00:00Z",
+    "detailedVideoTimeline": {
+      "cloud" : [
+        {
+          "startTime": "2022-07-18T20:10:05",
+          "endTime": "2022-07-18T20:10:21"
+        },
+        {
+          "startTime": "2022-07-18T20:22:15",
+          "endTime": "2022-07-18T20:27:19"
+        }
+        {
+          "startTime": "2022-07-18T22:50:02",
+          "endTime": "2022-07-18T22:56:06"
+        }
+      ],
+      "device": [
+        {
+          "startTime": "2022-07-18T20:10:05",
+          "endTime": "2022-07-18T20:10:13"
+        } 
+      ]
+    },
+    "nextToken": "eyJkZXZpY2VJZCI6ImQxMjMiLCJ0aW1lc3RhbXAiOjE2OTc4Mjc5MjB9"
+  }
+  ```
+
+### Commands to run
+
+#### Guidance Cloud
+
+Deploy resources from the guidance package
+
+1. Checkout https://github.com/aws-solutions-library-samples/guidance-for-video-analytics-infrastructure-on-aws
+2. Build the service from source code
+3. Deploy the necessary resources from the deployment folder - Video Logistics and Device Management
+
+#### Process 2
+
+References for spinning up process 2 can be found [here](./source/edge/DEVELOPMENT.md). Execute process 2 with the required config file parameter. A sample `Yaml` config file has been included with the source code.
+
+To execute, enter the following command
+
+```
+cargo run -- -c <path to config file>
+```
+
+### Expected output 
+When the process 2 is successfully running, you should see output similar to this in your terminal:
+```
+[2024-01-17T10:15:32Z INFO  edge_process] Reading configuration from ./config.yaml
+[2024-01-17T10:15:32Z INFO  edge_process] Setting up directory at guidance-for-video-analytics-infrastructure-on-aws/source/edge
+[2024-01-17T10:15:32Z INFO  edge_process] Initializing tracing/logging system
+[2024-01-17T10:15:33Z INFO  edge_process] Establishing IoT MQTT connection
+[2024-01-17T10:15:33Z INFO  edge_process] Connected to IoT Core
+[2024-01-17T10:15:33Z DEBUG edge_process] Devices found: example-device-id
+[2024-01-17T10:15:33Z INFO  edge_process] Device IP found: 10.123.456.7
+[2024-01-17T10:15:33Z INFO  edge_process] Checking for pending IoT job executions
+[2024-01-17T10:15:33Z INFO  edge_process] Setting up device model
+[2024-01-17T10:15:33Z INFO  edge_process] Getting video encoder configurations
+[2024-01-17T10:15:33Z INFO  edge_process] Publishing video settings to IoT Core
+[2024-01-17T10:15:33Z INFO  edge_process] Setting up thumbnail services URI
+[2024-01-17T10:15:33Z INFO  edge_process] Bootstrapping thumbnail services
+[2024-01-17T10:15:33Z INFO  edge_process] Initializing snapshot client
+[2024-01-17T10:15:34Z INFO  edge_process] Setting up streaming services URI
+[2024-01-17T10:15:34Z INFO  edge_process] Bootstrapping streaming services
+[2024-01-17T10:15:34Z INFO  edge_process] Getting stream URI
+[2024-01-17T10:15:34Z INFO  edge_process] Setting up RTSP URL
+[2024-01-17T10:15:34Z INFO  edge_process] Initializing WebRTC state machine
+```
+
+### Output description
+Successfully executing process 2 from cargo starts the communication to the cloud resources that have been deployed in your AWS account. You can now access livestream sessions, snapshots, etc. in your cloud resources through the AWS Console. For further monitoring and management of your video analytics infrastructure, you can also access the deployed Lambda functions and S3 buckets through their respective AWS Console interfaces."
 
 ## Next Steps
 
