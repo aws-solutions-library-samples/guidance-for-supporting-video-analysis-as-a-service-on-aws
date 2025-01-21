@@ -1,5 +1,6 @@
 use std::borrow::Borrow;
 use std::collections::HashMap;
+use std::env;
 use std::error::Error;
 use std::fmt::Debug;
 use std::str::FromStr;
@@ -683,9 +684,12 @@ where
 {
     /// set up services uri by calling ONVIF GetServices
     async fn set_up_services_uri(&mut self, ip_address: String) -> Result<(), Box<dyn Error>> {
-        // This call gives us the uri that will be needed for get_services_uri method in
-        // all ONVIF call
-        self.get_services(ip_address).await?;
+        if cfg!(not (feature = "simulated-rtsp-stream")) {
+            // This call gives us the uri that will be needed for get_services_uri method in
+            // all ONVIF call
+            self.get_services(ip_address).await?;            
+        }
+
         Ok(())
     }
 
@@ -707,6 +711,10 @@ where
 
     /// Send request to Onvif server to get stream URI
     async fn get_stream_uri(&mut self) -> Result<String, Box<dyn Error>> {
+        if cfg!(feature = "simulated-rtsp-stream") {
+            return Ok(env::var("SIM_RTSP_STREAM").expect("Environment variable SIM_RTSP_STREAM not set. Unable to run edge process."))
+        }
+
         let get_profiles_response = self.get_profiles().await?;
         let prof_resp = get_profiles_response
             .profiles
@@ -734,7 +742,7 @@ where
         let get_stream_uri_resp: GetStreamUriResponse =
             soap::deserialize(stream_uri_resp_str.as_str())?;
         info!("Successfully Retrieved RTSP Url: {:?}", get_stream_uri_resp);
-        Ok(get_stream_uri_resp.media_uri.uri)
+        return Ok(get_stream_uri_resp.media_uri.uri);
     }
 
     /// Passing the RTSP url to gstreamer and start the gstreamer pipeline
@@ -745,6 +753,14 @@ where
     ) -> Result<StreamUriConfiguration, Box<dyn Error>> {
         let get_stream_rtsp_uri = self.get_stream_uri().await?;
 
+        if cfg!(feature = "simulated-rtsp-stream") {
+            return Ok(StreamUriConfiguration {
+                        rtsp_uri: get_stream_rtsp_uri,
+                        username: String::new(),
+                        password: String::new(),
+                    })
+        }
+    
         let pw_md5_hash = md5::compute(password.as_str());
         let pw_md5_base64 = general_purpose::STANDARD.encode(*pw_md5_hash);
 
@@ -754,6 +770,7 @@ where
             username,
             password: pw_md5_base64,
         })
+
     }
 }
 

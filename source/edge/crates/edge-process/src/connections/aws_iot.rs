@@ -52,6 +52,7 @@ pub fn new_pub_sub_message_builder() -> Box<dyn PubSubMessageBuilder + Send + Sy
     MQTTMessageBuilder::new_pub_sub_message_builder()
 }
 
+#[cfg(not(feature = "simulated-rtsp-stream"))]
 /// Setup event loop for communication with aws-iot
 pub async fn setup_and_start_iot_event_loop(
     config: &ConfigImpl,
@@ -138,6 +139,84 @@ pub async fn setup_and_start_iot_event_loop(
                                 let _ = pub_sub_client_manager.update_command_status(CommandStatus::Failed, job_id, iot_client.borrow_mut()).await;
                             }
 
+                        }
+
+                        if let Some(message) = pub_sub_client_manager.received_livestream_shadow_message(msg_in.as_ref()) {
+                            info!("Streaming message received {:?}", message);
+                            let _ = livestreaming_request_tx.send(message).await;
+                        };
+
+                        info!("received message :{}", msg_in.get_payload());
+                    }
+
+
+                }
+            }
+        }
+    });
+    Ok(handle)
+}
+
+#[cfg(feature = "simulated-rtsp-stream")]
+/// Setup event loop for communication with aws-iot
+pub async fn setup_and_start_iot_event_loop(
+    config: &ConfigImpl,
+    logger_config_tx: Sender<String>,
+    mut pub_sub_client_manager: Box<dyn IotClientManager + Send + Sync>,
+    mut iot_client: AsyncPubSubClient,
+    livestreaming_request_tx: Sender<String>,
+) -> anyhow::Result<JoinHandle<()>> {
+    // Connections startup sequence.
+    ServiceCommunicationManager::create_global_device_information(&config.get_config())
+        .expect("Failure to setup global device information");
+    let mut rx = ServiceCommunicationManager::create_global_iot_communication_channel(
+        BUFFER_SIZE,
+        new_pub_sub_message_builder(),
+    )
+    .expect("Unable to create IoT Communication channel.");
+
+    let handle = tokio::spawn(async move {
+        let _msgs = false;
+        loop {
+            let log_sync = std::env::var(LOG_SYNC).unwrap_or("FALSE".to_string()).eq("TRUE");
+
+            // Publish and empty message to applicable shadow to pass delta.
+            trigger_shadows();
+            loop {
+                select! {
+                    // Messages to publish to the cloud.
+                    Some(msg_out) = rx.recv() => {
+                        // Should assume errors are recoverable and log them.  IoT Client should panic if errors are unrecoverable
+                        match iot_client.send(msg_out).await {
+                            Ok(_) => {
+                                debug!("Message published to AWS IoT.");
+                            },
+                            Err(e) => {
+                                error!("Error sending message to AWS IoT : {:?}",e);
+                            }
+                        }
+                    },
+                    // Messages from IoT
+                    Ok(msg_in) = iot_client.recv() => {
+                        // System state change message received.
+                        if let Some(new_state) = pub_sub_client_manager.received_state_message(msg_in.as_ref()) {
+                            match new_state {
+                                //Device has been set to ENABLED
+                                State::CreateOrEnableSteamingResources => {
+                                    StateManager::set_state(State::CreateOrEnableSteamingResources);
+                                },
+                                //Device has been set to DISABLED
+                                State::DisableStreamingResources => {
+                                    StateManager::set_state(State::DisableStreamingResources);
+                                },
+                            }
+                        }
+
+                        if let Some(message) = pub_sub_client_manager.received_logger_settings_message(msg_in.as_ref()) {
+                            if log_sync {
+                                info!("Logger settings message received {:?}", message);
+                                let _ = logger_config_tx.send(message.to_string()).await;
+                            }
                         }
 
                         if let Some(message) = pub_sub_client_manager.received_livestream_shadow_message(msg_in.as_ref()) {

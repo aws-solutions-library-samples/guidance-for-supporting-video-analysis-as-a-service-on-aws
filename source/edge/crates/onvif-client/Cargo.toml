@@ -37,3 +37,6 @@ http-auth = "0.1.8"
 # used for calculating onvif password hash
 md5 = "0.7.0"
 base64 = "0.21.0"
+
+[features]
+simulated-rtsp-stream = []

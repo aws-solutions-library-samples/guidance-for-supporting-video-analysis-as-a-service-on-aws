@@ -195,7 +195,8 @@ This deployment has been tested on macOS and Linux operating systems. Follow the
           openssl-devel libcurl-devel log4cplus-devel \
           gstreamer1-devel gstreamer1-plugins-base-devel \
           gstreamer1-plugins-good gstreamer1-plugins-bad-free \
-          gstreamer1-plugins-ugly-free gstreamer1-tools
+          gstreamer1-plugins-ugly-free gstreamer1-tools \
+          gstreamer1-plugins-base-tools gstreamer1-plugins-bad-free-devel
         ```
 
    2. **Build and Install KVS GStreamer Plugin**
@@ -286,7 +287,7 @@ This deployment has been tested on macOS and Linux operating systems. Follow the
      ```bash
      cargo install cross --git https://github.com/cross-rs/cross
      ```
-
+    Note, cross compiling edge binary depends on Gstreamer. Refer to previous section Install GStreamer Base Requirements for its installation. 
 6. **Additional Tools**
    - Git
      ```bash

@@ -47,6 +47,7 @@ use webrtc_client::signaling_client::WebrtcSignalingClient;
 use webrtc_client::state_machine::WebrtcStateMachine;
 use ws_discovery_client::client::ws_discovery_client::DiscoveryBuilder;
 
+#[cfg(not(feature = "simulated-rtsp-stream"))]
 #[tokio::main]
 async fn main() -> Result<ExitCode, Box<dyn Error>> {
     let cli_args = get_cli_args();
@@ -528,6 +529,220 @@ async fn main() -> Result<ExitCode, Box<dyn Error>> {
     Ok(ExitCode::SUCCESS)
 }
 
+// Implementation for when using simulated rtsp stream instead of ONVIF compliant devices. 
+// When the feature is used, edge binary only provides the feature playback and livestream. 
+// Does not provide import media object, snapshot, and optional features (ip discovery, commands, and configurations)
+#[cfg(feature = "simulated-rtsp-stream")]
+#[tokio::main]
+async fn main() -> Result<ExitCode, Box<dyn Error>> {
+    let cli_args = get_cli_args();
+
+    let config_path = cli_args.settings_path.expect("No config path entered!");
+
+    // Get settings from file
+    let configurations = ConfigImpl::new(&config_path.clone()).await?;
+
+    let settings = configurations.get_settings();
+
+    let dir = settings.get_dir().await.expect("Invalid Directory Entered");
+
+    let local_log_file_path = dir.to_owned().join("logs");
+    let dir_path = dir.to_owned().display().to_string();
+
+    // File Writer collects tracing logs, Returns a guard which must exist for the lifetime of the program.
+    let _log_file_guard = init_tracing(&settings).await;
+
+    let mut http_client = Client::new();
+
+    // If we are tunneling IP, the remote endpoint is getting reached
+    // We need to set up a correct proxy for reqwest to use
+    // this is used for local development and testing purposes
+    if let Ok(localhost_endpoint) = env::var("LOCALHOST_ENDPOINT") {
+        http_client = Client::builder().proxy(Proxy::http(localhost_endpoint)?).build()?;
+    }
+
+    let ip_address = env::var("LOCALHOST_ENDPOINT").unwrap_or("127.0.0.1".to_string());
+
+    let log_sync = env::var(LOG_SYNC).unwrap_or("FALSE".to_string()).eq("TRUE");
+
+    let mut pub_sub_client_manager =
+        IotMqttClientManager::new_iot_connection_manager(configurations.get_config());
+    let mut iot_client: Box<dyn PubSubClient + Send + Sync> =
+        pub_sub_client_manager.new_pub_sub_client().await?;
+
+    let config_media_path = get_media_config(&config_path.clone()).await?;
+
+    let (snapshot_tx, mut snapshot_rx) = channel::<String>(BUFFER_SIZE);
+
+    let mut streaming_model =
+        device_streaming_config::get_device_streaming_config_instance(http_client.clone());
+    streaming_model.set_up_services_uri(ip_address.clone()).await?;  // the call does nothing for now
+
+    let _get_stream_response = streaming_model.get_stream_uri().await?;
+    let stream_uri_config = streaming_model
+        .get_rtsp_url(
+            config_media_path.onvif_account_name.clone(),
+            config_media_path.onvif_password.clone(),
+        )
+        .await?;
+
+    // Livestream
+    let (streaming_signal_tx, mut streaming_signal_rx) = channel::<String>(BUFFER_SIZE);
+    let mut webrtc_state_machine = WebrtcStateMachine::new(
+        streaming_signal_tx.clone(),
+        stream_uri_config.rtsp_uri.clone(),
+        config_media_path.onvif_account_name.clone(),
+        config_media_path.onvif_password.clone(),
+        config_media_path.aws_region.clone(),
+    )
+    .expect("Unable to create webrtc state machine");
+
+    // This is used by P2P to send and receive P2P connection state with cloud.
+    // using unnamed classic shadow to communicate P2P connections from cloud to edge
+    let mut iot_classic_shadow_client: Box<dyn ShadowManager + Send + Sync> =
+        new_iot_shadow_manager(settings.get_client_id(), None, dir.to_owned()).await;
+
+    let (peer_connection_tx, mut peer_connection_rx) = channel::<String>(1000);
+
+    let _peer_streaming_join_handle = tokio::spawn(async move {
+        clear_peer_to_peer_content_from_shadow_blocking(iot_classic_shadow_client.as_mut()).await;
+        loop {
+            // Guard to prevent new peer-to-peer streaming unless device is enabled.
+            if !is_device_state_create_or_enable() {
+                sleep(Duration::from_millis(250)).await;
+                continue;
+            }
+            select! {
+                // Handle connection from the cloud
+                Some(message) = peer_connection_rx.recv() => {
+                    let Ok(message) = serde_json::from_str(&message) else {
+                        error!("Error in converting peer connection from string to json");
+                        return;
+                    };
+
+                    debug!("received connection signal from the cloud");
+                    let _res = webrtc_state_machine
+                        .handle_state_update(message).await;
+                }
+
+                // Temporary solution for clearing out shadows
+                Some(msg_in) = streaming_signal_rx.recv() => {
+
+                    info!("received message");
+                    // Re instantiate box inside of move
+                    let mut iot_classic_shadow_client = new_iot_shadow_manager(
+                        settings.get_client_id(),
+                        None,
+                        dir.to_owned(),
+                    )
+                    .await;
+
+                    let Ok(message) = serde_json::from_str::<Value>(&msg_in) else {
+                        error!("Error in converting streaming signal message from string to json");
+                        return;
+                    };
+                    let client_id = &message[CLIENT_ID];
+                    let status = &message[STATE];
+                    if status == "Failed" || status == "Disconnected" {
+                        let Ok(clear_streaming_peer_connections_shadow_entry)  = serde_json::from_str::<Value>(&format!(
+                            "{{
+                                \"StreamingPeerConnections\": {{
+                                    {client_id}: null
+                                }}
+                            }}"
+                        )) else {
+                            error!("Error in converting peer connection from string to json");
+                            return;
+                        };
+                        info!("Clearing state");
+                        let _res = iot_classic_shadow_client.update_desired_state_from_device(clear_streaming_peer_connections_shadow_entry.clone()).await;
+
+                        let _res = iot_classic_shadow_client.update_reported_state(clear_streaming_peer_connections_shadow_entry.clone()).await;
+                        let _res = webrtc_state_machine.handle_state_update(message.clone()).await;
+                    }
+                }
+            }
+        }
+    });
+    let peer_connection_tx_clone = peer_connection_tx.clone();
+
+    let (video_config_tx, mut video_config_rx) = channel::<Value>(BUFFER_SIZE);
+    let (logger_config_tx, mut logger_config_rx) = channel::<String>(BUFFER_SIZE);
+    let (log_tx, log_rx) = channel::<Value>(BUFFER_SIZE);
+
+    static LOG_SYNC_STATUS: Lazy<Arc<Mutex<bool>>> = Lazy::new(|| Arc::new(Mutex::new(true)));
+    static LOG_SYNC_LEVEL: Lazy<Arc<Mutex<String>>> =
+        Lazy::new(|| Arc::new(Mutex::new("INFO".to_string())));
+    static LOG_SYNC_FREQUENCY: Lazy<Arc<Mutex<u64>>> = Lazy::new(|| Arc::new(Mutex::new(300)));
+
+    let logger_config_tx_clone = logger_config_tx.clone();
+
+    let _iot_loop_handle = setup_and_start_iot_event_loop(
+        &configurations,
+        logger_config_tx_clone,
+        pub_sub_client_manager,
+        iot_client,
+        peer_connection_tx_clone,
+    )
+    .await?;
+
+    let _log_loop_handle =
+        setup_and_start_log_sync_loop(dir_path, local_log_file_path, log_rx).await?;
+
+    loop {
+        match StateManager::get_state() {
+            State::CreateOrEnableSteamingResources => {
+                info!("Device is enabled creating streaming resources.");
+                break;
+            }
+            _ => {
+                debug!("Device not enabled. Blocking creation streaming resources.");
+            }
+        }
+        sleep(Duration::from_millis(250)).await;
+    }
+
+    let (motion_based_streaming_tx, motion_based_streaming_rx) = sync_channel(5);
+    let uri_config = stream_uri_config.clone();
+    let mut streaming_service = create_streaming_service(uri_config, motion_based_streaming_rx);
+
+    // Livestream
+    // ServiceCommunicationManager is established in setup_and_start_iot_event_loop().
+    // Therefore, KinesisVideoStreamClient that depends on ServiceCommunicationManager can't be instantiated prior to that function
+    let kvs_client = KinesisVideoStreamClient::from_conf().await?;
+
+    let _webrtc_signaling_client = WebrtcSignalingClient::new(
+        kvs_client.ice_server_configs.to_owned(),
+        stream_uri_config.rtsp_uri.clone(),
+        config_media_path.aws_region.clone(),
+        config_media_path.onvif_account_name.clone(),
+        config_media_path.onvif_password.clone(),
+    )
+    .await?;
+
+    let _gstreamer_pipeline_handle = tokio::spawn(async move {
+        // Start pipeline when device is in the correct state.
+        loop {
+            match StateManager::get_state() {
+                // Device has been set to ENABLED
+                State::CreateOrEnableSteamingResources => {
+                    streaming_service.ensure_start().await;
+                }
+                // Device has been set to DISABLED
+                State::DisableStreamingResources => {
+                    streaming_service.ensure_stop().await;
+                }
+            }
+            sleep(Duration::from_millis(250)).await;
+        }
+    });
+
+    // This will keep process 2 alive until connections task stops.
+    try_join!(_iot_loop_handle)?;
+
+    Ok(ExitCode::SUCCESS)
+}
+
 fn is_device_state_create_or_enable() -> bool {
     let state = StateManager::get_state();
     state == State::CreateOrEnableSteamingResources
@@ -566,3 +781,4 @@ async fn clear_peer_to_peer_content_from_shadow_blocking(
         sleep(Duration::from_millis(100)).await;
     }
 }
+
