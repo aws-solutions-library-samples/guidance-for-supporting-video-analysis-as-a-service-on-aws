@@ -40,6 +40,12 @@ export class ServiceStack extends Stack {
       ]
     });
 
+    // Add Lambda invoke permissions
+    apiGatewayRole.addToPolicy(new PolicyStatement({
+      resources: [`arn:aws:lambda:${props.region}:${props.account}:function:*`],
+      actions: ['lambda:InvokeFunction']
+    }));
+
     const getDeviceRole = createLambdaRole(this, "GetDeviceRole", [
       new PolicyStatement({
         effect: Effect.ALLOW,
@@ -79,6 +85,10 @@ export class ServiceStack extends Stack {
       }),
     });
 
+    getDeviceLambda.addPermission('getDeviceApiGatewayPermission', {
+      principal: new ServicePrincipal('apigateway.amazonaws.com'),
+    })
+
     const getDeviceShadowRole = createLambdaRole(this, "GetDeviceShadowRole", [
       new PolicyStatement({
         effect: Effect.ALLOW,
@@ -109,6 +119,10 @@ export class ServiceStack extends Stack {
       }),
     });
 
+    getDeviceShadowLambda.addPermission('getDeviceShadowApiGatewayPermission', {
+      principal: new ServicePrincipal('apigateway.amazonaws.com'),
+    })
+
     const updateDeviceShadowRole = createLambdaRole(this, "UpdateDeviceShadowRole", [
       new PolicyStatement({
         effect: Effect.ALLOW,
@@ -138,6 +152,10 @@ export class ServiceStack extends Stack {
           logGroupName: "/aws/lambda/UpdateDeviceShadowActivity",
       }),
     });
+
+    updateDeviceShadowLambda.addPermission('updateDeviceShadowApiGatewayPermission', {
+      principal: new ServicePrincipal('apigateway.amazonaws.com'),
+    })
 
     // Create StartCreateDeviceActivity role with minimal permissions
     const StartCreateDeviceSyncPathRole = createLambdaRole(this, "StartCreateDeviceSyncPathRole", [
@@ -187,6 +205,10 @@ export class ServiceStack extends Stack {
       }),
     });
 
+    startCreateDeviceLambda.addPermission('startCreateDeviceApiGatewayPermission', {
+      principal: new ServicePrincipal('apigateway.amazonaws.com'),
+    })
+
     // GetCreateDeviceStatusActivity Lambda
     const getCreateDeviceStatusLambda = new Function(this, "GetCreateDeviceStatusActivity", {
       runtime: Runtime.JAVA_17,
@@ -206,11 +228,9 @@ export class ServiceStack extends Stack {
       }),
     });
 
-    // Add Lambda invoke permissions
-    apiGatewayRole.addToPolicy(new PolicyStatement({
-      resources: ['*'],
-      actions: ['lambda:InvokeFunction']
-    }));
+    getCreateDeviceStatusLambda.addPermission('getCreateDeviceApiGatewayPermission', {
+      principal: new ServicePrincipal('apigateway.amazonaws.com'),
+    })
 
     // Overriding CFN logical IDs for OpenAPI spec transformation
     // This must match the variables defined in the Smithy model

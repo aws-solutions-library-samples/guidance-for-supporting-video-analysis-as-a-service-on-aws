@@ -155,7 +155,7 @@ impl MediaMetadataStorage {
     }
 
     /// Save media to database.  Copies the content of the media file.
-    /// TODO: eventually, we will want to package media into a zip file instead of a string
+    /// Potential Improvement: package media into a zip file instead of a string
     pub(crate) fn save_media(&mut self, media: String) -> Result<usize, DatabaseError> {
         let mut media_as_json: Value = serde_json::from_str(&media.clone()).unwrap();
         let media_start_time = media_as_json[TIMESTAMP_KEY].as_u64().unwrap();

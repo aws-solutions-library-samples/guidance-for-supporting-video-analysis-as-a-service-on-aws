@@ -85,6 +85,19 @@ exports[`ServiceStack Snapshot test 1`] = `
       "Type": "AWS::Logs::LogGroup",
       "UpdateReplacePolicy": "Retain",
     },
+    "GetCreateDeviceStatusActivitygetCreateDeviceApiGatewayPermission91D4EFE2": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "GetCreateDeviceStatusActivity",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
     "GetCreateDeviceStatusRoleDefaultPolicy7BBC8369": {
       "Properties": {
         "PolicyDocument": {
@@ -206,6 +219,19 @@ exports[`ServiceStack Snapshot test 1`] = `
       },
       "Type": "AWS::Logs::LogGroup",
       "UpdateReplacePolicy": "Retain",
+    },
+    "GetDeviceActivitygetDeviceApiGatewayPermission1400358C": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "GetDeviceActivity",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+      },
+      "Type": "AWS::Lambda::Permission",
     },
     "GetDeviceRole3D35518F": {
       "Properties": {
@@ -338,6 +364,19 @@ exports[`ServiceStack Snapshot test 1`] = `
       "Type": "AWS::Logs::LogGroup",
       "UpdateReplacePolicy": "Retain",
     },
+    "GetDeviceShadowActivitygetDeviceShadowApiGatewayPermission546E1052": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "GetDeviceShadowActivity",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
     "GetDeviceShadowRoleDefaultPolicy4630B68E": {
       "Properties": {
         "PolicyDocument": {
@@ -459,6 +498,19 @@ exports[`ServiceStack Snapshot test 1`] = `
       },
       "Type": "AWS::Logs::LogGroup",
       "UpdateReplacePolicy": "Retain",
+    },
+    "StartCreateDeviceActivitystartCreateDeviceApiGatewayPermissionA746ABF8": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "StartCreateDeviceActivity",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+      },
+      "Type": "AWS::Lambda::Permission",
     },
     "StartCreateDeviceSyncPathRoleDD129E47": {
       "Properties": {
@@ -592,6 +644,19 @@ exports[`ServiceStack Snapshot test 1`] = `
       },
       "Type": "AWS::Logs::LogGroup",
       "UpdateReplacePolicy": "Retain",
+    },
+    "UpdateDeviceShadowActivityupdateDeviceShadowApiGatewayPermissionC0F8FA49": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "UpdateDeviceShadowActivity",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+      },
+      "Type": "AWS::Lambda::Permission",
     },
     "UpdateDeviceShadowRoleDefaultPolicyF4BFF2DD": {
       "Properties": {
@@ -791,7 +856,7 @@ exports[`ServiceStack Snapshot test 1`] = `
             {
               "Action": "lambda:InvokeFunction",
               "Effect": "Allow",
-              "Resource": "*",
+              "Resource": "arn:aws:lambda:us-east-1:123456789012:function:*",
             },
           ],
           "Version": "2012-10-17",

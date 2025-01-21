@@ -1,29 +1,35 @@
-import { Construct } from 'constructs';
 import { Stack } from 'aws-cdk-lib';
-import * as path from 'path';
 import {
-  Table, AttributeType, BillingMode, StreamViewType, ProjectionType
+  AttributeType, BillingMode,
+  ProjectionType,
+  StreamViewType,
+  Table
 } from 'aws-cdk-lib/aws-dynamodb';
 import {
-  AccountRootPrincipal, Role, ServicePrincipal, PolicyStatement, ManagedPolicy, Effect
+  AccountRootPrincipal,
+  Effect,
+  ManagedPolicy,
+  PolicyStatement,
+  Role, ServicePrincipal
 } from 'aws-cdk-lib/aws-iam';
-import {
-  Function, IFunction, Runtime, StartingPosition, Code, Tracing
-} from 'aws-cdk-lib/aws-lambda';
-import { Queue, QueueEncryption } from 'aws-cdk-lib/aws-sqs';
-import { DynamoEventSource, SqsDlq } from 'aws-cdk-lib/aws-lambda-event-sources';
-import { StateMachine } from 'aws-cdk-lib/aws-stepfunctions';
 import { Key } from 'aws-cdk-lib/aws-kms';
-import * as fs from 'fs';
-
 import {
-  DEFAULT_LAMBDA_PACKAGE_NAME,
-  DEFAULT_LAMBDA_HANDLER_DIRECTORY,
+  Code,
+  Function, IFunction, Runtime, StartingPosition,
+  Tracing
+} from 'aws-cdk-lib/aws-lambda';
+import { DynamoEventSource, SqsDlq } from 'aws-cdk-lib/aws-lambda-event-sources';
+import { Queue, QueueEncryption } from 'aws-cdk-lib/aws-sqs';
+import { StateMachine } from 'aws-cdk-lib/aws-stepfunctions';
+import { Construct } from 'constructs';
+
+import { createGSI, createTable } from './serviceConstructs';
+import {
   JOB_ID,
   LAMBDA_MANAGED_POLICY_NAME,
-  LAMBDA_SERVICE_PRINCIPAL
+  LAMBDA_SERVICE_PRINCIPAL,
+  WORKFLOW_HANDLER_DIRECTORY
 } from './serviceConstructs/const';
-import { createGSI, createTable } from './serviceConstructs';
 
 export abstract class VideoAnalyticsAsyncWorkflowResource extends Construct {
   protected name: string;
@@ -177,25 +183,15 @@ export class Workflow extends Construct {
         STATE_MACHINE_FOR_FINALIZE_ARN: props.stateMachineForFinalizeArn
       })
     };
-
-    const lambdaName = props.workflowLambdaProps?.lambdaPackageName ?? DEFAULT_LAMBDA_PACKAGE_NAME;
-    const lambdaDirectory =
-      props.workflowLambdaProps?.lambdaHandlerDirectory ?? DEFAULT_LAMBDA_HANDLER_DIRECTORY;
-
-    const lambdaAssetPath = path.join(__dirname, '../../../', 'lambda-built', lambdaName);
-    let code: Code;
-    if (fs.existsSync(lambdaAssetPath)) {
-      code = Code.fromAsset(lambdaAssetPath);
-    } else {
-      code = Code.fromAsset('../../../../guidance-for-video-analytics-infrastructure-on-aws/assets/lambda-built/common-construct-assets/VideoAnalyticsWorkflowHandler-1.0-beta.jar');
-    }
+    
+    let code = Code.fromAsset(WORKFLOW_HANDLER_DIRECTORY);
 
     this.lambda = new Function(this, `${props.tableName}-StreamProcessor`, {
       code: code,
       description: 'Lambda responsible for invocation of StepFunction',
       runtime: Runtime.JAVA_17,
       tracing: Tracing.ACTIVE,
-      handler: 'com.amazonaws.videoanalytics.workflow.lambda.TriggerStepFunctionLambda::handleRequest', // TODO: Update this to the correct handler
+      handler: 'com.amazonaws.videoanalytics.workflow.lambda.TriggerStepFunctionLambda::handleRequest',
       role: this.ddbStreamProcessorLambdaRole,
       memorySize: 1028,
       environment: environment

@@ -456,8 +456,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
                   "Effect": "Allow",
                   "Resource": [
                     "arn:aws:apigateway:us-east-1::/restapis",
-                    "arn:aws:apigateway:us-east-1::/restapis/*",
-                    "arn:aws:execute-api:us-east-1:123456789012:*/*/POST/*/*",
+                    "arn:aws:execute-api:us-east-1:123456789012:*/*/POST/start-vl-register-device/*",
                   ],
                 },
                 {
@@ -536,8 +535,8 @@ exports[`WorkflowStack Snapshot test 1`] = `
     },
     "StartCreateDeviceFVLWorkflowCheckerLambdaFAD86E9D": {
       "DependsOn": [
-        "StartCreateDeviceCreateKvsStreamRoleDefaultPolicy5564FEE9",
-        "StartCreateDeviceCreateKvsStreamRoleD0636F2D",
+        "StartCreateDeviceVideoLogisticsWorkflowCheckerRoleDefaultPolicyFEF9F0F1",
+        "StartCreateDeviceVideoLogisticsWorkflowCheckerRoleC8B6D774",
       ],
       "Properties": {
         "Code": {
@@ -550,7 +549,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
             "AccountId": "123456789012",
             "LambdaRoleArn": {
               "Fn::GetAtt": [
-                "StartCreateDeviceCreateKvsStreamRoleD0636F2D",
+                "StartCreateDeviceVideoLogisticsWorkflowCheckerRoleC8B6D774",
                 "Arn",
               ],
             },
@@ -566,7 +565,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
         "MemorySize": 512,
         "Role": {
           "Fn::GetAtt": [
-            "StartCreateDeviceCreateKvsStreamRoleD0636F2D",
+            "StartCreateDeviceVideoLogisticsWorkflowCheckerRoleC8B6D774",
             "Arn",
           ],
         },
@@ -753,7 +752,7 @@ exports[`WorkflowStack Snapshot test 1`] = `
                     "iot:AttachPolicy",
                   ],
                   "Effect": "Allow",
-                  "Resource": "*",
+                  "Resource": "arn:aws:iot:us-east-1:123456789012:*/*",
                 },
               ],
               "Version": "2012-10-17",
@@ -1250,6 +1249,108 @@ exports[`WorkflowStack Snapshot test 1`] = `
       },
       "Type": "AWS::Logs::LogGroup",
       "UpdateReplacePolicy": "Retain",
+    },
+    "StartCreateDeviceVideoLogisticsWorkflowCheckerRoleC8B6D774": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
+                    "apigateway:GET",
+                    "execute-api:Invoke",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": [
+                    "arn:aws:apigateway:us-east-1::/restapis",
+                    "arn:aws:execute-api:us-east-1:123456789012:*/*/POST/get-vl-register-device-status/*",
+                  ],
+                },
+                {
+                  "Action": [
+                    "dynamodb:GetItem",
+                    "dynamodb:PutItem",
+                    "dynamodb:UpdateItem",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": [
+                    "*",
+                    {
+                      "Fn::GetAtt": [
+                        "CreateDeviceTableC4C8D097",
+                        "Arn",
+                      ],
+                    },
+                  ],
+                },
+                {
+                  "Action": [
+                    "kms:Decrypt",
+                    "kms:GenerateDataKey",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": "*",
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": "AccessPolicy",
+          },
+        ],
+        "RoleName": "VideoLogisticsWorkflowCheckerRole",
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "StartCreateDeviceVideoLogisticsWorkflowCheckerRoleDefaultPolicyFEF9F0F1": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "StartCreateDeviceVideoLogisticsWorkflowCheckerRoleDefaultPolicyFEF9F0F1",
+        "Roles": [
+          {
+            "Ref": "StartCreateDeviceVideoLogisticsWorkflowCheckerRoleC8B6D774",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
     },
     "StartCreateDeviceWorkflowCreateDeviceTableCreateDeviceTableStreamDLQ11CED7D4": {
       "DeletionPolicy": "Delete",

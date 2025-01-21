@@ -1,14 +1,8 @@
-import { Duration, Fn, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
+import { Duration, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
 
-import { BlockPublicAccess, Bucket, BucketEncryption, ObjectOwnership } from 'aws-cdk-lib/aws-s3';
 import { AttributeType, BillingMode, StreamViewType, Table } from 'aws-cdk-lib/aws-dynamodb';
-import { DynamoEventSource, KinesisEventSource, SqsDlq } from 'aws-cdk-lib/aws-lambda-event-sources';
-import { Function, Runtime, StartingPosition, IFunction, Code, Tracing } from 'aws-cdk-lib/aws-lambda';
-import { LambdaFunction } from 'aws-cdk-lib/aws-events-targets';
-import { LogGroup, RetentionDays } from 'aws-cdk-lib/aws-logs';
-import { Queue, QueueEncryption } from 'aws-cdk-lib/aws-sqs';
 import { Rule, Schedule } from 'aws-cdk-lib/aws-events';
-import { Stream, StreamEncryption, StreamMode } from 'aws-cdk-lib/aws-kinesis';
+import { LambdaFunction } from 'aws-cdk-lib/aws-events-targets';
 import {
     AccountRootPrincipal,
     Effect,
@@ -17,27 +11,32 @@ import {
     Role,
     ServicePrincipal
 } from 'aws-cdk-lib/aws-iam';
+import { Stream, StreamEncryption, StreamMode } from 'aws-cdk-lib/aws-kinesis';
 import { Key } from 'aws-cdk-lib/aws-kms';
+import { Code, Function, IFunction, Runtime, StartingPosition, Tracing } from 'aws-cdk-lib/aws-lambda';
+import { DynamoEventSource, KinesisEventSource, SqsDlq } from 'aws-cdk-lib/aws-lambda-event-sources';
+import { LogGroup, RetentionDays } from 'aws-cdk-lib/aws-logs';
+import { BlockPublicAccess, Bucket, BucketEncryption, ObjectOwnership } from 'aws-cdk-lib/aws-s3';
+import { Queue, QueueEncryption } from 'aws-cdk-lib/aws-sqs';
 
 
 import type { Construct } from 'constructs';
 import { AWSRegion, createTable } from 'video_analytics_common_construct';
 import {
     DENSITY_UPDATE_LAMBDA_HANDLER_PATH,
-    LAMBDA_PACKAGE_NAME,
+    EXPORT_LAMBDA_HANDLER_PATH,
+    LAMBDA_ASSET_PATH,
+    LAMBDA_MANAGED_POLICY_NAME,
+    LAMBDA_SERVICE_PRINCIPAL,
     RAW_VIDEO_TIMELINE_PK_NAME,
     RAW_VIDEO_TIMELINE_SORT_KEY_NAME,
     RAW_VIDEO_TIMELINE_TABLE_NAME,
-    EXPORT_LAMBDA_HANDLER_PATH,
     TIMELINE_BUCKET_NAME,
+    TIMELINE_FORWARDER_HANDLER_PATH,
     VIDEO_TIMELINE_PK_NAME,
     VIDEO_TIMELINE_SK_NAME,
     VIDEO_TIMELINE_TABLE_NAME,
-    VIDEO_TIMELINE_TTL_ATTRIBUTE_NAME,
-    TIMELINE_FORWARDER_HANDLER_PATH,
-    LAMBDA_ASSET_PATH,
-    LAMBDA_MANAGED_POLICY_NAME,
-    LAMBDA_SERVICE_PRINCIPAL
+    VIDEO_TIMELINE_TTL_ATTRIBUTE_NAME
 } from '../const';
 
 export interface TimelineStackProps extends StackProps {
@@ -137,7 +136,6 @@ export class TimelineStack extends Stack {
         );
 
         const timelineForwarderLambda = new Function(this, 'TimelineForwarderLambda', {
-            // TODO: Update lambda asset path once code compiled jar is available
             code: Code.fromAsset(LAMBDA_ASSET_PATH),
             description: 'Lambda responsible for forwarding lambda to KDS ',
             runtime: Runtime.JAVA_17,
@@ -192,7 +190,6 @@ export class TimelineStack extends Stack {
             ManagedPolicy.fromAwsManagedPolicyName(LAMBDA_MANAGED_POLICY_NAME)
         );
         this.videoDensityUpdateLambda = new Function(this, 'VideoDensityUpdateLambda', {
-            // TODO: Update lambda asset path once code compiled jar is available
             code: Code.fromAsset(LAMBDA_ASSET_PATH),
             description: 'Lambda responsible for aggregation of video timelines',
             runtime: Runtime.JAVA_17,
@@ -378,7 +375,6 @@ function getExportLambdaRole(
 
 function createExportLambda(stack: Stack, role: Role, props: TimelineStackProps) {
     return new Function(stack, 'VideoTimelineS3ExportLambda', {
-        // TODO: Update lambda asset path once code compiled jar is available
         code: Code.fromAsset(LAMBDA_ASSET_PATH),
         description: 'Lambda responsible for exporting timeline information from S3 to DDB',
         runtime: Runtime.JAVA_17,

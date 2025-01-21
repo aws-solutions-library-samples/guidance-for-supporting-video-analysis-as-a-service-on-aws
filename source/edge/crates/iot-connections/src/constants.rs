@@ -23,7 +23,6 @@ pub const JOB_EXECUTION_FIELD: &str = "execution";
 pub(crate) const JOB_ID_FIELD: &str = "jobId";
 //Shadow topics to subscribe too, you must add the topic prefix for the shadow.
 //https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html
-// TODO: Add to list as features are added.
 pub(crate) const SHADOW_TOPICS_TO_SUBSCRIBE: &[&str] =
     &["get/accepted", "get/rejected", "update/delta", "update/accepted", "update/rejected"];
 pub(crate) const STREAMING_PEER_CONNECTIONS_FROM_CLOUD: &str = "StreamingPeerConnections";

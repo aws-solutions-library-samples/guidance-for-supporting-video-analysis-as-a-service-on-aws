@@ -42,6 +42,7 @@ export class StartCreateDevice extends VideoAnalyticsAsyncWorkflowResource {
   private readonly attachKvsAccessToCertRole: Role;
   private readonly createDeviceRole: Role;
   private readonly createKvsStreamRole: Role;
+  private readonly videoLogisticsWorkflowCheckerRole: Role;
   private readonly setLoggerConfigRole: Role;
   private readonly failCreateDeviceRole: Role;
   private readonly account: string;
@@ -138,8 +139,23 @@ export class StartCreateDevice extends VideoAnalyticsAsyncWorkflowResource {
         ],
         resources: [
           `arn:aws:apigateway:${this.region}::/restapis`,
-          `arn:aws:apigateway:${this.region}::/restapis/*`,
-          `arn:aws:execute-api:${this.region}:${this.account}:*/*/POST/*/*`
+          `arn:aws:execute-api:${this.region}:${this.account}:*/*/POST/start-vl-register-device/*`
+        ]
+      }),
+      this.dynamoDbStatement,
+      this.kmsStatement,
+    ]);
+
+    this.videoLogisticsWorkflowCheckerRole = createLambdaRole(this, "VideoLogisticsWorkflowCheckerRole", [
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        actions: [
+          'apigateway:GET',
+          'execute-api:Invoke'
+        ],
+        resources: [
+          `arn:aws:apigateway:${this.region}::/restapis`,
+          `arn:aws:execute-api:${this.region}:${this.account}:*/*/POST/get-vl-register-device-status/*`
         ]
       }),
       this.dynamoDbStatement,
@@ -176,7 +192,7 @@ export class StartCreateDevice extends VideoAnalyticsAsyncWorkflowResource {
                 'iot:AttachThingPrincipal',
                 'iot:AttachPolicy'
               ],
-              resources: ['*']
+              resources: [`arn:aws:iot:${props.region}:${props.account}:*/*`]
             })
           ]
         })
@@ -297,11 +313,10 @@ export class StartCreateDevice extends VideoAnalyticsAsyncWorkflowResource {
         tracing: Tracing.ACTIVE,
         handler: `${DM_WORKFLOW_JAVA_PATH_PREFIX}.createdevice.VideoLogisticsWorkflowCheckerHandler::handleRequest`,
         memorySize: 512,
-        // same API GW permissions as createKvsStreamLambda
-        role: this.createKvsStreamRole,
+        role: this.videoLogisticsWorkflowCheckerRole,
         environment: {
           AccountId: this.account.toString(),
-          LambdaRoleArn: this.createKvsStreamRole.roleArn,
+          LambdaRoleArn: this.videoLogisticsWorkflowCheckerRole.roleArn,
           // this would be dynamically resolved in the Lambda for API Gateway endpoint resolving
           VIDEO_LOGISTICS_API_NAME: VIDEO_LOGISTICS_API_NAME
         },
@@ -409,7 +424,6 @@ export class StartCreateDevice extends VideoAnalyticsAsyncWorkflowResource {
     const successState = new Succeed(this, "Successful");
 
     createDeviceState.addRetry({
-      //TODO: Update this once the model code is updated
       errors: [
         "com.amazonaws.videoanalytics.devicemanagement.exceptions.RetryableException",
       ],
@@ -418,7 +432,6 @@ export class StartCreateDevice extends VideoAnalyticsAsyncWorkflowResource {
       backoffRate: 2,
     });
     setLoggerConfigState.addRetry({
-      //TODO: Update this once the model code is updated
       errors: [
         "com.amazonaws.videoanalytics.devicemanagement.exceptions.RetryableException",
       ],
@@ -427,7 +440,6 @@ export class StartCreateDevice extends VideoAnalyticsAsyncWorkflowResource {
       backoffRate: 2,
     });
     failCreateDeviceState.addRetry({
-      //TODO: Update this once the model code is updated
       errors: [
         "com.amazonaws.videoanalytics.devicemanagement.exceptions.RetryableException",
       ],
