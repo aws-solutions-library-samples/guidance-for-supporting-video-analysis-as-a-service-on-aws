@@ -166,7 +166,7 @@ public class VideoTimelineDAO {
                 condition = QueryConditional.sortLessThan(
                         t -> t.partitionValue(partitionKey).sortValue(nextMultipleTimestamp));
 
-                // TODO: Add filter for KVS TTL to make sure we are not returning deleted information
+                // Potential Improvement: Add filter for KVS TTL to make sure we are not returning deleted information
                 results = this.videoTimelineTable.query(QueryEnhancedRequest.builder()
                         .queryConditional(condition)
                         .exclusiveStartKey(lastEvaluatedKey)

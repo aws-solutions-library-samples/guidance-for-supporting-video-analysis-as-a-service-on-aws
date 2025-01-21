@@ -501,7 +501,6 @@ impl<T> DeviceStateModel for OnvifClient<T>
 where
     T: HttpClient + std::fmt::Debug + Send + Sync,
 {
-    // TODO: parity with snapshot onvif client
     async fn bootstrap(
         &mut self,
         config_path: &str,

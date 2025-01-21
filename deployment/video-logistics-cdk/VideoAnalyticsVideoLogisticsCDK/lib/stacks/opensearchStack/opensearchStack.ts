@@ -1,20 +1,21 @@
 import type { App } from 'aws-cdk-lib';
-import { Domain } from 'aws-cdk-lib/aws-opensearchservice';
-import { Stack, StackProps, CfnOutput } from 'aws-cdk-lib';
-import {getVLSearchDomainProps} from './utils';
+import { CfnOutput, Stack, StackProps } from 'aws-cdk-lib';
 import {
   AccountRootPrincipal,
   AnyPrincipal,
   ArnPrincipal,
   Effect,
+  ManagedPolicy,
   PolicyDocument,
   PolicyStatement,
+  Role,
   ServicePrincipal
 } from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
+import { Domain } from 'aws-cdk-lib/aws-opensearchservice';
 import { AWSRegion } from 'video_analytics_common_construct';
-import {OPEN_SEARCH_SERVICE_NAME} from '../const';
-import { Role, ManagedPolicy } from 'aws-cdk-lib/aws-iam';
+import { OPEN_SEARCH_SERVICE_NAME } from '../const';
+import { getVLSearchDomainProps } from './utils';
 
 
 export interface OpenSearchStackProps extends StackProps {
@@ -41,13 +42,16 @@ export class OpenSearchStack extends Stack {
 
     const openSearchPolicy = new PolicyStatement({
       effect: Effect.ALLOW,
-      resources: ['*'],
+      resources: [
+        `arn:aws:es:${this.region}:${this.account}:domain/valopensearchdomain`,
+        `arn:aws:es:${this.region}:${this.account}:domain/valopensearchdomain/*`
+      ],
       actions: ['es:ESHttpPost', 'es:ESHttpPut', 'es:ESHttpGet', 'es:ESHttpHead']
     });
 
     const kmsPolicy = new PolicyStatement({
       effect: Effect.ALLOW,
-      resources: ['*'],
+      resources: [`arn:aws:kms:${this.region}:${this.account}:key/*`],
       actions: ['kms:Decrypt', 'kms:Encrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*']
     });
 

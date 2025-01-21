@@ -1,31 +1,31 @@
+import { Arn, Duration, Stack, StackProps } from 'aws-cdk-lib';
 import type { Role } from 'aws-cdk-lib/aws-iam';
 import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
-import type { Construct } from 'constructs';
 import { Code, Function, Runtime, Tracing } from 'aws-cdk-lib/aws-lambda';
 import { LogGroup, RetentionDays } from 'aws-cdk-lib/aws-logs';
-import { Arn, Duration, Stack, StackProps } from 'aws-cdk-lib';
-import { LambdaInvoke } from 'aws-cdk-lib/aws-stepfunctions-tasks';
 import {
   Fail,
-  Succeed,
   JsonPath,
+  LogLevel,
   StateMachine,
-  TaskInput,
-  LogLevel
+  Succeed,
+  TaskInput
 } from 'aws-cdk-lib/aws-stepfunctions';
-import {
-  ERROR_MESSAGE_PATH,
-  PARTITION_KEY_PATH,
-  RESULT_PATH,
-  RESULT_PATH_ERROR,
-  LAMBDA_ASSET_PATH
-} from '../const';
+import { LambdaInvoke } from 'aws-cdk-lib/aws-stepfunctions-tasks';
+import type { Construct } from 'constructs';
 import {
   AWSRegion,
+  AWSRegionUtils,
   createLambdaRole,
-  VideoAnalyticsAsyncWorkflowResource,
-  AWSRegionUtils
+  VideoAnalyticsAsyncWorkflowResource
 } from 'video_analytics_common_construct';
+import {
+  ERROR_MESSAGE_PATH,
+  LAMBDA_ASSET_PATH,
+  PARTITION_KEY_PATH,
+  RESULT_PATH,
+  RESULT_PATH_ERROR
+} from '../const';
 
 export interface WorkflowStackProps extends StackProps {
   region: AWSRegion;
@@ -79,11 +79,10 @@ class RegisterDeviceWorkflow extends VideoAnalyticsAsyncWorkflowResource {
     resources: [Arn.format({ service: 'kms', resource: 'key/*' }, Stack.of(this))]
   });
 
-  // Keeping the scope for resources broad-ish in order to allow decryption by cross account keys
   private kmsEncryptionPolicy = new PolicyStatement({
     effect: Effect.ALLOW,
     actions: ['kms:Decrypt', 'kms:GenerateDataKey*', 'kms:ReEncrypt*'],
-    resources: ['arn:*:kms:*:*:key/*']
+    resources: [Arn.format({ service: 'kms', resource: 'key/*' }, Stack.of(this))]
   });
 
   private kvsRole: Role;
@@ -116,7 +115,6 @@ class RegisterDeviceWorkflow extends VideoAnalyticsAsyncWorkflowResource {
     const successState = new Succeed(this, 'Successful');
 
     const kvsLambda = new Function(this, 'KvsCreateLambda', {
-      // TODO: Update lambda asset path once code compiled jar is available
       code: Code.fromAsset(LAMBDA_ASSET_PATH),
       description: 'Lambda responsible for invocation of StepFunction',
       runtime: Runtime.JAVA_17,

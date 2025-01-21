@@ -1,21 +1,12 @@
 package com.amazonaws.videoanalytics.videologistics.inference;
 
-import com.amazonaws.videoanalytics.videologistics.client.opensearch.OpenSearchClient;
-import com.amazonaws.videoanalytics.videologistics.client.opensearch.OpenSearchClientProvider;
-import com.amazonaws.videoanalytics.videologistics.client.s3.ImageUploader;
-import com.amazonaws.videoanalytics.videologistics.client.s3.ThumbnailS3PresignerFactory;
-import com.amazonaws.videoanalytics.videologistics.dagger.AWSVideoAnalyticsVLControlPlaneComponent;
-import com.amazonaws.videoanalytics.videologistics.dagger.DaggerAWSVideoAnalyticsVLControlPlaneComponent;
-import com.amazonaws.videoanalytics.videologistics.utils.InferenceUtils;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
-import com.amazonaws.services.lambda.runtime.Context;
-import com.amazonaws.services.lambda.runtime.RequestHandler;
-import com.amazonaws.services.lambda.runtime.events.KinesisEvent;
-import com.amazonaws.services.lambda.runtime.events.KinesisEvent.KinesisEventRecord;
-import com.amazonaws.services.lambda.runtime.events.StreamsEventResponse;
-import com.amazonaws.services.lambda.runtime.events.StreamsEventResponse.BatchItemFailure;
-import com.google.common.base.Joiner;
-import com.google.common.collect.Lists;
+import javax.inject.Inject;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
@@ -26,22 +17,27 @@ import org.opensearch.action.bulk.BulkResponse;
 import org.opensearch.action.index.IndexRequest;
 import org.opensearch.common.xcontent.XContentType;
 import org.opensearch.core.rest.RestStatus;
-import software.amazon.awssdk.core.document.Document;
 
-import java.io.IOException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import com.amazonaws.services.lambda.runtime.Context;
+import com.amazonaws.services.lambda.runtime.RequestHandler;
+import com.amazonaws.services.lambda.runtime.events.KinesisEvent;
+import com.amazonaws.services.lambda.runtime.events.KinesisEvent.KinesisEventRecord;
+import com.amazonaws.services.lambda.runtime.events.StreamsEventResponse;
+import com.amazonaws.services.lambda.runtime.events.StreamsEventResponse.BatchItemFailure;
+import com.amazonaws.videoanalytics.videologistics.client.opensearch.OpenSearchClient;
+import com.amazonaws.videoanalytics.videologistics.client.opensearch.OpenSearchClientProvider;
+import com.amazonaws.videoanalytics.videologistics.client.s3.ImageUploader;
+import com.amazonaws.videoanalytics.videologistics.client.s3.ThumbnailS3PresignerFactory;
+import com.amazonaws.videoanalytics.videologistics.dagger.AWSVideoAnalyticsVLControlPlaneComponent;
+import com.amazonaws.videoanalytics.videologistics.dagger.DaggerAWSVideoAnalyticsVLControlPlaneComponent;
+import static com.amazonaws.videoanalytics.videologistics.exceptions.VideoAnalyticsExceptionMessage.INVALID_INPUT_EXCEPTION;
+import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.UPLOAD_BUCKET_FORMAT;
+import com.amazonaws.videoanalytics.videologistics.utils.InferenceUtils;
+import com.amazonaws.videoanalytics.videologistics.utils.annotations.ExcludeFromJacocoGeneratedReport;
+import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
 
 import software.amazon.awssdk.regions.Region;
-
-import javax.inject.Inject;
-import com.amazonaws.videoanalytics.videologistics.utils.annotations.ExcludeFromJacocoGeneratedReport;
-
-import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.UPLOAD_BUCKET_FORMAT;
-import static com.amazonaws.videoanalytics.videologistics.exceptions.VideoAnalyticsExceptionMessage.INVALID_INPUT_EXCEPTION;
 
 public class BulkInferenceLambda implements RequestHandler<KinesisEvent, StreamsEventResponse> {
     private static final Logger LOG = LogManager.getLogger(BulkInferenceLambda.class);
@@ -90,7 +86,6 @@ public class BulkInferenceLambda implements RequestHandler<KinesisEvent, Streams
         if (event == null) {
             throw new IllegalArgumentException(INVALID_INPUT_EXCEPTION);
         }
-        // TODO: Get opensearch endpoint from cdk
         OpenSearchClient openSearchClient = openSearchClientProvider.getInstance(this.endpoint);
 
         InferenceRequest inferenceRequest = parseKinesisEvent(event);

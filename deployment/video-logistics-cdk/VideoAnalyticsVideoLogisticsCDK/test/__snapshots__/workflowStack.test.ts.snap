@@ -299,7 +299,18 @@ exports[`WorkflowStack Snapshot test 1`] = `
                     "kms:ReEncrypt*",
                   ],
                   "Effect": "Allow",
-                  "Resource": "arn:*:kms:*:*:key/*",
+                  "Resource": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:",
+                        {
+                          "Ref": "AWS::Partition",
+                        },
+                        ":kms:us-east-1:123456789012:key/*",
+                      ],
+                    ],
+                  },
                 },
               ],
               "Version": "2012-10-17",

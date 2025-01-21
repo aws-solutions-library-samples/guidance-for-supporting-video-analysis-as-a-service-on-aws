@@ -47,6 +47,11 @@ export class ServiceStack extends Stack {
       assumedBy: new ServicePrincipal('apigateway.amazonaws.com'),
     });
 
+    apiGatewayRole.addToPolicy(new PolicyStatement({
+      resources: [`arn:aws:lambda:${props.region}:${props.account}:function:*`],
+      actions: ['lambda:InvokeFunction']
+    }));
+
     const createLivestreamSessionRole = createLambdaRole(this, "CreateLivestreamSessionRole", [
       new PolicyStatement({
         effect: Effect.ALLOW,
@@ -68,7 +73,6 @@ export class ServiceStack extends Stack {
         ],
         resources: [
           `arn:aws:apigateway:${this.region}::/restapis`,
-          `arn:aws:apigateway:${this.region}::/restapis/*`,
           `arn:aws:execute-api:${this.region}:${this.account}:*/*/POST/get-device/*`
         ]
       })
@@ -92,6 +96,10 @@ export class ServiceStack extends Stack {
       }),
     });
 
+    createLivestreamSessionLambda.addPermission('createLivestreamSessionApiGatewayPermission', {
+      principal: new ServicePrincipal('apigateway.amazonaws.com'),
+    })
+
     const createPlaybackSessionRole = createLambdaRole(this, "CreatePlaybackSessionRole", [
       new PolicyStatement({
         effect: Effect.ALLOW,
@@ -112,7 +120,6 @@ export class ServiceStack extends Stack {
         ],
         resources: [
           `arn:aws:apigateway:${this.region}::/restapis`,
-          `arn:aws:apigateway:${this.region}::/restapis/*`,
           `arn:aws:execute-api:${this.region}:${this.account}:*/*/POST/get-device/*`
         ]
       })
@@ -136,6 +143,10 @@ export class ServiceStack extends Stack {
       }),
     });
 
+    createPlaybackSessionLambda.addPermission('createPlaybackSessionApiGatewayPermission', {
+      principal: new ServicePrincipal('apigateway.amazonaws.com'),
+    })
+
     const createSnapshotUploadPathRole = createLambdaRole(this, "CreateSnapshotUploadPathRole", [
       new PolicyStatement({
         effect: Effect.ALLOW,
@@ -145,7 +156,6 @@ export class ServiceStack extends Stack {
         ],
         resources: [
           `arn:aws:apigateway:${this.region}::/restapis`,
-          `arn:aws:apigateway:${this.region}::/restapis/*`,
           `arn:aws:execute-api:${this.region}:${this.account}:*/*/POST/update-device-shadow/*`
         ]
       }),
@@ -391,6 +401,10 @@ export class ServiceStack extends Stack {
       }),
     });
 
+    getVLRegisterDeviceStatusLambda.addPermission('getVLRegisterDeviceStatusApiGatewayPermission', {
+      principal: new ServicePrincipal('apigateway.amazonaws.com'),
+    })
+
     const startVLRegisterDeviceRole = createLambdaRole(this, "StartVLRegisterDeviceRole", [
       new PolicyStatement({
         effect: Effect.ALLOW,
@@ -411,7 +425,6 @@ export class ServiceStack extends Stack {
         ],
         resources: [
           `arn:aws:apigateway:${this.region}::/restapis`,
-          `arn:aws:apigateway:${this.region}::/restapis/*`,
           `arn:aws:execute-api:${this.region}:${this.account}:*/*/POST/get-device/*`
         ]
       })
@@ -435,16 +448,15 @@ export class ServiceStack extends Stack {
       }),
     });
 
-    apiGatewayRole.addToPolicy(new PolicyStatement({
-      resources: ['*'],
-      actions: ['lambda:InvokeFunction']
-    }));
+    startVLRegisterDeviceLambda.addPermission('startVLRegisterDeviceApiGatewayPermission', {
+      principal: new ServicePrincipal('apigateway.amazonaws.com'),
+    })
 
     const importMediaObjectRole = createLambdaRole(this, "ImportMediaObjectRole", [
       new PolicyStatement({
         effect: Effect.ALLOW,
         actions: ['kinesis:PutRecord'],
-        resources: ['*']
+        resources: [`arn:aws:kinesis:${props.region}:${props.account}:stream/*`]
       })
     ]);
 
@@ -476,10 +488,9 @@ export class ServiceStack extends Stack {
       }),
     });
 
-    apiGatewayRole.addToPolicy(new PolicyStatement({
-      resources: ['*'],
-      actions: ['lambda:InvokeFunction']
-    }));
+    importMediaObjectLambda.addPermission('importMediaObjectApiGatewayPermission', {
+      principal: new ServicePrincipal('apigateway.amazonaws.com'),
+    })
 
     const videoTimelineBaseRole = [
       new PolicyStatement({
@@ -539,6 +550,10 @@ export class ServiceStack extends Stack {
       }),
     });
 
+    listDetailedVideoTimelineLambda.addPermission('listDetailedVideoTimelineApiGatewayPermission', {
+      principal: new ServicePrincipal('apigateway.amazonaws.com'),
+    })
+
     const listVideoTimelinesLambda = new Function(this, "ListVideoTimelinesActivity", {
       runtime: Runtime.JAVA_17,
       tracing: Tracing.ACTIVE,
@@ -555,6 +570,10 @@ export class ServiceStack extends Stack {
           logGroupName: "/aws/lambda/ListVideoTimelinesActivity",
       }),
     });
+
+    listVideoTimelinesLambda.addPermission('listVideoTimelinesApiGatewayPermission', {
+      principal: new ServicePrincipal('apigateway.amazonaws.com'),
+    })
 
     const putVideoTimelineLambda = new Function(this, "PutVideoTimelineActivity", {
       runtime: Runtime.JAVA_17,

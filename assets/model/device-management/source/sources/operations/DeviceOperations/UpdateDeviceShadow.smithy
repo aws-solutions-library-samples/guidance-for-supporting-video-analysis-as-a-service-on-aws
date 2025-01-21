@@ -14,7 +14,6 @@ use aws.apigateway#integration
     credentials: "arn:aws:iam::${AWS::AccountId}:role/DeviceManagementApiGatewayRole")
 @http(code: 200, method: "POST", uri: "/update-device-shadow/{deviceId}")
 @idempotent
-//TODO: Add idempotency token and validation
 operation UpdateDeviceShadow {
     input: UpdateDeviceShadowRequest,
     output: UpdateDeviceShadowResponse,

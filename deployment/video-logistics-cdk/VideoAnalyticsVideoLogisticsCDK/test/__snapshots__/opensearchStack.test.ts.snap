@@ -151,7 +151,10 @@ exports[`OpenSearchStack Snapshot test 1`] = `
                 "es:ESHttpHead",
               ],
               "Effect": "Allow",
-              "Resource": "*",
+              "Resource": [
+                "arn:aws:es:us-east-1:123456789012:domain/valopensearchdomain",
+                "arn:aws:es:us-east-1:123456789012:domain/valopensearchdomain/*",
+              ],
             },
             {
               "Action": [
@@ -161,7 +164,7 @@ exports[`OpenSearchStack Snapshot test 1`] = `
                 "kms:GenerateDataKey*",
               ],
               "Effect": "Allow",
-              "Resource": "*",
+              "Resource": "arn:aws:kms:us-east-1:123456789012:key/*",
             },
           ],
           "Version": "2012-10-17",

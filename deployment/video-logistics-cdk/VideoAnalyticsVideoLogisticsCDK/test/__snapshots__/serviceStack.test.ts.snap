@@ -80,6 +80,19 @@ exports[`ServiceStack Snapshot test 1`] = `
       "Type": "AWS::Logs::LogGroup",
       "UpdateReplacePolicy": "Retain",
     },
+    "CreateLivestreamSessionActivitycreateLivestreamSessionApiGatewayPermission8D415A73": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "CreateLivestreamSessionActivity",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
     "CreateLivestreamSessionRole4E6365C5": {
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -129,7 +142,6 @@ exports[`ServiceStack Snapshot test 1`] = `
                   "Effect": "Allow",
                   "Resource": [
                     "arn:aws:apigateway:us-east-1::/restapis",
-                    "arn:aws:apigateway:us-east-1::/restapis/*",
                     "arn:aws:execute-api:us-east-1:123456789012:*/*/POST/get-device/*",
                   ],
                 },
@@ -213,6 +225,19 @@ exports[`ServiceStack Snapshot test 1`] = `
       "Type": "AWS::Logs::LogGroup",
       "UpdateReplacePolicy": "Retain",
     },
+    "CreatePlaybackSessionActivitycreatePlaybackSessionApiGatewayPermission3EC76FBB": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "CreatePlaybackSessionActivity",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
     "CreatePlaybackSessionRole9B55E107": {
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -261,7 +286,6 @@ exports[`ServiceStack Snapshot test 1`] = `
                   "Effect": "Allow",
                   "Resource": [
                     "arn:aws:apigateway:us-east-1::/restapis",
-                    "arn:aws:apigateway:us-east-1::/restapis/*",
                     "arn:aws:execute-api:us-east-1:123456789012:*/*/POST/get-device/*",
                   ],
                 },
@@ -428,7 +452,6 @@ exports[`ServiceStack Snapshot test 1`] = `
                   "Effect": "Allow",
                   "Resource": [
                     "arn:aws:apigateway:us-east-1::/restapis",
-                    "arn:aws:apigateway:us-east-1::/restapis/*",
                     "arn:aws:execute-api:us-east-1:123456789012:*/*/POST/update-device-shadow/*",
                   ],
                 },
@@ -492,6 +515,19 @@ exports[`ServiceStack Snapshot test 1`] = `
       "Type": "AWS::Logs::LogGroup",
       "UpdateReplacePolicy": "Retain",
     },
+    "GetVLRegisterDeviceStatusActivitygetVLRegisterDeviceStatusApiGatewayPermission372C43E6": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "GetVLRegisterDeviceStatusActivity",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
     "ImportMediaObjectActivity": {
       "DependsOn": [
         "ImportMediaObjectRoleDefaultPolicy34EA1022",
@@ -537,6 +573,19 @@ exports[`ServiceStack Snapshot test 1`] = `
       "Type": "AWS::Logs::LogGroup",
       "UpdateReplacePolicy": "Retain",
     },
+    "ImportMediaObjectActivityimportMediaObjectApiGatewayPermission23822089": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ImportMediaObjectActivity",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
     "ImportMediaObjectRoleC03E3A7A": {
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -572,7 +621,7 @@ exports[`ServiceStack Snapshot test 1`] = `
                 {
                   "Action": "kinesis:PutRecord",
                   "Effect": "Allow",
-                  "Resource": "*",
+                  "Resource": "arn:aws:kinesis:us-east-1:123456789012:stream/*",
                 },
               ],
               "Version": "2012-10-17",
@@ -662,6 +711,19 @@ exports[`ServiceStack Snapshot test 1`] = `
       },
       "Type": "AWS::Logs::LogGroup",
       "UpdateReplacePolicy": "Retain",
+    },
+    "ListDetailedVideoTimelineActivitylistDetailedVideoTimelineApiGatewayPermission74EE4148": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ListDetailedVideoTimelineActivity",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+      },
+      "Type": "AWS::Lambda::Permission",
     },
     "ListDetailedVideoTimelineRole57EEC40B": {
       "Properties": {
@@ -812,6 +874,19 @@ exports[`ServiceStack Snapshot test 1`] = `
       },
       "Type": "AWS::Logs::LogGroup",
       "UpdateReplacePolicy": "Retain",
+    },
+    "ListVideoTimelinesActivitylistVideoTimelinesApiGatewayPermissionE1ECC661": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ListVideoTimelinesActivity",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+      },
+      "Type": "AWS::Lambda::Permission",
     },
     "ListVideoTimelinesRole217B167D": {
       "Properties": {
@@ -1380,6 +1455,19 @@ exports[`ServiceStack Snapshot test 1`] = `
       "Type": "AWS::Logs::LogGroup",
       "UpdateReplacePolicy": "Retain",
     },
+    "StartVLRegisterDeviceActivitystartVLRegisterDeviceApiGatewayPermission377C9E38": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "StartVLRegisterDeviceActivity",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
     "StartVLRegisterDeviceRoleDefaultPolicyF271889A": {
       "Properties": {
         "PolicyDocument": {
@@ -1452,7 +1540,6 @@ exports[`ServiceStack Snapshot test 1`] = `
                   "Effect": "Allow",
                   "Resource": [
                     "arn:aws:apigateway:us-east-1::/restapis",
-                    "arn:aws:apigateway:us-east-1::/restapis/*",
                     "arn:aws:execute-api:us-east-1:123456789012:*/*/POST/get-device/*",
                   ],
                 },
@@ -1877,7 +1964,7 @@ exports[`ServiceStack Snapshot test 1`] = `
             {
               "Action": "lambda:InvokeFunction",
               "Effect": "Allow",
-              "Resource": "*",
+              "Resource": "arn:aws:lambda:us-east-1:123456789012:function:*",
             },
           ],
           "Version": "2012-10-17",

@@ -1,24 +1,27 @@
 package com.amazonaws.videoanalytics.videologistics.timeline;
 
-import com.amazonaws.videoanalytics.videologistics.client.s3.S3Proxy;
-import com.amazonaws.videoanalytics.videologistics.dao.videotimeline.RawVideoTimelineDAO;
-import com.amazonaws.videoanalytics.videologistics.exceptions.VideoAnalyticsExceptionMessage;
-import com.amazonaws.videoanalytics.videologistics.utils.S3BucketRegionalizer;
-import com.amazonaws.videoanalytics.videologistics.schema.SchemaConst;
+import java.io.IOException;
+
+import javax.inject.Inject;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.ScheduledEvent;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import com.amazonaws.videoanalytics.videologistics.client.s3.S3Proxy;
+import com.amazonaws.videoanalytics.videologistics.dagger.AWSVideoAnalyticsVLControlPlaneComponent;
+import com.amazonaws.videoanalytics.videologistics.dagger.DaggerAWSVideoAnalyticsVLControlPlaneComponent;
+import com.amazonaws.videoanalytics.videologistics.dao.videotimeline.RawVideoTimelineDAO;
+import com.amazonaws.videoanalytics.videologistics.exceptions.VideoAnalyticsExceptionMessage;
+import com.amazonaws.videoanalytics.videologistics.utils.S3BucketRegionalizer;
+import com.amazonaws.videoanalytics.videologistics.utils.annotations.ExcludeFromJacocoGeneratedReport;
+
 import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.ListObjectsV2Response;
 import software.amazon.awssdk.services.s3.model.S3Object;
-import javax.inject.Inject;
-import java.io.IOException;
-import com.amazonaws.videoanalytics.videologistics.utils.annotations.ExcludeFromJacocoGeneratedReport;
-import com.amazonaws.videoanalytics.videologistics.dagger.AWSVideoAnalyticsVLControlPlaneComponent;
-import com.amazonaws.videoanalytics.videologistics.dagger.DaggerAWSVideoAnalyticsVLControlPlaneComponent;
 
 public class VideoTimelineS3ExportLambda implements RequestHandler<ScheduledEvent, Void> {
 
@@ -61,7 +64,7 @@ public class VideoTimelineS3ExportLambda implements RequestHandler<ScheduledEven
         ListObjectsV2Response result;
         do {
             result = s3Proxy.listS3Objects(bucketName, continuationToken);
-            // TODO: Add threading to parallelize these calls
+            // Potential Improvement: Add threading to parallelize these calls
             for (S3Object s3Object : result.contents()) {
                 BatchTimeline batchTimeline;
                 try {

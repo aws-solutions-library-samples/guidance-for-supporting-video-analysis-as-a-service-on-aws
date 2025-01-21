@@ -192,10 +192,6 @@ public class IotService {
                                                   JSONObject shadowProvision,
                                                   List<GroupNameAndArn> thingGroups)
     {
-        // TODO: For shadow doc, this function currently assumes -
-        //  1) shadow doc is 1 dimensional
-        //  2) state.reported and metadata.reported both exist in the shadow doc
-        //  Still need to think through edge cases of dealing with shadow doc input and update this function accordingly.
 
         DeviceMetaData deviceMetaData = DeviceMetaData.builder().build();
         IpAddress ipAddress = IpAddress.builder().build();

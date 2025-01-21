@@ -1,4 +1,4 @@
-// GRCOV_STOP_COVERAGE : TODO: Add tests after redesign is complete
+// GRCOV_STOP_COVERAGE
 //! This module holds the logic for timeline generation for fragments that are on the device in local
 //! storage but have not made it to the cloud.
 
