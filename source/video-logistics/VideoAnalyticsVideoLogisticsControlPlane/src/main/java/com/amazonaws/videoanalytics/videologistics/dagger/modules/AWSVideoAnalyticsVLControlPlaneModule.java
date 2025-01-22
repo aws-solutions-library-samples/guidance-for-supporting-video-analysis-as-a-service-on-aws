@@ -27,6 +27,8 @@ import com.amazonaws.videoanalytics.videologistics.timeline.VideoTimelineAggrega
 import com.amazonaws.videoanalytics.videologistics.timeline.VideoTimelineUtils;
 import com.amazonaws.videoanalytics.videologistics.utils.S3BucketRegionalizer;
 import com.amazonaws.videoanalytics.videologistics.validator.InferenceValidator;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import dagger.Module;
@@ -56,7 +58,17 @@ public class AWSVideoAnalyticsVLControlPlaneModule {
     @Provides
     @Singleton
     public ObjectMapper provideObjectMapper() {
-        return new ObjectMapper();
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
+
+        // Disable auto-detection. Explicitly allowlist fields for ser/de using @JsonProperty to avoid
+        // inadvertently serializing fields not meant for storage.
+        objectMapper.setVisibility(objectMapper.getSerializationConfig().getDefaultVisibilityChecker()
+                .withFieldVisibility(JsonAutoDetect.Visibility.NONE)
+                .withGetterVisibility(JsonAutoDetect.Visibility.NONE)
+                .withSetterVisibility(JsonAutoDetect.Visibility.NONE)
+                .withCreatorVisibility(JsonAutoDetect.Visibility.NONE));
+        return objectMapper;
     }
 
     @Provides

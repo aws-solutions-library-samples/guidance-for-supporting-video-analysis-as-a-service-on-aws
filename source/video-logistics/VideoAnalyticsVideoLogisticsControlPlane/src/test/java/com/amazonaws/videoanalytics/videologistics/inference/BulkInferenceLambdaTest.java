@@ -1,45 +1,5 @@
 package com.amazonaws.videoanalytics.videologistics.inference;
 
-import com.amazonaws.videoanalytics.videologistics.client.opensearch.OpenSearchClient;
-import com.amazonaws.videoanalytics.videologistics.client.opensearch.OpenSearchClientProvider;
-import com.amazonaws.videoanalytics.videologistics.client.s3.ImageUploader;
-import com.amazonaws.videoanalytics.videologistics.client.s3.ThumbnailS3Presigner;
-import com.amazonaws.videoanalytics.videologistics.client.s3.ThumbnailS3PresignerFactory;
-import com.amazonaws.videoanalytics.videologistics.utils.InferenceTestUtils;
-import com.amazonaws.services.lambda.runtime.Context;
-import com.amazonaws.services.lambda.runtime.events.KinesisEvent;
-import com.amazonaws.services.lambda.runtime.events.KinesisEvent.KinesisEventRecord;
-import com.amazonaws.services.lambda.runtime.events.KinesisEvent.Record;
-import com.amazonaws.services.lambda.runtime.events.StreamsEventResponse;
-import com.google.common.collect.Lists;
-import org.junit.Rule;
-import org.junit.contrib.java.lang.system.EnvironmentVariables;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.opensearch.action.DocWriteRequest;
-import org.opensearch.action.DocWriteResponse;
-import org.opensearch.action.bulk.BulkItemResponse;
-import org.opensearch.action.bulk.BulkRequest;
-import org.opensearch.action.bulk.BulkResponse;
-import org.opensearch.action.index.IndexRequest;
-import org.opensearch.common.xcontent.XContentType;
-import org.opensearch.core.rest.RestStatus;
-import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
-
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 import static com.amazonaws.videoanalytics.videologistics.utils.InferenceTestUtils.IMAGE;
 import static com.amazonaws.videoanalytics.videologistics.utils.InferenceTestUtils.KDS_INFERENCE_1;
 import static com.amazonaws.videoanalytics.videologistics.utils.InferenceTestUtils.KDS_INFERENCE_2;
@@ -60,6 +20,48 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import org.junit.Rule;
+import org.junit.contrib.java.lang.system.EnvironmentVariables;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.opensearch.action.DocWriteRequest;
+import org.opensearch.action.DocWriteResponse;
+import org.opensearch.action.bulk.BulkItemResponse;
+import org.opensearch.action.bulk.BulkRequest;
+import org.opensearch.action.bulk.BulkResponse;
+import org.opensearch.action.index.IndexRequest;
+import org.opensearch.common.xcontent.XContentType;
+import org.opensearch.core.rest.RestStatus;
+
+import com.amazonaws.services.lambda.runtime.Context;
+import com.amazonaws.services.lambda.runtime.LambdaLogger;
+import com.amazonaws.services.lambda.runtime.events.KinesisEvent;
+import com.amazonaws.services.lambda.runtime.events.KinesisEvent.KinesisEventRecord;
+import com.amazonaws.services.lambda.runtime.events.KinesisEvent.Record;
+import com.amazonaws.services.lambda.runtime.events.StreamsEventResponse;
+import com.amazonaws.videoanalytics.videologistics.client.opensearch.OpenSearchClient;
+import com.amazonaws.videoanalytics.videologistics.client.opensearch.OpenSearchClientProvider;
+import com.amazonaws.videoanalytics.videologistics.client.s3.ImageUploader;
+import com.amazonaws.videoanalytics.videologistics.client.s3.ThumbnailS3Presigner;
+import com.amazonaws.videoanalytics.videologistics.client.s3.ThumbnailS3PresignerFactory;
+import com.amazonaws.videoanalytics.videologistics.utils.InferenceTestUtils;
+import com.google.common.collect.Lists;
+
 import software.amazon.awssdk.regions.Region;
 
 public class BulkInferenceLambdaTest {
@@ -107,7 +109,7 @@ public class BulkInferenceLambdaTest {
     private ThumbnailS3Presigner s3Presigner;
 
     @Mock
-    private AwsCredentialsProvider fasCreds;
+    private LambdaLogger logger;
 
     @BeforeEach
     public void setup() throws MalformedURLException {
@@ -115,6 +117,7 @@ public class BulkInferenceLambdaTest {
         environmentVariables.set("opensearchEndpoint", MOCK_OPENSEARCH_ENDPOINT);
         environmentVariables.set("Stage", MOCK_AWS_STAGE);
         MockitoAnnotations.openMocks(this);
+        when(context.getLogger()).thenReturn(logger);
         when(openSearchClientProvider.getInstance(any(String.class))).thenReturn(openSearchClient);
         when(s3Presigner.getUploadPath()).thenReturn(THUMBNAIL_UPLOAD_PATH);
         when(s3Presigner.generateImageUploadURL(any(byte[].class))).thenReturn(new URL("https://" + THUMBNAIL_UPLOAD_PATH));
@@ -154,7 +157,7 @@ public class BulkInferenceLambdaTest {
         assertEquals(OPEN_SEARCH_INFERENCE_JSON_1, indexRequest1.source().utf8ToString());
 
         String expectedIndex = "test-1.0";
-        String expectedId = "Device#456-2023-10-07T00:41:47.418Z-Test-1.0-44288fd324546f02fe39f5d4e5961e9b260c2e51ffb11f704b6c430a878d03f78054e65c517cef394c2b19d713bf5d1a";
+        String expectedId = "Device#456-1696639307-Test-1.0-44288fd324546f02fe39f5d4e5961e9b260c2e51ffb11f704b6c430a878d03f78054e65c517cef394c2b19d713bf5d1a";
         assertEquals(expectedIndex, indexRequest2.index());
         assertEquals(expectedId, indexRequest2.id());
         assertEquals(XContentType.JSON, indexRequest2.getContentType());
@@ -196,7 +199,7 @@ public class BulkInferenceLambdaTest {
         assertEquals(OPEN_SEARCH_INFERENCE_JSON_1, indexRequest1.source().utf8ToString());
 
         String expectedIndex = "test-1.0";
-        String expectedId = "Device#456-2023-10-07T00:41:47.418Z-Test-1.0-44288fd324546f02fe39f5d4e5961e9b260c2e51ffb11f704b6c430a878d03f78054e65c517cef394c2b19d713bf5d1a";
+        String expectedId = "Device#456-1696639307-Test-1.0-44288fd324546f02fe39f5d4e5961e9b260c2e51ffb11f704b6c430a878d03f78054e65c517cef394c2b19d713bf5d1a";
         assertEquals(expectedIndex, indexRequest2.index());
         assertEquals(expectedId, indexRequest2.id());
         assertEquals(XContentType.JSON, indexRequest2.getContentType());

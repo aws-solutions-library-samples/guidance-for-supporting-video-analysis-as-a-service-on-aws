@@ -1,8 +1,9 @@
 package com.amazonaws.videoanalytics.videologistics.inference;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.List;
 public class KdsMetadata {
     @JsonProperty
     private String deviceId;

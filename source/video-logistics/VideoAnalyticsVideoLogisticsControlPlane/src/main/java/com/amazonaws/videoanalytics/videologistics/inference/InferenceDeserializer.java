@@ -13,7 +13,7 @@ public class InferenceDeserializer {
         try {
             return objectMapper.readValue(inference, KdsInference.class);
         } catch (Exception e) {
-            throw new RuntimeException("Failed to deserialize inference as KdsInference from KDS");
+            throw new RuntimeException(e.getMessage());
         }
     }
 

@@ -1,27 +1,26 @@
 package com.amazonaws.videoanalytics.videologistics.inference;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 
-import java.io.IOException;
-
 import static com.amazonaws.videoanalytics.videologistics.utils.InferenceTestUtils.DEVICE_ID;
-import static com.amazonaws.videoanalytics.videologistics.utils.InferenceTestUtils.ENCRYPTED_FAS;
 import static com.amazonaws.videoanalytics.videologistics.utils.InferenceTestUtils.INFERENCE_TIMESTAMP_STR;
 import static com.amazonaws.videoanalytics.videologistics.utils.InferenceTestUtils.MODEL_NAME;
 import static com.amazonaws.videoanalytics.videologistics.utils.InferenceTestUtils.MODEL_VERSION;
 import static com.amazonaws.videoanalytics.videologistics.utils.InferenceTestUtils.OPEN_SEARCH_INFERENCE_JSON_1;
 import static com.amazonaws.videoanalytics.videologistics.utils.InferenceTestUtils.THUMBNAIL_METADATA_LIST;
 import static com.amazonaws.videoanalytics.videologistics.utils.InferenceTestUtils.readInferenceFromResourcesFolder;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.when;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class InferenceSerializerTest {
 
@@ -80,7 +79,7 @@ public class InferenceSerializerTest {
         openSearchMetadata.addThumbnailS3Path("s3://upload/path");
         String inference = serializer.serialize(openSearchInference);
 
-        String expectedInference = "{\"timestamp\":\"2023-10-07T00:41:47.418Z\",\"metadata\":{\"deviceId\":\"Device#123\"," +
+        String expectedInference = "{\"timestamp\":\"1696639307\",\"metadata\":{\"deviceId\":\"Device#123\"," +
                 "\"thumbnailS3Paths\":[\"s3://upload/path\"]},\"modelOutput\":{\"MetadataStream\":{\"VideoAnalytics\":{\"Frame\":{\"Extension\":{}}}},\"confidence\":0.1}}";
         assertEquals(expectedInference, inference);
     }

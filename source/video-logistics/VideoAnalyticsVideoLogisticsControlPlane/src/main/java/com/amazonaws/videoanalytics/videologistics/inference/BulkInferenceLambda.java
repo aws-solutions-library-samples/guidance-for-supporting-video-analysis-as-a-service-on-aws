@@ -1,5 +1,8 @@
 package com.amazonaws.videoanalytics.videologistics.inference;
 
+import static com.amazonaws.videoanalytics.videologistics.exceptions.VideoAnalyticsExceptionMessage.INVALID_INPUT_EXCEPTION;
+import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.UPLOAD_BUCKET_FORMAT;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -19,6 +22,7 @@ import org.opensearch.common.xcontent.XContentType;
 import org.opensearch.core.rest.RestStatus;
 
 import com.amazonaws.services.lambda.runtime.Context;
+import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.KinesisEvent;
 import com.amazonaws.services.lambda.runtime.events.KinesisEvent.KinesisEventRecord;
@@ -30,8 +34,6 @@ import com.amazonaws.videoanalytics.videologistics.client.s3.ImageUploader;
 import com.amazonaws.videoanalytics.videologistics.client.s3.ThumbnailS3PresignerFactory;
 import com.amazonaws.videoanalytics.videologistics.dagger.AWSVideoAnalyticsVLControlPlaneComponent;
 import com.amazonaws.videoanalytics.videologistics.dagger.DaggerAWSVideoAnalyticsVLControlPlaneComponent;
-import static com.amazonaws.videoanalytics.videologistics.exceptions.VideoAnalyticsExceptionMessage.INVALID_INPUT_EXCEPTION;
-import static com.amazonaws.videoanalytics.videologistics.utils.AWSVideoAnalyticsServiceLambdaConstants.UPLOAD_BUCKET_FORMAT;
 import com.amazonaws.videoanalytics.videologistics.utils.InferenceUtils;
 import com.amazonaws.videoanalytics.videologistics.utils.annotations.ExcludeFromJacocoGeneratedReport;
 import com.google.common.base.Joiner;
@@ -83,12 +85,14 @@ public class BulkInferenceLambda implements RequestHandler<KinesisEvent, Streams
     }
 
     public StreamsEventResponse handleRequest(final KinesisEvent event, final Context context) {
+        LambdaLogger logger = context.getLogger();
+
         if (event == null) {
             throw new IllegalArgumentException(INVALID_INPUT_EXCEPTION);
         }
         OpenSearchClient openSearchClient = openSearchClientProvider.getInstance(this.endpoint);
 
-        InferenceRequest inferenceRequest = parseKinesisEvent(event);
+        InferenceRequest inferenceRequest = parseKinesisEvent(event, logger);
         // https://docs.aws.amazon.com/lambda/latest/dg/with-kinesis.html#services-kinesis-batchfailurereporting
         List<BatchItemFailure> itemFailures = Lists.newArrayList();
         StringBuilder errorMessageBuilder = new StringBuilder();
@@ -103,9 +107,8 @@ public class BulkInferenceLambda implements RequestHandler<KinesisEvent, Streams
                 try {
                     thumbnail.upload();
                 } catch (IOException e) {
-                    LOG.error("Failed to upload thumbnail to path: {} due to {}. " +
-                            "Adding to list of failures to be retried in next lambda invocation.",
-                            thumbnail.getS3UploadPath(), e.getMessage());
+                    logger.log(String.format("Failed to upload thumbnail to path: %s due to %s. Adding to list of failures to be retried in next lambda invocation.",
+                            thumbnail.getS3UploadPath(), e.getMessage()));
                     itemFailures.add(BatchItemFailure.builder()
                             .withItemIdentifier(thumbnail.getSeqNumberInBatch())
                             .build());
@@ -116,7 +119,7 @@ public class BulkInferenceLambda implements RequestHandler<KinesisEvent, Streams
             try {
                 BulkResponse response = openSearchClient.bulkIndex(inferenceRequest.getBulkRequest());
                 // Construct partial failure info
-                populateOpenSearchPartialFailures(response, inferenceRequest, itemFailures, errorMessageBuilder);
+                populateOpenSearchPartialFailures(response, inferenceRequest, itemFailures, errorMessageBuilder, logger);
             } catch (IOException e) {
                 throw new RuntimeException("bulkIndex API failed, sample partition key: "
                     + inferenceRequest.getValidRecords().get(0).getKinesis().getPartitionKey(), e);
@@ -124,15 +127,15 @@ public class BulkInferenceLambda implements RequestHandler<KinesisEvent, Streams
         }
 
         if (itemFailures.isEmpty()) {
-            LOG.info("Succeeded to index {} inferences from {} KDS records.",
-                inferenceRequest.getValidRecords().size(), inferenceRequest.getAllRecords().size());
+            logger.log(String.format("Succeeded to index %d inferences from %d KDS records.",
+                inferenceRequest.getValidRecords().size(), inferenceRequest.getAllRecords().size()));
 
             return null;
         }
 
-        LOG.error(
-            "Totally {} records from {} KDS records were not processed, with KDS sequences: {}. Error details: {}.",
-            itemFailures.size(), inferenceRequest.getAllRecords().size(), itemFailures, errorMessageBuilder.toString());
+        logger.log(
+            String.format("Totally %d records from %d KDS records were not processed, with KDS sequences: %s. Error details: %s.",
+            itemFailures.size(), inferenceRequest.getAllRecords().size(), itemFailures.toString(), errorMessageBuilder.toString()));
 
         return StreamsEventResponse.builder()
             .withBatchItemFailures(itemFailures)
@@ -164,7 +167,8 @@ public class BulkInferenceLambda implements RequestHandler<KinesisEvent, Streams
         final BulkResponse response,
         final InferenceRequest inferenceRequest,
         final List<BatchItemFailure> itemFailures,
-        final StringBuilder messageBuilder) {
+        final StringBuilder messageBuilder,
+        final LambdaLogger logger) {
 
         // Figure out each failed item's seqN fo partial failure handling
         if (response.hasFailures()) {
@@ -173,7 +177,7 @@ public class BulkInferenceLambda implements RequestHandler<KinesisEvent, Streams
                 if (item.isFailed()) {
                     // Check if the failure is due to document with the same id existed
                     if (RestStatus.CONFLICT.equals(item.getFailure().getStatus())){
-                        LOG.warn("Inference {} already exists, skip it.", item.getId());
+                        logger.log(String.format("Inference %s already exists, skip it.", item.getId()));
                         continue;
                     }
                     // Get original KDS seq number for the failed Open Search request
@@ -195,9 +199,9 @@ public class BulkInferenceLambda implements RequestHandler<KinesisEvent, Streams
         }
     }
 
-    private InferenceRequest parseKinesisEvent(KinesisEvent event) {
+    private InferenceRequest parseKinesisEvent(KinesisEvent event, LambdaLogger logger) {
         List<KinesisEvent.KinesisEventRecord> kinesisEventRecords = event.getRecords();
-        LOG.info("Received {} inferences from KDS.", kinesisEventRecords.size());
+        logger.log(String.format("Received %d inferences from KDS.", kinesisEventRecords.size()));
         BulkRequest bulkOpenSearchIndexRequest = new BulkRequest();
         List<KinesisEventRecord> validRecords = Lists.newArrayList();
         List<Thumbnail> thumbnailUploadRequests = Lists.newArrayList();
@@ -231,7 +235,7 @@ public class BulkInferenceLambda implements RequestHandler<KinesisEvent, Streams
                                 .modelVersion(kdsMetadata.getModelVersion())
                                 .deviceId(kdsMetadata.getDeviceId())
                                 .bucketName(String.format(UPLOAD_BUCKET_FORMAT, this.accountId, region.toString()))
-                                .eventTimestamp(DateTime.parse(inference.getTimestamp()))
+                                .eventTimestamp(new DateTime(Long.parseLong(inference.getTimestamp())))
                                 .eventDigest(kdsInference.getEventDigest())
                                 .thumbnailMetadata(thumbnailMetadata)
                                 .build();
@@ -261,8 +265,8 @@ public class BulkInferenceLambda implements RequestHandler<KinesisEvent, Streams
                 // Why don't we continue? Because the partial failure handling of Lambda will retry all records
                 // starting from the invalid records. To avoid unnecessary call to Open Search at our best,
                 // skip the processing of onward records
-                LOG.error("Failed to parse inference for partition {} with SeqN {}",
-                    record.getPartitionKey(), record.getSequenceNumber(), e);
+                logger.log(String.format("Failed to parse inference for partition %s with SeqN %s: %s",
+                    record.getPartitionKey(), record.getSequenceNumber(), e.getMessage()));
                 return new InferenceRequest(bulkOpenSearchIndexRequest, kinesisEventRecords, validRecords, i, thumbnailUploadRequests);
             }
         }

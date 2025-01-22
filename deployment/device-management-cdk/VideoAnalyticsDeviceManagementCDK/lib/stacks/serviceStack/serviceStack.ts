@@ -228,7 +228,7 @@ export class ServiceStack extends Stack {
       }),
     });
 
-    getCreateDeviceStatusLambda.addPermission('getCreateDeviceApiGatewayPermission', {
+    getCreateDeviceStatusLambda.addPermission('getCreateDeviceStatusApiGatewayPermission', {
       principal: new ServicePrincipal('apigateway.amazonaws.com'),
     })
 

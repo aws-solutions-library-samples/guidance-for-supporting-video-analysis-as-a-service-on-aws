@@ -27,40 +27,8 @@ public class SchemaConst {
     public static final String SCHEMA = "Schema";
     public static final String NAME = "Name";
     public static final String TYPE = "Type";
-    //    Playback Session Attributes
-    public static final String PLAYBACK_SESSION_TABLE_NAME =
-            "PlaybackSessionTable";
-    //    Livestream Session Attributes
-    public static final String LIVESTREAM_SESSION_TABLE_NAME =
-            "LivestreamSessionTable";
-    public static final String SESSION_ID = "SessionId";
-    public static final String SESSION_STATUS = "SessionStatus";
-    public static final String PEER_CONNECTION_STATUS = "PeerConnectionStatus";
-    public static final String HLS_URL = "HLSUrl";
-    public static final String CONNECTED_AT = "ConnectedAt";
-    public static final String SIGNALING_CHANNEL_URL = "SignalingChannelUrl";
-    public static final String STREAM_LOG_ARN = "StreamLogArn";
-    public static final String TEMPORARY_IS_WEBRTC_CONNECTION = "TemporaryIsWebRTCConnection";
     public static final String ERROR_CODE = "ErrorCode";
     public static final String ERROR_MESSAGE = "ErrorMessage";
-    public static final String START_TIME = "StartTime";
-    public static final String END_TIME = "EndTime";
-    public static final String STREAM_SOURCE = "StreamSource";
-    public static final String PASSWORD = "Password";
-    public static final String USERNAME = "Username";
-    public static final String TTL = "TTL";
-    public static final String URIS = "Uris";
-    public static final String EXPIRATION_TIME = "ExpirationTime";
-    public static final String ICE_SERVER = "IceServer";
-    public static final String CLIENT_ID = "ClientId";
-    public static final String STREAM_SESSION_TYPE = "StreamSessionType";
-    public static final String IS_LIVESTREAM = "IsLivestream";
-    public static final String SOURCE = "Source";
-    public static final String ENCRYPTED_FAS_CREDENTIALS = "EncryptedFASCredentials";
-    public static final String FAS_ACCESS_KEY = "AccessKey";
-    public static final String FAS_SECRET_KEY = "SecretKey";
-    public static final String FAS_SECURITY_TOKEN = "SecurityToken";
-
 
     // VIDEO_TIMELINE attributes
     public static final String RAW_VIDEO_TIMELINE_TABLE_NAME =
@@ -94,21 +62,6 @@ public class SchemaConst {
     public static final String FORWARDED_DATA_TYPES = "ForwardedDataTypes";
     public static final String SELECTORS = "Selectors";
     public static final String DESTINATIONS = "Destinations";
-
-    // Video Export Attributes
-    public static final String VIDEO_EXPORT_JOB_PARTITION_KEY = "CustomerAccountId_DeviceId";
-    public static final String EXPORTED_S3_PATH = "ExportedS3Path";
-    public static final String LAST_EXPORTED_TIME = "LastExportedTimestamp";
-    public static final String EXPORT_FILE_START_TIME = "ExportFileStartTime";
-    public static final String EXPORT_FILE_END_TIME = "ExportFileEndTime";
-    public static final String SEGMENT_JOB_STATUS = "SegmentJobStatus";
-    public static final String VIDEO_EXPORT_RESULTS_JOB_STATUS_GSI_NAME = "JobIDStatus-Index";
-    public static final String VIDEO_EXPORT_RESULTS_JOB_END_TIME_GSI_NAME = "JobIDEndTime-Index";
-    public static final String VIDEO_EXPORT_DEVICE_JOBS_GSI_NAME = "DeviceJobStatus-Index";
-    public static final String TOTAL_SEGMENTS = "TotalSegments";
-    public static final String SEGMENT_NUMBER = "SegmentNumber";
-    public static final String VIDEO_EXPORT_JOB_CUSTOMER_JOB_ID_GSI_NAME = "AccountIDJobID-Index";
-
 
     private SchemaConst() {
         // restrict instantiation

@@ -1,16 +1,3 @@
-export const VIDEO_EXPORT_JOB_GSI_NAME = "DeviceJobStatus-Index";
-export const VIDEO_EXPORT_JOB_GSI_PK = "CustomerAccountId_DeviceId";
-export const VIDEO_EXPORT_JOB_GSI_SK = "JobStatus";
-export const JOB_ID = "JobId";
-export const EXPORT_FILE_START_TIME = "ExportFileStartTime";
-export const VIDEO_EXPORT_JOB_PARTITION_KEY = "CustomerAccountId_DeviceId";
-export const JOB_STATUS = "JobStatus";
-export const VIDEO_EXPORT_RESULTS_GSI_1ST_NAME = "JobIDStatus-Index";
-export const VIDEO_EXPORT_RESULTS_GSI_1ST_SK = "SegmentJobStatus";
-export const VIDEO_EXPORT_RESULTS_GSI_2ND_NAME = "JobIDEndTime-Index";
-export const VIDEO_EXPORT_RESULTS_GSI_2ND_SK = "ExportFileEndTime";
-export const VIDEO_EXPORT_ACCOUNT_JOB_ID_GSI = "AccountIDJobID-Index";
-export const VIDEO_EXPORT_ACCOUNT_JOB_ID_GSI_PK = "CustomerAccountId";
 // Step function state parameters
 export const EXECUTION_COUNTER = "$.Counter";
 export const EXPORT_RESULT_PATH = "$.exportResult";
