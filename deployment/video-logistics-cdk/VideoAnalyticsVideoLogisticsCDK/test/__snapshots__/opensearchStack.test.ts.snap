@@ -166,6 +166,11 @@ exports[`OpenSearchStack Snapshot test 1`] = `
               "Effect": "Allow",
               "Resource": "arn:aws:kms:us-east-1:123456789012:key/*",
             },
+            {
+              "Action": "s3:PutObject",
+              "Effect": "Allow",
+              "Resource": "arn:aws:s3:::video-analytics-image-upload-bucket-123456789012-us-east-1/*",
+            },
           ],
           "Version": "2012-10-17",
         },

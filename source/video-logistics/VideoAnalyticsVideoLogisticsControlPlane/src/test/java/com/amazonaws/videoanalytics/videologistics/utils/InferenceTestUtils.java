@@ -1,30 +1,28 @@
 package com.amazonaws.videoanalytics.videologistics.utils;
 
-import com.amazonaws.videoanalytics.videologistics.inference.KdsInference;
-import com.amazonaws.videoanalytics.videologistics.inference.ThumbnailMetadata;
-import com.amazonaws.videoanalytics.videologistics.inference.InferenceDeserializer;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import com.amazonaws.videoanalytics.videologistics.inference.InferenceDeserializer;
+import com.amazonaws.videoanalytics.videologistics.inference.KdsInference;
+import com.amazonaws.videoanalytics.videologistics.inference.ThumbnailMetadata;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 public class InferenceTestUtils {
-    public static final Date INFERENCE_TIMESTAMP = Date.from(Instant.ofEpochMilli(1696639307418L));
-    public static final String INFERENCE_TIMESTAMP_STR = Instant.ofEpochMilli(1696639307418L).toString();
+    public static final Date INFERENCE_TIMESTAMP = Date.from(Instant.ofEpochMilli(1696639307L));
+    public static final String INFERENCE_TIMESTAMP_STR = "1696639307";
     public static final String ACCOUNT_ID = "Account#123";
     public static final String INVALID_ACCOUNT_ID = "Account#456";
     public static final String DEVICE_ID = "Device#123";
     public static final String MODEL_NAME = "Test";
     public static final String MODEL_VERSION = "1.0";
     public static final String DUMMY_PARTITION_KEY = "Dummy Key";
-    public static final String ENCRYPTED_FAS = "encryptedFASToken";
     public static final String KDS_INFERENCE_1 = InferenceTestUtils.readInferenceFromResourcesFolder("test-inference-kds-example-1.json");
     public static final String KDS_INFERENCE_2 = InferenceTestUtils.readInferenceFromResourcesFolder("test-inference-kds-example-2.json");
     public static final String KDS_INFERENCE_3 = InferenceTestUtils.readInferenceFromResourcesFolder("test-inference-kds-example-3.json");

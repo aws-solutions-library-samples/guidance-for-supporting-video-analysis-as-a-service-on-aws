@@ -1,10 +1,11 @@
 package com.amazonaws.videoanalytics.videologistics.inference;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.JsonNode;
+import java.util.List;
+
 import org.apache.commons.codec.digest.DigestUtils;
 
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.JsonNode;
 
 public class KdsInference {
 

@@ -55,8 +55,15 @@ export class OpenSearchStack extends Stack {
       actions: ['kms:Decrypt', 'kms:Encrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*']
     });
 
+    const s3Policy = new PolicyStatement({
+      effect: Effect.ALLOW,
+      actions: ['s3:PutObject'],
+      resources: [`arn:aws:s3:::video-analytics-image-upload-bucket-${this.account}-${this.region}/*`]
+    })
+
     bulkInferenceLambdaRole.addToPolicy(openSearchPolicy);
     bulkInferenceLambdaRole.addToPolicy(kmsPolicy);
+    bulkInferenceLambdaRole.addToPolicy(s3Policy);
 
     this.bulkInferenceLambdaRoleArn = bulkInferenceLambdaRole.roleArn;
     new CfnOutput(this, 'BulkInferenceLambdaRoleArn', {
