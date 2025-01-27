@@ -1,0 +1,32 @@
+{
+  "Parameters": {
+    "ThingName": {
+      "Type": "String"
+    },
+    "ThingCertificateId": {
+      "Type": "String"
+    }
+  },
+  "Resources": {
+    "thing": {
+      "Type": "AWS::IoT::Thing",
+      "Properties": {
+        "ThingName": {
+          "Ref": "ThingName"
+        },
+        "ThingGroups": [
+          "SpecialGroup_EnabledState"
+        ]
+      }
+    },
+    "certificate": {
+      "Type": "AWS::IoT::Certificate",
+      "Properties": {
+        "CertificateId": {
+          "Ref": "ThingCertificateId"
+        },
+        "Status": "ACTIVE"
+      }
+    }
+  }
+}

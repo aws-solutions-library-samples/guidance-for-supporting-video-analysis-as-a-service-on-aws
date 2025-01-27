@@ -1,0 +1,1637 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`WorkflowStack Snapshot test 1`] = `
+{
+  "Parameters": {
+    "BootstrapVersion": {
+      "Default": "/cdk-bootstrap/hnb659fds/version",
+      "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]",
+      "Type": "AWS::SSM::Parameter::Value<String>",
+    },
+  },
+  "Resources": {
+    "CreateDeviceTableC4C8D097": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "JobId",
+            "AttributeType": "S",
+          },
+        ],
+        "BillingMode": "PAY_PER_REQUEST",
+        "DeletionProtectionEnabled": true,
+        "KeySchema": [
+          {
+            "AttributeName": "JobId",
+            "KeyType": "HASH",
+          },
+        ],
+        "PointInTimeRecoverySpecification": {
+          "PointInTimeRecoveryEnabled": true,
+        },
+        "SSESpecification": {
+          "SSEEnabled": true,
+        },
+        "StreamSpecification": {
+          "StreamViewType": "NEW_AND_OLD_IMAGES",
+        },
+        "TableClass": "STANDARD",
+        "TableName": "CreateDeviceTable",
+      },
+      "Type": "AWS::DynamoDB::Table",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "StartCreateDeviceAttachKvsAccessToCertLambda9C48ABC8": {
+      "DependsOn": [
+        "StartCreateDeviceAttachKvsAccessToCertRoleDefaultPolicy0B014CA3",
+        "StartCreateDeviceAttachKvsAccessToCertRole3AF06585",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
+          "S3Key": Anything,
+        },
+        "Description": Any<String>,
+        "Environment": {
+          "Variables": {
+            "AccountId": "123456789012",
+            "LambdaRoleArn": {
+              "Fn::GetAtt": [
+                "StartCreateDeviceAttachKvsAccessToCertRole3AF06585",
+                "Arn",
+              ],
+            },
+          },
+        },
+        "Handler": "com.amazonaws.videoanalytics.devicemanagement.workflow.createdevice.AttachKvsAccessToCertHandler::handleRequest",
+        "LoggingConfig": {
+          "LogGroup": {
+            "Ref": "StartCreateDeviceAttachKvsAccessToCertLambdaLogGroup738DF6C6",
+          },
+        },
+        "MemorySize": 512,
+        "Role": {
+          "Fn::GetAtt": [
+            "StartCreateDeviceAttachKvsAccessToCertRole3AF06585",
+            "Arn",
+          ],
+        },
+        "Runtime": "java17",
+        "Timeout": 300,
+        "TracingConfig": {
+          "Mode": "Active",
+        },
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "StartCreateDeviceAttachKvsAccessToCertLambdaLogGroup738DF6C6": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "LogGroupName": "AttachKvsAccessToCertLambdaLogGroup",
+        "RetentionInDays": 3653,
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "StartCreateDeviceAttachKvsAccessToCertRole3AF06585": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
+                    "iot:AttachPolicy",
+                    "iot:ListThingPrincipals",
+                    "iot:UpdateThingShadow",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": [
+                    "arn:aws:iot:us-east-1:123456789012:cert/*",
+                    "arn:aws:iot:us-east-1:123456789012:policy/*",
+                    "arn:aws:iot:us-east-1:123456789012:thing/*",
+                  ],
+                },
+                {
+                  "Action": [
+                    "dynamodb:GetItem",
+                    "dynamodb:PutItem",
+                    "dynamodb:UpdateItem",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": [
+                    "*",
+                    {
+                      "Fn::GetAtt": [
+                        "CreateDeviceTableC4C8D097",
+                        "Arn",
+                      ],
+                    },
+                  ],
+                },
+                {
+                  "Action": [
+                    "kms:Decrypt",
+                    "kms:GenerateDataKey",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": "*",
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": "AccessPolicy",
+          },
+        ],
+        "RoleName": "AttachKvsAccessToCertRole",
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "StartCreateDeviceAttachKvsAccessToCertRoleDefaultPolicy0B014CA3": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "StartCreateDeviceAttachKvsAccessToCertRoleDefaultPolicy0B014CA3",
+        "Roles": [
+          {
+            "Ref": "StartCreateDeviceAttachKvsAccessToCertRole3AF06585",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "StartCreateDeviceCreateDeviceLambda9980D98A": {
+      "DependsOn": [
+        "StartCreateDeviceCreateDeviceRoleDefaultPolicy7F1DCAAE",
+        "StartCreateDeviceCreateDeviceRole7B7353C8",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
+          "S3Key": Anything,
+        },
+        "Environment": {
+          "Variables": {
+            "ACCOUNT_ID": "123456789012",
+            "LAMBDA_ROLE_ARN": {
+              "Fn::GetAtt": [
+                "StartCreateDeviceCreateDeviceRole7B7353C8",
+                "Arn",
+              ],
+            },
+          },
+        },
+        "Handler": "com.amazonaws.videoanalytics.devicemanagement.workflow.createdevice.CreateDeviceHandler::handleRequest",
+        "LoggingConfig": {
+          "LogGroup": {
+            "Ref": "StartCreateDeviceCreateDeviceLambdaLogGroup4D35EBFA",
+          },
+        },
+        "MemorySize": 512,
+        "Role": {
+          "Fn::GetAtt": [
+            "StartCreateDeviceCreateDeviceRole7B7353C8",
+            "Arn",
+          ],
+        },
+        "Runtime": "java17",
+        "Timeout": 300,
+        "TracingConfig": {
+          "Mode": "Active",
+        },
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "StartCreateDeviceCreateDeviceLambdaLogGroup4D35EBFA": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/CreateDeviceLambda",
+        "RetentionInDays": 3653,
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "StartCreateDeviceCreateDeviceRole7B7353C8": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
+                    "iot:AddThingToThingGroup",
+                    "iot:AttachThingPrincipal",
+                    "iot:CreateThing",
+                    "iot:DescribeCertificate",
+                    "iot:DescribeThing",
+                    "iot:DescribeThingGroup",
+                    "iot:ListThingGroupsForThing",
+                    "iot:UpdateCertificate",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": [
+                    "arn:aws:iot:us-east-1:123456789012:cert/*",
+                    "arn:aws:iot:us-east-1:123456789012:thinggroup/*",
+                    "arn:aws:iot:us-east-1:123456789012:thing/*",
+                  ],
+                },
+                {
+                  "Action": "iot:RegisterThing",
+                  "Effect": "Allow",
+                  "Resource": "*",
+                },
+                {
+                  "Action": [
+                    "dynamodb:GetItem",
+                    "dynamodb:PutItem",
+                    "dynamodb:UpdateItem",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": [
+                    "*",
+                    {
+                      "Fn::GetAtt": [
+                        "CreateDeviceTableC4C8D097",
+                        "Arn",
+                      ],
+                    },
+                  ],
+                },
+                {
+                  "Action": [
+                    "kms:Decrypt",
+                    "kms:GenerateDataKey",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": "*",
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": "AccessPolicy",
+          },
+        ],
+        "RoleName": "CreateDeviceRole",
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "StartCreateDeviceCreateDeviceRoleDefaultPolicy7F1DCAAE": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "StartCreateDeviceCreateDeviceRoleDefaultPolicy7F1DCAAE",
+        "Roles": [
+          {
+            "Ref": "StartCreateDeviceCreateDeviceRole7B7353C8",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "StartCreateDeviceCreateKVSStreamLambdaCBD49F90": {
+      "DependsOn": [
+        "StartCreateDeviceCreateKvsStreamRoleDefaultPolicy5564FEE9",
+        "StartCreateDeviceCreateKvsStreamRoleD0636F2D",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
+          "S3Key": Anything,
+        },
+        "Description": Any<String>,
+        "Environment": {
+          "Variables": {
+            "AccountId": "123456789012",
+            "LambdaRoleArn": {
+              "Fn::GetAtt": [
+                "StartCreateDeviceCreateKvsStreamRoleD0636F2D",
+                "Arn",
+              ],
+            },
+            "VIDEO_LOGISTICS_API_NAME": "VideoAnalyticsVideoLogisticsAPIGateway",
+          },
+        },
+        "Handler": "com.amazonaws.videoanalytics.devicemanagement.workflow.createdevice.CreateKVSStreamHandler::handleRequest",
+        "LoggingConfig": {
+          "LogGroup": {
+            "Ref": "StartCreateDeviceCreateKVSStreamLambdaLogGroupC3E89063",
+          },
+        },
+        "MemorySize": 512,
+        "Role": {
+          "Fn::GetAtt": [
+            "StartCreateDeviceCreateKvsStreamRoleD0636F2D",
+            "Arn",
+          ],
+        },
+        "Runtime": "java17",
+        "Timeout": 300,
+        "TracingConfig": {
+          "Mode": "Active",
+        },
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "StartCreateDeviceCreateKVSStreamLambdaLogGroupC3E89063": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "LogGroupName": "CreateKVSStreamLambdaLogGroup",
+        "RetentionInDays": 3653,
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "StartCreateDeviceCreateKvsStreamRoleD0636F2D": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
+                    "apigateway:GET",
+                    "execute-api:Invoke",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": [
+                    "arn:aws:apigateway:us-east-1::/restapis",
+                    "arn:aws:execute-api:us-east-1:123456789012:*/*/POST/start-vl-register-device/*",
+                  ],
+                },
+                {
+                  "Action": [
+                    "dynamodb:GetItem",
+                    "dynamodb:PutItem",
+                    "dynamodb:UpdateItem",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": [
+                    "*",
+                    {
+                      "Fn::GetAtt": [
+                        "CreateDeviceTableC4C8D097",
+                        "Arn",
+                      ],
+                    },
+                  ],
+                },
+                {
+                  "Action": [
+                    "kms:Decrypt",
+                    "kms:GenerateDataKey",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": "*",
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": "AccessPolicy",
+          },
+        ],
+        "RoleName": "CreateKvsStreamRole",
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "StartCreateDeviceCreateKvsStreamRoleDefaultPolicy5564FEE9": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "StartCreateDeviceCreateKvsStreamRoleDefaultPolicy5564FEE9",
+        "Roles": [
+          {
+            "Ref": "StartCreateDeviceCreateKvsStreamRoleD0636F2D",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "StartCreateDeviceDeviceProvisioningTemplate7A07037F": {
+      "Properties": {
+        "Description": "Template for provisioning video analytics devices",
+        "Enabled": true,
+        "ProvisioningRoleArn": {
+          "Fn::GetAtt": [
+            "StartCreateDeviceIoTProvisioningRoleDAA2D849",
+            "Arn",
+          ],
+        },
+        "TemplateBody": "{"Parameters":{"ThingName":{"Type":"String"}},"Resources":{"thing":{"Type":"AWS::IoT::Thing","Properties":{"ThingName":{"Ref":"ThingName"},"ThingGroups":["SpecialGroup_EnabledState"]}},"certificate":{"Type":"AWS::IoT::Certificate","Properties":{"CertificateId":{"Ref":"AWS::IoT::Certificate::Id"},"Status":"ACTIVE"}}}}",
+        "TemplateName": "VideoAnalyticsDeviceTemplate",
+      },
+      "Type": "AWS::IoT::ProvisioningTemplate",
+    },
+    "StartCreateDeviceFVLWorkflowCheckerLambdaFAD86E9D": {
+      "DependsOn": [
+        "StartCreateDeviceVideoLogisticsWorkflowCheckerRoleDefaultPolicyFEF9F0F1",
+        "StartCreateDeviceVideoLogisticsWorkflowCheckerRoleC8B6D774",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
+          "S3Key": Anything,
+        },
+        "Description": Any<String>,
+        "Environment": {
+          "Variables": {
+            "AccountId": "123456789012",
+            "LambdaRoleArn": {
+              "Fn::GetAtt": [
+                "StartCreateDeviceVideoLogisticsWorkflowCheckerRoleC8B6D774",
+                "Arn",
+              ],
+            },
+            "VIDEO_LOGISTICS_API_NAME": "VideoAnalyticsVideoLogisticsAPIGateway",
+          },
+        },
+        "Handler": "com.amazonaws.videoanalytics.devicemanagement.workflow.createdevice.VideoLogisticsWorkflowCheckerHandler::handleRequest",
+        "LoggingConfig": {
+          "LogGroup": {
+            "Ref": "StartCreateDeviceVLWorkflowCheckerLambdaLogGroup6C79C1F7",
+          },
+        },
+        "MemorySize": 512,
+        "Role": {
+          "Fn::GetAtt": [
+            "StartCreateDeviceVideoLogisticsWorkflowCheckerRoleC8B6D774",
+            "Arn",
+          ],
+        },
+        "Runtime": "java17",
+        "Timeout": 300,
+        "TracingConfig": {
+          "Mode": "Active",
+        },
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "StartCreateDeviceFailCreateDeviceLambda0D6A6176": {
+      "DependsOn": [
+        "StartCreateDeviceFailCreateDeviceRoleDefaultPolicy284DAAB2",
+        "StartCreateDeviceFailCreateDeviceRoleEB90340B",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
+          "S3Key": Anything,
+        },
+        "Environment": {
+          "Variables": {
+            "ACCOUNT_ID": "123456789012",
+            "LAMBDA_ROLE_ARN": {
+              "Fn::GetAtt": [
+                "StartCreateDeviceFailCreateDeviceRoleEB90340B",
+                "Arn",
+              ],
+            },
+          },
+        },
+        "Handler": "com.amazonaws.videoanalytics.devicemanagement.workflow.createdevice.FailCreateDeviceHandler::handleRequest",
+        "LoggingConfig": {
+          "LogGroup": {
+            "Ref": "StartCreateDeviceFailCreateDeviceLambdaLogGroupEA1B6434",
+          },
+        },
+        "MemorySize": 512,
+        "Role": {
+          "Fn::GetAtt": [
+            "StartCreateDeviceFailCreateDeviceRoleEB90340B",
+            "Arn",
+          ],
+        },
+        "Runtime": "java17",
+        "Timeout": 300,
+        "TracingConfig": {
+          "Mode": "Active",
+        },
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "StartCreateDeviceFailCreateDeviceLambdaLogGroupEA1B6434": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/FailCreateDeviceLambda",
+        "RetentionInDays": 3653,
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "StartCreateDeviceFailCreateDeviceRoleDefaultPolicy284DAAB2": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "StartCreateDeviceFailCreateDeviceRoleDefaultPolicy284DAAB2",
+        "Roles": [
+          {
+            "Ref": "StartCreateDeviceFailCreateDeviceRoleEB90340B",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "StartCreateDeviceFailCreateDeviceRoleEB90340B": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": "iot:UpdateCertificate",
+                  "Effect": "Allow",
+                  "Resource": "arn:aws:iot:us-east-1:123456789012:cert/*",
+                },
+                {
+                  "Action": [
+                    "dynamodb:GetItem",
+                    "dynamodb:PutItem",
+                    "dynamodb:UpdateItem",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": [
+                    "*",
+                    {
+                      "Fn::GetAtt": [
+                        "CreateDeviceTableC4C8D097",
+                        "Arn",
+                      ],
+                    },
+                  ],
+                },
+                {
+                  "Action": [
+                    "kms:Decrypt",
+                    "kms:GenerateDataKey",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": "*",
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": "AccessPolicy",
+          },
+        ],
+        "RoleName": "FailCreateDeviceRole",
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "StartCreateDeviceIoTProvisioningRoleDAA2D849": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "iot.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "Description": "Role for IoT provisioning template",
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
+                    "iot:CreateThing",
+                    "iot:AddThingToThingGroup",
+                    "iot:CreateCertificateFromCsr",
+                    "iot:AttachThingPrincipal",
+                    "iot:AttachPolicy",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": "arn:aws:iot:us-east-1:123456789012:*/*",
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": "ProvisioningPolicy",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "StartCreateDeviceSetLoggerConfigLambdaA0263FA9": {
+      "DependsOn": [
+        "StartCreateDeviceSetLoggerConfigRoleDefaultPolicyF5829FEC",
+        "StartCreateDeviceSetLoggerConfigRole69187543",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
+          "S3Key": Anything,
+        },
+        "Environment": {
+          "Variables": {
+            "ACCOUNT_ID": "123456789012",
+            "LAMBDA_ROLE_ARN": {
+              "Fn::GetAtt": [
+                "StartCreateDeviceSetLoggerConfigRole69187543",
+                "Arn",
+              ],
+            },
+          },
+        },
+        "Handler": "com.amazonaws.videoanalytics.devicemanagement.workflow.createdevice.SetLoggerConfigHandler::handleRequest",
+        "LoggingConfig": {
+          "LogGroup": {
+            "Ref": "StartCreateDeviceSetLoggerConfigLambdaLogGroup5FD04A2D",
+          },
+        },
+        "MemorySize": 512,
+        "Role": {
+          "Fn::GetAtt": [
+            "StartCreateDeviceSetLoggerConfigRole69187543",
+            "Arn",
+          ],
+        },
+        "Runtime": "java17",
+        "Timeout": 300,
+        "TracingConfig": {
+          "Mode": "Active",
+        },
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "StartCreateDeviceSetLoggerConfigLambdaLogGroup5FD04A2D": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/SetLoggerConfigLambda",
+        "RetentionInDays": 3653,
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "StartCreateDeviceSetLoggerConfigRole69187543": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": "iot:UpdateThingShadow",
+                  "Effect": "Allow",
+                  "Resource": "arn:aws:iot:us-east-1:123456789012:thing/*",
+                },
+                {
+                  "Action": [
+                    "dynamodb:GetItem",
+                    "dynamodb:PutItem",
+                    "dynamodb:UpdateItem",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": [
+                    "*",
+                    {
+                      "Fn::GetAtt": [
+                        "CreateDeviceTableC4C8D097",
+                        "Arn",
+                      ],
+                    },
+                  ],
+                },
+                {
+                  "Action": [
+                    "kms:Decrypt",
+                    "kms:GenerateDataKey",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": "*",
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": "AccessPolicy",
+          },
+        ],
+        "RoleName": "SetLoggerConfigRole",
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "StartCreateDeviceSetLoggerConfigRoleDefaultPolicyF5829FEC": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "StartCreateDeviceSetLoggerConfigRoleDefaultPolicyF5829FEC",
+        "Roles": [
+          {
+            "Ref": "StartCreateDeviceSetLoggerConfigRole69187543",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "StartCreateDeviceStartCreateDeviceStateMachine140D55D1": {
+      "DeletionPolicy": "Delete",
+      "DependsOn": [
+        "StartCreateDeviceStartCreateDeviceStateMachineRoleDefaultPolicyC56538DD",
+        "StartCreateDeviceStartCreateDeviceStateMachineRoleE4B4ECA8",
+      ],
+      "Properties": {
+        "DefinitionString": {
+          "Fn::Join": [
+            "",
+            [
+              "{"StartAt":"CreateDevice","States":{"CreateDevice":{"Next":"SetLoggerConfig","Retry":[{"ErrorEquals":["Lambda.ClientExecutionTimeoutException","Lambda.ServiceException","Lambda.AWSLambdaException","Lambda.SdkClientException"],"IntervalSeconds":2,"MaxAttempts":6,"BackoffRate":2},{"ErrorEquals":["com.amazonaws.videoanalytics.devicemanagement.exceptions.RetryableException"],"IntervalSeconds":2,"MaxAttempts":5,"BackoffRate":2}],"Catch":[{"ErrorEquals":["States.ALL"],"ResultPath":"$.error","Next":"FailCreateDevice"}],"Type":"Task","ResultPath":"$.output","Resource":"arn:",
+              {
+                "Ref": "AWS::Partition",
+              },
+              ":states:::lambda:invoke","Parameters":{"FunctionName":"",
+              {
+                "Fn::GetAtt": [
+                  "StartCreateDeviceCreateDeviceLambda9980D98A",
+                  "Arn",
+                ],
+              },
+              "","Payload":{"jobId.$":"$.partitionKey"}}},"SetLoggerConfig":{"Next":"CreateKVSStream","Retry":[{"ErrorEquals":["Lambda.ClientExecutionTimeoutException","Lambda.ServiceException","Lambda.AWSLambdaException","Lambda.SdkClientException"],"IntervalSeconds":2,"MaxAttempts":6,"BackoffRate":2},{"ErrorEquals":["com.amazonaws.videoanalytics.devicemanagement.exceptions.RetryableException"],"IntervalSeconds":2,"MaxAttempts":5,"BackoffRate":2}],"Catch":[{"ErrorEquals":["States.ALL"],"ResultPath":"$.error","Next":"FailCreateDevice"}],"Type":"Task","ResultPath":"$.output","Resource":"arn:",
+              {
+                "Ref": "AWS::Partition",
+              },
+              ":states:::lambda:invoke","Parameters":{"FunctionName":"",
+              {
+                "Fn::GetAtt": [
+                  "StartCreateDeviceSetLoggerConfigLambdaA0263FA9",
+                  "Arn",
+                ],
+              },
+              "","Payload":{"jobId.$":"$.partitionKey"}}},"CreateKVSStream":{"Next":"FvlWorkflowChecker","Retry":[{"ErrorEquals":["Lambda.ClientExecutionTimeoutException","Lambda.ServiceException","Lambda.AWSLambdaException","Lambda.SdkClientException"],"IntervalSeconds":2,"MaxAttempts":6,"BackoffRate":2}],"Catch":[{"ErrorEquals":["States.ALL"],"ResultPath":"$.error","Next":"FailCreateDevice"}],"Type":"Task","ResultPath":"$.output","Resource":"arn:",
+              {
+                "Ref": "AWS::Partition",
+              },
+              ":states:::lambda:invoke","Parameters":{"FunctionName":"",
+              {
+                "Fn::GetAtt": [
+                  "StartCreateDeviceCreateKVSStreamLambdaCBD49F90",
+                  "Arn",
+                ],
+              },
+              "","Payload":{"jobId.$":"$.partitionKey"}}},"FvlWorkflowChecker":{"Next":"AttachKvsAccessToCert","Retry":[{"ErrorEquals":["Lambda.ClientExecutionTimeoutException","Lambda.ServiceException","Lambda.AWSLambdaException","Lambda.SdkClientException"],"IntervalSeconds":2,"MaxAttempts":6,"BackoffRate":2},{"ErrorEquals":["com.amazonaws.videoanalytics.devicemanagement.exceptions.RetryableException"],"IntervalSeconds":2,"MaxAttempts":34,"BackoffRate":2}],"Catch":[{"ErrorEquals":["States.ALL"],"ResultPath":"$.error","Next":"FailCreateDevice"}],"Type":"Task","ResultPath":"$.output","Resource":"arn:",
+              {
+                "Ref": "AWS::Partition",
+              },
+              ":states:::lambda:invoke","Parameters":{"FunctionName":"",
+              {
+                "Fn::GetAtt": [
+                  "StartCreateDeviceFVLWorkflowCheckerLambdaFAD86E9D",
+                  "Arn",
+                ],
+              },
+              "","Payload":{"jobId.$":"$.partitionKey"}}},"AttachKvsAccessToCert":{"Next":"Successful","Retry":[{"ErrorEquals":["Lambda.ClientExecutionTimeoutException","Lambda.ServiceException","Lambda.AWSLambdaException","Lambda.SdkClientException"],"IntervalSeconds":2,"MaxAttempts":6,"BackoffRate":2}],"Catch":[{"ErrorEquals":["States.ALL"],"ResultPath":"$.error","Next":"FailCreateDevice"}],"Type":"Task","ResultPath":"$.output","Resource":"arn:",
+              {
+                "Ref": "AWS::Partition",
+              },
+              ":states:::lambda:invoke","Parameters":{"FunctionName":"",
+              {
+                "Fn::GetAtt": [
+                  "StartCreateDeviceAttachKvsAccessToCertLambda9C48ABC8",
+                  "Arn",
+                ],
+              },
+              "","Payload":{"jobId.$":"$.partitionKey"}}},"Successful":{"Type":"Succeed"},"FailCreateDevice":{"Next":"Fail","Retry":[{"ErrorEquals":["Lambda.ClientExecutionTimeoutException","Lambda.ServiceException","Lambda.AWSLambdaException","Lambda.SdkClientException"],"IntervalSeconds":2,"MaxAttempts":6,"BackoffRate":2},{"ErrorEquals":["com.amazonaws.videoanalytics.devicemanagement.exceptions.RetryableException"],"IntervalSeconds":2,"MaxAttempts":5,"BackoffRate":2}],"Type":"Task","ResultPath":"$.output","Resource":"arn:",
+              {
+                "Ref": "AWS::Partition",
+              },
+              ":states:::lambda:invoke","Parameters":{"FunctionName":"",
+              {
+                "Fn::GetAtt": [
+                  "StartCreateDeviceFailCreateDeviceLambda0D6A6176",
+                  "Arn",
+                ],
+              },
+              "","Payload":{"jobId.$":"$.partitionKey","failureReason.$":"$.error.Cause"}}},"Fail":{"Type":"Fail"}}}",
+            ],
+          ],
+        },
+        "LoggingConfiguration": {
+          "Destinations": [
+            {
+              "CloudWatchLogsLogGroup": {
+                "LogGroupArn": {
+                  "Fn::GetAtt": [
+                    "StartCreateDeviceStartCreateDeviceStateMachineLogGroupBA50EA42",
+                    "Arn",
+                  ],
+                },
+              },
+            },
+          ],
+          "Level": "ALL",
+        },
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "StartCreateDeviceStartCreateDeviceStateMachineRoleE4B4ECA8",
+            "Arn",
+          ],
+        },
+        "TracingConfiguration": {
+          "Enabled": true,
+        },
+      },
+      "Type": "AWS::StepFunctions::StateMachine",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "StartCreateDeviceStartCreateDeviceStateMachineLogGroupBA50EA42": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "LogGroupName": "StartCreateDeviceStateMachineLogGroup",
+        "RetentionInDays": 3653,
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "StartCreateDeviceStartCreateDeviceStateMachineRoleDefaultPolicyC56538DD": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "StartCreateDeviceCreateDeviceLambda9980D98A",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "StartCreateDeviceCreateDeviceLambda9980D98A",
+                          "Arn",
+                        ],
+                      },
+                      ":*",
+                    ],
+                  ],
+                },
+              ],
+            },
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "StartCreateDeviceSetLoggerConfigLambdaA0263FA9",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "StartCreateDeviceSetLoggerConfigLambdaA0263FA9",
+                          "Arn",
+                        ],
+                      },
+                      ":*",
+                    ],
+                  ],
+                },
+              ],
+            },
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "StartCreateDeviceCreateKVSStreamLambdaCBD49F90",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "StartCreateDeviceCreateKVSStreamLambdaCBD49F90",
+                          "Arn",
+                        ],
+                      },
+                      ":*",
+                    ],
+                  ],
+                },
+              ],
+            },
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "StartCreateDeviceFVLWorkflowCheckerLambdaFAD86E9D",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "StartCreateDeviceFVLWorkflowCheckerLambdaFAD86E9D",
+                          "Arn",
+                        ],
+                      },
+                      ":*",
+                    ],
+                  ],
+                },
+              ],
+            },
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "StartCreateDeviceAttachKvsAccessToCertLambda9C48ABC8",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "StartCreateDeviceAttachKvsAccessToCertLambda9C48ABC8",
+                          "Arn",
+                        ],
+                      },
+                      ":*",
+                    ],
+                  ],
+                },
+              ],
+            },
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "StartCreateDeviceFailCreateDeviceLambda0D6A6176",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "StartCreateDeviceFailCreateDeviceLambda0D6A6176",
+                          "Arn",
+                        ],
+                      },
+                      ":*",
+                    ],
+                  ],
+                },
+              ],
+            },
+            {
+              "Action": [
+                "logs:CreateLogDelivery",
+                "logs:GetLogDelivery",
+                "logs:UpdateLogDelivery",
+                "logs:DeleteLogDelivery",
+                "logs:ListLogDeliveries",
+                "logs:PutResourcePolicy",
+                "logs:DescribeResourcePolicies",
+                "logs:DescribeLogGroups",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            {
+              "Action": [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+                "xray:GetSamplingRules",
+                "xray:GetSamplingTargets",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "StartCreateDeviceStartCreateDeviceStateMachineRoleDefaultPolicyC56538DD",
+        "Roles": [
+          {
+            "Ref": "StartCreateDeviceStartCreateDeviceStateMachineRoleE4B4ECA8",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "StartCreateDeviceStartCreateDeviceStateMachineRoleE4B4ECA8": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "states.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "StartCreateDeviceVLWorkflowCheckerLambdaLogGroup6C79C1F7": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "LogGroupName": "VLWorkflowCheckerLambdaLogGroup",
+        "RetentionInDays": 3653,
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "StartCreateDeviceVideoLogisticsWorkflowCheckerRoleC8B6D774": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
+                    "apigateway:GET",
+                    "execute-api:Invoke",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": [
+                    "arn:aws:apigateway:us-east-1::/restapis",
+                    "arn:aws:execute-api:us-east-1:123456789012:*/*/POST/get-vl-register-device-status/*",
+                  ],
+                },
+                {
+                  "Action": [
+                    "dynamodb:GetItem",
+                    "dynamodb:PutItem",
+                    "dynamodb:UpdateItem",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": [
+                    "*",
+                    {
+                      "Fn::GetAtt": [
+                        "CreateDeviceTableC4C8D097",
+                        "Arn",
+                      ],
+                    },
+                  ],
+                },
+                {
+                  "Action": [
+                    "kms:Decrypt",
+                    "kms:GenerateDataKey",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": "*",
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": "AccessPolicy",
+          },
+        ],
+        "RoleName": "VideoLogisticsWorkflowCheckerRole",
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "StartCreateDeviceVideoLogisticsWorkflowCheckerRoleDefaultPolicyFEF9F0F1": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "StartCreateDeviceVideoLogisticsWorkflowCheckerRoleDefaultPolicyFEF9F0F1",
+        "Roles": [
+          {
+            "Ref": "StartCreateDeviceVideoLogisticsWorkflowCheckerRoleC8B6D774",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "StartCreateDeviceWorkflowCreateDeviceTableCreateDeviceTableStreamDLQ11CED7D4": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "KmsMasterKeyId": {
+          "Fn::GetAtt": [
+            "StartCreateDeviceWorkflowCreateDeviceTableCreateDeviceTableStreamDlqEncryptionKey3B709AC2",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "AWS::SQS::Queue",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "StartCreateDeviceWorkflowCreateDeviceTableCreateDeviceTableStreamDlqEncryptionKey3B709AC2": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "EnableKeyRotation": true,
+        "KeyPolicy": {
+          "Statement": [
+            {
+              "Action": "kms:*",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":iam::123456789012:root",
+                    ],
+                  ],
+                },
+              },
+              "Resource": "*",
+            },
+            {
+              "Action": [
+                "kms:Create*",
+                "kms:Describe*",
+                "kms:Enable*",
+                "kms:List*",
+                "kms:Put*",
+                "kms:Update*",
+                "kms:Revoke*",
+                "kms:Disable*",
+                "kms:Get*",
+                "kms:Delete*",
+                "kms:TagResource",
+                "kms:UntagResource",
+                "kms:ScheduleKeyDeletion",
+                "kms:CancelKeyDeletion",
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":iam::123456789012:root",
+                    ],
+                  ],
+                },
+              },
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::KMS::Key",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "StartCreateDeviceWorkflowCreateDeviceTableCreateDeviceTableStreamProcessorD61E4E44": {
+      "DependsOn": [
+        "StartCreateDeviceWorkflowCreateDeviceTableDDBStreamProcessorLambdaRoleDefaultPolicy6109FD44",
+        "StartCreateDeviceWorkflowCreateDeviceTableDDBStreamProcessorLambdaRoleB0B1ECBD",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
+          "S3Key": Anything,
+        },
+        "Description": Any<String>,
+        "Environment": {
+          "Variables": {
+            "PARTITION_KEY": "JobId",
+            "SORT_KEY": "",
+            "STATE_MACHINE_ARN": {
+              "Ref": "StartCreateDeviceStartCreateDeviceStateMachine140D55D1",
+            },
+          },
+        },
+        "Handler": "com.amazonaws.videoanalytics.workflow.lambda.TriggerStepFunctionLambda::handleRequest",
+        "MemorySize": 1028,
+        "Role": {
+          "Fn::GetAtt": [
+            "StartCreateDeviceWorkflowCreateDeviceTableDDBStreamProcessorLambdaRoleB0B1ECBD",
+            "Arn",
+          ],
+        },
+        "Runtime": "java17",
+        "TracingConfig": {
+          "Mode": "Active",
+        },
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "StartCreateDeviceWorkflowCreateDeviceTableCreateDeviceTableStreamProcessorDynamoDBEventSourceWorkflowStackCreateDeviceTable91256990CF0422DE": {
+      "Properties": {
+        "BatchSize": 10,
+        "BisectBatchOnFunctionError": true,
+        "DestinationConfig": {
+          "OnFailure": {
+            "Destination": {
+              "Fn::GetAtt": [
+                "StartCreateDeviceWorkflowCreateDeviceTableCreateDeviceTableStreamDLQ11CED7D4",
+                "Arn",
+              ],
+            },
+          },
+        },
+        "Enabled": true,
+        "EventSourceArn": {
+          "Fn::GetAtt": [
+            "CreateDeviceTableC4C8D097",
+            "StreamArn",
+          ],
+        },
+        "FunctionName": {
+          "Ref": "StartCreateDeviceWorkflowCreateDeviceTableCreateDeviceTableStreamProcessorD61E4E44",
+        },
+        "MaximumRetryAttempts": 2,
+        "StartingPosition": "LATEST",
+      },
+      "Type": "AWS::Lambda::EventSourceMapping",
+    },
+    "StartCreateDeviceWorkflowCreateDeviceTableDDBStreamProcessorLambdaRoleB0B1ECBD": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "StartCreateDeviceWorkflowCreateDeviceTableDDBStreamProcessorLambdaRoleDefaultPolicy6109FD44": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "states:StartExecution",
+              "Effect": "Allow",
+              "Resource": {
+                "Ref": "StartCreateDeviceStartCreateDeviceStateMachine140D55D1",
+              },
+            },
+            {
+              "Action": [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            {
+              "Action": [
+                "sqs:SendMessage",
+                "sqs:GetQueueAttributes",
+                "sqs:GetQueueUrl",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "StartCreateDeviceWorkflowCreateDeviceTableCreateDeviceTableStreamDLQ11CED7D4",
+                  "Arn",
+                ],
+              },
+            },
+            {
+              "Action": [
+                "kms:Decrypt",
+                "kms:Encrypt",
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey*",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "StartCreateDeviceWorkflowCreateDeviceTableCreateDeviceTableStreamDlqEncryptionKey3B709AC2",
+                  "Arn",
+                ],
+              },
+            },
+            {
+              "Action": "dynamodb:ListStreams",
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            {
+              "Action": [
+                "dynamodb:DescribeStream",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "CreateDeviceTableC4C8D097",
+                  "StreamArn",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "StartCreateDeviceWorkflowCreateDeviceTableDDBStreamProcessorLambdaRoleDefaultPolicy6109FD44",
+        "Roles": [
+          {
+            "Ref": "StartCreateDeviceWorkflowCreateDeviceTableDDBStreamProcessorLambdaRoleB0B1ECBD",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+  },
+  "Rules": {
+    "CheckBootstrapVersion": {
+      "Assertions": [
+        {
+          "Assert": {
+            "Fn::Not": [
+              {
+                "Fn::Contains": [
+                  [
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5",
+                  ],
+                  {
+                    "Ref": "BootstrapVersion",
+                  },
+                ],
+              },
+            ],
+          },
+          "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI.",
+        },
+      ],
+    },
+  },
+}
+`;

@@ -1,0 +1,31 @@
+[package]
+name = "kvs-client"
+version.workspace = true
+edition.workspace = true
+
+publish = false
+ 
+[dependencies]
+reqwest.workspace = true
+serde_json.workspace = true
+tracing.workspace = true
+async-trait.workspace = true
+serde.workspace = true
+mockall.workspace = true
+thiserror.workspace = true
+tokio.workspace = true
+chrono.workspace = true
+aws-smithy-http.workspace = true
+aws-smithy-types.workspace = true
+http.workspace = true
+url-escape.workspace = true
+aws-config.workspace = true
+aws-types.workspace = true
+aws-credential-types.workspace = true
+aws-sigv4.workspace = true
+aws-sdk-kinesisvideo = { version = "1.0", features = ["behavior-version-latest"] }
+aws-sdk-kinesisvideosignaling = { version = "1.0", features = ["behavior-version-latest"] }
+
+# internal dependencies
+device-traits.workspace = true
+iot-client.workspace = true

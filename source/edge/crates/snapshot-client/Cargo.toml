@@ -1,0 +1,22 @@
+[package]
+name = "snapshot-client"
+version.workspace = true
+edition.workspace = true
+
+# This should be set to true if this crate is split up to another repo.
+publish = false
+
+[dependencies]
+device-traits.workspace = true
+snapshot-traits.workspace = true
+http-client.workspace = true
+anyhow.workspace = true
+thiserror.workspace = true
+mockall.workspace = true
+serde_json.workspace = true
+base64.workspace = true
+tracing.workspace = true
+async-trait.workspace = true
+tokio.workspace = true
+sha256.workspace = true
+hex.workspace = true

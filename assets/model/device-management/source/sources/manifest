@@ -1,0 +1,10 @@
+types/Device.smithy
+types/DeviceOperation.smithy
+resources/Device.smithy
+resources/DeviceOperation.smithy
+operations/Device/StartCreateDevice.smithy
+operations/Device/GetCreateDeviceStatus.smithy
+operations/DeviceOperations/UpdateDeviceShadow.smithy
+operations/DeviceOperations/GetDeviceShadow.smithy
+operations/DeviceOperations/GetDevice.smithy
+video-analytic.smithy

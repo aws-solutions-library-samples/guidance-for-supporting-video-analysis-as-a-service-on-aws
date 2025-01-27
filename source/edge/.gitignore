@@ -1,0 +1,12 @@
+target/
+
+# Don't check in the local rustup toolchain override.
+/rust-toolchain.toml
+
+#Ignore log files
+/logs
+
+# Don't check in any certificates used for local testing
+/certificates
+
+Cargo.lock

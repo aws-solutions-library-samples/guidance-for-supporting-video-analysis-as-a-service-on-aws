@@ -1,0 +1,101 @@
+# This Cargo.toml file sets values for the entire workspace.
+# The crates built in this workspace can inherit dependenices and settings from this file.
+# https://doc.rust-lang.org/cargo/reference/workspaces.html
+[workspace]
+members = ["crates/*"]
+resolver = "2"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+
+[profile.dev]
+# Set debug to 2 for more output
+debug = 1
+
+[profile.release]
+debug = 0
+
+# Set depenency versions for the project, crates in this workspace can inherit
+[workspace.dependencies]
+# local crates
+device-traits = { path = "./crates/device-traits" }
+mqtt-client = { path = "./crates/mqtt-client"}
+iot-connections = { path = "./crates/iot-connections"}
+iot-client = { path = "./crates/iot-client"}
+kvs-client = { path = "./crates/kvs-client"}
+http-client = { path = "./crates/http-client"}
+onvif-client = { path = "./crates/onvif-client"}
+ws-discovery-client = { path = "./crates/ws-discovery-client" }
+streaming-traits = { path = "./crates/streaming-traits" }
+gstreamer-pipeline = { path = "./crates/gstreamer-pipeline" }
+snapshot-traits = { path = "./crates/snapshot-traits" }
+snapshot-client = { path = "./crates/snapshot-client" }
+event-processor = { path = "./crates/event-processor" }
+video-analytics-client = { path = "./crates/video-analytics-client" }
+webrtc-client = { path = "./crates/webrtc-client" }
+
+# non-local crates
+tokio = { version = "1", features = ["full", "tracing"] }
+tokio-util = "0.7.7"
+tracing = "0.1"
+tracing-subscriber = {version = "0.3", features = ["fmt","std","json","env-filter"]}
+tracing-appender = "0.2"
+async-trait = "0.1.64"
+mockall = "0.11.4"
+jsonschema = "0.24.0"
+serde = {version = "^1.0.152", features = ["rc"]}
+serde_json = "1.0"
+serde_derive = "^1.0.152"
+rumqttc = "0.23.0"
+thiserror = "1.0.24"
+anyhow = "1"
+clap = { version = "^4.2", features = ["cargo", "derive", "env"] }
+config = "0.14.0"
+once_cell = "1.17.1"
+rusqlite = {version = "0.29.0", features = ["bundled"]}
+aws-config = { version = "1.1.7", features = ["behavior-version-latest"] }
+aws-types = "1.0"
+aws-credential-types = "1.2.0"
+aws-sdk-apigateway = {version = "1.3.0", features = ["behavior-version-latest"] }
+aws-sigv4 = "1.0"
+aws-smithy-http = "0.60"
+aws-smithy-types = "1.0"
+chrono = "0.4.30"
+hex = "0.4.3"
+http = "1"
+url-escape = "0.1.1"
+# Use rustls-tls crypto library rather than OpenSSL (C dependency which is the default)
+reqwest = { version = "0.11.14", default-features = false, features = ["rustls-tls","json","stream"]}
+sha256 = "1.4.0"
+base64 = "0.22.1"
+http-auth = "0.1.8"
+gstreamer = "0.20.0"
+gstreamer-app = "0.20.0"
+gstreamer-rtsp = "0.20.0"
+gstreamer-rtp = "0.20.0"
+gstreamer-video = "0.20.0"
+gstreamer-base = "0.20.0"
+glib = "0.17.2"
+queues = "1.1.0"
+serde_bytes = "0.11"
+time = "0.3.1"
+xmlparser = "0.13.5"
+crossbeam-channel = "0.5.9"
+quickxml_to_serde = "0.5.0"
+quick-xml = "0.28.2"
+futures-util = "0.3.28"
+bytes = "^1.4.0"
+futures-channel = "0.3.28"
+h264-reader = "0.6.0"
+signal = "0.7.0"
+tokio-tungstenite = { version = "0.20.1", features = ["rustls-tls-webpki-roots"] }
+webrtc = "^0.9.0"
+bincode = "1"
+fs_extra = "1.3.0"
+
+[workspace.metadata.cross.target.armv7-unknown-linux-gnueabihf]
+pre-build = [
+"dpkg --add-architecture armhf",
+"apt-get update && apt-get install -y libgstreamer1.0-dev:armhf libgstreamer-plugins-base1.0-dev:armhf"
+]

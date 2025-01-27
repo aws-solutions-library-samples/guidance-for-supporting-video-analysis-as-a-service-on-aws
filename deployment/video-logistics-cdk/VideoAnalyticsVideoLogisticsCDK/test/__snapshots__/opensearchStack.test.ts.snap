@@ -1,0 +1,472 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`OpenSearchStack Snapshot test 1`] = `
+{
+  "Outputs": {
+    "BulkInferenceLambdaRoleArn": {
+      "Export": {
+        "Name": "BulkInferenceLambdaRoleArn",
+      },
+      "Value": {
+        "Fn::GetAtt": [
+          "BulkInferenceLambdaRole4C07E6B3",
+          "Arn",
+        ],
+      },
+    },
+  },
+  "Parameters": {
+    "BootstrapVersion": {
+      "Default": "/cdk-bootstrap/hnb659fds/version",
+      "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]",
+      "Type": "AWS::SSM::Parameter::Value<String>",
+    },
+  },
+  "Resources": {
+    "AWS679f53fac002430cb0da5b7982bd22872D164C4C": {
+      "DependsOn": [
+        "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleDefaultPolicyD28E1A5E",
+        "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
+          "S3Key": Anything,
+        },
+        "Handler": "index.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs20.x",
+        "Timeout": 120,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleDefaultPolicyD28E1A5E": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "kms:List*",
+                "kms:Describe*",
+                "kms:CreateGrant",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "VALDomainKey37626C63",
+                  "Arn",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleDefaultPolicyD28E1A5E",
+        "Roles": [
+          {
+            "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "BulkInferenceLambdaRole4C07E6B3": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "Description": "Allows lambda to make a bulk request to open search",
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+        "RoleName": "BulkInferenceLambdaRole",
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "BulkInferenceLambdaRoleDefaultPolicy57C8A9D3": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "es:ESHttpPost",
+                "es:ESHttpPut",
+                "es:ESHttpGet",
+                "es:ESHttpHead",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                "arn:aws:es:us-east-1:123456789012:domain/valopensearchdomain",
+                "arn:aws:es:us-east-1:123456789012:domain/valopensearchdomain/*",
+              ],
+            },
+            {
+              "Action": [
+                "kms:Decrypt",
+                "kms:Encrypt",
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey*",
+              ],
+              "Effect": "Allow",
+              "Resource": "arn:aws:kms:us-east-1:123456789012:key/*",
+            },
+            {
+              "Action": "s3:PutObject",
+              "Effect": "Allow",
+              "Resource": "arn:aws:s3:::video-analytics-image-upload-bucket-123456789012-us-east-1/*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "BulkInferenceLambdaRoleDefaultPolicy57C8A9D3",
+        "Roles": [
+          {
+            "Ref": "BulkInferenceLambdaRole4C07E6B3",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "VALDomainKey37626C63": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "EnableKeyRotation": true,
+        "Enabled": true,
+        "KeyPolicy": {
+          "Statement": [
+            {
+              "Action": [
+                "kms:List*",
+                "kms:Describe*",
+              ],
+              "Condition": {
+                "ArnLike": {
+                  "aws:PrincipalArn": "arn:aws:iam::123456789012:role/*",
+                },
+              },
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": "*",
+              },
+              "Resource": "*",
+            },
+            {
+              "Action": "kms:CreateGrant",
+              "Condition": {
+                "ArnLike": {
+                  "aws:PrincipalArn": "arn:aws:iam::123456789012:role/*",
+                },
+                "Bool": {
+                  "kms:GrantIsForAWSResource": "true",
+                },
+                "StringEquals": {
+                  "kms:ViaService": "es.us-east-1.amazonaws.com",
+                },
+              },
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": "*",
+              },
+              "Resource": "*",
+            },
+            {
+              "Action": [
+                "kms:Create*",
+                "kms:Describe*",
+                "kms:Enable*",
+                "kms:List*",
+                "kms:Put*",
+                "kms:Update*",
+                "kms:Revoke*",
+                "kms:Disable*",
+                "kms:Get*",
+                "kms:Delete*",
+                "kms:TagResource",
+                "kms:UntagResource",
+                "kms:ScheduleKeyDeletion",
+                "kms:CancelKeyDeletion",
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":iam::123456789012:root",
+                    ],
+                  ],
+                },
+              },
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::KMS::Key",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "VALDomainKeyAlias6C44A7F2": {
+      "Properties": {
+        "AliasName": "alias/DomainKey",
+        "TargetKeyId": {
+          "Fn::GetAtt": [
+            "VALDomainKey37626C63",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "AWS::KMS::Alias",
+    },
+    "VALOpenSearchDomain7C5F7020": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "ClusterConfig": {
+          "DedicatedMasterCount": 3,
+          "DedicatedMasterEnabled": true,
+          "DedicatedMasterType": "m6g.large.search",
+          "InstanceCount": 3,
+          "InstanceType": "c6g.large.search",
+          "WarmCount": 3,
+          "WarmEnabled": true,
+          "WarmType": "ultrawarm1.medium.search",
+          "ZoneAwarenessConfig": {
+            "AvailabilityZoneCount": 3,
+          },
+          "ZoneAwarenessEnabled": true,
+        },
+        "DomainEndpointOptions": {
+          "EnforceHTTPS": true,
+          "TLSSecurityPolicy": "Policy-Min-TLS-1-0-2019-07",
+        },
+        "DomainName": "valopensearchdomain",
+        "EBSOptions": {
+          "EBSEnabled": true,
+          "VolumeSize": 100,
+          "VolumeType": "gp3",
+        },
+        "EncryptionAtRestOptions": {
+          "Enabled": true,
+          "KmsKeyId": {
+            "Ref": "VALDomainKey37626C63",
+          },
+        },
+        "EngineVersion": "OpenSearch_2.9",
+        "LogPublishingOptions": {},
+        "NodeToNodeEncryptionOptions": {
+          "Enabled": true,
+        },
+      },
+      "Type": "AWS::OpenSearchService::Domain",
+      "UpdatePolicy": {
+        "EnableVersionUpgrade": true,
+      },
+      "UpdateReplacePolicy": "Retain",
+    },
+    "VALOpenSearchDomainAccessPolicyCustomResourcePolicy0B24C3AD": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "es:UpdateDomainConfig",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "VALOpenSearchDomain7C5F7020",
+                  "Arn",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "VALOpenSearchDomainAccessPolicyCustomResourcePolicy0B24C3AD",
+        "Roles": [
+          {
+            "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "VALOpenSearchDomainAccessPolicyE52C5A6D": {
+      "DeletionPolicy": "Delete",
+      "DependsOn": [
+        "VALOpenSearchDomainAccessPolicyCustomResourcePolicy0B24C3AD",
+      ],
+      "Properties": {
+        "Create": {
+          "Fn::Join": [
+            "",
+            [
+              "{"action":"updateDomainConfig","service":"OpenSearch","parameters":{"DomainName":"",
+              {
+                "Ref": "VALOpenSearchDomain7C5F7020",
+              },
+              "","AccessPolicies":"{\\"Statement\\":[{\\"Action\\":\\"es:*\\",\\"Effect\\":\\"Allow\\",\\"Principal\\":{\\"Service\\":\\"es.amazonaws.com\\",\\"AWS\\":\\"",
+              {
+                "Fn::GetAtt": [
+                  "BulkInferenceLambdaRole4C07E6B3",
+                  "Arn",
+                ],
+              },
+              "\\"},\\"Resource\\":[\\"",
+              {
+                "Fn::GetAtt": [
+                  "VALOpenSearchDomain7C5F7020",
+                  "Arn",
+                ],
+              },
+              "\\",\\"",
+              {
+                "Fn::GetAtt": [
+                  "VALOpenSearchDomain7C5F7020",
+                  "Arn",
+                ],
+              },
+              "/*\\"]}],\\"Version\\":\\"2012-10-17\\"}"},"outputPaths":["DomainConfig.AccessPolicies"],"physicalResourceId":{"id":"",
+              {
+                "Ref": "VALOpenSearchDomain7C5F7020",
+              },
+              "AccessPolicy"}}",
+            ],
+          ],
+        },
+        "InstallLatestAwsSdk": false,
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "AWS679f53fac002430cb0da5b7982bd22872D164C4C",
+            "Arn",
+          ],
+        },
+        "Update": {
+          "Fn::Join": [
+            "",
+            [
+              "{"action":"updateDomainConfig","service":"OpenSearch","parameters":{"DomainName":"",
+              {
+                "Ref": "VALOpenSearchDomain7C5F7020",
+              },
+              "","AccessPolicies":"{\\"Statement\\":[{\\"Action\\":\\"es:*\\",\\"Effect\\":\\"Allow\\",\\"Principal\\":{\\"Service\\":\\"es.amazonaws.com\\",\\"AWS\\":\\"",
+              {
+                "Fn::GetAtt": [
+                  "BulkInferenceLambdaRole4C07E6B3",
+                  "Arn",
+                ],
+              },
+              "\\"},\\"Resource\\":[\\"",
+              {
+                "Fn::GetAtt": [
+                  "VALOpenSearchDomain7C5F7020",
+                  "Arn",
+                ],
+              },
+              "\\",\\"",
+              {
+                "Fn::GetAtt": [
+                  "VALOpenSearchDomain7C5F7020",
+                  "Arn",
+                ],
+              },
+              "/*\\"]}],\\"Version\\":\\"2012-10-17\\"}"},"outputPaths":["DomainConfig.AccessPolicies"],"physicalResourceId":{"id":"",
+              {
+                "Ref": "VALOpenSearchDomain7C5F7020",
+              },
+              "AccessPolicy"}}",
+            ],
+          ],
+        },
+      },
+      "Type": "Custom::OpenSearchAccessPolicy",
+      "UpdateReplacePolicy": "Delete",
+    },
+  },
+  "Rules": {
+    "CheckBootstrapVersion": {
+      "Assertions": [
+        {
+          "Assert": {
+            "Fn::Not": [
+              {
+                "Fn::Contains": [
+                  [
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5",
+                  ],
+                  {
+                    "Ref": "BootstrapVersion",
+                  },
+                ],
+              },
+            ],
+          },
+          "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI.",
+        },
+      ],
+    },
+  },
+}
+`;

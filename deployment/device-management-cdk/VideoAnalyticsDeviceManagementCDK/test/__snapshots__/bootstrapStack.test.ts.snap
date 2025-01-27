@@ -1,0 +1,623 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`BootstrapStack Snapshot test 1`] = `
+{
+  "Parameters": {
+    "BootstrapVersion": {
+      "Default": "/cdk-bootstrap/hnb659fds/version",
+      "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]",
+      "Type": "AWS::SSM::Parameter::Value<String>",
+    },
+  },
+  "Resources": {
+    "AWS679f53fac002430cb0da5b7982bd22872D164C4C": {
+      "DependsOn": [
+        "IotCustomResourceRole06D4BC6D",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
+          "S3Key": Anything,
+        },
+        "Handler": "index.handler",
+        "MemorySize": 512,
+        "Role": {
+          "Fn::GetAtt": [
+            "IotCustomResourceRole06D4BC6D",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs20.x",
+        "Timeout": 120,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "AttachDisabledPolicyAE9FD5C7": {
+      "DeletionPolicy": "Delete",
+      "DependsOn": [
+        "DisabledStatePolicy",
+        "DisabledStateThingGroup",
+        "IotCustomResourceIamPolicy6D081B90",
+      ],
+      "Properties": {
+        "Create": "{"service":"@aws-sdk/client-iot","action":"attachPolicy","parameters":{"target":"arn:aws:iot:us-east-1:123456789012:thinggroup/SpecialGroup_DisabledState","policyName":"DisabledPolicy_us-east-1"},"physicalResourceId":{"id":"attachDisabled"}}",
+        "Delete": "{"service":"@aws-sdk/client-iot","action":"detachPolicy","parameters":{"target":"arn:aws:iot:us-east-1:123456789012:thinggroup/SpecialGroup_DisabledState","policyName":"DisabledPolicy_us-east-1"},"physicalResourceId":{"id":"detachDisabled"}}",
+        "InstallLatestAwsSdk": true,
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "AWS679f53fac002430cb0da5b7982bd22872D164C4C",
+            "Arn",
+          ],
+        },
+        "Update": "{"service":"@aws-sdk/client-iot","action":"attachPolicy","parameters":{"target":"arn:aws:iot:us-east-1:123456789012:thinggroup/SpecialGroup_DisabledState","policyName":"DisabledPolicy_us-east-1"},"physicalResourceId":{"id":"attachDisabled"}}",
+      },
+      "Type": "Custom::AWS",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "AttachEnabledPolicy1A5EF86A": {
+      "DeletionPolicy": "Delete",
+      "DependsOn": [
+        "EnabledStatePolicy",
+        "EnabledStateThingGroup",
+        "IotCustomResourceIamPolicy6D081B90",
+        "IotCustomResourceRole06D4BC6D",
+      ],
+      "Properties": {
+        "Create": "{"service":"@aws-sdk/client-iot","action":"attachPolicy","parameters":{"target":"arn:aws:iot:us-east-1:123456789012:thinggroup/SpecialGroup_EnabledState","policyName":"EnabledPolicy_us-east-1"},"physicalResourceId":{"id":"attachEnabled"}}",
+        "Delete": "{"service":"@aws-sdk/client-iot","action":"detachPolicy","parameters":{"target":"arn:aws:iot:us-east-1:123456789012:thinggroup/SpecialGroup_EnabledState","policyName":"EnabledPolicy_us-east-1"},"physicalResourceId":{"id":"detachEnabled"}}",
+        "InstallLatestAwsSdk": true,
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "AWS679f53fac002430cb0da5b7982bd22872D164C4C",
+            "Arn",
+          ],
+        },
+        "Update": "{"service":"@aws-sdk/client-iot","action":"attachPolicy","parameters":{"target":"arn:aws:iot:us-east-1:123456789012:thinggroup/SpecialGroup_EnabledState","policyName":"EnabledPolicy_us-east-1"},"physicalResourceId":{"id":"attachEnabled"}}",
+      },
+      "Type": "Custom::AWS",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "AttachIotJobPolicyToDisabledStateDF82A5CF": {
+      "DeletionPolicy": "Delete",
+      "DependsOn": [
+        "DisabledStateThingGroup",
+        "IotCustomResourceIamPolicy6D081B90",
+        "IotJobPolicy",
+      ],
+      "Properties": {
+        "Create": "{"service":"@aws-sdk/client-iot","action":"attachPolicy","parameters":{"target":"arn:aws:iot:us-east-1:123456789012:thinggroup/SpecialGroup_DisabledState","policyName":"IotJobPolicy_us-east-1"},"physicalResourceId":{"id":"attachIotJobPolicyDisabled"}}",
+        "Delete": "{"service":"@aws-sdk/client-iot","action":"detachPolicy","parameters":{"target":"arn:aws:iot:us-east-1:123456789012:thinggroup/SpecialGroup_DisabledState","policyName":"IotJobPolicy_us-east-1"},"physicalResourceId":{"id":"detachIotJobPolicyDisabled"}}",
+        "InstallLatestAwsSdk": true,
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "AWS679f53fac002430cb0da5b7982bd22872D164C4C",
+            "Arn",
+          ],
+        },
+        "Update": "{"service":"@aws-sdk/client-iot","action":"attachPolicy","parameters":{"target":"arn:aws:iot:us-east-1:123456789012:thinggroup/SpecialGroup_DisabledState","policyName":"IotJobPolicy_us-east-1"},"physicalResourceId":{"id":"attachIotJobPolicyDisabled"}}",
+      },
+      "Type": "Custom::AWS",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "AttachIotJobPolicyToEnabledState7C773FC1": {
+      "DeletionPolicy": "Delete",
+      "DependsOn": [
+        "EnabledStateThingGroup",
+        "IotCustomResourceIamPolicy6D081B90",
+        "IotCustomResourceRole06D4BC6D",
+        "IotJobPolicy",
+      ],
+      "Properties": {
+        "Create": "{"service":"@aws-sdk/client-iot","action":"attachPolicy","parameters":{"target":"arn:aws:iot:us-east-1:123456789012:thinggroup/SpecialGroup_EnabledState","policyName":"IotJobPolicy_us-east-1"},"physicalResourceId":{"id":"attachIotJobPolicyEnabled"}}",
+        "Delete": "{"service":"@aws-sdk/client-iot","action":"detachPolicy","parameters":{"target":"arn:aws:iot:us-east-1:123456789012:thinggroup/SpecialGroup_EnabledState","policyName":"IotJobPolicy_us-east-1"},"physicalResourceId":{"id":"detachIotJobPolicyEnabled"}}",
+        "InstallLatestAwsSdk": true,
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "AWS679f53fac002430cb0da5b7982bd22872D164C4C",
+            "Arn",
+          ],
+        },
+        "Update": "{"service":"@aws-sdk/client-iot","action":"attachPolicy","parameters":{"target":"arn:aws:iot:us-east-1:123456789012:thinggroup/SpecialGroup_EnabledState","policyName":"IotJobPolicy_us-east-1"},"physicalResourceId":{"id":"attachIotJobPolicyEnabled"}}",
+      },
+      "Type": "Custom::AWS",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "DeviceKVSRole": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "sts:AssumeRole",
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "credentials.iot.amazonaws.com",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "MaxSessionDuration": 43200,
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
+                    "kinesisvideo:DescribeStream",
+                    "kinesisvideo:PutMedia",
+                    "kinesisvideo:TagStream",
+                    "kinesisvideo:GetDataEndpoint",
+                    "kinesisvideo:DescribeSignalingChannel",
+                    "kinesisvideo:ConnectAsMaster",
+                    "kinesisvideo:GetSignalingChannelEndpoint",
+                    "kinesisvideo:GetIceServerConfig",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": [
+                    "arn:aws:kinesisvideo:us-east-1:123456789012:stream/\${credentials-iot:ThingName}/*",
+                    "arn:aws:kinesisvideo:us-east-1:123456789012:channel/\${credentials-iot:ThingName}-LiveStreamSignalingChannel/*",
+                  ],
+                },
+                {
+                  "Action": [
+                    "apigateway:GET",
+                    "execute-api:Invoke",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": [
+                    "arn:aws:apigateway:us-east-1::/restapis",
+                    "arn:aws:execute-api:us-east-1:123456789012:*/*/POST/import-media-object",
+                  ],
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": "DeviceKVSAccess",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "DeviceKVSRoleAlias": {
+      "Properties": {
+        "CredentialDurationSeconds": 43200,
+        "RoleAlias": "kvsDeviceIoTRoleAlias",
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "DeviceKVSRole",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "AWS::IoT::RoleAlias",
+    },
+    "DeviceTelemetryCloudWatchLogGroupA07AA937": {
+      "DeletionPolicy": "RetainExceptOnCreate",
+      "Properties": {
+        "LogGroupName": "DeviceTelemetryCloudWatchLogGroup",
+        "RetentionInDays": 14,
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "DeviceTelemetryCloudWatchLogsPolicyF1534CBB": {
+      "Properties": {
+        "Description": "Policy for log stream creation for telemetry information from edge device to customer account CloudWatch Logs",
+        "ManagedPolicyName": "DeviceTelemetryCloudWatchLogsPolicy",
+        "Path": "/",
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:DescribeLogStreams",
+                "logs:PutLogEvents",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "DeviceTelemetryCloudWatchLogGroupA07AA937",
+                  "Arn",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::IAM::ManagedPolicy",
+    },
+    "DeviceTelemetryCloudWatchLogsRule": {
+      "Properties": {
+        "RuleName": "DeviceTelemetryCloudWatchLogsRule",
+        "TopicRulePayload": {
+          "Actions": [
+            {
+              "CloudwatchLogs": {
+                "BatchMode": true,
+                "LogGroupName": {
+                  "Ref": "DeviceTelemetryCloudWatchLogGroupA07AA937",
+                },
+                "RoleArn": {
+                  "Fn::GetAtt": [
+                    "DeviceTelemetryCloudWatchLogsRuleRole1283E379",
+                    "Arn",
+                  ],
+                },
+              },
+            },
+          ],
+          "AwsIotSqlVersion": "2016-03-23",
+          "RuleDisabled": false,
+          "Sql": "SELECT (SELECT * AS log FROM * WHERE timestamp <> '' AND message.level <> '') as logsList, clientid() AS deviceId FROM 'rules/deviceTelemetryCloudWatchLogsRule/things/+/logs'",
+        },
+      },
+      "Type": "AWS::IoT::TopicRule",
+    },
+    "DeviceTelemetryCloudWatchLogsRuleRole1283E379": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "iot.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Ref": "DeviceTelemetryCloudWatchLogsPolicyF1534CBB",
+          },
+        ],
+        "RoleName": "DeviceTelemetryCloudWatchLogsRuleRole",
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "DeviceX509CertPolicy": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "iot:Connect",
+                "iot:AssumeRoleWithCertificate",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "DeviceKVSRoleAlias",
+                    "RoleAliasArn",
+                  ],
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "kvsDeviceIoTPolicy",
+      },
+      "Type": "AWS::IoT::Policy",
+    },
+    "DisabledStatePolicy": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "iot:Connect",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                "arn:aws:iot:us-east-1:123456789012:client/\${iot:Connection.Thing.ThingName}",
+              ],
+            },
+            {
+              "Action": [
+                "iot:Publish",
+                "iot:Receive",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                "arn:aws:iot:us-east-1:123456789012:topic/$aws/things/\${iot:Connection.Thing.ThingName}/connection",
+                "arn:aws:iot:us-east-1:123456789012:topic/$aws/things/\${iot:Connection.Thing.ThingName}/shadow/name/*/get/*",
+                "arn:aws:iot:us-east-1:123456789012:topic/$aws/things/\${iot:Connection.Thing.ThingName}/shadow/name/*/update/*",
+                "arn:aws:iot:us-east-1:123456789012:topic/$aws/things/\${iot:Connection.Thing.ThingName}/shadow/get",
+              ],
+            },
+            {
+              "Action": [
+                "iot:Subscribe",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                "arn:aws:iot:us-east-1:123456789012:topicfilter/$aws/things/\${iot:Connection.Thing.ThingName}/shadow/connection",
+                "arn:aws:iot:us-east-1:123456789012:topicfilter/$aws/things/\${iot:Connection.Thing.ThingName}/shadow/name/*/get/*",
+                "arn:aws:iot:us-east-1:123456789012:topicfilter/$aws/things/\${iot:Connection.Thing.ThingName}/shadow/name/*/update/*",
+                "arn:aws:iot:us-east-1:123456789012:topicfilter/$aws/things/\${iot:Connection.Thing.ThingName}/shadow/get",
+              ],
+            },
+            {
+              "Action": [
+                "iot:Publish",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                "arn:aws:iot:us-east-1:123456789012:topic/videoanalytics/\${iot:Connection.Thing.ThingName}/timeline",
+                "arn:aws:iot:us-east-1:123456789012:topic/videoanalytics/\${iot:Connection.Thing.ThingName}/snapshot",
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "DisabledPolicy_us-east-1",
+      },
+      "Type": "AWS::IoT::Policy",
+    },
+    "DisabledStateThingGroup": {
+      "Properties": {
+        "ThingGroupName": "SpecialGroup_DisabledState",
+      },
+      "Type": "AWS::IoT::ThingGroup",
+    },
+    "EnabledStatePolicy": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "iot:Connect",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                "arn:aws:iot:us-east-1:123456789012:client/\${iot:Connection.Thing.ThingName}",
+              ],
+            },
+            {
+              "Action": [
+                "iot:Publish",
+                "iot:Receive",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                "arn:aws:iot:us-east-1:123456789012:topic/$aws/things/\${iot:Connection.Thing.ThingName}/shadow/*",
+                "arn:aws:iot:us-east-1:123456789012:topic/videoanalytics/\${iot:Connection.Thing.ThingName}/*",
+                "arn:aws:iot:us-east-1:123456789012:topic/management/\${iot:Connection.Thing.ThingName}/*",
+                "arn:aws:iot:us-east-1:123456789012:topic/$aws/rules/DeviceTelemetryCloudWatchLogsRule/things/\${iot:Connection.Thing.ThingName}/*",
+              ],
+            },
+            {
+              "Action": [
+                "iot:Subscribe",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                "arn:aws:iot:us-east-1:123456789012:topicfilter/$aws/things/\${iot:Connection.Thing.ThingName}/shadow/*",
+                "arn:aws:iot:us-east-1:123456789012:topicfilter/videoanalytics/\${iot:Connection.Thing.ThingName}/*",
+                "arn:aws:iot:us-east-1:123456789012:topicfilter/management/\${iot:Connection.Thing.ThingName}/*",
+              ],
+            },
+            {
+              "Action": [
+                "iot:GetThingShadow",
+                "iot:UpdateThingShadow",
+                "iot:DeleteThingShadow",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                "arn:aws:iot:us-east-1:123456789012:thing/\${iot:Connection.Thing.ThingName}",
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "EnabledPolicy_us-east-1",
+      },
+      "Type": "AWS::IoT::Policy",
+    },
+    "EnabledStateThingGroup": {
+      "Properties": {
+        "ThingGroupName": "SpecialGroup_EnabledState",
+      },
+      "Type": "AWS::IoT::ThingGroup",
+    },
+    "IotCustomResourceIamPolicy6D081B90": {
+      "Properties": {
+        "Description": "",
+        "ManagedPolicyName": "iot-custom-resource-policy",
+        "Path": "/",
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "iot:AttachPolicy",
+                "iot:DetachPolicy",
+                "iot:AttachThingPrincipal",
+                "iot:DetachThingPrincipal",
+                "iot:AttachPrincipalPolicy",
+                "iot:DetachPrincipalPolicy",
+                "iot:UpdateIndexingConfiguration",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "Roles": [
+          {
+            "Ref": "IotCustomResourceRole06D4BC6D",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::ManagedPolicy",
+    },
+    "IotCustomResourceRole06D4BC6D": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "RoleName": "iot-custom-resource-role",
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "IotJobPolicy": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "iot:Publish",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                "arn:aws:iot:us-east-1:123456789012:topic/$aws/things/\${iot:Connection.Thing.ThingName}/jobs/*/update",
+                "arn:aws:iot:us-east-1:123456789012:topic/$aws/things/\${iot:Connection.Thing.ThingName}/jobs/start-next",
+                "arn:aws:iot:us-east-1:123456789012:topic/$aws/things/\${iot:Connection.Thing.ThingName}/jobs/get",
+                "arn:aws:iot:us-east-1:123456789012:topic/$aws/things/\${iot:Connection.Thing.ThingName}/jobs/$next/get",
+              ],
+            },
+            {
+              "Action": [
+                "iot:Subscribe",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                "arn:aws:iot:us-east-1:123456789012:topicfilter/$aws/things/\${iot:Connection.Thing.ThingName}/jobs/*/update/*",
+                "arn:aws:iot:us-east-1:123456789012:topicfilter/$aws/things/\${iot:Connection.Thing.ThingName}/jobs/start-next/*",
+                "arn:aws:iot:us-east-1:123456789012:topicfilter/$aws/things/\${iot:Connection.Thing.ThingName}/jobs/get/*",
+                "arn:aws:iot:us-east-1:123456789012:topicfilter/$aws/things/\${iot:Connection.Thing.ThingName}/jobs/notify",
+                "arn:aws:iot:us-east-1:123456789012:topicfilter/$aws/things/\${iot:Connection.Thing.ThingName}/jobs/$next/get/*",
+              ],
+            },
+            {
+              "Action": [
+                "iot:Receive",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                "arn:aws:iot:us-east-1:123456789012:topic/$aws/things/\${iot:Connection.Thing.ThingName}/jobs/*/update/*",
+                "arn:aws:iot:us-east-1:123456789012:topic/$aws/things/\${iot:Connection.Thing.ThingName}/jobs/start-next/*",
+                "arn:aws:iot:us-east-1:123456789012:topic/$aws/things/\${iot:Connection.Thing.ThingName}/jobs/get/*",
+                "arn:aws:iot:us-east-1:123456789012:topic/$aws/things/\${iot:Connection.Thing.ThingName}/jobs/notify",
+                "arn:aws:iot:us-east-1:123456789012:topic/$aws/things/\${iot:Connection.Thing.ThingName}/jobs/$next/get/*",
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "IotJobPolicy_us-east-1",
+      },
+      "Type": "AWS::IoT::Policy",
+    },
+    "detachstatepolicyFB72B991": {
+      "Properties": {
+        "Description": "",
+        "ManagedPolicyName": "detach-state-policy",
+        "Path": "/",
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "iot:DetachPolicy",
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "Roles": [
+          {
+            "Ref": "iotdetachpolicycustomresourceroleB1A11ADA",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::ManagedPolicy",
+    },
+    "fleetindexingresource5CCA8F41": {
+      "DeletionPolicy": "Delete",
+      "DependsOn": [
+        "IotCustomResourceIamPolicy6D081B90",
+      ],
+      "Properties": {
+        "Create": "{"service":"@aws-sdk/client-iot","action":"UpdateIndexingConfiguration","parameters":{"thingIndexingConfiguration":{"thingIndexingMode":"REGISTRY","thingConnectivityIndexingMode":"STATUS"}},"physicalResourceId":{"id":"fleet-indexing-resource"}}",
+        "InstallLatestAwsSdk": true,
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "AWS679f53fac002430cb0da5b7982bd22872D164C4C",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "Custom::AWS",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "iotdetachpolicycustomresourceroleB1A11ADA": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "RoleName": "iot-detach-policy-custom-resource-role",
+      },
+      "Type": "AWS::IAM::Role",
+    },
+  },
+  "Rules": {
+    "CheckBootstrapVersion": {
+      "Assertions": [
+        {
+          "Assert": {
+            "Fn::Not": [
+              {
+                "Fn::Contains": [
+                  [
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5",
+                  ],
+                  {
+                    "Ref": "BootstrapVersion",
+                  },
+                ],
+              },
+            ],
+          },
+          "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI.",
+        },
+      ],
+    },
+  },
+}
+`;

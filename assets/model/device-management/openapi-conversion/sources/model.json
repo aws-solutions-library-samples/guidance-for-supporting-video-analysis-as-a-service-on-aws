@@ -1,0 +1,643 @@
+{
+    "smithy": "2.0",
+    "shapes": {
+        "com.amazonaws.videoanalytics.devicemanagement#CertificateId": {
+            "type": "string",
+            "traits": {
+                "smithy.api#length": {
+                    "min": 1,
+                    "max": 64
+                },
+                "smithy.api#pattern": "^(0x)?[a-fA-F0-9]+$"
+            }
+        },
+        "com.amazonaws.videoanalytics.devicemanagement#CloudVideoStreamingElement": {
+            "type": "structure",
+            "members": {
+                "id": {
+                    "target": "smithy.api#String"
+                },
+                "status": {
+                    "target": "com.amazonaws.videoanalytics.devicemanagement#VideoStreamingState"
+                },
+                "updatedAt": {
+                    "target": "smithy.api#Timestamp",
+                    "traits": {
+                        "smithy.api#timestampFormat": "date-time"
+                    }
+                }
+            }
+        },
+        "com.amazonaws.videoanalytics.devicemanagement#CloudVideoStreamingList": {
+            "type": "list",
+            "member": {
+                "target": "com.amazonaws.videoanalytics.devicemanagement#CloudVideoStreamingElement"
+            }
+        },
+        "com.amazonaws.videoanalytics.devicemanagement#Device": {
+            "type": "resource",
+            "operations": [
+                {
+                    "target": "com.amazonaws.videoanalytics.devicemanagement#GetCreateDeviceStatus"
+                },
+                {
+                    "target": "com.amazonaws.videoanalytics.devicemanagement#StartCreateDevice"
+                }
+            ]
+        },
+        "com.amazonaws.videoanalytics.devicemanagement#DeviceConnection": {
+            "type": "structure",
+            "members": {
+                "status": {
+                    "target": "smithy.api#Boolean"
+                },
+                "updatedAt": {
+                    "target": "smithy.api#Timestamp",
+                    "traits": {
+                        "smithy.api#timestampFormat": "date-time"
+                    }
+                }
+            }
+        },
+        "com.amazonaws.videoanalytics.devicemanagement#DeviceInfo": {
+            "type": "structure",
+            "members": {
+                "deviceName": {
+                    "target": "smithy.api#String"
+                },
+                "deviceId": {
+                    "target": "com.amazonaws.videoanalytics#DeviceId"
+                },
+                "deviceMetaData": {
+                    "target": "com.amazonaws.videoanalytics.devicemanagement#DeviceMetaData"
+                },
+                "deviceSettings": {
+                    "target": "com.amazonaws.videoanalytics#KeyValueMap"
+                },
+                "createdAt": {
+                    "target": "smithy.api#Timestamp",
+                    "traits": {
+                        "smithy.api#timestampFormat": "date-time"
+                    }
+                }
+            }
+        },
+        "com.amazonaws.videoanalytics.devicemanagement#DeviceMetaData": {
+            "type": "structure",
+            "members": {
+                "manufacturer": {
+                    "target": "smithy.api#String"
+                },
+                "model": {
+                    "target": "smithy.api#String"
+                },
+                "mac": {
+                    "target": "smithy.api#String"
+                },
+                "ipAddress": {
+                    "target": "com.amazonaws.videoanalytics.devicemanagement#IpAddress"
+                },
+                "aiChipset": {
+                    "target": "smithy.api#String"
+                },
+                "firmwareVersion": {
+                    "target": "smithy.api#String"
+                },
+                "sdkVersion": {
+                    "target": "smithy.api#String"
+                },
+                "aiModelVersion": {
+                    "target": "smithy.api#String"
+                },
+                "aiSdkVersion": {
+                    "target": "smithy.api#String"
+                },
+                "deviceStatus": {
+                    "target": "com.amazonaws.videoanalytics.devicemanagement#DeviceStatus"
+                }
+            }
+        },
+        "com.amazonaws.videoanalytics.devicemanagement#DeviceOperation": {
+            "type": "list",
+            "member": {
+                "target": "com.amazonaws.videoanalytics.devicemanagement#DeviceOperationInfo"
+            }
+        },
+        "com.amazonaws.videoanalytics.devicemanagement#DeviceOperationInfo": {
+            "type": "structure",
+            "members": {
+                "deviceOperationId": {
+                    "target": "smithy.api#String"
+                },
+                "deviceOperationName": {
+                    "target": "smithy.api#String"
+                },
+                "deviceOperationStatus": {
+                    "target": "smithy.api#String"
+                },
+                "callerAccount": {
+                    "target": "smithy.api#String"
+                },
+                "sourceIPAddress": {
+                    "target": "smithy.api#String"
+                },
+                "createdAt": {
+                    "target": "smithy.api#Timestamp",
+                    "traits": {
+                        "smithy.api#timestampFormat": "date-time"
+                    }
+                },
+                "updatedAt": {
+                    "target": "smithy.api#Timestamp",
+                    "traits": {
+                        "smithy.api#timestampFormat": "date-time"
+                    }
+                },
+                "requestParameters": {
+                    "target": "smithy.api#String"
+                },
+                "contents": {
+                    "target": "smithy.api#String"
+                },
+                "errorCode": {
+                    "target": "smithy.api#String"
+                },
+                "errorMessage": {
+                    "target": "smithy.api#String"
+                }
+            }
+        },
+        "com.amazonaws.videoanalytics.devicemanagement#DeviceOperations": {
+            "type": "resource",
+            "operations": [
+                {
+                    "target": "com.amazonaws.videoanalytics.devicemanagement#GetDevice"
+                },
+                {
+                    "target": "com.amazonaws.videoanalytics.devicemanagement#GetDeviceShadow"
+                },
+                {
+                    "target": "com.amazonaws.videoanalytics.devicemanagement#UpdateDeviceShadow"
+                }
+            ]
+        },
+        "com.amazonaws.videoanalytics.devicemanagement#DeviceState": {
+            "type": "enum",
+            "members": {
+                "ENABLED": {
+                    "target": "smithy.api#Unit",
+                    "traits": {
+                        "smithy.api#enumValue": "ENABLED"
+                    }
+                },
+                "DISABLED": {
+                    "target": "smithy.api#Unit",
+                    "traits": {
+                        "smithy.api#enumValue": "DISABLED"
+                    }
+                },
+                "CREATED": {
+                    "target": "smithy.api#Unit",
+                    "traits": {
+                        "smithy.api#enumValue": "CREATED"
+                    }
+                }
+            }
+        },
+        "com.amazonaws.videoanalytics.devicemanagement#DeviceStatus": {
+            "type": "structure",
+            "members": {
+                "deviceState": {
+                    "target": "com.amazonaws.videoanalytics.devicemanagement#DeviceState"
+                },
+                "deviceConnection": {
+                    "target": "com.amazonaws.videoanalytics.devicemanagement#DeviceConnection"
+                },
+                "cloudVideoStreaming": {
+                    "target": "com.amazonaws.videoanalytics.devicemanagement#CloudVideoStreamingList"
+                }
+            }
+        },
+        "com.amazonaws.videoanalytics.devicemanagement#Devices": {
+            "type": "list",
+            "member": {
+                "target": "com.amazonaws.videoanalytics.devicemanagement#DeviceInfo"
+            }
+        },
+        "com.amazonaws.videoanalytics.devicemanagement#GetCreateDeviceStatus": {
+            "type": "operation",
+            "input": {
+                "target": "com.amazonaws.videoanalytics.devicemanagement#GetCreateDeviceStatusRequest"
+            },
+            "output": {
+                "target": "com.amazonaws.videoanalytics.devicemanagement#GetCreateDeviceStatusResponse"
+            },
+            "errors": [
+                {
+                    "target": "com.amazonaws.videoanalytics#InternalServerException"
+                },
+                {
+                    "target": "com.amazonaws.videoanalytics#ValidationException"
+                }
+            ],
+            "traits": {
+                "aws.apigateway#integration": {
+                    "type": "aws_proxy",
+                    "httpMethod": "POST",
+                    "uri": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${GetCreateDeviceStatusActivity}/invocations",
+                    "credentials": "arn:aws:iam::${AWS::AccountId}:role/DeviceManagementApiGatewayRole"
+                },
+                "smithy.api#http": {
+                    "code": 200,
+                    "method": "POST",
+                    "uri": "/get-create-device-status/{jobId}"
+                },
+                "smithy.api#idempotent": {}
+            }
+        },
+        "com.amazonaws.videoanalytics.devicemanagement#GetCreateDeviceStatusRequest": {
+            "type": "structure",
+            "members": {
+                "jobId": {
+                    "target": "com.amazonaws.videoanalytics#JobId",
+                    "traits": {
+                        "smithy.api#httpLabel": {},
+                        "smithy.api#required": {}
+                    }
+                }
+            },
+            "traits": {
+                "smithy.api#input": {}
+            }
+        },
+        "com.amazonaws.videoanalytics.devicemanagement#GetCreateDeviceStatusResponse": {
+            "type": "structure",
+            "members": {
+                "jobId": {
+                    "target": "com.amazonaws.videoanalytics#JobId"
+                },
+                "deviceId": {
+                    "target": "com.amazonaws.videoanalytics#DeviceId"
+                },
+                "status": {
+                    "target": "com.amazonaws.videoanalytics#Status"
+                },
+                "createTime": {
+                    "target": "smithy.api#Timestamp",
+                    "traits": {
+                        "smithy.api#timestampFormat": "date-time"
+                    }
+                },
+                "modifiedTime": {
+                    "target": "smithy.api#Timestamp",
+                    "traits": {
+                        "smithy.api#timestampFormat": "date-time"
+                    }
+                },
+                "errorMessage": {
+                    "target": "smithy.api#String"
+                }
+            },
+            "traits": {
+                "smithy.api#output": {}
+            }
+        },
+        "com.amazonaws.videoanalytics.devicemanagement#GetDevice": {
+            "type": "operation",
+            "input": {
+                "target": "com.amazonaws.videoanalytics.devicemanagement#GetDeviceRequest"
+            },
+            "output": {
+                "target": "com.amazonaws.videoanalytics.devicemanagement#GetDeviceResponse"
+            },
+            "errors": [
+                {
+                    "target": "com.amazonaws.videoanalytics#AccessDeniedException"
+                },
+                {
+                    "target": "com.amazonaws.videoanalytics#InternalServerException"
+                },
+                {
+                    "target": "com.amazonaws.videoanalytics#ValidationException"
+                }
+            ],
+            "traits": {
+                "aws.apigateway#integration": {
+                    "httpMethod": "POST",
+                    "type": "aws_proxy",
+                    "uri": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${GetDeviceActivity}/invocations",
+                    "credentials": "arn:aws:iam::${AWS::AccountId}:role/DeviceManagementApiGatewayRole"
+                },
+                "smithy.api#http": {
+                    "code": 200,
+                    "method": "POST",
+                    "uri": "/get-device/{deviceId}"
+                },
+                "smithy.api#readonly": {}
+            }
+        },
+        "com.amazonaws.videoanalytics.devicemanagement#GetDeviceRequest": {
+            "type": "structure",
+            "members": {
+                "deviceId": {
+                    "target": "com.amazonaws.videoanalytics#DeviceId",
+                    "traits": {
+                        "smithy.api#httpLabel": {},
+                        "smithy.api#required": {}
+                    }
+                }
+            },
+            "traits": {
+                "smithy.api#input": {}
+            }
+        },
+        "com.amazonaws.videoanalytics.devicemanagement#GetDeviceResponse": {
+            "type": "structure",
+            "members": {
+                "deviceName": {
+                    "target": "smithy.api#String"
+                },
+                "deviceId": {
+                    "target": "com.amazonaws.videoanalytics#DeviceId"
+                },
+                "deviceMetaData": {
+                    "target": "com.amazonaws.videoanalytics.devicemanagement#DeviceMetaData"
+                },
+                "deviceSettings": {
+                    "target": "com.amazonaws.videoanalytics#KeyValueMap"
+                },
+                "createdAt": {
+                    "target": "smithy.api#Timestamp",
+                    "traits": {
+                        "smithy.api#timestampFormat": "date-time"
+                    }
+                }
+            },
+            "traits": {
+                "smithy.api#output": {}
+            }
+        },
+        "com.amazonaws.videoanalytics.devicemanagement#GetDeviceShadow": {
+            "type": "operation",
+            "input": {
+                "target": "com.amazonaws.videoanalytics.devicemanagement#GetDeviceShadowRequest"
+            },
+            "output": {
+                "target": "com.amazonaws.videoanalytics.devicemanagement#GetDeviceShadowResponse"
+            },
+            "errors": [
+                {
+                    "target": "com.amazonaws.videoanalytics#AccessDeniedException"
+                },
+                {
+                    "target": "com.amazonaws.videoanalytics#InternalServerException"
+                },
+                {
+                    "target": "com.amazonaws.videoanalytics#ValidationException"
+                }
+            ],
+            "traits": {
+                "aws.apigateway#integration": {
+                    "httpMethod": "POST",
+                    "type": "aws_proxy",
+                    "uri": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${GetDeviceShadowActivity}/invocations",
+                    "credentials": "arn:aws:iam::${AWS::AccountId}:role/DeviceManagementApiGatewayRole"
+                },
+                "smithy.api#http": {
+                    "code": 200,
+                    "method": "POST",
+                    "uri": "/get-device-shadow/{deviceId}"
+                }
+            }
+        },
+        "com.amazonaws.videoanalytics.devicemanagement#GetDeviceShadowRequest": {
+            "type": "structure",
+            "members": {
+                "deviceId": {
+                    "target": "com.amazonaws.videoanalytics#DeviceId",
+                    "traits": {
+                        "smithy.api#httpLabel": {},
+                        "smithy.api#required": {}
+                    }
+                },
+                "shadowName": {
+                    "target": "com.amazonaws.videoanalytics.devicemanagement#ShadowName"
+                }
+            },
+            "traits": {
+                "smithy.api#input": {}
+            }
+        },
+        "com.amazonaws.videoanalytics.devicemanagement#GetDeviceShadowResponse": {
+            "type": "structure",
+            "members": {
+                "shadowPayload": {
+                    "target": "com.amazonaws.videoanalytics.devicemanagement#ShadowMap"
+                }
+            },
+            "traits": {
+                "smithy.api#output": {}
+            }
+        },
+        "com.amazonaws.videoanalytics.devicemanagement#IpAddress": {
+            "type": "structure",
+            "members": {
+                "publicIpAddress": {
+                    "target": "smithy.api#String"
+                },
+                "privateIpAddress": {
+                    "target": "smithy.api#String"
+                }
+            }
+        },
+        "com.amazonaws.videoanalytics.devicemanagement#ShadowMap": {
+            "type": "structure",
+            "members": {
+                "shadowName": {
+                    "target": "com.amazonaws.videoanalytics.devicemanagement#ShadowName"
+                },
+                "stateDocument": {
+                    "target": "smithy.api#Document"
+                }
+            }
+        },
+        "com.amazonaws.videoanalytics.devicemanagement#ShadowName": {
+            "type": "string",
+            "traits": {
+                "smithy.api#length": {
+                    "min": 1,
+                    "max": 64
+                },
+                "smithy.api#pattern": "^[a-zA-Z0-9:_\\-]+$"
+            }
+        },
+        "com.amazonaws.videoanalytics.devicemanagement#StartCreateDevice": {
+            "type": "operation",
+            "input": {
+                "target": "com.amazonaws.videoanalytics.devicemanagement#StartCreateDeviceRequest"
+            },
+            "output": {
+                "target": "com.amazonaws.videoanalytics.devicemanagement#StartCreateDeviceResponse"
+            },
+            "errors": [
+                {
+                    "target": "com.amazonaws.videoanalytics#AccessDeniedException"
+                },
+                {
+                    "target": "com.amazonaws.videoanalytics#ConflictException"
+                },
+                {
+                    "target": "com.amazonaws.videoanalytics#InternalServerException"
+                },
+                {
+                    "target": "com.amazonaws.videoanalytics#ResourceNotFoundException"
+                },
+                {
+                    "target": "com.amazonaws.videoanalytics#ValidationException"
+                }
+            ],
+            "traits": {
+                "aws.apigateway#integration": {
+                    "type": "aws_proxy",
+                    "httpMethod": "POST",
+                    "uri": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${StartCreateDeviceActivity}/invocations",
+                    "credentials": "arn:aws:iam::${AWS::AccountId}:role/DeviceManagementApiGatewayRole"
+                },
+                "smithy.api#http": {
+                    "code": 200,
+                    "method": "POST",
+                    "uri": "/start-create-device/{deviceId}"
+                },
+                "smithy.api#idempotent": {}
+            }
+        },
+        "com.amazonaws.videoanalytics.devicemanagement#StartCreateDeviceRequest": {
+            "type": "structure",
+            "members": {
+                "deviceId": {
+                    "target": "com.amazonaws.videoanalytics#DeviceId",
+                    "traits": {
+                        "smithy.api#httpLabel": {},
+                        "smithy.api#required": {}
+                    }
+                },
+                "certificateId": {
+                    "target": "com.amazonaws.videoanalytics.devicemanagement#CertificateId",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                }
+            },
+            "traits": {
+                "smithy.api#input": {}
+            }
+        },
+        "com.amazonaws.videoanalytics.devicemanagement#StartCreateDeviceResponse": {
+            "type": "structure",
+            "members": {
+                "jobId": {
+                    "target": "com.amazonaws.videoanalytics#JobId"
+                }
+            },
+            "traits": {
+                "smithy.api#output": {}
+            }
+        },
+        "com.amazonaws.videoanalytics.devicemanagement#UpdateDeviceShadow": {
+            "type": "operation",
+            "input": {
+                "target": "com.amazonaws.videoanalytics.devicemanagement#UpdateDeviceShadowRequest"
+            },
+            "output": {
+                "target": "com.amazonaws.videoanalytics.devicemanagement#UpdateDeviceShadowResponse"
+            },
+            "errors": [
+                {
+                    "target": "com.amazonaws.videoanalytics#AccessDeniedException"
+                },
+                {
+                    "target": "com.amazonaws.videoanalytics#InternalServerException"
+                },
+                {
+                    "target": "com.amazonaws.videoanalytics#ValidationException"
+                }
+            ],
+            "traits": {
+                "aws.apigateway#integration": {
+                    "httpMethod": "POST",
+                    "type": "aws_proxy",
+                    "uri": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${UpdateDeviceShadowActivity}/invocations",
+                    "credentials": "arn:aws:iam::${AWS::AccountId}:role/DeviceManagementApiGatewayRole"
+                },
+                "smithy.api#http": {
+                    "code": 200,
+                    "method": "POST",
+                    "uri": "/update-device-shadow/{deviceId}"
+                },
+                "smithy.api#idempotent": {}
+            }
+        },
+        "com.amazonaws.videoanalytics.devicemanagement#UpdateDeviceShadowRequest": {
+            "type": "structure",
+            "members": {
+                "deviceId": {
+                    "target": "com.amazonaws.videoanalytics#DeviceId",
+                    "traits": {
+                        "smithy.api#httpLabel": {},
+                        "smithy.api#required": {}
+                    }
+                },
+                "shadowPayload": {
+                    "target": "com.amazonaws.videoanalytics.devicemanagement#ShadowMap"
+                }
+            },
+            "traits": {
+                "smithy.api#input": {}
+            }
+        },
+        "com.amazonaws.videoanalytics.devicemanagement#UpdateDeviceShadowResponse": {
+            "type": "structure",
+            "members": {
+                "deviceId": {
+                    "target": "com.amazonaws.videoanalytics#DeviceId"
+                }
+            },
+            "traits": {
+                "smithy.api#output": {}
+            }
+        },
+        "com.amazonaws.videoanalytics.devicemanagement#VideoAnalytic": {
+            "type": "service",
+            "version": "2024-10-18",
+            "resources": [
+                {
+                    "target": "com.amazonaws.videoanalytics.devicemanagement#Device"
+                },
+                {
+                    "target": "com.amazonaws.videoanalytics.devicemanagement#DeviceOperations"
+                }
+            ],
+            "traits": {
+                "aws.protocols#restJson1": {},
+                "smithy.api#title": "Video Analytic Guidance Solution - Device Management"
+            }
+        },
+        "com.amazonaws.videoanalytics.devicemanagement#VideoStreamingState": {
+            "type": "enum",
+            "members": {
+                "CONNECTED": {
+                    "target": "smithy.api#Unit",
+                    "traits": {
+                        "smithy.api#enumValue": "CONNECTED"
+                    }
+                },
+                "DISCONNECTED": {
+                    "target": "smithy.api#Unit",
+                    "traits": {
+                        "smithy.api#enumValue": "DISCONNECTED"
+                    }
+                }
+            }
+        }
+    }
+}

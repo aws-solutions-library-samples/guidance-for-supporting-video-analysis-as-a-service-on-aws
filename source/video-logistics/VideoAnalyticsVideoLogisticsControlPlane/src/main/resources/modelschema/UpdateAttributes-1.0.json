@@ -1,0 +1,150 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "#UpdateAttributesModelSchema",
+    "title": "UpdateAttributes model schema",
+    "description": "This document records the schema of an inference for UpdateAttributes model",
+    "type": "object",
+    "required": ["MetadataStream"],
+    "properties": {
+      "MetadataStream": {
+        "type": "object",
+        "required": ["VideoAnalytics"],
+        "properties": {
+          "VideoAnalytics": {
+            "type": "object",
+            "required": ["Frame"],
+            "properties": {
+              "Frame": {
+                "type": "object",
+                "required": ["Source", "UtcTime", "Transformation", "Object", "Extension"],
+                "properties": {
+                  "Source": {"enum": ["VA_ATTR_BASIC", "VA_ATTR", "VA_ATTR_BI"]},
+                  "UtcTime": {"type": "string"},
+                  "Transformation": {
+                    "type": "object",
+                    "required": ["Translate", "Scale"],
+                    "properties": {
+                      "Translate": {
+                        "type": "object",
+                        "required": ["x", "y"],
+                        "properties": {
+                          "x": {"type": "number"},
+                          "y": {"type": "number"}
+                        }
+                      },
+                      "Scale": {
+                        "type": "object",
+                        "required": ["x", "y"],
+                        "properties": {
+                          "x": {"type": "number"},
+                          "y": {"type": "number"}
+                        }
+                      }
+                    }
+                  },
+                  "Object": {"type": "object", "required": ["ObjectId", "Appearance", "Extension"],
+                    "properties": {
+                      "ObjectId": {"type": "number"},
+                      "Appearance": {"type": "object", "required": ["Shape", "Class"],
+                        "properties": {
+                          "Shape": {"type": "object", "required": ["BoundingBox", "CenterOfGravity"],
+                            "properties": {
+                              "BoundingBox": {"type": "object", "required": ["left", "right", "top", "bottom"],
+                                "properties": {
+                                  "left": {"type": "number", "minimum": 0.0, "maximum": 1.0},
+                                  "right": {"type": "number", "minimum": 0.0, "maximum": 1.0},
+                                  "top": {"type": "number", "minimum": 0.0, "maximum": 1.0},
+                                  "bottom": {"type": "number", "minimum": 0.0, "maximum": 1.0}
+                                }
+                              },
+                              "CenterOfGravity": {"type": "object", "required": ["x", "y"],
+                                "properties": {
+                                  "x": {"type": "number", "minimum": 0.0, "maximum": 1.0},
+                                  "y": {"type": "number", "minimum": 0.0, "maximum": 1.0}
+                                }
+                              }
+                            }
+                          },
+                          "Color": { "type": "object", "required": ["Extension"],
+                            "properties": {
+                              "Extension": {
+                                "type": "object", "required": ["topColorStep1", "topColorStep2", "botColorStep1", "botColorStep2", "topColor1_H",
+                                  "topColor1_S", "topColor1_V", "topColor2_H", "topColor2_S", "topColor2_V", "botColor1_H", "botColor1_S",
+                                  "botColor1_V", "botColor2_H", "botColor2_S", "botColor2_V"],
+                                "properties": {
+                                  "topColorStep1": {"type": "number"},
+                                  "topColorStep2": {"type": "number"},
+                                  "botColorStep1": {"type": "number"},
+                                  "botColorStep2": {"type": "number"},
+                                  "topColor1_H": {"type": "number"},
+                                  "topColor1_S": {"type": "number"},
+                                  "topColor1_V": {"type": "number"},
+                                  "topColor2_H": {"type": "number"},
+                                  "topColor2_S": {"type": "number"},
+                                  "topColor2_V": {"type": "number"},
+                                  "botColor1_H": {"type": "number"},
+                                  "botColor1_S": {"type": "number"},
+                                  "botColor1_V": {"type": "number"},
+                                  "botColor2_H": {"type": "number"},
+                                  "botColor2_S": {"type": "number"},
+                                  "botColor2_V": {"type": "number"}
+                                }
+                              }
+                            }
+                          },
+                          "Class": {"type": "object", "required": ["Type"],
+                            "properties": {
+                              "Type": {"type": "object", "required": ["Likelihood", "txt"],
+                                "properties": {
+                                  "Likelihood": {"type": "number", "minimum": 0.0, "maximum": 1.0},
+                                  "txt": {"type": "string"}
+                                }
+                              }
+                            }
+                          },
+                          "Extension": {"type": "object", "required": ["age", "ageGroup", "gender"],
+                            "properties": {
+                              "age": {"type": "number"},
+                              "ageGroup": {"type": "number"},
+                              "gender": {"type": "number"}
+                            }
+                          }
+                        }
+                      },
+                      "Extension": {"type": "object", "required": ["EnterDt", "EnterDtText", "EnterDtTextMs", "ExitDt",
+                        "ExitDtText", "ExitDtTextMs", "BestThumbnailCapDateTime", "BestThumbnailCapDateTimeMs", "timeText", "TriggerDateTime"],
+                        "properties": {
+                          "cls": {"type": "number"},
+                          "EnterDt": {"type": "number"},
+                          "EnterDtText": {"type": "string"},
+                          "EnterDtTextMs": {"type": "string"},
+                          "ExitDt": {"type": "number"},
+                          "ExitDtText": {"type": "string"},
+                          "ExitDtTextMs": {"type": "string"},
+                          "BestThumbnailCapDateTime": {"type": "string"},
+                          "BestThumbnailCapDateTimeMs": {"type": "string"},
+                          "timeText": {"type": "string"},
+                          "TriggerDateTime": {"type": "string"}
+                        }
+                      }
+                    }
+                  },
+                  "Extension": {"type": "object", "required": ["Image"],
+                    "properties": {
+                      "Image": {"type": "object", "required": ["ImageId", "data_size", "data"],
+                        "properties": {
+                          "ImageId": {"type": "number"},
+                          "data_size": {"type": "number"},
+                          "data": {"type": "string"}
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }

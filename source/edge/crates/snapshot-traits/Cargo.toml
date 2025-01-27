@@ -1,0 +1,16 @@
+[package]
+name = "snapshot-traits"
+version.workspace = true
+edition.workspace = true
+
+publish = false
+
+[dependencies]
+device-traits.workspace = true
+tokio.workspace = true
+tokio-util.workspace = true
+async-trait.workspace = true
+tracing.workspace = true
+anyhow.workspace = true
+thiserror.workspace = true
+mockall.workspace = true

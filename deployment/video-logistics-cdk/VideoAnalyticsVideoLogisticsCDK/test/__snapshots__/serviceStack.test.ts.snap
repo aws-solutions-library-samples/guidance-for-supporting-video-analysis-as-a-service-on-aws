@@ -1,0 +1,2142 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ServiceStack Snapshot test 1`] = `
+{
+  "Outputs": {
+    "VideoAnalyticsVideoLogisticsAPIGatewayEndpoint9FBF1FC9": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "https://",
+            {
+              "Ref": "VideoAnalyticsVideoLogisticsAPIGateway398EC1B0",
+            },
+            ".execute-api.us-east-1.",
+            {
+              "Ref": "AWS::URLSuffix",
+            },
+            "/",
+            {
+              "Ref": "VideoAnalyticsVideoLogisticsAPIGatewayDeploymentStageprod05FE7F1B",
+            },
+            "/",
+          ],
+        ],
+      },
+    },
+  },
+  "Parameters": {
+    "BootstrapVersion": {
+      "Default": "/cdk-bootstrap/hnb659fds/version",
+      "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]",
+      "Type": "AWS::SSM::Parameter::Value<String>",
+    },
+  },
+  "Resources": {
+    "CreateLivestreamSessionActivity": {
+      "DependsOn": [
+        "CreateLivestreamSessionRoleDefaultPolicy04E3CFCD",
+        "CreateLivestreamSessionRole4E6365C5",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
+          "S3Key": Anything,
+        },
+        "Environment": {
+          "Variables": {
+            "ACCOUNT_ID": "123456789012",
+            "DEVICE_MANAGEMENT_API_NAME": "VideoAnalyticsDeviceManagementAPIGateway",
+          },
+        },
+        "Handler": "com.amazonaws.videoanalytics.videologistics.activity.CreateLivestreamSessionActivity::handleRequest",
+        "LoggingConfig": {
+          "LogGroup": {
+            "Ref": "CreateLivestreamSessionActivityLogGroupBC467205",
+          },
+        },
+        "MemorySize": 512,
+        "Role": {
+          "Fn::GetAtt": [
+            "CreateLivestreamSessionRole4E6365C5",
+            "Arn",
+          ],
+        },
+        "Runtime": "java17",
+        "Timeout": 300,
+        "TracingConfig": {
+          "Mode": "Active",
+        },
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "CreateLivestreamSessionActivityLogGroupBC467205": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/CreateLivestreamSessionActivity",
+        "RetentionInDays": 3653,
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "CreateLivestreamSessionActivitycreateLivestreamSessionApiGatewayPermission8D415A73": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "CreateLivestreamSessionActivity",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "CreateLivestreamSessionRole4E6365C5": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
+                    "kinesisvideo:DescribeSignalingChannel",
+                    "kinesisvideo:GetSignalingChannelEndpoint",
+                    "kinesisvideo:GetIceServerConfig",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": "arn:aws:kinesisvideo:us-east-1:123456789012:channel/*",
+                },
+                {
+                  "Action": [
+                    "apigateway:GET",
+                    "execute-api:Invoke",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": [
+                    "arn:aws:apigateway:us-east-1::/restapis",
+                    "arn:aws:execute-api:us-east-1:123456789012:*/*/POST/get-device/*",
+                  ],
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": "AccessPolicy",
+          },
+        ],
+        "RoleName": "CreateLivestreamSessionRole",
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "CreateLivestreamSessionRoleDefaultPolicy04E3CFCD": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "CreateLivestreamSessionRoleDefaultPolicy04E3CFCD",
+        "Roles": [
+          {
+            "Ref": "CreateLivestreamSessionRole4E6365C5",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "CreatePlaybackSessionActivity": {
+      "DependsOn": [
+        "CreatePlaybackSessionRoleDefaultPolicy4FF90827",
+        "CreatePlaybackSessionRole9B55E107",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
+          "S3Key": Anything,
+        },
+        "Environment": {
+          "Variables": {
+            "ACCOUNT_ID": "123456789012",
+            "DEVICE_MANAGEMENT_API_NAME": "VideoAnalyticsDeviceManagementAPIGateway",
+          },
+        },
+        "Handler": "com.amazonaws.videoanalytics.videologistics.activity.CreatePlaybackSessionActivity::handleRequest",
+        "LoggingConfig": {
+          "LogGroup": {
+            "Ref": "CreatePlaybackSessionActivityLogGroup8007886B",
+          },
+        },
+        "MemorySize": 512,
+        "Role": {
+          "Fn::GetAtt": [
+            "CreatePlaybackSessionRole9B55E107",
+            "Arn",
+          ],
+        },
+        "Runtime": "java17",
+        "Timeout": 300,
+        "TracingConfig": {
+          "Mode": "Active",
+        },
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "CreatePlaybackSessionActivityLogGroup8007886B": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/CreatePlaybackSessionActivity",
+        "RetentionInDays": 3653,
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "CreatePlaybackSessionActivitycreatePlaybackSessionApiGatewayPermission3EC76FBB": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "CreatePlaybackSessionActivity",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "CreatePlaybackSessionRole9B55E107": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
+                    "kinesisvideo:GetDataEndpoint",
+                    "kinesisvideo:GetHLSStreamingSessionURL",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": "arn:aws:kinesisvideo:us-east-1:123456789012:stream/*",
+                },
+                {
+                  "Action": [
+                    "apigateway:GET",
+                    "execute-api:Invoke",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": [
+                    "arn:aws:apigateway:us-east-1::/restapis",
+                    "arn:aws:execute-api:us-east-1:123456789012:*/*/POST/get-device/*",
+                  ],
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": "AccessPolicy",
+          },
+        ],
+        "RoleName": "CreatePlaybackSessionRole",
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "CreatePlaybackSessionRoleDefaultPolicy4FF90827": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "CreatePlaybackSessionRoleDefaultPolicy4FF90827",
+        "Roles": [
+          {
+            "Ref": "CreatePlaybackSessionRole9B55E107",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "CreateSnapshotUploadPathActivity": {
+      "DependsOn": [
+        "CreateSnapshotUploadPathRoleDefaultPolicy3343E442",
+        "CreateSnapshotUploadPathRoleE753F1EE",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
+          "S3Key": Anything,
+        },
+        "Environment": {
+          "Variables": {
+            "ACCOUNT_ID": "123456789012",
+            "DEVICE_MANAGEMENT_API_NAME": "VideoAnalyticsDeviceManagementAPIGateway",
+          },
+        },
+        "Handler": "com.amazonaws.videoanalytics.videologistics.activity.CreateSnapshotUploadPathActivity::handleRequest",
+        "LoggingConfig": {
+          "LogGroup": {
+            "Ref": "CreateSnapshotUploadPathActivityLogGroupCCC6A5B7",
+          },
+        },
+        "MemorySize": 512,
+        "Role": {
+          "Fn::GetAtt": [
+            "CreateSnapshotUploadPathRoleE753F1EE",
+            "Arn",
+          ],
+        },
+        "Runtime": "java17",
+        "Timeout": 300,
+        "TracingConfig": {
+          "Mode": "Active",
+        },
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "CreateSnapshotUploadPathActivityLogGroupCCC6A5B7": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/CreateSnapshotUploadPathActivity",
+        "RetentionInDays": 3653,
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "CreateSnapshotUploadPathLambdaFunctionPermission": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "CreateSnapshotUploadPathActivity",
+            "Arn",
+          ],
+        },
+        "Principal": "iot.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "snapIoTToLambdaRule",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "CreateSnapshotUploadPathRoleDefaultPolicy3343E442": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "CreateSnapshotUploadPathRoleDefaultPolicy3343E442",
+        "Roles": [
+          {
+            "Ref": "CreateSnapshotUploadPathRoleE753F1EE",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "CreateSnapshotUploadPathRoleE753F1EE": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
+                    "apigateway:GET",
+                    "execute-api:Invoke",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": [
+                    "arn:aws:apigateway:us-east-1::/restapis",
+                    "arn:aws:execute-api:us-east-1:123456789012:*/*/POST/update-device-shadow/*",
+                  ],
+                },
+                {
+                  "Action": "s3:PutObject",
+                  "Effect": "Allow",
+                  "Resource": "arn:aws:s3:::video-analytics-image-upload-bucket-123456789012-us-east-1/*",
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": "AccessPolicy",
+          },
+        ],
+        "RoleName": "CreateSnapshotUploadPathRole",
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "GetVLRegisterDeviceStatusActivity": {
+      "DependsOn": [
+        "getVLRegisterDeviceStatusRoleDefaultPolicy60937742",
+        "getVLRegisterDeviceStatusRole583C9D58",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
+          "S3Key": Anything,
+        },
+        "Environment": {
+          "Variables": {
+            "ACCOUNT_ID": "123456789012",
+          },
+        },
+        "Handler": "com.amazonaws.videoanalytics.videologistics.activity.GetVLRegisterDeviceStatusActivity::handleRequest",
+        "LoggingConfig": {
+          "LogGroup": {
+            "Ref": "GetVLRegisterDeviceStatusActivityLogGroupD3928315",
+          },
+        },
+        "MemorySize": 512,
+        "Role": {
+          "Fn::GetAtt": [
+            "getVLRegisterDeviceStatusRole583C9D58",
+            "Arn",
+          ],
+        },
+        "Runtime": "java17",
+        "Timeout": 300,
+        "TracingConfig": {
+          "Mode": "Active",
+        },
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "GetVLRegisterDeviceStatusActivityLogGroupD3928315": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/GetVLRegisterDeviceStatusActivity",
+        "RetentionInDays": 3653,
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "GetVLRegisterDeviceStatusActivitygetVLRegisterDeviceStatusApiGatewayPermission372C43E6": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "GetVLRegisterDeviceStatusActivity",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "ImportMediaObjectActivity": {
+      "DependsOn": [
+        "ImportMediaObjectRoleDefaultPolicy34EA1022",
+        "ImportMediaObjectRoleC03E3A7A",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
+          "S3Key": Anything,
+        },
+        "Environment": {
+          "Variables": {
+            "ACCOUNT_ID": "123456789012",
+          },
+        },
+        "Handler": "com.amazonaws.videoanalytics.videologistics.activity.ImportMediaObjectActivity::handleRequest",
+        "LoggingConfig": {
+          "LogGroup": {
+            "Ref": "ImportMediaObjectActivityLogGroupB5CBF4FC",
+          },
+        },
+        "MemorySize": 512,
+        "Role": {
+          "Fn::GetAtt": [
+            "ImportMediaObjectRoleC03E3A7A",
+            "Arn",
+          ],
+        },
+        "Runtime": "java17",
+        "Timeout": 300,
+        "TracingConfig": {
+          "Mode": "Active",
+        },
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "ImportMediaObjectActivityLogGroupB5CBF4FC": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/ImportMediaObjectActivity",
+        "RetentionInDays": 3653,
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "ImportMediaObjectActivityimportMediaObjectApiGatewayPermission23822089": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ImportMediaObjectActivity",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "ImportMediaObjectRoleC03E3A7A": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": "kinesis:PutRecord",
+                  "Effect": "Allow",
+                  "Resource": "arn:aws:kinesis:us-east-1:123456789012:stream/*",
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": "AccessPolicy",
+          },
+        ],
+        "RoleName": "ImportMediaObjectRole",
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "ImportMediaObjectRoleDefaultPolicy34EA1022": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "kms:Encrypt",
+                "kms:Decrypt",
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey",
+              ],
+              "Effect": "Allow",
+              "Resource": "arn:aws:kms:us-east-1:123456789012:key/*",
+            },
+            {
+              "Action": [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "ImportMediaObjectRoleDefaultPolicy34EA1022",
+        "Roles": [
+          {
+            "Ref": "ImportMediaObjectRoleC03E3A7A",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "ListDetailedVideoTimelineActivity": {
+      "DependsOn": [
+        "ListDetailedVideoTimelineRoleDefaultPolicyDB00F35E",
+        "ListDetailedVideoTimelineRole57EEC40B",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
+          "S3Key": Anything,
+        },
+        "Environment": {
+          "Variables": {
+            "ACCOUNT_ID": "123456789012",
+          },
+        },
+        "Handler": "com.amazonaws.videoanalytics.videologistics.activity.ListDetailedVideoTimelineActivity::handleRequest",
+        "LoggingConfig": {
+          "LogGroup": {
+            "Ref": "ListDetailedVideoTimelineActivityLogGroupE3A8B93A",
+          },
+        },
+        "MemorySize": 512,
+        "Role": {
+          "Fn::GetAtt": [
+            "ListDetailedVideoTimelineRole57EEC40B",
+            "Arn",
+          ],
+        },
+        "Runtime": "java17",
+        "Timeout": 300,
+        "TracingConfig": {
+          "Mode": "Active",
+        },
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "ListDetailedVideoTimelineActivityLogGroupE3A8B93A": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/ListDetailedVideoTimelineActivity",
+        "RetentionInDays": 3653,
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "ListDetailedVideoTimelineActivitylistDetailedVideoTimelineApiGatewayPermission74EE4148": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ListDetailedVideoTimelineActivity",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "ListDetailedVideoTimelineRole57EEC40B": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
+                    "s3:GetObject",
+                    "s3:PutObject",
+                    "s3:DeleteObject",
+                    "s3:List*",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": [
+                    "arn:aws:s3:::videoanalytics-timeline-bucket-us-east-1-123456789012",
+                    "arn:aws:s3:::videoanalytics-timeline-bucket-us-east-1-123456789012/*",
+                  ],
+                },
+                {
+                  "Action": [
+                    "kms:GenerateDataKey",
+                    "kms:Decrypt",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": "*",
+                },
+                {
+                  "Action": [
+                    "dynamodb:Scan",
+                    "dynamodb:GetItem",
+                    "dynamodb:UpdateItem",
+                    "dynamodb:Query",
+                    "dynamodb:BatchGetItem",
+                    "dynamodb:PutItem",
+                    "dynamodb:DescribeTable",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": [
+                    "arn:aws:dynamodb:us-east-1:123456789012:table/VideoTimelineTable",
+                    "arn:aws:dynamodb:us-east-1:123456789012:table/RawVideoTimelineTable",
+                    "arn:aws:dynamodb:us-east-1:123456789012:table/VideoTimelineTable/*",
+                    "arn:aws:dynamodb:us-east-1:123456789012:table/RawVideoTimelineTable/*",
+                  ],
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": "AccessPolicy",
+          },
+        ],
+        "RoleName": "ListDetailedVideoTimelineRole",
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "ListDetailedVideoTimelineRoleDefaultPolicyDB00F35E": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "ListDetailedVideoTimelineRoleDefaultPolicyDB00F35E",
+        "Roles": [
+          {
+            "Ref": "ListDetailedVideoTimelineRole57EEC40B",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "ListVideoTimelinesActivity": {
+      "DependsOn": [
+        "ListVideoTimelinesRoleDefaultPolicy0E5D6392",
+        "ListVideoTimelinesRole217B167D",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
+          "S3Key": Anything,
+        },
+        "Environment": {
+          "Variables": {
+            "ACCOUNT_ID": "123456789012",
+          },
+        },
+        "Handler": "com.amazonaws.videoanalytics.videologistics.activity.ListVideoTimelinesActivity::handleRequest",
+        "LoggingConfig": {
+          "LogGroup": {
+            "Ref": "ListVideoTimelinesActivityLogGroup09542E14",
+          },
+        },
+        "MemorySize": 512,
+        "Role": {
+          "Fn::GetAtt": [
+            "ListVideoTimelinesRole217B167D",
+            "Arn",
+          ],
+        },
+        "Runtime": "java17",
+        "Timeout": 300,
+        "TracingConfig": {
+          "Mode": "Active",
+        },
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "ListVideoTimelinesActivityLogGroup09542E14": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/ListVideoTimelinesActivity",
+        "RetentionInDays": 3653,
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "ListVideoTimelinesActivitylistVideoTimelinesApiGatewayPermissionE1ECC661": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ListVideoTimelinesActivity",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "ListVideoTimelinesRole217B167D": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
+                    "s3:GetObject",
+                    "s3:PutObject",
+                    "s3:DeleteObject",
+                    "s3:List*",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": [
+                    "arn:aws:s3:::videoanalytics-timeline-bucket-us-east-1-123456789012",
+                    "arn:aws:s3:::videoanalytics-timeline-bucket-us-east-1-123456789012/*",
+                  ],
+                },
+                {
+                  "Action": [
+                    "kms:GenerateDataKey",
+                    "kms:Decrypt",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": "*",
+                },
+                {
+                  "Action": [
+                    "dynamodb:Scan",
+                    "dynamodb:GetItem",
+                    "dynamodb:UpdateItem",
+                    "dynamodb:Query",
+                    "dynamodb:BatchGetItem",
+                    "dynamodb:PutItem",
+                    "dynamodb:DescribeTable",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": [
+                    "arn:aws:dynamodb:us-east-1:123456789012:table/VideoTimelineTable",
+                    "arn:aws:dynamodb:us-east-1:123456789012:table/RawVideoTimelineTable",
+                    "arn:aws:dynamodb:us-east-1:123456789012:table/VideoTimelineTable/*",
+                    "arn:aws:dynamodb:us-east-1:123456789012:table/RawVideoTimelineTable/*",
+                  ],
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": "AccessPolicy",
+          },
+        ],
+        "RoleName": "ListVideoTimelinesRole",
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "ListVideoTimelinesRoleDefaultPolicy0E5D6392": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "ListVideoTimelinesRoleDefaultPolicy0E5D6392",
+        "Roles": [
+          {
+            "Ref": "ListVideoTimelinesRole217B167D",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "PutVideoTimelineActivity": {
+      "DependsOn": [
+        "PutVideoTimelineRoleDefaultPolicy9C0E6A68",
+        "PutVideoTimelineRoleA6200BBF",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
+          "S3Key": Anything,
+        },
+        "Environment": {
+          "Variables": {
+            "ACCOUNT_ID": "123456789012",
+          },
+        },
+        "Handler": "com.amazonaws.videoanalytics.videologistics.activity.PutVideoTimelineActivity::handleRequest",
+        "LoggingConfig": {
+          "LogGroup": {
+            "Ref": "PutVideoTimelineActivityLogGroup2468ACB3",
+          },
+        },
+        "MemorySize": 512,
+        "Role": {
+          "Fn::GetAtt": [
+            "PutVideoTimelineRoleA6200BBF",
+            "Arn",
+          ],
+        },
+        "Runtime": "java17",
+        "Timeout": 300,
+        "TracingConfig": {
+          "Mode": "Active",
+        },
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "PutVideoTimelineActivityLogGroup2468ACB3": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/PutVideoTimelineActivity",
+        "RetentionInDays": 3653,
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "PutVideoTimelineLambdaFunctionPermission": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "PutVideoTimelineActivity",
+            "Arn",
+          ],
+        },
+        "Principal": "iot.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "VideoTimelineIngestionIoTToLambdaRule",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "PutVideoTimelineRoleA6200BBF": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
+                    "s3:GetObject",
+                    "s3:PutObject",
+                    "s3:DeleteObject",
+                    "s3:List*",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": [
+                    "arn:aws:s3:::videoanalytics-timeline-bucket-us-east-1-123456789012",
+                    "arn:aws:s3:::videoanalytics-timeline-bucket-us-east-1-123456789012/*",
+                  ],
+                },
+                {
+                  "Action": [
+                    "kms:GenerateDataKey",
+                    "kms:Decrypt",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": "*",
+                },
+                {
+                  "Action": [
+                    "dynamodb:Scan",
+                    "dynamodb:GetItem",
+                    "dynamodb:UpdateItem",
+                    "dynamodb:Query",
+                    "dynamodb:BatchGetItem",
+                    "dynamodb:PutItem",
+                    "dynamodb:DescribeTable",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": [
+                    "arn:aws:dynamodb:us-east-1:123456789012:table/VideoTimelineTable",
+                    "arn:aws:dynamodb:us-east-1:123456789012:table/RawVideoTimelineTable",
+                    "arn:aws:dynamodb:us-east-1:123456789012:table/VideoTimelineTable/*",
+                    "arn:aws:dynamodb:us-east-1:123456789012:table/RawVideoTimelineTable/*",
+                  ],
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": "AccessPolicy",
+          },
+        ],
+        "RoleName": "PutVideoTimelineRole",
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "PutVideoTimelineRoleDefaultPolicy9C0E6A68": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "PutVideoTimelineRoleDefaultPolicy9C0E6A68",
+        "Roles": [
+          {
+            "Ref": "PutVideoTimelineRoleA6200BBF",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "SnapDLQKmsKey2BFBC897": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Description": "Kms key for snapshot DLQ.",
+        "EnableKeyRotation": true,
+        "KeyPolicy": {
+          "Statement": [
+            {
+              "Action": "kms:*",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":iam::123456789012:root",
+                    ],
+                  ],
+                },
+              },
+              "Resource": "*",
+            },
+            {
+              "Action": [
+                "kms:Generate*",
+                "kms:DescribeKey",
+                "kms:Encrypt",
+                "kms:ReEncrypt*",
+                "kms:Decrypt",
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": [
+                  {
+                    "Fn::GetAtt": [
+                      "SnapLambdaDLQRole",
+                      "Arn",
+                    ],
+                  },
+                  {
+                    "Fn::GetAtt": [
+                      "SnapIoTRuleDLQRole",
+                      "Arn",
+                    ],
+                  },
+                  {
+                    "Fn::GetAtt": [
+                      "CreateSnapshotUploadPathRoleE753F1EE",
+                      "Arn",
+                    ],
+                  },
+                ],
+              },
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::KMS::Key",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "SnapDLQKmsKeyAlias": {
+      "Properties": {
+        "AliasName": "alias/SnapDLQKmsKey",
+        "TargetKeyId": {
+          "Ref": "SnapDLQKmsKey2BFBC897",
+        },
+      },
+      "Type": "AWS::KMS::Alias",
+    },
+    "SnapIoTRuleDLQBAA8354F": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "KmsMasterKeyId": {
+          "Fn::GetAtt": [
+            "SnapDLQKmsKey2BFBC897",
+            "Arn",
+          ],
+        },
+        "QueueName": "SnapIoTRuleDLQ",
+      },
+      "Type": "AWS::SQS::Queue",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "SnapIoTRuleDLQPolicy5F7441EF": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sqs:*",
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": "false",
+                },
+              },
+              "Effect": "Deny",
+              "Principal": {
+                "AWS": "*",
+              },
+              "Resource": {
+                "Fn::GetAtt": [
+                  "SnapIoTRuleDLQBAA8354F",
+                  "Arn",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "Queues": [
+          {
+            "Ref": "SnapIoTRuleDLQBAA8354F",
+          },
+        ],
+      },
+      "Type": "AWS::SQS::QueuePolicy",
+    },
+    "SnapIoTRuleDLQRole": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "sts:AssumeRole",
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "iot.amazonaws.com",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
+                    "sqs:SendMessage",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": "*",
+                  "Sid": "SnapIoTRuleDLQAccess",
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": "SnapIoTRuleDLQPolicy",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "SnapLambdaDLQ48763A8A": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "KmsMasterKeyId": {
+          "Fn::GetAtt": [
+            "SnapDLQKmsKey2BFBC897",
+            "Arn",
+          ],
+        },
+        "QueueName": "SnapLambdaDLQ",
+      },
+      "Type": "AWS::SQS::Queue",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "SnapLambdaDLQPolicyDB19AD36": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sqs:*",
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": "false",
+                },
+              },
+              "Effect": "Deny",
+              "Principal": {
+                "AWS": "*",
+              },
+              "Resource": {
+                "Fn::GetAtt": [
+                  "SnapLambdaDLQ48763A8A",
+                  "Arn",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "Queues": [
+          {
+            "Ref": "SnapLambdaDLQ48763A8A",
+          },
+        ],
+      },
+      "Type": "AWS::SQS::QueuePolicy",
+    },
+    "SnapLambdaDLQRole": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "sts:AssumeRole",
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "iot.amazonaws.com",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
+                    "sqs:SendMessage",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": "*",
+                  "Sid": "SnapLambdaDLQAccess",
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": "SnapLambdaDLQPolicy",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "StartVLRegisterDeviceActivity": {
+      "DependsOn": [
+        "StartVLRegisterDeviceRoleDefaultPolicyF271889A",
+        "StartVLRegisterDeviceRoleEC874B45",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
+          "S3Key": Anything,
+        },
+        "Environment": {
+          "Variables": {
+            "ACCOUNT_ID": "123456789012",
+            "DEVICE_MANAGEMENT_API_NAME": "VideoAnalyticsDeviceManagementAPIGateway",
+          },
+        },
+        "Handler": "com.amazonaws.videoanalytics.videologistics.activity.StartVLRegisterDeviceActivity::handleRequest",
+        "LoggingConfig": {
+          "LogGroup": {
+            "Ref": "StartVLRegisterDeviceActivityLogGroupB140289E",
+          },
+        },
+        "MemorySize": 512,
+        "Role": {
+          "Fn::GetAtt": [
+            "StartVLRegisterDeviceRoleEC874B45",
+            "Arn",
+          ],
+        },
+        "Runtime": "java17",
+        "Timeout": 300,
+        "TracingConfig": {
+          "Mode": "Active",
+        },
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "StartVLRegisterDeviceActivityLogGroupB140289E": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/StartVLRegisterDeviceActivity",
+        "RetentionInDays": 3653,
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "StartVLRegisterDeviceActivitystartVLRegisterDeviceApiGatewayPermission377C9E38": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "StartVLRegisterDeviceActivity",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "StartVLRegisterDeviceRoleDefaultPolicyF271889A": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "StartVLRegisterDeviceRoleDefaultPolicyF271889A",
+        "Roles": [
+          {
+            "Ref": "StartVLRegisterDeviceRoleEC874B45",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "StartVLRegisterDeviceRoleEC874B45": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
+                    "dynamodb:PutItem",
+                    "dynamodb:UpdateItem",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": "arn:aws:dynamodb:us-east-1:123456789012:table/VLRegisterDeviceJobTable",
+                },
+                {
+                  "Action": [
+                    "apigateway:GET",
+                    "execute-api:Invoke",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": [
+                    "arn:aws:apigateway:us-east-1::/restapis",
+                    "arn:aws:execute-api:us-east-1:123456789012:*/*/POST/get-device/*",
+                  ],
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": "AccessPolicy",
+          },
+        ],
+        "RoleName": "StartVLRegisterDeviceRole",
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "VideoAnalyticsVideoLogisticsAPIGateway398EC1B0": {
+      "Properties": {
+        "Body": {
+          "Fn::Transform": {
+            "Name": "AWS::Include",
+            "Parameters": {
+              "Location": "s3://cdk-hnb659fds-assets-123456789012-us-east-1/59be46297b59ec5c22028a65e8ce797927befc8635d25b255b908e2b4b0240d4.json",
+            },
+          },
+        },
+        "Name": "VideoAnalyticsVideoLogisticsAPIGateway",
+        "Policy": {
+          "Statement": [
+            {
+              "Action": "execute-api:Invoke",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":iam::123456789012:root",
+                    ],
+                  ],
+                },
+              },
+              "Resource": "arn:aws:execute-api:us-east-1:123456789012:*/*/POST/*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::ApiGateway::RestApi",
+    },
+    "VideoAnalyticsVideoLogisticsAPIGatewayAccountCA72BB3A": {
+      "DeletionPolicy": "Retain",
+      "DependsOn": [
+        "VideoAnalyticsVideoLogisticsAPIGateway398EC1B0",
+      ],
+      "Properties": {
+        "CloudWatchRoleArn": {
+          "Fn::GetAtt": [
+            "VideoAnalyticsVideoLogisticsAPIGatewayCloudWatchRole4258C65A",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "AWS::ApiGateway::Account",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "VideoAnalyticsVideoLogisticsAPIGatewayCloudWatchRole4258C65A": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "apigateway.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "VideoAnalyticsVideoLogisticsAPIGatewayDeployment6F6E8BDF0f71081dac6d970c7a055d6699d7265b": {
+      "Properties": {
+        "Description": "Automatically created by the RestApi construct",
+        "RestApiId": {
+          "Ref": "VideoAnalyticsVideoLogisticsAPIGateway398EC1B0",
+        },
+      },
+      "Type": "AWS::ApiGateway::Deployment",
+    },
+    "VideoAnalyticsVideoLogisticsAPIGatewayDeploymentStageprod05FE7F1B": {
+      "DependsOn": [
+        "VideoAnalyticsVideoLogisticsAPIGatewayAccountCA72BB3A",
+      ],
+      "Properties": {
+        "DeploymentId": {
+          "Ref": "VideoAnalyticsVideoLogisticsAPIGatewayDeployment6F6E8BDF0f71081dac6d970c7a055d6699d7265b",
+        },
+        "MethodSettings": [
+          {
+            "DataTraceEnabled": false,
+            "HttpMethod": "*",
+            "LoggingLevel": "OFF",
+            "ResourcePath": "/*",
+          },
+        ],
+        "RestApiId": {
+          "Ref": "VideoAnalyticsVideoLogisticsAPIGateway398EC1B0",
+        },
+        "StageName": "prod",
+        "TracingEnabled": true,
+      },
+      "Type": "AWS::ApiGateway::Stage",
+    },
+    "VideoTimelineIngestionDLQKmsKeyAlias": {
+      "Properties": {
+        "AliasName": "alias/VideoTimelineIngestionDLQKmsKey",
+        "TargetKeyId": {
+          "Ref": "VideoTimelineIngestionDLQKmsKeyF1D67F57",
+        },
+      },
+      "Type": "AWS::KMS::Alias",
+    },
+    "VideoTimelineIngestionDLQKmsKeyF1D67F57": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Description": "Kms key for Video Timeline ingestion DLQ",
+        "EnableKeyRotation": true,
+        "KeyPolicy": {
+          "Statement": [
+            {
+              "Action": "kms:*",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":iam::123456789012:root",
+                    ],
+                  ],
+                },
+              },
+              "Resource": "*",
+            },
+            {
+              "Action": [
+                "kms:Generate*",
+                "kms:DescribeKey",
+                "kms:Encrypt",
+                "kms:ReEncrypt*",
+                "kms:Decrypt",
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": [
+                  {
+                    "Fn::GetAtt": [
+                      "VideoTimelineIngestionLambdaDLQRole",
+                      "Arn",
+                    ],
+                  },
+                  {
+                    "Fn::GetAtt": [
+                      "VideoTimelineIngestionIoTRuleDLQRole",
+                      "Arn",
+                    ],
+                  },
+                  {
+                    "Fn::GetAtt": [
+                      "PutVideoTimelineRoleA6200BBF",
+                      "Arn",
+                    ],
+                  },
+                ],
+              },
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::KMS::Key",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "VideoTimelineIngestionIoTRuleDLQCA4F932A": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "KmsMasterKeyId": {
+          "Fn::GetAtt": [
+            "VideoTimelineIngestionDLQKmsKeyF1D67F57",
+            "Arn",
+          ],
+        },
+        "QueueName": "VideoTimelineIngestionIoTRuleDLQ",
+      },
+      "Type": "AWS::SQS::Queue",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "VideoTimelineIngestionIoTRuleDLQPolicy738664D8": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sqs:*",
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": "false",
+                },
+              },
+              "Effect": "Deny",
+              "Principal": {
+                "AWS": "*",
+              },
+              "Resource": {
+                "Fn::GetAtt": [
+                  "VideoTimelineIngestionIoTRuleDLQCA4F932A",
+                  "Arn",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "Queues": [
+          {
+            "Ref": "VideoTimelineIngestionIoTRuleDLQCA4F932A",
+          },
+        ],
+      },
+      "Type": "AWS::SQS::QueuePolicy",
+    },
+    "VideoTimelineIngestionIoTRuleDLQRole": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "sts:AssumeRole",
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "iot.amazonaws.com",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
+                    "sqs:SendMessage",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": "*",
+                  "Sid": "VideoTimelineIoTRuleDLQAccess",
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": "VideoTimelineIngestionIoTRuleDLQPolicy",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "VideoTimelineIngestionIoTToLambdaRule": {
+      "Properties": {
+        "TopicRulePayload": {
+          "Actions": [
+            {
+              "Lambda": {
+                "FunctionArn": {
+                  "Fn::GetAtt": [
+                    "PutVideoTimelineActivity",
+                    "Arn",
+                  ],
+                },
+              },
+            },
+          ],
+          "AwsIotSqlVersion": "2016-03-23",
+          "Description": "Forward Video Timeline to destination.",
+          "ErrorAction": {
+            "Sqs": {
+              "QueueUrl": {
+                "Ref": "VideoTimelineIngestionIoTRuleDLQCA4F932A",
+              },
+              "RoleArn": {
+                "Fn::GetAtt": [
+                  "VideoTimelineIngestionIoTRuleDLQRole",
+                  "Arn",
+                ],
+              },
+              "UseBase64": false,
+            },
+          },
+          "RuleDisabled": false,
+          "Sql": "SELECT location as body.location, timestamps as body.timestamps, topic(2) as body.deviceId FROM 'videoanalytics/+/timeline'",
+        },
+      },
+      "Type": "AWS::IoT::TopicRule",
+    },
+    "VideoTimelineIngestionLambdaDLQ30E137B3": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "KmsMasterKeyId": {
+          "Fn::GetAtt": [
+            "VideoTimelineIngestionDLQKmsKeyF1D67F57",
+            "Arn",
+          ],
+        },
+        "QueueName": "VideoTimelineIngestionLambdaDLQ",
+      },
+      "Type": "AWS::SQS::Queue",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "VideoTimelineIngestionLambdaDLQPolicy3E0E96FB": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sqs:*",
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": "false",
+                },
+              },
+              "Effect": "Deny",
+              "Principal": {
+                "AWS": "*",
+              },
+              "Resource": {
+                "Fn::GetAtt": [
+                  "VideoTimelineIngestionLambdaDLQ30E137B3",
+                  "Arn",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "Queues": [
+          {
+            "Ref": "VideoTimelineIngestionLambdaDLQ30E137B3",
+          },
+        ],
+      },
+      "Type": "AWS::SQS::QueuePolicy",
+    },
+    "VideoTimelineIngestionLambdaDLQRole": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "sts:AssumeRole",
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "iot.amazonaws.com",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
+                    "sqs:SendMessage",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": "*",
+                  "Sid": "VideoTimelineLambdaDLQAccess",
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": "VideoTimelineIngestionLambdaDLQPolicy",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "apiGatewayRoleDefaultPolicyE59959A8": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": "arn:aws:lambda:us-east-1:123456789012:function:*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "apiGatewayRoleDefaultPolicyE59959A8",
+        "Roles": [
+          {
+            "Ref": "apiGatewayRoleF7B60DA1",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "apiGatewayRoleF7B60DA1": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "apigateway.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "RoleName": "VideoLogisticsApiGatewayRole",
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "getVLRegisterDeviceStatusRole583C9D58": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
+                    "dynamodb:Scan",
+                    "dynamodb:GetItem",
+                    "dynamodb:UpdateItem",
+                    "dynamodb:Query",
+                    "dynamodb:BatchGetItem",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": "arn:aws:dynamodb:us-east-1:123456789012:table/VLRegisterDeviceJobTable",
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": "AccessPolicy",
+          },
+        ],
+        "RoleName": "getVLRegisterDeviceStatusRole",
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "getVLRegisterDeviceStatusRoleDefaultPolicy60937742": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "getVLRegisterDeviceStatusRoleDefaultPolicy60937742",
+        "Roles": [
+          {
+            "Ref": "getVLRegisterDeviceStatusRole583C9D58",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "snapIoTToLambdaRule": {
+      "Properties": {
+        "TopicRulePayload": {
+          "Actions": [
+            {
+              "Lambda": {
+                "FunctionArn": {
+                  "Fn::GetAtt": [
+                    "CreateSnapshotUploadPathActivity",
+                    "Arn",
+                  ],
+                },
+              },
+            },
+          ],
+          "AwsIotSqlVersion": "2016-03-23",
+          "Description": "Forward snapshots to destination.",
+          "ErrorAction": {
+            "Sqs": {
+              "QueueUrl": {
+                "Ref": "SnapIoTRuleDLQBAA8354F",
+              },
+              "RoleArn": {
+                "Fn::GetAtt": [
+                  "SnapIoTRuleDLQRole",
+                  "Arn",
+                ],
+              },
+              "UseBase64": false,
+            },
+          },
+          "RuleDisabled": false,
+          "Sql": "SELECT checksum as body.checksum, contentLength as body.contentLength, topic(2) as body.deviceId FROM 'videoanalytics/+/snapshot'",
+        },
+      },
+      "Type": "AWS::IoT::TopicRule",
+    },
+  },
+  "Rules": {
+    "CheckBootstrapVersion": {
+      "Assertions": [
+        {
+          "Assert": {
+            "Fn::Not": [
+              {
+                "Fn::Contains": [
+                  [
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5",
+                  ],
+                  {
+                    "Ref": "BootstrapVersion",
+                  },
+                ],
+              },
+            ],
+          },
+          "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI.",
+        },
+      ],
+    },
+  },
+}
+`;

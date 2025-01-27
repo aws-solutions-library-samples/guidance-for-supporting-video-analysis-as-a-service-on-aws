@@ -1,0 +1,48 @@
+{
+  "name": "video_analytics_device_management_cdk",
+  "version": "0.1.0",
+  "bin": {
+    "video_analytics_device_management_cdk": "dist/lib/app.js"
+  },
+  "scripts": {
+    "clean": "rm -rf dist node_modules package-lock.json",
+    "build": "npm install && tsc --project tsconfig.json && npm run test",
+    "watch": "tsc -w",
+    "test": "jest --passWithNoTests --maxWorkers=50%",
+    "test:update": "jest --updateSnapshot",
+    "lint": "eslint 'lib/**/*.ts' 'test/**/*.ts'",
+    "format": "eslint --fix 'lib/**/*.ts' 'test/**/*.ts' && prettier --write 'lib/**/*.ts' 'test/**/*.ts'",
+    "cdk": "cdk"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.13.0",
+    "@types/jest": "^29.5.14",
+    "@types/node": "22.7.9",
+    "@typescript-eslint/eslint-plugin": "^5.50.0",
+    "@typescript-eslint/parser": "^5.50.0",
+    "aws-cdk": "2.161.1",
+    "eslint": "^8.57.1",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-jsdoc": "^48.2.1",
+    "eslint-plugin-no-null": "^1.0.2",
+    "eslint-plugin-prettier": "^4.2.1",
+    "globals": "^15.11.0",
+    "jest": "^29.7.0",
+    "npm-check-updates": "^16.14.16",
+    "prettier": "^2.8.3",
+    "prettier-eslint": "^16.3.0",
+    "ts-jest": "^29.2.5",
+    "ts-node": "^10.9.2",
+    "typescript": "~5.6.2",
+    "typescript-eslint": "^8.12.0"
+  },
+  "dependencies": {
+    "aws-cdk-lib": "2.161.1",
+    "constructs": "^10.0.0",
+    "dotenv": "^16.4.5",
+    "dotenv-cli": "^7.4.1",
+    "source-map-support": "^0.5.21",
+    "video_analytics_common_construct": "file:../../common-constructs/VideoAnalyticsCommonConstruct"
+  }
+}

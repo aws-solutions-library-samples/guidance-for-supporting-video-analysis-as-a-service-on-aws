@@ -1,0 +1,8 @@
+{
+  "private": true,
+  "workspaces": [
+    "common-constructs/VideoAnalyticsCommonConstruct",
+    "device-management-cdk/VideoAnalyticsDeviceManagementCDK",
+    "video-logistics-cdk/VideoAnalyticsVideoLogisticsCDK"
+  ]
+}

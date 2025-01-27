@@ -1,0 +1,1202 @@
+{
+    "openapi": "3.0.2",
+    "info": {
+        "title": "Video Analytic Guidance Solution - Video Logistics",
+        "version": "2024-10-18"
+    },
+    "paths": {
+        "/create-livestream-session": {
+            "post": {
+                "operationId": "CreateLivestreamSession",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateLivestreamSessionRequestContent"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "CreateLivestreamSession 200 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CreateLivestreamSessionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "ValidationException 400 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "AccessDeniedException 403 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AccessDeniedExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "ResourceNotFoundException 404 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResourceNotFoundExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "ConflictException 409 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ConflictExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "InternalServerException 500 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InternalServerExceptionResponseContent"
+                                }
+                            }
+                        }
+                    }
+                },
+                "x-amazon-apigateway-integration": {
+                    "type": "aws_proxy",
+                    "httpMethod": "POST",
+                    "uri": {
+                        "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${CreateLivestreamSessionActivity}/invocations"
+                    },
+                    "credentials": {
+                        "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/VideoLogisticsApiGatewayRole"
+                    }
+                },
+                "x-amazon-apigateway-auth": {
+                    "type": "AWS_IAM"
+                }
+            }
+        },
+        "/create-playback-session": {
+            "post": {
+                "operationId": "CreatePlaybackSession",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreatePlaybackSessionRequestContent"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "CreatePlaybackSession 200 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CreatePlaybackSessionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "ValidationException 400 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "AccessDeniedException 403 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AccessDeniedExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "ResourceNotFoundException 404 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResourceNotFoundExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "InternalServerException 500 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InternalServerExceptionResponseContent"
+                                }
+                            }
+                        }
+                    }
+                },
+                "x-amazon-apigateway-integration": {
+                    "type": "aws_proxy",
+                    "httpMethod": "POST",
+                    "uri": {
+                        "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${CreatePlaybackSessionActivity}/invocations"
+                    },
+                    "credentials": {
+                        "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/VideoLogisticsApiGatewayRole"
+                    }
+                },
+                "x-amazon-apigateway-auth": {
+                    "type": "AWS_IAM"
+                }
+            }
+        },
+        "/create-snapshot-upload-path": {
+            "post": {
+                "operationId": "CreateSnapshotUploadPath",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateSnapshotUploadPathRequestContent"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "CreateSnapshotUploadPath 200 response"
+                    },
+                    "400": {
+                        "description": "ValidationException 400 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "InternalServerException 500 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InternalServerExceptionResponseContent"
+                                }
+                            }
+                        }
+                    }
+                },
+                "x-amazon-apigateway-integration": {
+                    "type": "aws_proxy",
+                    "httpMethod": "POST",
+                    "uri": {
+                        "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${CreateSnapshotUploadPathActivity}/invocations"
+                    },
+                    "credentials": {
+                        "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/VideoLogisticsApiGatewayRole"
+                    }
+                }
+            }
+        },
+        "/get-vl-register-device-status/{jobId}": {
+            "post": {
+                "operationId": "GetVLRegisterDeviceStatus",
+                "parameters": [
+                    {
+                        "name": "jobId",
+                        "in": "path",
+                        "schema": {
+                            "type": "string",
+                            "maxLength": 128,
+                            "minLength": 1,
+                            "pattern": "^[a-z0-9\\-]+$"
+                        },
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "GetVLRegisterDeviceStatus 200 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GetVLRegisterDeviceStatusResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "ValidationException 400 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "AccessDeniedException 403 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AccessDeniedExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "ResourceNotFoundException 404 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResourceNotFoundExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "InternalServerException 500 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InternalServerExceptionResponseContent"
+                                }
+                            }
+                        }
+                    }
+                },
+                "x-amazon-apigateway-integration": {
+                    "type": "aws_proxy",
+                    "httpMethod": "POST",
+                    "uri": {
+                        "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${GetVLRegisterDeviceStatusActivity}/invocations"
+                    },
+                    "credentials": {
+                        "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/VideoLogisticsApiGatewayRole"
+                    }
+                },
+                "x-amazon-apigateway-auth": {
+                    "type": "AWS_IAM"
+                }
+            }
+        },
+        "/import-media-object": {
+            "post": {
+                "operationId": "ImportMediaObject",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ImportMediaObjectRequestContent"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "ImportMediaObject 200 response"
+                    },
+                    "400": {
+                        "description": "ValidationException 400 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "InternalServerException 500 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InternalServerExceptionResponseContent"
+                                }
+                            }
+                        }
+                    }
+                },
+                "x-amazon-apigateway-integration": {
+                    "type": "aws_proxy",
+                    "httpMethod": "POST",
+                    "uri": {
+                        "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${ImportMediaObjectActivity}/invocations"
+                    },
+                    "credentials": {
+                        "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/VideoLogisticsApiGatewayRole"
+                    }
+                },
+                "x-amazon-apigateway-auth": {
+                    "type": "AWS_IAM"
+                }
+            }
+        },
+        "/list-detailed-video-timeline": {
+            "post": {
+                "operationId": "ListDetailedVideoTimeline",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ListDetailedVideoTimelineRequestContent"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "ListDetailedVideoTimeline 200 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ListDetailedVideoTimelineResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "ValidationException 400 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "AccessDeniedException 403 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AccessDeniedExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "ResourceNotFoundException 404 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResourceNotFoundExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "InternalServerException 500 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InternalServerExceptionResponseContent"
+                                }
+                            }
+                        }
+                    }
+                },
+                "x-amazon-apigateway-integration": {
+                    "type": "aws_proxy",
+                    "httpMethod": "POST",
+                    "uri": {
+                        "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${ListDetailedVideoTimelineActivity}/invocations"
+                    },
+                    "credentials": {
+                        "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/VideoLogisticsApiGatewayRole"
+                    }
+                },
+                "x-amazon-apigateway-auth": {
+                    "type": "AWS_IAM"
+                }
+            }
+        },
+        "/list-video-timelines": {
+            "post": {
+                "operationId": "ListVideoTimelines",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ListVideoTimelinesRequestContent"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "ListVideoTimelines 200 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ListVideoTimelinesResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "ValidationException 400 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "InternalServerException 500 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InternalServerExceptionResponseContent"
+                                }
+                            }
+                        }
+                    }
+                },
+                "x-amazon-apigateway-integration": {
+                    "type": "aws_proxy",
+                    "httpMethod": "POST",
+                    "uri": {
+                        "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${ListVideoTimelinesActivity}/invocations"
+                    },
+                    "credentials": {
+                        "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/VideoLogisticsApiGatewayRole"
+                    }
+                },
+                "x-amazon-apigateway-auth": {
+                    "type": "AWS_IAM"
+                }
+            }
+        },
+        "/put-video-timeline": {
+            "post": {
+                "operationId": "PutVideoTimeline",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PutVideoTimelineRequestContent"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "PutVideoTimeline 200 response"
+                    },
+                    "400": {
+                        "description": "ValidationException 400 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "InternalServerException 500 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InternalServerExceptionResponseContent"
+                                }
+                            }
+                        }
+                    }
+                },
+                "x-amazon-apigateway-integration": {
+                    "type": "aws_proxy",
+                    "httpMethod": "POST",
+                    "uri": {
+                        "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${PutVideoTimelineActivity}/invocations"
+                    },
+                    "credentials": {
+                        "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/VideoLogisticsApiGatewayRole"
+                    }
+                }
+            }
+        },
+        "/start-vl-register-device/{deviceId}": {
+            "post": {
+                "operationId": "StartVLRegisterDevice",
+                "parameters": [
+                    {
+                        "name": "deviceId",
+                        "in": "path",
+                        "schema": {
+                            "type": "string",
+                            "maxLength": 128,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9:_\\-]+$"
+                        },
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "StartVLRegisterDevice 200 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StartVLRegisterDeviceResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "ValidationException 400 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "AccessDeniedException 403 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AccessDeniedExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "ResourceNotFoundException 404 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResourceNotFoundExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "InternalServerException 500 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InternalServerExceptionResponseContent"
+                                }
+                            }
+                        }
+                    }
+                },
+                "x-amazon-apigateway-integration": {
+                    "type": "aws_proxy",
+                    "httpMethod": "POST",
+                    "uri": {
+                        "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${StartVLRegisterDeviceActivity}/invocations"
+                    },
+                    "credentials": {
+                        "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/VideoLogisticsApiGatewayRole"
+                    }
+                },
+                "x-amazon-apigateway-auth": {
+                    "type": "AWS_IAM"
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "AccessDeniedExceptionResponseContent": {
+                "type": "object",
+                "properties": {
+                    "message": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "message"
+                ]
+            },
+            "ConflictExceptionResponseContent": {
+                "type": "object",
+                "properties": {
+                    "message": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "message"
+                ]
+            },
+            "CreateLivestreamSessionRequestContent": {
+                "type": "object",
+                "properties": {
+                    "deviceId": {
+                        "type": "string",
+                        "maxLength": 128,
+                        "minLength": 1,
+                        "pattern": "^[a-zA-Z0-9:_\\-]+$"
+                    },
+                    "clientId": {
+                        "type": "string",
+                        "maxLength": 256,
+                        "minLength": 1,
+                        "pattern": "^(?!((A|a)(W|w)(S|s))_.*)[a-zA-Z0-9_.\\-]"
+                    }
+                },
+                "required": [
+                    "deviceId"
+                ]
+            },
+            "CreateLivestreamSessionResponseContent": {
+                "type": "object",
+                "properties": {
+                    "sessionId": {
+                        "type": "string",
+                        "maxLength": 128,
+                        "minLength": 1,
+                        "pattern": "^[a-z0-9\\-]+$"
+                    },
+                    "clientId": {
+                        "type": "string",
+                        "maxLength": 256,
+                        "minLength": 1,
+                        "pattern": "^(?!((A|a)(W|w)(S|s))_.*)[a-zA-Z0-9_.\\-]"
+                    },
+                    "iceServers": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/IceServer"
+                        }
+                    },
+                    "signalingChannelURL": {
+                        "type": "string"
+                    }
+                }
+            },
+            "CreatePlaybackSessionRequestContent": {
+                "type": "object",
+                "properties": {
+                    "deviceId": {
+                        "type": "string",
+                        "maxLength": 128,
+                        "minLength": 1,
+                        "pattern": "^[a-zA-Z0-9:_\\-]+$"
+                    },
+                    "startTime": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "endTime": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "required": [
+                    "deviceId",
+                    "endTime",
+                    "startTime"
+                ]
+            },
+            "CreatePlaybackSessionResponseContent": {
+                "type": "object",
+                "properties": {
+                    "streamSources": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/StreamSource"
+                        }
+                    }
+                }
+            },
+            "CreateSnapshotUploadPathRequestContent": {
+                "type": "object",
+                "properties": {
+                    "deviceId": {
+                        "type": "string",
+                        "maxLength": 128,
+                        "minLength": 1,
+                        "pattern": "^[a-zA-Z0-9:_\\-]+$"
+                    },
+                    "checksum": {
+                        "type": "string"
+                    },
+                    "contentLength": {
+                        "type": "number"
+                    }
+                },
+                "required": [
+                    "checksum",
+                    "contentLength",
+                    "deviceId"
+                ]
+            },
+            "DetailedVideoTimeline": {
+                "type": "object",
+                "properties": {
+                    "cloud": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Timeline"
+                        }
+                    },
+                    "device": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Timeline"
+                        }
+                    }
+                }
+            },
+            "GetVLRegisterDeviceStatusResponseContent": {
+                "type": "object",
+                "properties": {
+                    "jobId": {
+                        "type": "string",
+                        "maxLength": 128,
+                        "minLength": 1,
+                        "pattern": "^[a-z0-9\\-]+$"
+                    },
+                    "deviceId": {
+                        "type": "string",
+                        "maxLength": 128,
+                        "minLength": 1,
+                        "pattern": "^[a-zA-Z0-9:_\\-]+$"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/Status"
+                    },
+                    "createTime": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "modifiedTime": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "kvsStreamArns": {
+                        "$ref": "#/components/schemas/KVSStreamARNs"
+                    }
+                }
+            },
+            "IceServer": {
+                "type": "object",
+                "properties": {
+                    "password": {
+                        "type": "string"
+                    },
+                    "ttl": {
+                        "type": "number",
+                        "format": "float"
+                    },
+                    "uris": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "maxLength": 100,
+                            "minLength": 1
+                        },
+                        "maxItems": 100,
+                        "minItems": 1,
+                        "uniqueItems": true
+                    },
+                    "username": {
+                        "type": "string"
+                    }
+                }
+            },
+            "ImportMediaObjectRequestContent": {
+                "type": "object",
+                "properties": {
+                    "deviceId": {
+                        "type": "string",
+                        "maxLength": 128,
+                        "minLength": 1,
+                        "pattern": "^[a-zA-Z0-9:_\\-]+$"
+                    },
+                    "mediaObject": {
+                        "type": "string",
+                        "maxLength": 50000000,
+                        "format": "byte"
+                    }
+                },
+                "required": [
+                    "deviceId",
+                    "mediaObject"
+                ]
+            },
+            "InternalServerExceptionResponseContent": {
+                "type": "object",
+                "properties": {
+                    "message": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "message"
+                ]
+            },
+            "KVSStreamARNs": {
+                "type": "object",
+                "properties": {
+                    "kvsStreamARNForPlayback": {
+                        "type": "string"
+                    }
+                }
+            },
+            "ListDetailedVideoTimelineRequestContent": {
+                "type": "object",
+                "properties": {
+                    "deviceId": {
+                        "type": "string",
+                        "maxLength": 128,
+                        "minLength": 1,
+                        "pattern": "^[a-zA-Z0-9:_\\-]+$"
+                    },
+                    "startTime": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "endTime": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "nextToken": {
+                        "type": "string",
+                        "pattern": "^[^\\n\\r<>&'\"\\x08]+$"
+                    }
+                },
+                "required": [
+                    "deviceId",
+                    "endTime",
+                    "startTime"
+                ]
+            },
+            "ListDetailedVideoTimelineResponseContent": {
+                "type": "object",
+                "properties": {
+                    "deviceId": {
+                        "type": "string",
+                        "maxLength": 128,
+                        "minLength": 1,
+                        "pattern": "^[a-zA-Z0-9:_\\-]+$"
+                    },
+                    "startTime": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "endTime": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "detailedVideoTimeline": {
+                        "$ref": "#/components/schemas/DetailedVideoTimeline"
+                    },
+                    "nextToken": {
+                        "type": "string",
+                        "pattern": "^[^\\n\\r<>&'\"\\x08]+$"
+                    }
+                }
+            },
+            "ListVideoTimelinesRequestContent": {
+                "type": "object",
+                "properties": {
+                    "deviceId": {
+                        "type": "string",
+                        "maxLength": 128,
+                        "minLength": 1,
+                        "pattern": "^[a-zA-Z0-9:_\\-]+$"
+                    },
+                    "startTime": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "endTime": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "timeIncrement": {
+                        "type": "number"
+                    },
+                    "timeIncrementUnits": {
+                        "$ref": "#/components/schemas/TimeIncrementUnits"
+                    },
+                    "nextToken": {
+                        "type": "string",
+                        "pattern": "^[^\\n\\r<>&'\"\\x08]+$"
+                    }
+                },
+                "required": [
+                    "deviceId",
+                    "endTime",
+                    "startTime",
+                    "timeIncrement",
+                    "timeIncrementUnits"
+                ]
+            },
+            "ListVideoTimelinesResponseContent": {
+                "type": "object",
+                "properties": {
+                    "deviceId": {
+                        "type": "string",
+                        "maxLength": 128,
+                        "minLength": 1,
+                        "pattern": "^[a-zA-Z0-9:_\\-]+$"
+                    },
+                    "startTime": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "endTime": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "timeIncrement": {
+                        "type": "number"
+                    },
+                    "timeIncrementUnits": {
+                        "$ref": "#/components/schemas/TimeIncrementUnits"
+                    },
+                    "videoTimelines": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/VideoTimeline"
+                        }
+                    },
+                    "nextToken": {
+                        "type": "string",
+                        "pattern": "^[^\\n\\r<>&'\"\\x08]+$"
+                    }
+                }
+            },
+            "PeerConnectionState": {
+                "type": "string",
+                "enum": [
+                    "Pending",
+                    "Connecting",
+                    "Connected",
+                    "Disconnected",
+                    "Failed"
+                ]
+            },
+            "PutVideoTimelineRequestContent": {
+                "type": "object",
+                "properties": {
+                    "deviceId": {
+                        "type": "string",
+                        "maxLength": 128,
+                        "minLength": 1,
+                        "pattern": "^[a-zA-Z0-9:_\\-]+$"
+                    },
+                    "location": {
+                        "$ref": "#/components/schemas/VideoDensityLocation"
+                    },
+                    "timestamps": {},
+                    "durationInMillis": {
+                        "type": "number"
+                    }
+                },
+                "required": [
+                    "deviceId",
+                    "location",
+                    "timestamps"
+                ]
+            },
+            "ResourceNotFoundExceptionResponseContent": {
+                "type": "object",
+                "properties": {
+                    "message": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "message"
+                ]
+            },
+            "SourceInfo": {
+                "type": "object",
+                "properties": {
+                    "hLSStreamingURL": {
+                        "type": "string"
+                    },
+                    "expirationTime": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "peerConnectionState": {
+                        "$ref": "#/components/schemas/PeerConnectionState"
+                    },
+                    "SignalingChannelURL": {
+                        "type": "string"
+                    },
+                    "clientId": {
+                        "type": "string"
+                    }
+                }
+            },
+            "SourceType": {
+                "type": "string",
+                "enum": [
+                    "HLS",
+                    "WEBRTC"
+                ]
+            },
+            "StartVLRegisterDeviceResponseContent": {
+                "type": "object",
+                "properties": {
+                    "jobId": {
+                        "type": "string",
+                        "maxLength": 128,
+                        "minLength": 1,
+                        "pattern": "^[a-z0-9\\-]+$"
+                    }
+                }
+            },
+            "Status": {
+                "type": "string",
+                "enum": [
+                    "RUNNING",
+                    "COMPLETED",
+                    "FAILED",
+                    "CANCELLED"
+                ]
+            },
+            "StreamSource": {
+                "type": "object",
+                "properties": {
+                    "sourceType": {
+                        "$ref": "#/components/schemas/SourceType"
+                    },
+                    "source": {
+                        "$ref": "#/components/schemas/SourceInfo"
+                    },
+                    "startTime": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                }
+            },
+            "TimeIncrementUnits": {
+                "type": "string",
+                "enum": [
+                    "SECONDS",
+                    "MINUTES",
+                    "HOURS",
+                    "DAYS"
+                ]
+            },
+            "Timeline": {
+                "type": "object",
+                "properties": {
+                    "startTime": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "endTime": {
+                        "type": "number",
+                        "format": "double"
+                    }
+                }
+            },
+            "ValidationExceptionField": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "message": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "message",
+                    "name"
+                ]
+            },
+            "ValidationExceptionReason": {
+                "type": "string",
+                "enum": [
+                    "unknownOperation",
+                    "cannotParse",
+                    "fieldValidationFailed",
+                    "other"
+                ]
+            },
+            "ValidationExceptionResponseContent": {
+                "type": "object",
+                "properties": {
+                    "message": {
+                        "type": "string"
+                    },
+                    "reason": {
+                        "$ref": "#/components/schemas/ValidationExceptionReason"
+                    },
+                    "fieldList": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ValidationExceptionField"
+                        }
+                    }
+                },
+                "required": [
+                    "message"
+                ]
+            },
+            "VideoDensityLocation": {
+                "type": "string",
+                "enum": [
+                    "CLOUD",
+                    "DEVICE"
+                ]
+            },
+            "VideoTimeline": {
+                "type": "object",
+                "properties": {
+                    "cloudDensity": {
+                        "type": "number",
+                        "maximum": 1,
+                        "minimum": 0,
+                        "format": "float"
+                    },
+                    "deviceDensity": {
+                        "type": "number",
+                        "maximum": 1,
+                        "minimum": 0,
+                        "format": "float"
+                    }
+                }
+            }
+        }
+    }
+}

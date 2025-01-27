@@ -1,0 +1,28 @@
+{
+  "version": "1.0",
+  "sources": ["models"],
+  "outputDirectory": "../../../assets/model/video-logistics",
+  "maven": {
+    "dependencies": [
+      "software.amazon.smithy:smithy-openapi:1.51.0",
+      "software.amazon.smithy:smithy-aws-traits:1.51.0",
+      "software.amazon.smithy:smithy-model:1.51.0",
+      "software.amazon.smithy:smithy-aws-apigateway-openapi:1.52.0"
+    ]
+  },
+  "imports": [
+    "../../../assets/model/common/source/model/model.json"
+  ],
+  "projections": {
+    "openapi-conversion": {
+      "plugins": {
+        "openapi": {
+          "service": "com.amazonaws.videoanalytics.videologistics#VideoAnalytic",
+          "protocol": "aws.protocols#restJson1",
+          "version": "3.0.2",
+          "outputFile": "openapi.yaml"
+        }
+      }
+    }
+  }
+}

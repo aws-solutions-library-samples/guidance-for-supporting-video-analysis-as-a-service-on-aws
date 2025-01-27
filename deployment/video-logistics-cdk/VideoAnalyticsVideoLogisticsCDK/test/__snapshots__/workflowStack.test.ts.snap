@@ -1,0 +1,893 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`WorkflowStack Snapshot test 1`] = `
+{
+  "Parameters": {
+    "BootstrapVersion": {
+      "Default": "/cdk-bootstrap/hnb659fds/version",
+      "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]",
+      "Type": "AWS::SSM::Parameter::Value<String>",
+    },
+  },
+  "Resources": {
+    "RegisterDeviceWorkflowFailAndCleanupFvlRegHandlerLogGroupFB8AF6F7": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "LogGroupName": "FailAndCleanupFvlRegHandlerLogGroup",
+        "RetentionInDays": 3653,
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "RegisterDeviceWorkflowFailAndCleanupFvlRegHandlerRole331A94CC": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
+                    "dynamodb:GetItem",
+                    "dynamodb:PutItem",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": [
+                    {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "arn:",
+                          {
+                            "Ref": "AWS::Partition",
+                          },
+                          ":dynamodb:us-east-1:123456789012:table/VLRegisterDeviceJobTable",
+                        ],
+                      ],
+                    },
+                    {
+                      "Fn::GetAtt": [
+                        "VLRegisterDeviceJobTableA904F593",
+                        "Arn",
+                      ],
+                    },
+                  ],
+                },
+                {
+                  "Action": [
+                    "kinesisvideo:DeleteStream",
+                    "kinesisvideo:DeleteSignalingChannel",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:",
+                        {
+                          "Ref": "AWS::Partition",
+                        },
+                        ":kinesisvideo:us-east-1:123456789012:*",
+                      ],
+                    ],
+                  },
+                },
+                {
+                  "Action": [
+                    "kms:Decrypt",
+                    "kms:Encrypt",
+                    "kms:ReEncrypt*",
+                    "kms:GenerateDataKey*",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:",
+                        {
+                          "Ref": "AWS::Partition",
+                        },
+                        ":kms:us-east-1:123456789012:key/*",
+                      ],
+                    ],
+                  },
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": "AccessPolicy",
+          },
+        ],
+        "RoleName": "FailAndCleanupFvlRegHandlerRole",
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "RegisterDeviceWorkflowFailAndCleanupFvlRegHandlerRoleDefaultPolicyFB878B49": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "RegisterDeviceWorkflowFailAndCleanupFvlRegHandlerRoleDefaultPolicyFB878B49",
+        "Roles": [
+          {
+            "Ref": "RegisterDeviceWorkflowFailAndCleanupFvlRegHandlerRole331A94CC",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "RegisterDeviceWorkflowFailAndCleanupVlRegHandler41AB87C8": {
+      "DependsOn": [
+        "RegisterDeviceWorkflowFailAndCleanupFvlRegHandlerRoleDefaultPolicyFB878B49",
+        "RegisterDeviceWorkflowFailAndCleanupFvlRegHandlerRole331A94CC",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
+          "S3Key": Anything,
+        },
+        "Description": Any<String>,
+        "Environment": {
+          "Variables": {
+            "airportCode": "iad",
+            "tableName": "VLRegisterDeviceJobTable",
+          },
+        },
+        "Handler": "com.amazonaws.videoanalytics.videologistics.workflow.FailAndCleanupVLDeviceRegistrationHandler::handleRequest",
+        "LoggingConfig": {
+          "LogGroup": {
+            "Ref": "RegisterDeviceWorkflowFailAndCleanupFvlRegHandlerLogGroupFB8AF6F7",
+          },
+        },
+        "MemorySize": 2048,
+        "Role": {
+          "Fn::GetAtt": [
+            "RegisterDeviceWorkflowFailAndCleanupFvlRegHandlerRole331A94CC",
+            "Arn",
+          ],
+        },
+        "Runtime": "java17",
+        "Timeout": 720,
+        "TracingConfig": {
+          "Mode": "Active",
+        },
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "RegisterDeviceWorkflowKVSStreamCreatorLambdaRole92F0C304": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
+                    "dynamodb:GetRecords",
+                    "dynamodb:GetItem",
+                    "dynamodb:Query",
+                    "dynamodb:PutItem",
+                    "dynamodb:UpdateItem",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": [
+                    {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "arn:",
+                          {
+                            "Ref": "AWS::Partition",
+                          },
+                          ":dynamodb:us-east-1:123456789012:table/VLRegisterDeviceJobTable",
+                        ],
+                      ],
+                    },
+                    {
+                      "Fn::GetAtt": [
+                        "VLRegisterDeviceJobTableA904F593",
+                        "Arn",
+                      ],
+                    },
+                  ],
+                },
+                {
+                  "Action": [
+                    "kinesisvideo:CreateStream",
+                    "kinesisvideo:CreateSignalingChannel",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:",
+                        {
+                          "Ref": "AWS::Partition",
+                        },
+                        ":kinesisvideo:us-east-1:123456789012:*",
+                      ],
+                    ],
+                  },
+                },
+                {
+                  "Action": [
+                    "kms:Decrypt",
+                    "kms:Encrypt",
+                    "kms:ReEncrypt*",
+                    "kms:GenerateDataKey*",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:",
+                        {
+                          "Ref": "AWS::Partition",
+                        },
+                        ":kms:us-east-1:123456789012:key/*",
+                      ],
+                    ],
+                  },
+                },
+                {
+                  "Action": [
+                    "kms:Decrypt",
+                    "kms:GenerateDataKey*",
+                    "kms:ReEncrypt*",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:",
+                        {
+                          "Ref": "AWS::Partition",
+                        },
+                        ":kms:us-east-1:123456789012:key/*",
+                      ],
+                    ],
+                  },
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": "AccessPolicy",
+          },
+        ],
+        "RoleName": "KVSStreamCreatorLambdaRole",
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "RegisterDeviceWorkflowKVSStreamCreatorLambdaRoleDefaultPolicy8D2EB656": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "RegisterDeviceWorkflowKVSStreamCreatorLambdaRoleDefaultPolicy8D2EB656",
+        "Roles": [
+          {
+            "Ref": "RegisterDeviceWorkflowKVSStreamCreatorLambdaRole92F0C304",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "RegisterDeviceWorkflowKvsCreateLambdaA83CDBA5": {
+      "DependsOn": [
+        "RegisterDeviceWorkflowKVSStreamCreatorLambdaRoleDefaultPolicy8D2EB656",
+        "RegisterDeviceWorkflowKVSStreamCreatorLambdaRole92F0C304",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
+          "S3Key": Anything,
+        },
+        "Description": Any<String>,
+        "Environment": {
+          "Variables": {
+            "airportCode": "iad",
+            "tableName": "VLRegisterDeviceJobTable",
+          },
+        },
+        "Handler": "com.amazonaws.videoanalytics.videologistics.workflow.KVSResourceCreateLambda::handleRequest",
+        "LoggingConfig": {
+          "LogGroup": {
+            "Ref": "RegisterDeviceWorkflowKvsCreateLambdaLogGroup1A23E77D",
+          },
+        },
+        "MemorySize": 2048,
+        "Role": {
+          "Fn::GetAtt": [
+            "RegisterDeviceWorkflowKVSStreamCreatorLambdaRole92F0C304",
+            "Arn",
+          ],
+        },
+        "Runtime": "java17",
+        "Timeout": 720,
+        "TracingConfig": {
+          "Mode": "Active",
+        },
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "RegisterDeviceWorkflowKvsCreateLambdaLogGroup1A23E77D": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "LogGroupName": "KvsCreateLambdaLogGroup",
+        "RetentionInDays": 3653,
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "RegisterDeviceWorkflowVLRegisterDeviceStateMachineA6299E55": {
+      "DeletionPolicy": "Delete",
+      "DependsOn": [
+        "RegisterDeviceWorkflowVLRegisterDeviceStateMachineRoleDefaultPolicyF76DF5AB",
+        "RegisterDeviceWorkflowVLRegisterDeviceStateMachineRoleE55991EF",
+      ],
+      "Properties": {
+        "DefinitionString": {
+          "Fn::Join": [
+            "",
+            [
+              "{"StartAt":"Create KVS ARN","States":{"Create KVS ARN":{"Next":"Successful","Retry":[{"ErrorEquals":["Lambda.ClientExecutionTimeoutException","Lambda.ServiceException","Lambda.AWSLambdaException","Lambda.SdkClientException"],"IntervalSeconds":2,"MaxAttempts":6,"BackoffRate":2}],"Catch":[{"ErrorEquals":["States.ALL"],"ResultPath":"$.error","Next":"FailAndCleanupVLRegStatus"}],"Type":"Task","ResultPath":"$.output","Resource":"arn:",
+              {
+                "Ref": "AWS::Partition",
+              },
+              ":states:::lambda:invoke","Parameters":{"FunctionName":"",
+              {
+                "Fn::GetAtt": [
+                  "RegisterDeviceWorkflowKvsCreateLambdaA83CDBA5",
+                  "Arn",
+                ],
+              },
+              "","Payload":{"JobId.$":"$.partitionKey"}}},"Successful":{"Type":"Succeed"},"FailAndCleanupVLRegStatus":{"Next":"Fail","Retry":[{"ErrorEquals":["Lambda.ClientExecutionTimeoutException","Lambda.ServiceException","Lambda.AWSLambdaException","Lambda.SdkClientException"],"IntervalSeconds":2,"MaxAttempts":6,"BackoffRate":2},{"ErrorEquals":["States.ALL"],"IntervalSeconds":2,"MaxAttempts":5,"BackoffRate":2}],"Type":"Task","ResultPath":"$.output","Resource":"arn:",
+              {
+                "Ref": "AWS::Partition",
+              },
+              ":states:::lambda:invoke","Parameters":{"FunctionName":"",
+              {
+                "Fn::GetAtt": [
+                  "RegisterDeviceWorkflowFailAndCleanupVlRegHandler41AB87C8",
+                  "Arn",
+                ],
+              },
+              "","Payload":{"jobId.$":"$.partitionKey","FailureReason.$":"$.error.Cause"}}},"Fail":{"Type":"Fail"}}}",
+            ],
+          ],
+        },
+        "LoggingConfiguration": {
+          "Destinations": [
+            {
+              "CloudWatchLogsLogGroup": {
+                "LogGroupArn": {
+                  "Fn::GetAtt": [
+                    "RegisterDeviceWorkflowVLRegisterDeviceStateMachineLogGroupBC9AE7A4",
+                    "Arn",
+                  ],
+                },
+              },
+            },
+          ],
+          "Level": "ALL",
+        },
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "RegisterDeviceWorkflowVLRegisterDeviceStateMachineRoleE55991EF",
+            "Arn",
+          ],
+        },
+        "TracingConfiguration": {
+          "Enabled": true,
+        },
+      },
+      "Type": "AWS::StepFunctions::StateMachine",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "RegisterDeviceWorkflowVLRegisterDeviceStateMachineLogGroupBC9AE7A4": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "LogGroupName": "VLRegisterDeviceStateMachineLogGroup",
+        "RetentionInDays": 3653,
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "RegisterDeviceWorkflowVLRegisterDeviceStateMachineRoleDefaultPolicyF76DF5AB": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "RegisterDeviceWorkflowKvsCreateLambdaA83CDBA5",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "RegisterDeviceWorkflowKvsCreateLambdaA83CDBA5",
+                          "Arn",
+                        ],
+                      },
+                      ":*",
+                    ],
+                  ],
+                },
+              ],
+            },
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "RegisterDeviceWorkflowFailAndCleanupVlRegHandler41AB87C8",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "RegisterDeviceWorkflowFailAndCleanupVlRegHandler41AB87C8",
+                          "Arn",
+                        ],
+                      },
+                      ":*",
+                    ],
+                  ],
+                },
+              ],
+            },
+            {
+              "Action": [
+                "logs:CreateLogDelivery",
+                "logs:GetLogDelivery",
+                "logs:UpdateLogDelivery",
+                "logs:DeleteLogDelivery",
+                "logs:ListLogDeliveries",
+                "logs:PutResourcePolicy",
+                "logs:DescribeResourcePolicies",
+                "logs:DescribeLogGroups",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            {
+              "Action": [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+                "xray:GetSamplingRules",
+                "xray:GetSamplingTargets",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "RegisterDeviceWorkflowVLRegisterDeviceStateMachineRoleDefaultPolicyF76DF5AB",
+        "Roles": [
+          {
+            "Ref": "RegisterDeviceWorkflowVLRegisterDeviceStateMachineRoleE55991EF",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "RegisterDeviceWorkflowVLRegisterDeviceStateMachineRoleE55991EF": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "states.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "RegisterDeviceWorkflowWorkflowVLRegisterDeviceJobTableDDBStreamProcessorLambdaRole567D5326": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "RegisterDeviceWorkflowWorkflowVLRegisterDeviceJobTableDDBStreamProcessorLambdaRoleDefaultPolicyF8F7A8E4": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "states:StartExecution",
+              "Effect": "Allow",
+              "Resource": {
+                "Ref": "RegisterDeviceWorkflowVLRegisterDeviceStateMachineA6299E55",
+              },
+            },
+            {
+              "Action": [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            {
+              "Action": [
+                "sqs:SendMessage",
+                "sqs:GetQueueAttributes",
+                "sqs:GetQueueUrl",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "RegisterDeviceWorkflowWorkflowVLRegisterDeviceJobTableVLRegisterDeviceJobTableStreamDLQEB5F14A7",
+                  "Arn",
+                ],
+              },
+            },
+            {
+              "Action": [
+                "kms:Decrypt",
+                "kms:Encrypt",
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey*",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "RegisterDeviceWorkflowWorkflowVLRegisterDeviceJobTableVLRegisterDeviceJobTableStreamDlqEncryptionKeyC8FB4B0C",
+                  "Arn",
+                ],
+              },
+            },
+            {
+              "Action": "dynamodb:ListStreams",
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            {
+              "Action": [
+                "dynamodb:DescribeStream",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "VLRegisterDeviceJobTableA904F593",
+                  "StreamArn",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "RegisterDeviceWorkflowWorkflowVLRegisterDeviceJobTableDDBStreamProcessorLambdaRoleDefaultPolicyF8F7A8E4",
+        "Roles": [
+          {
+            "Ref": "RegisterDeviceWorkflowWorkflowVLRegisterDeviceJobTableDDBStreamProcessorLambdaRole567D5326",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "RegisterDeviceWorkflowWorkflowVLRegisterDeviceJobTableVLRegisterDeviceJobTableStreamDLQEB5F14A7": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "KmsMasterKeyId": {
+          "Fn::GetAtt": [
+            "RegisterDeviceWorkflowWorkflowVLRegisterDeviceJobTableVLRegisterDeviceJobTableStreamDlqEncryptionKeyC8FB4B0C",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "AWS::SQS::Queue",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "RegisterDeviceWorkflowWorkflowVLRegisterDeviceJobTableVLRegisterDeviceJobTableStreamDlqEncryptionKeyC8FB4B0C": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "EnableKeyRotation": true,
+        "KeyPolicy": {
+          "Statement": [
+            {
+              "Action": "kms:*",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":iam::123456789012:root",
+                    ],
+                  ],
+                },
+              },
+              "Resource": "*",
+            },
+            {
+              "Action": [
+                "kms:Create*",
+                "kms:Describe*",
+                "kms:Enable*",
+                "kms:List*",
+                "kms:Put*",
+                "kms:Update*",
+                "kms:Revoke*",
+                "kms:Disable*",
+                "kms:Get*",
+                "kms:Delete*",
+                "kms:TagResource",
+                "kms:UntagResource",
+                "kms:ScheduleKeyDeletion",
+                "kms:CancelKeyDeletion",
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":iam::123456789012:root",
+                    ],
+                  ],
+                },
+              },
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::KMS::Key",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "RegisterDeviceWorkflowWorkflowVLRegisterDeviceJobTableVLRegisterDeviceJobTableStreamProcessor3042FE4F": {
+      "DependsOn": [
+        "RegisterDeviceWorkflowWorkflowVLRegisterDeviceJobTableDDBStreamProcessorLambdaRoleDefaultPolicyF8F7A8E4",
+        "RegisterDeviceWorkflowWorkflowVLRegisterDeviceJobTableDDBStreamProcessorLambdaRole567D5326",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
+          "S3Key": Anything,
+        },
+        "Description": Any<String>,
+        "Environment": {
+          "Variables": {
+            "PARTITION_KEY": "JobId",
+            "SORT_KEY": "",
+            "STATE_MACHINE_ARN": {
+              "Ref": "RegisterDeviceWorkflowVLRegisterDeviceStateMachineA6299E55",
+            },
+          },
+        },
+        "Handler": "com.amazonaws.videoanalytics.workflow.lambda.TriggerStepFunctionLambda::handleRequest",
+        "MemorySize": 1028,
+        "Role": {
+          "Fn::GetAtt": [
+            "RegisterDeviceWorkflowWorkflowVLRegisterDeviceJobTableDDBStreamProcessorLambdaRole567D5326",
+            "Arn",
+          ],
+        },
+        "Runtime": "java17",
+        "TracingConfig": {
+          "Mode": "Active",
+        },
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "RegisterDeviceWorkflowWorkflowVLRegisterDeviceJobTableVLRegisterDeviceJobTableStreamProcessorDynamoDBEventSourceWorkflowStackVLRegisterDeviceJobTable3C9351746FD1294A": {
+      "Properties": {
+        "BatchSize": 10,
+        "BisectBatchOnFunctionError": true,
+        "DestinationConfig": {
+          "OnFailure": {
+            "Destination": {
+              "Fn::GetAtt": [
+                "RegisterDeviceWorkflowWorkflowVLRegisterDeviceJobTableVLRegisterDeviceJobTableStreamDLQEB5F14A7",
+                "Arn",
+              ],
+            },
+          },
+        },
+        "Enabled": true,
+        "EventSourceArn": {
+          "Fn::GetAtt": [
+            "VLRegisterDeviceJobTableA904F593",
+            "StreamArn",
+          ],
+        },
+        "FunctionName": {
+          "Ref": "RegisterDeviceWorkflowWorkflowVLRegisterDeviceJobTableVLRegisterDeviceJobTableStreamProcessor3042FE4F",
+        },
+        "MaximumRetryAttempts": 2,
+        "StartingPosition": "LATEST",
+      },
+      "Type": "AWS::Lambda::EventSourceMapping",
+    },
+    "VLRegisterDeviceJobTableA904F593": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "JobId",
+            "AttributeType": "S",
+          },
+        ],
+        "BillingMode": "PAY_PER_REQUEST",
+        "DeletionProtectionEnabled": true,
+        "KeySchema": [
+          {
+            "AttributeName": "JobId",
+            "KeyType": "HASH",
+          },
+        ],
+        "PointInTimeRecoverySpecification": {
+          "PointInTimeRecoveryEnabled": true,
+        },
+        "SSESpecification": {
+          "SSEEnabled": true,
+        },
+        "StreamSpecification": {
+          "StreamViewType": "NEW_AND_OLD_IMAGES",
+        },
+        "TableClass": "STANDARD",
+        "TableName": "VLRegisterDeviceJobTable",
+      },
+      "Type": "AWS::DynamoDB::Table",
+      "UpdateReplacePolicy": "Retain",
+    },
+  },
+  "Rules": {
+    "CheckBootstrapVersion": {
+      "Assertions": [
+        {
+          "Assert": {
+            "Fn::Not": [
+              {
+                "Fn::Contains": [
+                  [
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5",
+                  ],
+                  {
+                    "Ref": "BootstrapVersion",
+                  },
+                ],
+              },
+            ],
+          },
+          "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI.",
+        },
+      ],
+    },
+  },
+}
+`;

@@ -1,0 +1,48 @@
+plugins {
+    id "org.openapi.generator" version "7.8.0"
+}
+
+group = 'org.example'
+version = '1.0-SNAPSHOT'
+
+openApiGenerate {
+    delete "$rootDir/generated-src/"
+    validateSpec = true
+    generatorName = "java"
+    inputSpec = "$rootDir/../../../assets/model/device-management/openapi-conversion/openapi/VideoAnalytic.openapi.json"
+    cleanupOutput = true
+    outputDir = "$buildDir/generated"
+    modelPackage = "com.amazonaws.videoanalytics.devicemanagement"
+    configOptions = [
+        "additionalModelTypeAnnotations": "@lombok.Builder;@lombok.AllArgsConstructor",
+        "dateLibrary": "legacy",
+        "hideGenerationTimestamp": "true"
+    ]
+
+    copy {
+        from "$buildDir/generated/src/main/java"
+        into "$rootDir/generated-src/"
+        include 'com/amazonaws/**/*.java'
+        include 'com/amazonaws/*.java'
+    }
+}
+
+task cleanBuildCache {
+    doLast {
+        delete layout.buildDirectory
+
+        delete fileTree(dir: "${System.getProperty('user.home')}/.gradle/caches")
+        delete fileTree(dir: "${System.getProperty('user.home')}/.gradle/daemon")
+        delete fileTree(dir: "${System.getProperty('user.home')}/.gradle/wrapper")
+
+        // Delete the .gradle directory in the project root, if it exists
+        def projectGradleDir = new File(projectDir, '.gradle')
+        if (projectGradleDir.exists()) {
+            println "Deleting project's .gradle directory..."
+            projectGradleDir.deleteDir()
+            println "Project's .gradle directory deleted successfully."
+        }
+
+        println "Build cache cleaning completed."
+    }
+}

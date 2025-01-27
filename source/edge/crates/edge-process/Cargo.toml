@@ -1,0 +1,63 @@
+[package]
+name = "edge-process"
+version = "0.1.0"
+edition = "2021"
+
+# This crate produces only binaries, so there's no need to publish.
+publish = false
+
+[[bin]]
+name = "edge-process"
+path = "./src/bin/main.rs"
+
+[dependencies]
+# Third Party Dependencies, inherit versions from workspace
+chrono.workspace = true
+tokio.workspace = true
+reqwest.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+tracing-appender.workspace = true
+anyhow.workspace = true
+clap.workspace = true
+config.workspace = true
+mockall.workspace = true
+serde_derive.workspace = true
+serde_json.workspace = true
+serde.workspace = true
+once_cell.workspace = true
+thiserror.workspace = true
+rusqlite.workspace = true
+futures-util.workspace = true
+# Do not inherit from cargo workspace, should only be called executable crate.
+tracing-core = "0.1.30"
+
+# internal dependencies
+device-traits.workspace = true
+mqtt-client.workspace = true
+iot-connections.workspace = true
+onvif-client.workspace = true
+http-client.workspace = true
+streaming-traits.workspace = true
+gstreamer-pipeline.workspace = true
+snapshot-traits.workspace = true
+snapshot-client.workspace = true
+ws-discovery-client.workspace = true
+webrtc-client.workspace = true
+kvs-client.workspace = true
+
+# P2P third party dependencies
+webrtc.workspace = true
+signal.workspace = true
+base64 = "0.21.0"
+tokio-tungstenite.workspace = true
+futures-channel.workspace = true
+bytes.workspace = true
+h264-reader.workspace = true
+hex.workspace = true
+
+[features]
+config = []
+command = []
+ip-discovery = []
+simulated-rtsp-stream = []
