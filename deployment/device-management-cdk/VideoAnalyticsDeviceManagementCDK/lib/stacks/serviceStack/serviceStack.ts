@@ -27,7 +27,7 @@ export class ServiceStack extends Stack {
 
   constructor(scope: Construct, id: string, props: ServiceStackProps) {
     super(scope, id, props);
-
+    this.templateOptions.description = "Guidance for Video Analytics Infrastructure on AWS(SO9006)"
     console.log("ServiceStack constructor called");
     console.log("Props:", JSON.stringify(props));
 
